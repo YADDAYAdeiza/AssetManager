@@ -1,5 +1,6 @@
 if (process.env.NODE_ENV !=='production'){
-    require('dotenv').load();
+  var dotEnv =  require('dotenv');
+  dotEnv.config();
 }
 
 let express = require('express');
