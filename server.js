@@ -1,6 +1,19 @@
+if (process.env.NODE_ENV !=='production'){
+    require('dotenv').load();
+}
+
 let express = require('express');
 let ejs = require('ejs');
 let layout = require('express-ejs-layouts');
+let mongoose = require('mongoose');
+
+
+mongoose.connect(process.env.DATABASE_URL, {useNewUrlParser:true }); //play around with this
+
+const db = mongoose.connection();
+
+db.on('error', error => console.error(error))
+db.once('open', () => console.log('Connected to mongoose'));
 
 let userRoute = require('./routes/user.js');
 
@@ -26,9 +39,7 @@ app.get('/', (req, res)=>{
     res.render('general');
 });
 
-app.get('/register', (req,res)=>{
-    res.send('What item now');
-})
+
 
 
 
