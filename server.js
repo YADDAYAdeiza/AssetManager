@@ -16,7 +16,8 @@ db.once('open', () => console.log('Connected to mongoose'));
 
 let userRoute = require('./routes/user.js');
 
-app.use('/user', userRoute);
+
+//app.use('/user', userRoute);
 
 
 
