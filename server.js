@@ -7,20 +7,17 @@ let express = require('express');
 let ejs = require('ejs');
 let layout = require('express-ejs-layouts');
 let mongoose = require('mongoose');
-
+let app = express();
 
 mongoose.connect(process.env.DATABASE_URL, {useNewUrlParser:true }); //play around with this
-
 const db = mongoose.connection;
-
 db.on('error', error => console.error(error))
 db.once('open', () => console.log('Connected to mongoose'));
 
 let userRoute = require('./routes/user.js');
 
-//app.use('/user', userRoute);
+app.use('/user', userRoute);
 
-let app = express();
 
 
 app.set('view engine', 'ejs');
