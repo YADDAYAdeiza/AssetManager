@@ -1,0 +1,20 @@
+<h2>List of Assets here</h2>
+
+<form action = '/assets' method = 'GET'>
+    <div>
+        <input type="text" name="assetName" value = <%=searchOptions %> />
+    </div>
+
+    <div>
+        <input type="date" name="assetDate" value = <%=searchOptions %>/>
+    </div>
+    <button type="submit">Search</button>
+</form>
+<br/>
+
+<% if (locals.asset !=null){ %>
+    <%= 'There are assets' %>
+    <%  asset.forEach(asset=>{%>
+        <p><%=asset.assetCode%></p>
+    <%})%>
+<% } %>

@@ -6,6 +6,7 @@ html, body {
     }
     form {
     border: 5px solid #f1f1f1;
+    width:100%;
     }
     input[type=text], input[type=password] {
     width: 100%;

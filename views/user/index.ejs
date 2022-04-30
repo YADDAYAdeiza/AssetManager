@@ -1,0 +1,12 @@
+<h2>List of users here</h2>
+
+form for search goes in here
+
+<% if (locals.users !=null){ %>
+    <%= 'There are users' %>
+    <% console.log(users)%>
+    <%  users.forEach(user=>{%>
+        <% console.log(user.firstName)%>
+        <p><%=user.firstName%></p>
+    <%})%>
+<% } %>

@@ -8225,7 +8225,8 @@ h1, h2, h3, h4, h5,
     margin-bottom: 20px;
     font-weight: 700; }
     #sidebar h1 .logo {
-      color: #fff; }
+      color: #fff;
+   }
   #sidebar ul.components {
     padding: 0; }
   #sidebar ul li {
@@ -8294,7 +8295,7 @@ a[data-toggle="collapse"] {
     display: none; } }
 
 #content {
-  width: 100%;
+  width: 70%;
   padding: 0;
   min-height: 100vh;
   -webkit-transition: all 0.3s;
