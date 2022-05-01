@@ -1,14 +1,5 @@
-
-if (!('BarcodeDetector' in window)) { 
-  alert('Not compatible')
- }
-
-//  var ba = BarcodeDetector.getSupportedFormats();
-// console.log(ba);
 let codes = [];
 const seen = new Set();
-console.log('I am here');
-alert('I am here');
 // Create new barcode detector
 const barcodeDetector = new BarcodeDetector({ formats: ['qr_code'] });
 
