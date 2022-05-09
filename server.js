@@ -33,11 +33,12 @@ let userRoute = require('./routes/user.js');
 let assetRoute = require('./routes/asset.js');
 let assetTypeRoute = require('./routes/assetType.js');
 let contractorRoute = require('./routes/contractor.js');
+let recentRoute = require('./routes/recent.js');
 
-let userModel = require('./User.js');
+let userModel = require('./models/user.js');
 
 const bodyParser = require('body-parser');
-const { fstat } = require('fs');
+// const { fstat } = require('fs');
 
 app.use(bodyParser.urlencoded({limit: '10mb', extended:false}));
 
@@ -45,6 +46,7 @@ app.use('/user', userRoute);
 app.use('/asset', assetRoute);
 app.use('/assetType', assetTypeRoute);
 app.use('/contractor', contractorRoute);
+app.use('/recent', recentRoute);
 
 
 
@@ -63,21 +65,28 @@ var sega= [
 ]
 var segaVar = JSON.stringify(sega);
 
-app.get('/', (req, res)=>{
+app.get('/', async (req, res)=>{
     console.log('I am working...');
     // res.send('Working too')
+    var user;
+    try{
+      user = await userModel.find().sort({dateCreated:'desc'}).limit(3).exec();//775, 780
+    }catch{
+      user = [];
+    }
+
     QRCode.toDataURL(segaVar, {type:'terminal'}, function(err, url){
       console.log(url);
-      res.render('userform', {code:url});
+      res.render('userform', {code:url, users:user});
     })
     //, {msg:'error message goes in here'}
   });
 
 
-// httpServer = http.createServer(app);
+//httpServer = http.createServer(app);
 // httpsServer = https.createServer(httpsOptions,app);
 
-// httpServer.listen(process.env.PORT || 2000);
+//httpServer.listen(process.env.PORT || 4000);
 // httpsServer.listen(process.env.PORT || 3000);
 app.listen(process.env.PORT || 2000)
 

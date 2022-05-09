@@ -1,12 +1,20 @@
 <h2>List of users here</h2>
+<p><%=msg%></p>
 
 form for search goes in here
-
+<form method="get" action="/user/index">
+    <p><input type="text" name="userNameSearch"></p>
+    <p><input type="date" name="userDateBeforeSearch"></p>
+    <p><input type="date" name="userDateAfterSearch"></p>
+    <p><button value="submit">Submit</button></p>
+</form>
 <% if (locals.users !=null){ %>
     <%= 'There are users' %>
     <% console.log(users)%>
     <%  users.forEach(user=>{%>
-        <% console.log(user.firstName)%>
+        <%= console.log(user.firstName)%>    
         <p><%=user.firstName%></p>
+       <p><%= user.userProfilePic %></p> 
+        <p><img height= "100" width="120" src="<%= "/uploads/profilePics/"+user.profilePic%>" alt="Some pic"></p>
     <%})%>
 <% } %>

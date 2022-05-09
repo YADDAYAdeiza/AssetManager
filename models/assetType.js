@@ -1,12 +1,15 @@
 var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/AssetManager');
 
+const assetTypeImagePath = 'uploads/assetTypePics';
+
+
 let assetTypeSchema = new mongoose.Schema({
     assetTypeCode:{
         type:String,
         required:true
     },
-    assetClass:{
+    assetTypeClass:{
         type:String,
         required:true,
     },
@@ -24,9 +27,14 @@ let assetTypeSchema = new mongoose.Schema({
         type:Date,
         required:true,
         default:Date.now()
+    },
+    assetTypePic:{
+        type:String,
+        required:true
     }
 });
 
 let assetTypeModel = mongoose.model('AssetTypeCol', assetTypeSchema);
 
 module.exports = assetTypeModel;
+module.exports.assetTypeImagePath = assetTypeImagePath;

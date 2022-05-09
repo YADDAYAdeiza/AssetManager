@@ -5,6 +5,11 @@ var inputAssetTypeGrab = document.getElementById('inputAssetType');
 
 var assetArr = []; //holds option in AssetType select
 
+// if (assetTypeID){
+//   assetTypeIDGrab = document.getElementById('assetTypeID');
+//   assetTypeIDGrab
+// }
+
 function showTab(n) {
   // This function will display the specified tab of the form ...
   var x = document.getElementsByClassName("tab");
@@ -78,7 +83,7 @@ function fixStepIndicator(n) {
 }
 
 function GetSerialNumber(asset){
-  alert (asset)
+  //alert (asset)
 
   var xhttp = new XMLHttpRequest();
 xhttp.onreadystatechange = function() {
@@ -94,7 +99,7 @@ xhttp.send();
 }
 
 function checkSelectOptions(inpt){
-  alert ('checking...');
+  //alert ('checking...');
  filterCheckSelectOptions(inpt)
 //  console.log(optionThing);
   // console.log(assetArr);
@@ -125,7 +130,9 @@ function filterCheckSelectOptions(inpt){
 }
 
 
+
+
 function SetAssetValue(this2){
   this2.size = 1;
-  inputAssetTypeGrab.value = selAssetGrab.value;
+  inputAssetTypeGrab.value = "Done"//selAssetGrab.options[selAssetGrab.selectedIndex].text;
 }

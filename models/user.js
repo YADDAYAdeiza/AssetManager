@@ -1,6 +1,7 @@
 var mongoose = require('mongoose');
 const assetTypeModel = require('./assetType.js')
 mongoose.connect('mongodb://localhost/AssetManager');
+const path = require('path');
 
 const profileImagePath = 'uploads/profilePics';
 
@@ -42,6 +43,11 @@ let userSchema = new mongoose.Schema({
         reference:assetTypeModel
         //required:assetTypeModel
     
+    },
+    dateCreated:{
+        type:Date,
+        required:true,
+        default:Date.now
     }
 });
 
@@ -49,3 +55,9 @@ let userModel = mongoose.model('UserCol', userSchema);
 
 module.exports = userModel;
 module.exports.profileImagePath = profileImagePath;
+
+userSchema.virtual('userProfilePic').get(function(){
+    if (this.profilePic != null){
+        return path.join('/', profileImagePath, this.profilePic);
+    }
+})

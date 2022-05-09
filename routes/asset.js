@@ -4,9 +4,16 @@ let route = express.Router();
 let ejs = require('ejs');
 let layout = require('express-ejs-layouts');
 
-let assetModel = require('../models/asset');
+let assetModel = require('../models/asset.js');
 let assetTypeModel = require('../models/assetType.js');
+const path  = require('path');
+const multer = require('multer');
 //route.set('layout', 'layouts/layout');
+
+var uploadPath = assetModel.uploadAssetPath;
+const assetUploadOptions = multer({
+    dest:path.join('public', uploadPath)
+})
 
 route.use(express.static('public'));
 
@@ -28,11 +35,11 @@ route.get('/index', async (req, res)=>{
 route.get('/new', async (req,res)=>{
    var assetTypeModelVar = await assetTypeModel.find({});
    assetTypeModelVar.sort((a,b)=>{
-    if (a.assetClass > b.assetClass){
+    if (a.assetTypeClass > b.assetTypeClass){
         return 1
     }
 
-    if (a.assetClass < b.assetClass){
+    if (a.assetTypeClass < b.assetTypeClass){
         return -1
     }
 
@@ -47,16 +54,37 @@ route.get('/new', async (req,res)=>{
 })
 
 //create new book
-route.post('/',  async (req,res)=>{
+route.post('/', assetUploadOptions.single('assetPic'), async (req,res)=>{
+    if (req.file.filename != null){
+        var fileName = req.file.filename;
+    }
+    console.log('This is filename ', fileName)
+    var assetItem = new assetModel({
+        assetImageName: fileName,
+        assetType: req.body.selAssetType
+    })
+    console.log(assetItem);
+    console.log('This is asset above');
+    
     try{
-        var assetModelVar = await assetModel.create({});
-        console.log(assetModelVar);
+        var newAsset = await assetItem.save();
+        console.log('This is newAsset');
+        console.log(newAsset);
         res.redirect('asset/index');
     }catch (e){
         // console.log(e.message);
+        if (newAsset.assetImageName != null){
+            removeAssetTypePic(newAsset.assetImageName);
+        }
     }
    
 })
+
+function removeAssetPic(assetPicName){
+    fs.unlink(path.join(uploadPath, assetPicName), err=>{
+        if (err) console.error(err)
+    })
+}
 
 
 module.exports = route;

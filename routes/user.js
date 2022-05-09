@@ -37,12 +37,33 @@ route.get('/index', async (req, res)=>{
     //res.render('userform.ejs');
     console.log('In index')
     console.log(userVar);
+    let query = userModel.find();
+    if (req.query.userNameSearch != null && req.query.userNameSearch != ""){
+        query = query.regex('firstName', new RegExp(req.query.userNameSearch, 'i'));
+    }
+    if (req.query.userDateBeforeSearch != null && req.query.userDateBeforeSearch != ""){
+        query = query.lte('dateCreated', req.query.userDateBeforeSearch);
+    }
+    if (req.query.afterDateBeforeSearch != null && req.query.afterDateBeforeSearch != ""){
+        query = query.gte('dateCreated', req.query.afterDateBeforeSearch);
+    }
 
     try{
-        const users = await userModel.find({})
-        console.log('******')
-        // console.log(users);
-        res.render('user/index.ejs', {msg: `${userVar.firstName} added`, users: users}); //tying the view to the moongoose model
+        const users = await query.exec()
+        console.log('Now******')
+        console.log(users[users.length-1].firstName);
+        console.log(users[users.length-1].userProfilePic);
+        console.log(users[users.length-1].profilePic);
+        var para = {
+            users:users,
+            searchParams:req.query,
+            msg: `An error occured`
+        }
+        res.render('user/index.ejs', {
+            users:users,
+            searchParams:req.query,
+            msg: `An error occured`
+        }); //tying the view to the moongoose model
         
     }catch {
         
@@ -93,7 +114,7 @@ route.post('/',  upload.single('photo'), async (req,res)=>{
         console.log(userVar)
     } catch(e){
         console.log(e.message);
-        if (newUser.removeProfilePic != null){
+        if (newUser.profilePic != null){
             removeProfilePic(newUser.profilePic);
         }
         res.render('user/new.ejs', {msg:"An error occured in updating the database", user: user})

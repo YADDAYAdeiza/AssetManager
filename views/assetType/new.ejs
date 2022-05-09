@@ -1,4 +1,4 @@
-<form id="regForm" action="/assetType" method = "post">
+<form id="regForm" action="/assetType" method = "post" enctype="multipart/form-data">
 
     <h1>Register Asset Type:</h1>
     
@@ -6,11 +6,11 @@
     <div class="tab">Name:
       <p><input placeholder="Asset Type Serial No..." oninput="this.className = ''" name = "assetNumber" id="serialInpt" value="<%=assetType.assetCode%>"></p>
       <p><input placeholder="Asset Type..." oninput = "checkSelectOptions(this.value)" oninput="this.className = ''" id = "inputAssetType" name = "assetTypeName" value="<%=assetType.assetType%>"></p>
-      
+      <p><input  type = 'file' placeholder = 'Asset Type Pic' name = 'assetTypePic'></p>
       <p><select onchange = "GetSerialNumber(this.value)" onclick = "SetAssetValue(this)" id = "selAsset">
         <% assetType.forEach(assetTypeItem =>{ %>
           
-          <option><%=assetTypeItem.assetClass %></option>
+          <option><%=assetTypeItem.assetTypeClass %></option>
 
           <%  })%>
       </select></p>
