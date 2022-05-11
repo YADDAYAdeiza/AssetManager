@@ -1,9 +1,6 @@
 var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/AssetManager');
 
-const profileImagePath = 'uploads/profilePics';
-const contractorDocument = 'uploads/contractDocuments';
-
 let contractorSchema = new mongoose.Schema({
     contractorCompanyName:{
         type:String,
@@ -33,12 +30,23 @@ let contractorSchema = new mongoose.Schema({
         required:true,
         default:Date.now()
     },
-    contractDocs:{
-        type:String
+    contractImageName:{
+        type:Buffer,
+        required:true
+    },
+    contractImageType:{
+        type:String,
+        required:true
     }
 });
+
+
+contractorSchema.virtual('contractorImageDetails').get(function(){
+    if (this.contractImageName != null && this.contractImageType != null){
+        return `data:${this.contractImageType};charset=utf-8;base64,${this.contractImageName.toString('base64')}`
+    }
+})
 
 let contractorModel = mongoose.model('ContractorCol', contractorSchema);
 
 module.exports = contractorModel;
-module.exports.contractorDocument = contractorDocument;

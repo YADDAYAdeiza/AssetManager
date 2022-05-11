@@ -1,13 +1,13 @@
-<form id="regForm" action="/assetType" method = "post" enctype="multipart/form-data">
+<form id="regForm" action="/assetType" method = "post">
 
     <h1>Register Asset Type:</h1>
     
     <!-- One "tab" for each step in the form: -->
     <div class="tab">Name:
       <p><input placeholder="Asset Type Serial No..." oninput="this.className = ''" name = "assetNumber" id="serialInpt" value="<%=assetType.assetCode%>"></p>
-      <p><input placeholder="Asset Type..." oninput = "checkSelectOptions(this.value)" oninput="this.className = ''" id = "inputAssetType" name = "assetTypeName" value="<%=assetType.assetType%>"></p>
-      <p><input  type = 'file' placeholder = 'Asset Type Pic' name = 'assetTypePic'></p>
-      <p><select onchange = "GetSerialNumber(this.value)" onclick = "SetAssetValue(this)" id = "selAsset">
+      <p><input placeholder="Asset Type..." oninput = "checkSelectOptions(this.value)" oninput="this.className = ''" id = "selAsset" name = "assetTypeName" value="<%=assetType.assetType%>"></p>
+      <p><input  type = 'file' placeholder = 'Asset Type Pic' name = 'assetTypePic' class="filepond"></p>
+      <p><select onchange = "SetAssetValue(this)" id = "inputAssetType">
         <% assetType.forEach(assetTypeItem =>{ %>
           
           <option><%=assetTypeItem.assetTypeClass %></option>

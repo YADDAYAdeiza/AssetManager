@@ -1,4 +1,4 @@
-<form id="regForm" action="/contractor" method = "post" enctype="multipart/form-data">
+<form id="regForm" action="/contractor" method = "post">
 
     <h1>Register Contractor:</h1>
     
@@ -7,7 +7,7 @@
       <p><input placeholder="Contractor Serial No..." oninput="this.className = ''" name = "assetNumber" id="serialInpt" value="<%= 'Code'%>"></p>
       <p><input placeholder="CompanyName" oninput="this.className = ''" name = "contractorCompanyName" id="contractorInpt" value="<%= contractor.contractorCompanyName%>"></p>
       <p><input placeholder="Contractor Address.." oninput = "checkSelectOptions(this.value)" oninput="this.className = ''" id = "contractorAddress" name = "contractorAddress" value="<%=contractor.contractorAddress%>"></p>
-      <p><input type="file" name="contractorDocs"></p>
+      <p><input type="file" name="contractorDocs" class = "filepond"></p>
       <p><input placeholder="Contractor Type..." oninput = "checkSelectOptions(this.value)" oninput="this.className = ''" id = "inputAssetType" name = "assetTypeName" value="<%=contractor.contractorClass%>"></p>
       
       <p><select onchange = "GetSerialNumber(this.value)" onclick = "SetAssetValue(this)" id = "selAsset">

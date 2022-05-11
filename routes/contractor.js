@@ -4,12 +4,10 @@ let ejs = require('ejs');
 let layout = require('express-ejs-layouts');
 
 let contractorModel = require('../models/contractor');
-const path = require('path');
-const multer = require('multer');
 
-const upload = multer({
-    dest:path.join('public', contractorModel.contractorDocument)
-})
+const imageMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
+
+
 //route.set('layout', 'layouts/layout');
 
 route.use(express.static('public'));
@@ -23,17 +21,14 @@ route.use(layout);
 //get all assets
 
 // route.get('/serial', async (req, res)=>{
-//     console.log(req.query.selAssType);
 
 //    var da =  await assetTypeModel.find({}).where('assetClass').equals(req.query.selAssType);
-//    console.log(da);
 //     res.json({'done': da[da.length-1].assetTypeCode});
 // })
 
 route.get('/index', async (req, res)=>{
     //  res.send('List all contractors...')
     let contractorModelArr = await contractorModel.find({});
-    console.log(contractorModelArr);
     res.render('contractor/index.ejs', {contractor: contractorModelArr});
 })
 
@@ -54,31 +49,40 @@ route.get('/new', async (req,res)=>{
 
         return 0;
    });
-   console.log(contractorArr);
 
     //res.render('AssetType/new.ejs', {assetType: new assetTypeModel()}); //tying the view to the moongoose model
     res.render('Contractor/new.ejs', {contractor: contractorArr}); //tying the view to the moongoose model
 })
 
 //create new book
-route.post('/',  upload.single('contractorDocs'), async (req,res)=>{
+route.post('/', async (req,res)=>{
 
    //res.send('Contractor form');
-    // console.log(req.body);
-   const fileName =  req.file.filename != null? req.file.filename : null;
+   var contractor = contractorModel({
+    contractorCompanyName: req.body.contractorCompanyName,
+    contractorAddress: req.body.contractorAddress,
+})
+contractormageDetails(contractor, req.body.contractorDocs);
     try{
-       var contractor = await contractorModel.create({
-        contractorCompanyName: req.body.contractorCompanyName,
-        contractorAddress: req.body.contractorAddress,
-        contractDocs: fileName
-    })
+        var newContractor = await contractor.save();
     res.redirect('contractor/index');
     } catch(e){
-        console.log(e.message);
+        console.error(e.message);
     }
 //    res.send('List of AssetTypes');
     
 })
+
+function contractormageDetails(contractor, encodedProfile){
+    if (encodedProfile == null) return
+    
+    const profile = JSON.parse(encodedProfile);
+    if (profile !=null && imageMimeTypes.includes(profile.type)){
+        contractor.contractImageName = new Buffer.from(profile.data, 'base64');
+        contractor.contractImageType = profile.type;
+    }
+
+}
 
 
 module.exports = route;

@@ -70,9 +70,7 @@
   <div>
     <% if (locals.users !=null){ %>
       <%= 'There are users' %>
-     <% console.log(users)%>
       <%  users.forEach(user=>{%>
-          <%= console.log(user.firstName)%>    
           <p><%=user.firstName%></p>
          <p><%= user.userProfilePic %></p> 
           <p><img height= "100" width="120" src="<%= "/uploads/profilePics/"+user.profilePic%>" alt="Some pic"></p>
@@ -106,7 +104,6 @@
       <span class="psw"><a href="#">Forgot password?</a></span>
     </div>
   </form>
-  <img src="<%=code %>" alt="">
 </body>
 </html>
     

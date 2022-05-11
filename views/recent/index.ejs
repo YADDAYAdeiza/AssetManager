@@ -1,5 +1,5 @@
 <h2>Recent Activity</h2>
-<p><%= %></p>
+<!-- <p><%= %></p>
 
 form for search goes in here
 <form method="get" action="/user/index">
@@ -7,36 +7,36 @@ form for search goes in here
     <p><input type="date" name="userDateBeforeSearch"></p>
     <p><input type="date" name="userDateAfterSearch"></p>
     <p><button value="submit">Submit</button></p>
-</form>
+</form> -->
 <% if (locals.users !=null){ %>
     <%= 'There are users' %>
-   <% console.log(users)%>
     <%  users.forEach(user=>{%>
-        <%= console.log(user.firstName)%>    
         <p><%=user.firstName%></p>
-       <p><%= user.userProfilePic %></p> 
-        <p><img height= "100" width="120" src="<%= "/uploads/profilePics/"+user.profilePic%>" alt="Some pic"></p>
+        <p><img height= "100" width="120" src="<%=user.userProfilePic%>" alt="Some pic"></p>
     <%})%>
 <% } %> 
 
 <% if (locals.asset !=null){ %>
     <%= 'Assets' %>
-   <% console.log(asset)%>
     <%  asset.forEach(assetItem=>{%>
-        <%= console.log(assetItem.assetCode)%>    
         <p><%=assetItem.assetCode%></p>
-       <p><%= assetItem.assetImageName %></p> 
-        <p><img height= "100" width="120" src="<%= "/uploads/assetPics/"+assetItem.assetImageName%>" alt="asset pic"></p>
+        <p><img height= "100" width="120" src="<%= assetItem.assetImageDetails %>" alt="asset pic"></p>
     <%})%>
 <% } %>
 
 <% if (locals.assetType !=null){ %>
     <%= 'Asset Types' %>
-   <% console.log(assetType)%>
     <%  assetType.forEach(assetTypeItem=>{%>
-        <%= console.log(assetTypeItem.assetTypeCode)%>    
         <p><%=assetTypeItem.assetTypeCode%></p>
        <p><%= assetTypeItem.assetTypePic %></p> 
-        <p><img height= "100" width="120" src="<%= "/uploads/assetTypePics/"+assetTypeItem.assetTypePic%>" alt="Some pic"></p>
+        <p><img height= "100" width="120" src="<%=assetTypeItem.assetTypeImageDetails%>" alt="Some pic"></p>
     <%})%>
+<% } %>
+    <% if (locals.contractor !=null){ %>
+        <%= 'Contractor' %>
+        <%  contractor.forEach(contractorItem=>{%>
+            <p><%=contractorItem.contractorCompanyName%></p>
+           <p><%= contractorItem.contractorClass %></p> 
+            <p><img height= "100" width="120" src="<%=contractorItem.contractorImageDetails%>" alt="Some pic"></p>
+        <%})%>
 <% } %>

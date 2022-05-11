@@ -4,6 +4,7 @@ let fs = require('fs');
 let path = require('path');
 let ejs = require('ejs');
 let layout = require('express-ejs-layouts');
+let contractorModel = require('../models/contractor')
 let assetTypeModel = require('../models/assetType');
 let assetModel = require('../models/asset');
 let userModel = require('../models/user');
@@ -28,23 +29,20 @@ route.use(layout);
 //get all assets
 
 route.get('/serial', async (req, res)=>{
-//     console.log(req.query.selAssType);
 
 //    var da =  await assetTypeModel.find({}).where('assetClass').equals(req.query.selAssType);
-//    console.log(da);
 //     res.json({'done': da[da.length-1].assetTypeCode});
 })
 route.get('/index', async (req, res)=>{
     // res.send('Book stuff...')
     // var assetTypes = await assetTypeModel.find({});
-    // console.log(assetTypes);
-    console.log('I am working...');
     // res.send('Working too')
     var user;
     var asset
     var assetType;
+    var contractor;
     try{
-      user = await userModel.find().sort({dateCreated:'desc'}).limit(4).exec();//775, 780
+      user = await userModel.find().sort({dateCreated:'desc'}).limit(10).exec();//775, 780
     //    asset = await assetModel.find().sort({assignDate:'desc'}).limit(4).exec();//775, 780
     //    assetType = await assetTypeModel.find().sort({assignDate:'desc'}).limit(4).exec();//775, 780
       
@@ -56,10 +54,8 @@ route.get('/index', async (req, res)=>{
 
     try{
         // user = await userModel.find().sort({dateCreated:'desc'}).limit(4).exec();//775, 780
-         asset = await assetModel.find().sort({assignDate:'desc'}).limit(4).exec();//775, 780
+         asset = await assetModel.find().sort({assignDate:'desc'}).limit(20).exec();//775, 780
       //    assetType = await assetTypeModel.find().sort({assignDate:'desc'}).limit(4).exec();//775, 780
-        console.log('This is asset')
-        console.log(asset);
       }catch{
         // user = [];
          asset = [];
@@ -69,14 +65,30 @@ route.get('/index', async (req, res)=>{
       try{
         // user = await userModel.find().sort({dateCreated:'desc'}).limit(4).exec();//775, 780
       //    asset = await assetModel.find().sort({assignDate:'desc'}).limit(4).exec();//775, 780
-         assetType = await assetTypeModel.find().sort({assignDate:'desc'}).limit(4).exec();//775, 780
+         assetType = await assetTypeModel.find().sort({assignDate:'desc'}).limit(20).exec();//775, 780
         
       }catch{
         // user = [];
       //    asset = [];
          assetType = [];
       }
-    res.render('recent/index.ejs', {users:user, asset:asset, assetType:assetType}); 
+
+      try{
+        // user = await userModel.find().sort({dateCreated:'desc'}).limit(4).exec();//775, 780
+         contractor = await contractorModel.find().sort({assignDate:'desc'}).limit(20).exec();//775, 780
+      //    assetType = await assetTypeModel.find().sort({assignDate:'desc'}).limit(4).exec();//775, 780
+      // console.log('__________')
+      // console.log(contractor);
+      // console.log('*****')
+      }catch(e){
+        console.error(e);
+        // user = [];
+         contractor = [];
+      //    assetType = [];
+      }
+
+      
+    res.render('recent/index.ejs', {users:user, asset:asset, assetType:assetType, contractor:contractor}); 
 });
 
 //get the create new form for new book
@@ -96,7 +108,6 @@ route.get('/new', async (req,res)=>{
 
 //         return 0;
 //    });
-//    console.log(assetTypesArr);
 
     //res.render('AssetType/new.ejs', {assetType: new assetTypeModel()}); //tying the view to the moongoose model
     // res.render('AssetType/new.ejs', {assetType: assetTypesArr}); //tying the view to the moongoose model
@@ -104,12 +115,8 @@ route.get('/new', async (req,res)=>{
 
 //create new book
 route.post('/', async (req,res)=>{
-    // console.log(req.body);
-// console.log(req.file.filename);
 // if (req.file.filename != null){
 //     var fileName = req.file.filename;
-//     console.log('This is filename');
-//     console.log(fileName);
 // }
 //     var asset = new assetTypeModel({
 //         assetTypeCode: req.body.assetNumber,
@@ -119,11 +126,7 @@ route.post('/', async (req,res)=>{
 
 //     try{
 //        var assetType = await asset.save();
-//         console.log('This is assetType: ');
-//         console.log(assetType);
-//         console.log(assetType.assetTypePic);
 //     } catch(e){
-//         console.log(e.message);
 //         if (assetType.assetTypePic != null){
 //             removeAssetTypePic(assetType.assetTypePic);
 //         }

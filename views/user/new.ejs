@@ -1,4 +1,4 @@
-<form id="regForm" action="/user" method = "post" enctype="multipart/form-data" style="background-color: skyblue;">
+<form id="regForm" action="/user" method = "post" style="background-color: skyblue;">
 
   <h1>Register User:</h1>
   
@@ -17,7 +17,7 @@
     <p><input placeholder="dd" oninput="this.className = ''" name = "day"></p>
     <p><input placeholder="mm" oninput="this.className = ''" name = "month"></p>
     <p><input placeholder="yyyy" oninput="this.className = ''" name = "year"></p>
-    <input type="file" name="photo">
+    <input type="file" name="photo" class = "filepond">
   </div>
   
   <div class="tab">Login Info:

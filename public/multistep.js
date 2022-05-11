@@ -2,6 +2,7 @@ var currentTab = 0; // Current tab is set to be the first tab (0)
 showTab(currentTab); // Display the current tab
 var selAssetGrab = document.getElementById('selAsset');
 var inputAssetTypeGrab = document.getElementById('inputAssetType');
+console.log(inputAssetTypeGrab);
 
 var assetArr = []; //holds option in AssetType select
 
@@ -58,7 +59,9 @@ function validateForm() {
   // A loop that checks every input field in the current tab:
   for (i = 0; i < y.length; i++) {
     // If a field is empty...
-    if (y[i].value == "") {
+    //console.log(y[i].type);
+    //console.log(y[i].value);
+    if (y[i].value == "" && y[i].type != "file") {
       // add an "invalid" class to the field:
       y[i].className += " invalid";
       // and set the current valid status to false:
@@ -69,6 +72,7 @@ function validateForm() {
   if (valid) {
     document.getElementsByClassName("step")[currentTab].className += " finish";
   }
+  console.log('Valid status ', valid);
   return valid; // return the valid status
 }
 
@@ -83,13 +87,11 @@ function fixStepIndicator(n) {
 }
 
 function GetSerialNumber(asset){
-  //alert (asset)
 
   var xhttp = new XMLHttpRequest();
 xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
        // Typical action to be performed when the document is ready:
-       console.log(xhttp.responseText);
        document.getElementById("serialInpt").value = parseInt(JSON.parse(xhttp.responseText).done) + 1;
     }
 };
@@ -99,17 +101,11 @@ xhttp.send();
 }
 
 function checkSelectOptions(inpt){
-  //alert ('checking...');
  filterCheckSelectOptions(inpt)
-//  console.log(optionThing);
-  // console.log(assetArr);
 }
 
 // function filterCheckSelectOptions(inpt){
-//   console.log(inpt);
 //   return [...selAssetGrab.options].filter(option=>{
-//     console.log(option.innerText);
-//     //console.log(option.innerText.includes(inpt));
 //     return option.innerText.includes(inpt);
 //     //assetArr.push(option.innerText);
 //   });
@@ -130,9 +126,7 @@ function filterCheckSelectOptions(inpt){
 }
 
 
-
-
 function SetAssetValue(this2){
   this2.size = 1;
-  inputAssetTypeGrab.value = "Done"//selAssetGrab.options[selAssetGrab.selectedIndex].text;
+  inputAssetType.value = selAssetGrab.options[selAssetGrab.selectedIndex].label;
 }

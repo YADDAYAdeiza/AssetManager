@@ -6,14 +6,10 @@ let layout = require('express-ejs-layouts');
 
 let assetModel = require('../models/asset.js');
 let assetTypeModel = require('../models/assetType.js');
-const path  = require('path');
-const multer = require('multer');
 //route.set('layout', 'layouts/layout');
 
-var uploadPath = assetModel.uploadAssetPath;
-const assetUploadOptions = multer({
-    dest:path.join('public', uploadPath)
-})
+const imageMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
+
 
 route.use(express.static('public'));
 
@@ -26,7 +22,6 @@ let userVar = 'trial';
 //get all assets
 route.get('/index', async (req, res)=>{
     // res.send('Book stuff...');
-    console.log('*******');
    let assetModelVar = await assetModel.find({});
     res.render('./asset/index.ejs', {asset:assetModelVar, searchOptions:"my name"});
 })
@@ -45,8 +40,6 @@ route.get('/new', async (req,res)=>{
 
     return 0;
 });
-    console.log('-----')
-    console.log(assetTypeModelVar);
     // res.send('What item now');
     // res.send('Asset form');
     res.render('./asset/new.ejs', {asset:assetModel, assetType:assetTypeModelVar});
@@ -54,36 +47,33 @@ route.get('/new', async (req,res)=>{
 })
 
 //create new book
-route.post('/', assetUploadOptions.single('assetPic'), async (req,res)=>{
-    if (req.file.filename != null){
-        var fileName = req.file.filename;
-    }
-    console.log('This is filename ', fileName)
+route.post('/', async (req,res)=>{
+    
     var assetItem = new assetModel({
-        assetImageName: fileName,
         assetType: req.body.selAssetType
     })
-    console.log(assetItem);
-    console.log('This is asset above');
+
+    saveAssetImageDetails(assetItem, req.body.assetPic);
     
     try{
         var newAsset = await assetItem.save();
-        console.log('This is newAsset');
-        console.log(newAsset);
         res.redirect('asset/index');
     }catch (e){
-        // console.log(e.message);
-        if (newAsset.assetImageName != null){
-            removeAssetTypePic(newAsset.assetImageName);
-        }
+        
     }
    
 })
 
-function removeAssetPic(assetPicName){
-    fs.unlink(path.join(uploadPath, assetPicName), err=>{
-        if (err) console.error(err)
-    })
+
+function saveAssetImageDetails(user, encodedProfile){
+    if (encodedProfile == null) return
+
+    const profile = JSON.parse(encodedProfile);
+    if (profile !=null && imageMimeTypes.includes(profile.type)){
+        user.assetImageName = new Buffer.from(profile.data, 'base64');
+        user.assetImageType = profile.type;
+    }
+
 }
 
 

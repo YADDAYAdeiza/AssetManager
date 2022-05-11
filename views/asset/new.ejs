@@ -1,4 +1,4 @@
-<form id="regForm" action="/asset" method = "post" enctype="multipart/form-data">
+<form id="regForm" action="/asset" method = "post">
 
     <h1>Register Asset:</h1>
     
@@ -6,8 +6,8 @@
     <div class="tab">Name:
       <p><input placeholder="Asset Type Serial No..." oninput="this.className = ''" name = "assetNumber" id="serialInpt" value="<%=assetType.assetCode%>"></p>
       <p><input placeholder="Asset Type..." oninput = "checkSelectOptions(this.value)" oninput="this.className = ''" id = "inputAssetType" name = "assetTypeName" value="<%=assetType.assetType%>"></p>
-      <p><input type="file" name="assetPic"></p>
-      <p><select onchange = "GetSerialNumber(this.value)" onclick = "SetAssetValue(this)" id = "selAsset" name="selAssetType">
+      <p><input type="file" name="assetPic" class = "filepond"></p>
+      <p><select  onchange = "SetAssetValue(this)" id = "selAsset" name="selAssetType">
         <% assetType.forEach(assetTypeItem =>{ %>
           
           <option label =<%=assetTypeItem.assetTypeClass %> value =<%=assetTypeItem._id%> ></option>
@@ -20,7 +20,7 @@
       <p><input placeholder="E-mail..." oninput="this.className = ''" name = "email" value="<%=asset.email%>"></p>
       <p><input placeholder="Phone..." oninput="this.className = ''" name = "phone" value="<%=asset.phone%>"></p>
     </div>
-    
+    <!-- onchange = "GetSerialNumber(this.value)" -->
     <div class="tab">Birthday:
       <p><input placeholder="dd" oninput="this.className = ''" name = "day"></p>
       <p><input placeholder="mm" oninput="this.className = ''" name = "month"></p>

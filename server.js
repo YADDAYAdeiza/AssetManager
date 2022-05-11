@@ -7,25 +7,24 @@ let express = require('express');
 let ejs = require('ejs');
 let layout = require('express-ejs-layouts');
 let mongoose = require('mongoose');
-const QRCode = require('qrcode');
+// const QRCode = require('qrcode');
 let app = express();
 const http = require('http');
 const https = require('https');
 const fs = require('fs');
 
-const httpsOptions = {
-  'cert':fs.readFileSync('./https/cert.pem'),
-  'key':fs.readFileSync('./https/key.pem')
-}
+// const httpsOptions = {
+//   'cert':fs.readFileSync('./https/cert.pem'),
+//   'key':fs.readFileSync('./https/key.pem')
+// }
 
 // const app = require('https-localhost')();
 
-console.log(httpsOptions)
 
 mongoose.connect(process.env.DATABASE_URL, {useNewUrlParser:true }); //play around with this
 const db = mongoose.connection;
 db.on('error', error => console.error(error))
-db.once('open', () => console.log('Connected to mongoose'));
+db.once('open', () => console.log('Connected to mongoose now'));
 
 
 
@@ -59,14 +58,13 @@ app.use(express.static('public'));
 // app.use('/user', userRoute);
 app.use(layout);
 
-var sega= [
-  {datal:"I love you", model:'alphanumeric'},
-  {datal: '200', model: "numeric"}
-]
-var segaVar = JSON.stringify(sega);
+// var sega= [
+//   {datal:"I love you", model:'alphanumeric'},
+//   {datal: '200', model: "numeric"}
+// ]
+// var segaVar = JSON.stringify(sega);
 
 app.get('/', async (req, res)=>{
-    console.log('I am working...');
     // res.send('Working too')
     var user;
     try{
@@ -75,10 +73,10 @@ app.get('/', async (req, res)=>{
       user = [];
     }
 
-    QRCode.toDataURL(segaVar, {type:'terminal'}, function(err, url){
-      console.log(url);
-      res.render('userform', {code:url, users:user});
-    })
+    // QRCode.toDataURL(segaVar, {type:'terminal'}, function(err, url){
+    //   res.render('userform', {code:url, users:user});
+    // })
+    res.render('userform', { users:user});//code:url,
     //, {msg:'error message goes in here'}
   });
 
