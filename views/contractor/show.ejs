@@ -1,0 +1,17 @@
+
+
+<% if (contractor){ %>
+    <h2><%=contractor.contractorCompanyName%></h2>
+    
+    <a href="/contractor/<%=contractor.id%>/edit">Edit</a>
+    <%-include('../partials/deleteForm', {url:`/contractor/${contractor.id}`})%>
+    
+    <%if (contractor.contractorDescription != null){%>
+        <h5><%=contractor.contractorDescription%></h5>
+        
+        <img height="150" width = "160" src="<%=contractor.contractorImageDetails%>">
+        <%}%>
+        <% } else {%>
+            <p>There was an error showing the contractor</p>
+        <a href="/contractor/index">Go back to Contractor List</a>
+        <%}%>

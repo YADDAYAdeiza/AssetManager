@@ -1,0 +1,16 @@
+<h2><%=user.firstName%></h2>
+<p><img height= "100" width="120" src="<%= user.userProfilePic%>"></p>
+
+<a href="/user/<%=user.id%>/edit">Edit</a>
+<!-- change this href to the populated version of user -->
+<a href="/user/<%=user.id%>/edit">View Asset</a>
+<%-include('../partials/deleteForm', {url:`/user/${user.id}`})%>
+
+<%if (assetsByUser.length >0){%>
+    <h2>Assets of User</h2>
+    <% assetsByUsers.forEach(assetByUser=>{%>
+      
+        <img height="150" width = "120" src="<%=assetByUser.assetImageDetails%>">
+
+        <% })%>
+        <%}%>

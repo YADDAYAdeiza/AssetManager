@@ -12,7 +12,7 @@ let assetTypeSchema = new mongoose.Schema({
         type:String,
         required:true,
     },
-    Status:{
+    status:{
         type:String,
         required:true,
         default:'New'
@@ -34,14 +34,27 @@ let assetTypeSchema = new mongoose.Schema({
     assetTypeImageType:{
         type:String,
         required:true
+    },
+    assetDescription:{
+        type:String,
+        default:"The Asset Type description goes in here "
     }
 });
+
+assetTypeSchema.pre('remove', function(next){
+    console.log('Gotten in preRemove..');
+    //input any constraints here.
+
+    next();
+})
 
 assetTypeSchema.virtual('assetTypeImageDetails').get(function(){
     if (this.assetTypeImageName != null && this.assetTypeImageType != null){
         return `data:${this.assetTypeImageType};charset=utf-8;base64,${this.assetTypeImageName.toString('base64')}`
     }
 })
+
+
 
 let assetTypeModel = mongoose.model('AssetTypeCol', assetTypeSchema);
 

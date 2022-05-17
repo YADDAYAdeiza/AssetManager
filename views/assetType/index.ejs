@@ -1,12 +1,14 @@
 <h2>List of Assets Types here</h2>
-
+<%if (locals.msg){ %>
+    <h6><%= msg %></h6>
+    <%}%>
 <form action = '/assetType' method = 'GET'>
     <div>
-        <input type="text" name="assetTypeName" value = <%=assetTypes %> />
+        <input type="text" name="assetTypeName" value = <%=assetTypes.assetTypeCode %>  >
     </div>
 
     <div>
-        <input type="date" name="assetTypeDate" value = <%=assetTypes %>/>
+        <input type="date" name="assetTypeDate" value = "<%=assetTypes %>">
     </div>
     <button type="submit">Search</button>
 </form>
@@ -16,5 +18,13 @@
     <%= 'There are assets' %>
     <%  assetTypes.forEach(assetType=>{%>
         <p><%=assetType.assetTypeClass%></p>
+
+        <a href="/assetType/<%=assetType.id%>">
+            <p><img height= "100" width="120" src="<%= assetType.assetTypeImageDetails%>"></p>
+        </a>
+        <p><a href="/assetType/<%=assetType.id%>">View </a><a href = "/assetType/<%=assetType.id%>/edit">Edit </a></p>
+        <%- include('../partials/deleteForm.ejs', {url:`/assetType/${assetType.id}`}) %>
+        
+        
     <%})%>
 <% } %>

@@ -10,7 +10,7 @@
       <p><select  onchange = "SetAssetValue(this)" id = "selAsset" name="selAssetType">
         <% assetType.forEach(assetTypeItem =>{ %>
           
-          <option label =<%=assetTypeItem.assetTypeClass %> value =<%=assetTypeItem._id%> ></option>
+          <option label = "<%= assetTypeItem.assetTypeClass %>" value =<%=assetTypeItem._id%> ></option>
 
           <%  })%>
       </select></p>

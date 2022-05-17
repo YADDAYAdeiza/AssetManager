@@ -1,6 +1,6 @@
-<form id="regForm" action="/user" method = "post" style="background-color: skyblue;">
+<form id="editForm" action="/user/<%= user.id %>?_method=PUT" method = "post" style="background-color: skyblue;">
 
-  <h1>Register User:</h1>
+  <h1>Edit User:</h1>
   
   <!-- One "tab" for each step in the form: -->
   <div class="tab">Name:
@@ -23,12 +23,19 @@
   <div class="tab">Login Info:
     <p><input placeholder="Username..." oninput="this.className = ''" name = "username"></p>
     <p><input placeholder="Password..." oninput="this.className = ''" name = "password"></p>
-    
+    <select name="assetTypeName" id="assetTypeID">
+     <% if(assetTypeArr!=null && assetTypeArr.length >0){ %>
+      <% assetTypeArr.forEach(item=>{ %>
+         <option label="<%= item.assetClass%>" value = "<%= item._id%>"></option>
+         <% }); %>
+   <% } %>
+
+    </select>
   </div>
   
   <div style="overflow:auto;">
     <div style = "float:left;">
-      <a href = "./new" id="cancelBtn">Cancel</a>
+      <a href = "/user/<%=user.id%>" id="cancelBtn">Cancel</a>
     </div>
     <div style="float:right;">
       <button type="button" id="prevBtn" onclick="nextPrev(-1)">Previous</button>

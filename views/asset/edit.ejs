@@ -1,34 +1,41 @@
-<form id="regForm" action="/user" method = "post" style="background-color: skyblue;">
+<form action="/asset/<%= asset.id %>?_method=PUT" method = "post" style="background-color: skyblue;">
 
-  <h1>Register User:</h1>
+  <h1>Edit Asset:</h1>
   
   <!-- One "tab" for each step in the form: -->
   <div class="tab">Name:
-    <p><input placeholder="First name..." oninput="this.className = ''" name = "firstName" value="<%=user.firstName%>"></p>
-    <p><input placeholder="Last name..." oninput="this.className = ''" name = "lastName" value="<%=user.lastName%>"></p>
+    <p><input placeholder="First name..." oninput="this.className = ''" name = "firstName" value="<%=asset.assetCode%>"></p>
+    <p><input placeholder="Last name..." oninput="this.className = ''" name = "lastName" value="<%= %>"></p>
   </div>
   
   <div class="tab">Contact Info:
-    <p><input placeholder="E-mail..." oninput="this.className = ''" name = "email" value="<%=user.email%>"></p>
-    <p><input placeholder="Phone..." oninput="this.className = ''" name = "phone" value="<%=user.phone%>"></p>
+    <p><input placeholder="E-mail..." oninput="this.className = ''" name = "email" value="<%= %>"></p>
+    <p><input placeholder="Phone..." oninput="this.className = ''" name = "phone" value="<%= %>"></p>
   </div>
   
   <div class="tab">Birthday:
     <p><input placeholder="dd" oninput="this.className = ''" name = "day"></p>
     <p><input placeholder="mm" oninput="this.className = ''" name = "month"></p>
     <p><input placeholder="yyyy" oninput="this.className = ''" name = "year"></p>
-    <input type="file" name="photo" class = "filepond">
+    <input type="file" name="assetPic" class = "filepond">
   </div>
   
   <div class="tab">Login Info:
     <p><input placeholder="Username..." oninput="this.className = ''" name = "username"></p>
     <p><input placeholder="Password..." oninput="this.className = ''" name = "password"></p>
-    
+    <select name="assetTypeName" id="assetTypeID">
+     <% if(assetTypeArr!=null && assetTypeArr.length >0){ %>
+      <% assetTypeArr.forEach(item=>{ %>
+         <option label="<%= item.assetClass%>" value = "<%= item._id%>"></option>
+         <% }); %>
+   <% } %>
+
+    </select>
   </div>
   
   <div style="overflow:auto;">
     <div style = "float:left;">
-      <a href = "./new" id="cancelBtn">Cancel</a>
+      <a href = "/asset/<%=asset.id%>" id="cancelBtn">Cancel</a>
     </div>
     <div style="float:right;">
       <button type="button" id="prevBtn" onclick="nextPrev(-1)">Previous</button>

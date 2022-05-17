@@ -37,15 +37,24 @@ let contractorSchema = new mongoose.Schema({
     contractImageType:{
         type:String,
         required:true
+    },
+    contractorDescription:{
+        type:String,
+        default:'Details of the contractor goes in here'
     }
 });
 
+contractorSchema.pre('remove', function(next){
+    console.log('Gotten in preRemove..');
+    next()
+})
 
 contractorSchema.virtual('contractorImageDetails').get(function(){
     if (this.contractImageName != null && this.contractImageType != null){
         return `data:${this.contractImageType};charset=utf-8;base64,${this.contractImageName.toString('base64')}`
     }
 })
+
 
 let contractorModel = mongoose.model('ContractorCol', contractorSchema);
 

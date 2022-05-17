@@ -11,7 +11,7 @@ let mongoose = require('mongoose');
 let app = express();
 const http = require('http');
 const https = require('https');
-const fs = require('fs');
+const methodOverride = require('method-override')
 
 // const httpsOptions = {
 //   'cert':fs.readFileSync('./https/cert.pem'),
@@ -40,6 +40,11 @@ const bodyParser = require('body-parser');
 // const { fstat } = require('fs');
 
 app.use(bodyParser.urlencoded({limit: '10mb', extended:false}));
+app.set('view engine', 'ejs');
+app.set('views', __dirname + '/views')
+app.set('layout', 'layouts/layout');
+app.use(methodOverride('_method'));
+app.use(express.static('public'));
 
 app.use('/user', userRoute);
 app.use('/asset', assetRoute);
@@ -49,11 +54,6 @@ app.use('/recent', recentRoute);
 
 
 
-app.set('view engine', 'ejs');
-app.set('views', __dirname + '/views')
-app.set('layout', 'layouts/layout');
-
-app.use(express.static('public'));
 
 // app.use('/user', userRoute);
 app.use(layout);

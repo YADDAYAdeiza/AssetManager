@@ -1,0 +1,10 @@
+<h2><%=assetType.assetTypeCode%></h2>
+
+<a href="/assetType/<%=assetType.id%>/edit">Edit</a>
+<%-include('../partials/deleteForm', {url:`/assetType/${assetType.id}`})%>
+
+<%if (assetType.assetDescription != null){%>
+    <h5><%=assetType.assetDescription%></h5>
+      
+        <img height="150" width = "160" src="<%=assetType.assetTypeImageDetails%>">
+        <%}%>

@@ -8,14 +8,16 @@ form for search goes in here
     <p><input type="date" name="userDateAfterSearch"></p>
     <p><button value="submit">Submit</button></p>
 </form>
+
 <% if (locals.users !=null){ %>
     <%= 'There are users' %>
-   <% console.log(users)%>
     <%  users.forEach(user=>{%>
-        <%= console.log(user.firstName)%>    
-        <p><%=user.firstName%></p>
-       <p><%= user.userProfilePic %></p> 
-        <!-- <p><img height= "100" width="120" src="<%= "/uploads/profilePics/"+user.profilePic%>" alt="Some pic"></p> -->
-        <p><img height= "100" width="120" src="<%= `data:${user.profilePicType};charset=utf-8;base64, ${user.profilePic.toString('base64')}`</p>
+        <p><%= user.userProfilePic %></p> 
+        <p><%=user.firstName%><a href="/user/<%= user.id %>">View</a>
+            <p><a href="/user/<%= user.id %>/edit">Edit</a></p></p>
+        <%-include('../partials/deleteForm.ejs', {url:`/user/${user.id}`}) %>
+        <a href="/user/<%= user.id %>">
+            <p><img height= "100" width="120" src="<%= user.userProfilePic%>"></p>
+        </a>
     <%})%>
 <% } %> 

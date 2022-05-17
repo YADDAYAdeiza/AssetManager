@@ -52,6 +52,78 @@ route.get('/new', async (req,res)=>{
     res.render('AssetType/new.ejs', {assetType: assetTypesArr}); //tying the view to the moongoose model
 })
 
+route.get("/:id", async (req, res)=>{
+    // res.send('Getting assetType of particular id '+req.params.id);
+
+    let assetType=[];
+    try{
+        assetType = await assetTypeModel.findById(req.params.id);
+        res.render('assetType/show.ejs', {assetType:assetType});
+    }catch{
+        res.render('assetType/index.ejs', {assetTypes:assetType, msg:'Error Showing Asset Type'})
+    }
+
+})
+
+route.get("/:id/edit", async (req, res)=>{
+    // res.send('Editing AssetType with id: '+req.params.id);
+    try{
+        let newAssetType = await assetTypeModel.findById(req.params.id);
+        res.render('assetType/edit.ejs',{assetType:newAssetType}); //tying the view to the moongoose model //, 
+
+    } catch (e){
+        console.log(e);
+        res.redirect('/assetType/index')
+    }
+})
+
+route.put('/:id', async(req, res)=>{
+    // res.send('updating AssetType with id: '+ req.params.id);
+
+    try {
+        let assetType = await assetTypeModel.findById(req.params.id);
+        
+        assetType.assetTypeCode = req.body.assetCode;
+        assetType.assetTypeClass = req.body.assetType;
+        assetType.Status = req.body.Status;
+        assetType.description = req.body.description;
+        assetType.assignDate = req.body.assignDate;
+        assetType.user = req.body.user;
+        assetType.assetDescription = req.body.assetDescription;
+        // user.asset = "0012"; //we're later getting asset from the form
+        
+        saveAssetImageDetails(asset, req.body.photo);
+        
+        await assetType.save();
+    
+        res.redirect("/assetType/${assetType.id}");
+    } catch(e){
+        if (author == null){
+            res.redirect('/assetType')
+        }else{
+            res.render('assetType/edit.ejs', {msg:"An error updating the asset type occurred", assetType: assetType})
+        }
+        
+    }
+})
+
+route.delete('/:id', async (req, res)=>{
+    
+    try {
+        let assetType = await assetTypeModel.findById(req.params.id);
+        await assetType.remove();
+        
+        console.log('Passed Here')
+        res.redirect("/assetType/index");
+    } catch(e){
+        if (user == null){
+            res.redirect('/assetType/index');
+        }else{
+            res.redirect(`/assetType/${assetType.id}`)
+        }
+    }
+})
+
 //create new book
 route.post('/',  async (req,res)=>{
 

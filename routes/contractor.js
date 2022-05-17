@@ -54,6 +54,56 @@ route.get('/new', async (req,res)=>{
     res.render('Contractor/new.ejs', {contractor: contractorArr}); //tying the view to the moongoose model
 })
 
+route.get('/:id', async(req, res)=>{
+    // res.send('Getting contractor by ID: '+req.param.id)
+    try{
+        let contractor = await contractorModel.findById(req.params.id);
+        res.render('contractor/show.ejs', {contractor});
+
+    }catch{
+        res.redirect('contractor/index');
+    }
+});
+
+route.get('/:id/edit', (req, res)=>{
+    // res.send('Editing contractor by id: '+req.params.id);
+    contractor = [];
+    res.render('contractor/new', {contractor});
+})
+
+route.put('/:id', async (req, res)=>{
+    // res.send('Updating contractor details by id: '+req.params.id)
+    try{
+        let contractor = await contractorModel.findById(req.params.id);
+        contractor.contractorCompanyName = 'Updated name'
+        contractor.contractorAddress = "updated address"
+        contractor.contractorClass = "updated Class"
+        contractor.Status = "Updated new status"
+
+        contractormageDetails(contractor, req.body.contractorDocs)
+        await contractor.save();
+
+        res.render('contractor/show.ejs', {contractor})
+    }catch{
+        res.redirect('contractor/index')
+    }
+
+})
+
+route.delete('/:id', async (req, res)=>{
+    // res.send('Deleting contractor details by id: '+req.params.id)
+    try{
+        let contractor = await contractorModel.findById(req.params.id)
+        console.log('Removing');
+        await contractor.remove();
+        res.redirect('/contractor/index');
+    }catch (e){
+        console.log(e);
+        res.redirect('/contractor/new')
+    }
+
+})
+
 //create new book
 route.post('/', async (req,res)=>{
 

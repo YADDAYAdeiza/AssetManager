@@ -5,20 +5,12 @@ let ejs = require('ejs');
 let layout = require('express-ejs-layouts');
 let userModel = require('../models/user');
 const assetTypeModel = require('../models/assetType.js');
-// let fs = require('fs');
-// const path = require('path');
-// const { use } = require('./recent');
-//const multer = require('multer');
+const assetModel = require('../models/asset.js');
+const { reset } = require('nodemon');
+const { rawListeners } = require('../models/assetType.js');
 const imageMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
 
-// const uploadPath = path.join('public', userModel.profileImagePath);
 
-// const upload = multer({
-//     dest: uploadPath, 
-//     // fileFilter: (req, file, callback)=>{
-//     //     callback(null, imageMimeTypes.includes(file.mimeType))
-//     // }
-// })
 
 //route.set('layout', 'layouts/layout');
 
@@ -68,10 +60,106 @@ route.get('/index', async (req, res)=>{
 //get the create new form for user
 route.get('/new',  async (req,res)=>{
     // res.send('What item now');
-    let assetTypeModelArr = await assetTypeModel.find({});
-    let user = new userModel();
-    res.render('user/new.ejs', {user: user, assetTypeArr:assetTypeModelArr}); //tying the view to the moongoose model
+    try{
+        let user = new userModel();
+        let assetTypeModelArr = await assetTypeModel.find({});
+        res.render('user/new.ejs', {user: user, assetTypeArr:[1,2,3,4,5]}); //tying the view to the moongoose model
+
+    }catch (e){
+        // console.log(e);
+    }
+    // console.log('-------');
+    // console.log(assetTypeModelArr);
 })
+
+
+route.get('/:id/edit',  async (req,res)=>{
+    console.log('Editing...');
+    try{
+        let userModelArr = await userModel.findById(req.params.id);
+        let assetTypeModelArr = await assetTypeModel.find({});
+        res.render('user/edit.ejs',{user: userModelArr, assetTypeArr:assetTypeModelArr}); //tying the view to the moongoose model //, 
+
+    } catch (e){
+
+        res.redirect('/user/index')
+    }
+    // let user = new userModel();
+})
+
+route.get('/:id', async (req, res)=>{
+    // res.send('Getting the User Page...'+req.params.id);
+    try {
+       const user =await userModel.findById(req.params.id);
+       const asset = await assetModel.find({user:user.id}).limit(6).exec();
+       res.render('user/show', {
+           user:user,
+           assetsByUser:asset
+       });
+
+    }catch (e){
+        console.log(e);
+        res.redirect('/index')
+    }
+});
+
+
+route.put('/:id', async (req,res)=>{
+    let user;
+
+    try {
+        let user = await userModel.find(req.params.id);
+        
+        user.lastName = req.body.lastName;
+        user.firstName = req.body.firstName;
+        user.email = req.body.email;
+        user.phone = req.body.phone;
+        user.username = req.body.username;
+        user.password = req.body.password;
+        user.assetType = req.body.assetTypeName;
+        // user.asset = "0012"; //we're later getting asset from the form
+        
+        saveProfilePic(user, req.body.photo);
+        
+        await user.save();
+    
+        res.redirect("/user/${user.id}");
+        // req.user = user;
+        // userVar = user;
+    } catch(e){
+        if (author == null){
+            res.redirect('/user')
+        }else{
+            res.render('user/edit.ejs', {msg:"An error updating the user occurred", user: user})
+        }
+        
+    }
+});
+
+route.delete('/:id', async(req,res)=>{
+
+    let user;
+    
+    try {
+        let user = await userModel.findById(req.params.id);
+        // console.log(user);
+        await user.remove();
+        
+        // saveProfilePic(user, req.body.photo);
+        console.log('Passed Here')
+        // await user.save();
+        res.redirect("/user/index");
+        // req.user = user;
+        // userVar = user;
+    } catch(e){
+        if (user == null){
+            console.log('Entered here');
+            res.redirect('/user/index');
+        }else{
+            res.redirect(`/user/${user.id}`)
+        }
+    }
+});
 
 //create new user
 route.post('/',   async (req,res)=>{
@@ -79,14 +167,15 @@ route.post('/',   async (req,res)=>{
 
     //const fileName = req.file.filename;//req.file != null ? req.file.filename : null;
 
-    const user = new userModel({
+    const user = new userModel({ //we're later getting asset from the form
         lastName:req.body.lastName,
         firstName:req.body.firstName,
         email:req.body.email,
         phone:req.body.phone,
         username:req.body.username,
         password:req.body.password,
-        assetType:req.body.assetTypeName
+        assetType:req.body.assetTypeName,
+        // asset:"0012"
     });
 
     saveProfilePic(user, req.body.photo);
@@ -95,16 +184,18 @@ route.post('/',   async (req,res)=>{
     try {
 
         const newUser = await user.save()
-        res.redirect("/user/index");
-        res.redirect("./user/${newUser.id}")
+        // res.redirect("/user/index");
+        res.redirect(`/user/${newUser.id}`);
         req.user = user;
         userVar =user;
     } catch(e){
-        
-        res.render('user/new.ejs', {msg:"An error occured in updating the database", user: user})
+        console.log(e);
+        res.render('user/new.ejs', {msg:"An error occured in posting to the database", user: user})
     }
     
 })
+
+
 
 route.get('/audit', (req, res)=>{
 res.render('./user/audit.ejs')
@@ -112,7 +203,7 @@ res.render('./user/audit.ejs')
 
 route.get('/audit2', (req, res)=>{
     res.render('./user/audit2.ejs')
-    })
+})
 
 
 

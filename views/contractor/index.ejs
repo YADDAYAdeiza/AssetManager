@@ -1,12 +1,12 @@
 <h2>List of  Contractors </h2>
 
-<form action = '/assets' method = 'GET'>
+<form action = '/contractor' method = 'GET'>
     <div>
-        <input type="text" name="contractorName" value = <%=contractor.contractorCompanyName %> >
+        <input type="text" name="contractorName" value = <%=contractor.contractorCompanyName ||locals.contractor %> >
     </div>
 
     <div>
-        <input type="date" name="contractorDate" value = <%=contractor.contractorCompanyName %> >
+        <input type="date" name="contractorDate" value = <%=contractor.contractorCompanyName ||locals.contractor %> >
     </div>
     <button type="submit">Search</button>
 </form>
@@ -16,5 +16,11 @@
     <%= 'There are assets' %>
     <%  contractor.forEach(contractor=>{%>
         <p><%=contractor.contractorCompanyName%></p>
+
+        <a href="/contractor/<%=contractor.id%>">
+            <p><img height= "100" width="120" src="<%= contractor.contractorImageDetails%>"></p>
+        </a>
+        <a href="/contractor/<%=contractor.id%>">View</a><a href="/contractor/<%=contractor.id%>/edit">Edit</a>
+        <%- include('../partials/deleteForm.ejs', {url:`/contractor/${contractor.id}`}) %>
     <%})%>
 <% } %>
