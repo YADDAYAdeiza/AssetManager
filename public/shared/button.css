@@ -1,0 +1,40 @@
+:root{
+    --color-btn-primary-text:cyan;
+    --color-btn-primary-background:skyblue;
+}
+
+.div-btn-row{
+    display: flex;
+    align-items: flex-start;
+
+}
+
+.div-btn-row > * {
+     margin-left:1rem;
+}
+
+.div-btn-row > *:first-child {
+    margin-left:0;
+}
+.btn {
+    border: 1px black solid;
+    border-radius:0.5rem;
+    padding:.5rem 1rem;
+    cursor:pointer;
+    text-decoration: none;
+    text-align: center;
+}
+
+.btn-primary{
+    color:var(--color-btn-primary-text);
+    background-color:var(--color-btn-primary-background);
+}
+
+.btn-delete{
+    color:red;
+}
+
+.btn-delete:hover{
+    color:white;
+    background-color: red;
+}
