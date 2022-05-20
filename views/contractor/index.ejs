@@ -20,7 +20,9 @@
         <a href="/contractor/<%=contractor.id%>">
             <p><img height= "100" width="120" src="<%= contractor.contractorImageDetails%>"></p>
         </a>
-        <a href="/contractor/<%=contractor.id%>">View</a><a href="/contractor/<%=contractor.id%>/edit">Edit</a>
-        <%- include('../partials/deleteForm.ejs', {url:`/contractor/${contractor.id}`}) %>
+        <div class = "div-btn-row">
+            <a class= "btn btn-primary" href="/contractor/<%=contractor.id%>">View</a><a class= "btn btn-primary" href="/contractor/<%=contractor.id%>/edit">Edit</a>
+            <%- include('../partials/deleteForm.ejs', {url:`/contractor/${contractor.id}`}) %>
+        </div>
     <%})%>
 <% } %>

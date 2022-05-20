@@ -1,16 +1,25 @@
-<h2><%=asset.assetCode%></h2>
-<h4>Asset Type: <%= asset.assetType.assetTypeClass%></h4>
-<h4>Asset Status: <%= asset.status%></h4>
-<h4>Asset Assigned: <%= asset.assignDate.toDateString()%></h4>
-
-<a href="/asset/<%=asset.id%>/edit">Edit</a>
-
-<!-- populate with the id so it can direct to the asset page -->
-<a href="/assetType/<%=asset.assetType.id%>/edit">View Asset Type</a>
-<%-include('../partials/deleteForm', {url:`/asset/${asset.id}`})%>
-
-<%if (asset.assetDescription != null){%>
-    <h5><%=asset.assetDescription%></h5>
-      
+<div class = "asset-details">
+    <h2><%=asset.assetCode%></h2>
+    <h4>Asset Type: <%= asset.assetType.assetTypeClass%></h4>
+    <h4>Asset Status: <%= asset.status%></h4>
+    <h4>Asset Assigned: <%= asset.assignDate.toDateString()%></h4>
+    
+    
+    <%if (asset.assetDescription != null){%>
+        <h5><%=asset.assetDescription%></h5>
+        
         <img height="150" width = "160" src="<%=asset.assetImageDetails%>">
         <%}%>
+        <br>
+        
+        <div class="asset-details-btn-grid">
+            <a href="/asset/<%=asset.id%>/edit">Edit</a>
+            <!-- populate with the id so it can direct to the asset page -->
+            <a href="/assetType/<%=asset.assetType.id%>/edit">View Asset Type/View User</a>
+            <%-include('../partials/deleteForm', {url:`/asset/${asset.id}`})%>
+        </div>
+        <br/><br/>
+        <div class="asset-details-asset-grid">
+            <h5>List of Former Users</h5>
+        </div>
+    </div>

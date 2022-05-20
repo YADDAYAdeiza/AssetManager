@@ -39,6 +39,8 @@ let userModel = require('./models/user.js');
 const bodyParser = require('body-parser');
 // const { fstat } = require('fs');
 
+
+
 app.use(bodyParser.urlencoded({limit: '10mb', extended:false}));
 app.set('view engine', 'ejs');
 app.set('views', __dirname + '/views')

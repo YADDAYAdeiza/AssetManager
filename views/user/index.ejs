@@ -12,12 +12,17 @@ form for search goes in here
 <% if (locals.users !=null){ %>
     <%= 'There are users' %>
     <%  users.forEach(user=>{%>
-        <p><%= user.userProfilePic %></p> 
-        <p><%=user.firstName%><a href="/user/<%= user.id %>">View</a>
-            <p><a href="/user/<%= user.id %>/edit">Edit</a></p></p>
-        <%-include('../partials/deleteForm.ejs', {url:`/user/${user.id}`}) %>
         <a href="/user/<%= user.id %>">
             <p><img height= "100" width="120" src="<%= user.userProfilePic%>"></p>
         </a>
+
+        <div class="user-row">
+            <div class="user-name"><%=user.firstName%></div>
+            <div class = "div-btn-row">
+                <a class= "btn btn-primary" href="/user/<%= user.id %>">View</a>
+                    <a class= "btn btn-primary" href="/user/<%= user.id %>/edit">Edit</a>
+                <%-include('../partials/deleteForm.ejs', {url:`/user/${user.id}`}) %>
+            </div>
+        </div>
     <%})%>
 <% } %> 

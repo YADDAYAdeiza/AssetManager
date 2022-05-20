@@ -8,9 +8,5 @@
 
 <%if (assetsByUser.length >0){%>
     <h2>Assets of User</h2>
-    <% assetsByUsers.forEach(assetByUser=>{%>
-      
-        <img height="150" width = "120" src="<%=assetByUser.assetImageDetails%>">
-
-        <% })%>
+    <%- include('../partials/userGrid.ejs', {asset:assetsByUser, large:true})%>;
         <%}%>

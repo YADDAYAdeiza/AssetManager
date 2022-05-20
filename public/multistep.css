@@ -1,6 +1,8 @@
 /* Style the form */
 
 @import 'shared/button.css';
+@import 'shared/user.css';
+@import 'shared/asset.css';
 
 #regForm {
   background-color: #ffffff;
@@ -49,4 +51,8 @@ input.invalid {
 /* Mark the steps that are finished and valid: */
 .step.finish {
   background-color: #04AA6D;
+}
+
+.error-message{
+  color:red;
 }

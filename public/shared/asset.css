@@ -1,0 +1,25 @@
+root:{
+    --asset-pic-width:200px;
+    --asset-pic-width-large:325px;
+    --asset-pic-aspect-ratio:0.75;
+}
+
+.asset-pic {
+    width:var(--asset-pic-width);
+    height:calc(var(--asset-pic-width)/var(--asset-pic-aspect-ratio));
+}
+
+.asset-pic-large{
+    --asset-pic-width: var(var(--asset-pic-width-large))
+}
+
+.asset-grid{
+    display:grid;
+    justify-content: center;
+    grid-gap:2rem;
+    grid-template-columns:repeat(auto-fill, var(--asset-pic-width))
+}
+
+.asset-grid-large{
+    grid-template-columns: repeat(autofill, var(--asset-pic-width-large));
+}

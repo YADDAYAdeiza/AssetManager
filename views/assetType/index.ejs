@@ -22,8 +22,10 @@
         <a href="/assetType/<%=assetType.id%>">
             <p><img height= "100" width="120" src="<%= assetType.assetTypeImageDetails%>"></p>
         </a>
-        <p><a href="/assetType/<%=assetType.id%>">View </a><a href = "/assetType/<%=assetType.id%>/edit">Edit </a></p>
-        <%- include('../partials/deleteForm.ejs', {url:`/assetType/${assetType.id}`}) %>
+        <div class = "div-btn-row">
+            <a class= "btn btn-primary" href="/assetType/<%=assetType.id%>">View </a><a class= "btn btn-primary" href = "/assetType/<%=assetType.id%>/edit">Edit </a>
+            <%- include('../partials/deleteForm.ejs', {url:`/assetType/${assetType.id}`}) %>
+        </div>
         
         
     <%})%>

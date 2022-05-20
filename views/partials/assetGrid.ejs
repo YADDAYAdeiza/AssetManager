@@ -1,0 +1,11 @@
+
+<%assetPicClass =locals.large?'asset-pic-large':'' %>
+<%assetGridClass =locals.large?'asset-grid-large':'' %>
+
+<div class="asset-grid <%assetGridClass%>>
+    <% asset.forEach(assetPic=>{%>
+      <a href="/asset/<%=assetPic.id%>">
+        <img class="asset-pic <%=assetPicClass%>" src="<%=assetPic.assetImageDetails%>">
+      </a>
+    <% })%>
+</div>

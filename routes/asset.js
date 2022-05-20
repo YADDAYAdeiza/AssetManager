@@ -54,6 +54,7 @@ async function renderNewPage(res, asset,assetTypeModelVar, hasError = false){
 }
 
 async function renderEditPage(res, asset, assetTypeModelVar, hasError=false){
+    console.log('Entered here...')
     renderFormPage(res, asset, assetTypeModelVar, 'edit', hasError)
 }
 
@@ -63,8 +64,12 @@ async function renderFormPage(res, asset, assetTypeModelVar, form, hasError = fa
         const user = await userModel.find({});
         const params = {
             user:user,
-            asset:asset,
-            assetType:assetTypeModelVar
+            asset:asset
+        }
+        if (form === "edit"){
+            params.assetTypeArr = assetTypeModelVar
+        }else{
+            params.assetType = assetTypeModelVar
         }
 
         if (hasError){
@@ -98,8 +103,9 @@ route.get('/:id/edit', async(req, res)=>{
 
     try{
         const asset = await assetModel.findById(req.params.id);
+        const assetTypeModeVar = await assetTypeModel.find({});
         renderEditPage(res, asset, assetTypeModeVar)
-    }catch{
+    }catch (e){
         res.redirect('/')
     }
 

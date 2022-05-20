@@ -20,7 +20,7 @@
             <p><img height= "100" width="120" src="<%= asset.assetImageDetails%>"></p>
         </a>
         <div class = "div-btn-row">
-            <a class= "btn btn-primary" href="/asset/<%=asset.id%>">View </a><a class= "btn btn-primary" href = "/asset/<%=asset.id%>/edit">Edit </a>
+            <a class= "btn btn-primary" href="/asset/<%=asset.id%>">View </a><a class= "btn btn-primary" href = "/asset/<%=asset.id%>/edit">Edit</a>
             
             <%- include('../partials/deleteForm.ejs', {url:`/asset/${asset.id}`}) %>
         </div>
