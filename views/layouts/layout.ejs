@@ -12,8 +12,8 @@
     <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900" rel="stylesheet">
 		
 		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-		<link rel="stylesheet" href="css/style.css">
-		<link id="multistep-css" rel="stylesheet" href="multistep.css">
+		<link rel="stylesheet" href="/css/style.css">
+		<link id="multistep-css" rel="stylesheet" href="/multistep.css">
 		<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
 	<link href="https://unpkg.com/filepond@^4/dist/filepond.css" rel="stylesheet" />
@@ -25,7 +25,7 @@
 	<script defer src="https://unpkg.com/filepond-plugin-file-encode/dist/filepond-plugin-file-encode.js"></script>
 	<script defer src="https://unpkg.com/filepond-plugin-image-resize/dist/filepond-plugin-image-resize.js"></script>
 	<script defer src="https://unpkg.com/filepond@^4/dist/filepond.js"></script>
-	<script defer src="javascripts/fileUpload.js"></script>
+	<script defer src="/javascripts/fileUpload.js"></script>
 
 </head>
   <body>
@@ -95,7 +95,15 @@
               </ul>
 	          </li>
 	          <li>
-              <a href="#">Assign/Reassign</a>
+              <a href= "#auditSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Audit</a>
+			  <ul class="collapse list-unstyled" id="auditSubmenu">
+                <li>
+                    <a href="/audit/index">Pending Audits</a>
+                </li>
+				<li>
+                    <a href="/audit/">Go Live</a>
+                </li>
+				</ul>
 	          </li>
 	          <li>
               <a href="#assetTypeSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Register Asset</a>
@@ -151,10 +159,10 @@
       </div>
 		</div>
 
-    <script src="js/jquery.min.js"></script>
-    <script src="js/popper.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/main.js"></script>
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/popper.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/main.js"></script>
 
 	<script src="/multistep.js">
 	</script>

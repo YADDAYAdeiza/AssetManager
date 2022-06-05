@@ -2,7 +2,7 @@ let express = require('express');
 let route = express.Router();
 
 let ejs = require('ejs');
-let layout = require('express-ejs-layouts');
+// let layout = require('express-ejs-layouts');
 let userModel = require('../models/user');
 const assetTypeModel = require('../models/assetType.js');
 const assetModel = require('../models/asset.js');
@@ -18,7 +18,7 @@ route.use(express.static('public'));
 
 //route.use('/user', userRoute);
 
-route.use(layout);
+// route.use(layout);
 
 
 let userVar = 'trial';
@@ -92,9 +92,15 @@ route.get('/:id', async (req, res)=>{
     try {
        const user =await userModel.findById(req.params.id);
        const asset = await assetModel.find({user:user.id}).limit(6).exec();
+       const allAsset = await assetModel.find().limit(20).exec();
+       console.log("----");
+       allAsset.forEach(asset=>{
+           console.log(asset.assetCode);
+       })
        res.render('user/show', {
            user:user,
-           assetsByUser:asset
+           assetsByUser:asset,
+           allAssets:allAsset
        });
 
     }catch (e){
@@ -174,7 +180,7 @@ route.post('/',   async (req,res)=>{
         phone:req.body.phone,
         username:req.body.username,
         password:req.body.password,
-        assetType:req.body.assetTypeName,
+        assetType:req.body.assetTypeName
         // asset:"0012"
     });
 

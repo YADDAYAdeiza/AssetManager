@@ -49,7 +49,7 @@ let userSchema = new mongoose.Schema({
     },
     asset:{
         type:mongoose.Schema.Types.ObjectId,
-        reference:assetModel
+        reference:assetModel,
     },
     dateCreated:{
         type:Date,

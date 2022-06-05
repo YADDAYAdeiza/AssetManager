@@ -1,12 +1,50 @@
-<h2><%=user.firstName%></h2>
+<div class="user-show-div">
+    <div>
+        <h2><%=user.firstName%></h2>
 <p><img height= "100" width="120" src="<%= user.userProfilePic%>"></p>
 
-<a href="/user/<%=user.id%>/edit">Edit</a>
+<a href="/user/<%=user.id%>/edit">Edit</a> |
 <!-- change this href to the populated version of user -->
-<a href="/user/<%=user.id%>/edit">View Asset</a>
+<a href="/user/<%=user.id%>/edit">View Asset</a> |
+<div class="user-assign-deAssign">
+    <button onclick="showAssetList()" class='assignShowButton'>Assign</button>
+    <button>DeAssign</button>
+</div>
+
+<div>
+    <button>Done</button>
+</div>
+
 <%-include('../partials/deleteForm', {url:`/user/${user.id}`})%>
+<ul>
+    <% allAssets.forEach(asset=>{ %>
+        <div style="background-color: yellow; height:60px;margin-bottom:5px">
+            <a href="/asset/<%=asset.id%>"><li><%=asset.assetCode%></li></a>
+        </div>
+    <%})%>
+</ul>
 
 <%if (assetsByUser.length >0){%>
     <h2>Assets of User</h2>
     <%- include('../partials/userGrid.ejs', {asset:assetsByUser, large:true})%>;
         <%}%>
+    </div>
+
+    <div id = "assetList" class="assetList">Assign</div>
+        
+    <script>
+        let assetListGrab = document.getElementsByClassName('assetList')[0];
+        let userShowDivGrab = document.getElementsByClassName('user-show-div')[0];
+
+        let assignShowButtonGrab = document.getElementsByClassName('assignShowButton')[0];
+        // allAsset.forEach(aAsset => {
+        //     console.log(aAsset);
+        // });
+
+        function showAssetList(){
+            userShowDivGrab.classList.toggle('user-show-div2');
+            userShowDivGrab.classList.toggle('user-show-div3');
+        }
+    </script>
+</div>
+

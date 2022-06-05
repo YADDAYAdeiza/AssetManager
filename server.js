@@ -13,14 +13,37 @@ const http = require('http');
 const https = require('https');
 const methodOverride = require('method-override')
 
-// const httpsOptions = {
-//   'cert':fs.readFileSync('./https/cert.pem'),
-//   'key':fs.readFileSync('./https/key.pem')
-// }
-
-// const app = require('https-localhost')();
+const {v4:uuidV4} = require('uuid');
+var server = require('http').Server(app);
+var io = require('socket.io')(server);
 
 
+app.get('/audit', (req,res)=>{
+    // res.send('Auditing...');
+    res.redirect(`/audit/${uuidV4()}`)
+})
+
+app.get('/audit/:room', (req,res)=>{
+    // res.send('Getting room...');
+    res.render('audit/room', {roomId:req.params.room})
+})
+
+io.on('connection', socket=>{
+    socket.on('join-room', (roomId, userId)=>{
+      socket.join(roomId)
+      socket.to(roomId).emit('user-connected', userId)
+      // socket.broadcast.to(roomId).emit("hello", "world");
+
+      socket.on('disconnect', ()=>{
+        socket.to(roomId).emit('user-disconnected', userId)
+      })
+    })
+  })
+
+  
+  server.listen(process.env.PORT || 2000);
+  
+  
 mongoose.connect(process.env.DATABASE_URL, {useNewUrlParser:true }); //play around with this
 const db = mongoose.connection;
 db.on('error', error => console.error(error))
@@ -45,6 +68,8 @@ app.use(bodyParser.urlencoded({limit: '10mb', extended:false}));
 app.set('view engine', 'ejs');
 app.set('views', __dirname + '/views')
 app.set('layout', 'layouts/layout');
+
+app.use(layout);
 app.use(methodOverride('_method'));
 app.use(express.static('public'));
 
@@ -58,7 +83,6 @@ app.use('/recent', recentRoute);
 
 
 // app.use('/user', userRoute);
-app.use(layout);
 
 // var sega= [
 //   {datal:"I love you", model:'alphanumeric'},
@@ -83,12 +107,14 @@ app.get('/', async (req, res)=>{
   });
 
 
-//httpServer = http.createServer(app);
-// httpsServer = https.createServer(httpsOptions,app);
 
-//httpServer.listen(process.env.PORT || 4000);
+
+// httpServer.listen(process.env.PORT || 4000);
 // httpsServer.listen(process.env.PORT || 3000);
-app.listen(process.env.PORT || 2000)
+// app.listen(process.env.PORT || 2000)
 
 
 //app.listen(process.env.PORT || 2000);
+
+// module.exports = io;
+//module.exports = "This is going somewhere";

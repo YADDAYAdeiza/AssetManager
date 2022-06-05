@@ -1,28 +1,32 @@
-<h2>List of users here</h2>
-<p><%=msg%></p>
-
-form for search goes in here
-<form method="get" action="/user/index">
-    <p><input type="text" name="userNameSearch"></p>
-    <p><input type="date" name="userDateBeforeSearch"></p>
-    <p><input type="date" name="userDateAfterSearch"></p>
-    <p><button value="submit">Submit</button></p>
-</form>
-
-<% if (locals.users !=null){ %>
-    <%= 'There are users' %>
-    <%  users.forEach(user=>{%>
-        <a href="/user/<%= user.id %>">
-            <p><img height= "100" width="120" src="<%= user.userProfilePic%>"></p>
-        </a>
-
-        <div class="user-row">
+    <h2>List of users here</h2>
+    <p><%=msg%></p>
+    
+    form for search goes in here
+    <form method="get" action="/user/index">
+        <p><input type="text" name="userNameSearch"></p>
+        <p><input type="date" name="userDateBeforeSearch"></p>
+        <p><input type="date" name="userDateAfterSearch"></p>
+        <p><button value="submit">Submit</button></p>
+    </form>
+    
+    <% if (locals.users !=null){ %>
+        <%= 'There are users' %>
+        <%  users.forEach(user=>{%>
+            <a href="/user/<%= user.id %>">
+                <p><img height= "100" width="120" src="<%= user.userProfilePic%>"></p>
+            </a>
             <div class="user-name"><%=user.firstName%></div>
-            <div class = "div-btn-row">
-                <a class= "btn btn-primary" href="/user/<%= user.id %>">View</a>
-                    <a class= "btn btn-primary" href="/user/<%= user.id %>/edit">Edit</a>
-                <%-include('../partials/deleteForm.ejs', {url:`/user/${user.id}`}) %>
+    
+            <div class="user-row">
+                
+                <div class = "div-btn-row">
+                    <a class= "btn btn-primary" href="/user/<%= user.id %>">View</a>
+                        <a class= "btn btn-primary" href="/user/<%= user.id %>/edit">Edit</a>
+                    <%-include('../partials/deleteForm.ejs', {url:`/user/${user.id}`}) %>
+                </div>
             </div>
-        </div>
-    <%})%>
-<% } %> 
+        <%})%>
+    <% } %> 
+    
+    <div class="assetList">Assign</div>
+</div>

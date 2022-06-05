@@ -1,7 +1,7 @@
 let express = require('express');
 let route = express.Router();
 let ejs = require('ejs');
-let layout = require('express-ejs-layouts');
+// let layout = require('express-ejs-layouts');
 let assetTypeModel = require('../models/assetType');
 
 const imageMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
@@ -13,7 +13,7 @@ route.use(express.static('public'));
 
 //route.use('/user', userRoute);
 
-route.use(layout);
+// route.use(layout);
 
 
 let userVar = 'trial';

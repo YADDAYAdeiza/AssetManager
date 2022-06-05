@@ -23,3 +23,20 @@ root:{
 .asset-grid-large{
     grid-template-columns: repeat(autofill, var(--asset-pic-width-large));
 }
+
+
+.assetList{
+    display: grid;
+    justify-items: end;
+    justify-content: end;
+    align-items: center;
+    height: 80vh;
+    width: 0;
+    background-color: silver;
+    opacity: 7;
+    transition: 0.4s;
+}
+
+.showAssetList{
+    width:100vh
+}

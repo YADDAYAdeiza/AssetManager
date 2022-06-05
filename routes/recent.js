@@ -3,7 +3,7 @@ let route = express.Router();
 let fs = require('fs');
 let path = require('path');
 let ejs = require('ejs');
-let layout = require('express-ejs-layouts');
+// let layout = require('express-ejs-layouts');
 let contractorModel = require('../models/contractor')
 let assetTypeModel = require('../models/assetType');
 let assetModel = require('../models/asset');
@@ -22,7 +22,7 @@ route.use(express.static('public'));
 
 //route.use('/user', userRoute);
 
-route.use(layout);
+// route.use(layout);
 
 
 // let userVar = 'trial';

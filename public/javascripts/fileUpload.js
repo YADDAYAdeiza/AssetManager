@@ -11,6 +11,8 @@ FilePond.setOptions({
 })
 FilePond.parse(document.body)
 
+//Consider using code below
+
 // const rootStyles = window.getComputedStyle(document.documentElement)
 
 // if (rootStyles.getPropertyValue('--asset-pic-width-large') != null && rootStyles.getPropertyValue('--asset-pic-width-large') !=""){

@@ -2,7 +2,7 @@ let express = require('express');
 let route = express.Router();
 
 let ejs = require('ejs');
-let layout = require('express-ejs-layouts');
+// let layout = require('express-ejs-layouts');
 
 let assetModel = require('../models/asset.js');
 let assetTypeModel = require('../models/assetType.js');
@@ -17,7 +17,7 @@ route.use(express.static('public'));
 
 //route.use('/user', userRoute);
 
-route.use(layout);
+// route.use(layout);
 
 
 let userVar = 'trial';
@@ -209,7 +209,7 @@ function saveAssetImageDetails(user, encodedProfile){
     console.log(profile.type);
     if (profile !=null && imageMimeTypes.includes(profile.type)){
         user.assetImageName = new Buffer.from(profile.data, 'base64');
-        user.assetImageType = profile.type;
+        user.assetImageType = profile.type; 
     }
 }
 
