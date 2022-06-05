@@ -6,7 +6,6 @@ let ejs = require('ejs');
 let userModel = require('../models/user');
 const assetTypeModel = require('../models/assetType.js');
 const assetModel = require('../models/asset.js');
-const { reset } = require('nodemon');
 const { rawListeners } = require('../models/assetType.js');
 const imageMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
 
