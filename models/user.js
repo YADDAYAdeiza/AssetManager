@@ -15,9 +15,13 @@ let userSchema = new mongoose.Schema({
         type:String,
         required:true
     },
-    designation:{
+    cadre:{
         type:String,
-        //required:true
+        required:true
+    },
+    rank:{
+        type:String,
+        required:true
     },
     email:{
         type:String,
@@ -27,13 +31,12 @@ let userSchema = new mongoose.Schema({
         type:Number,
         required:true
     },
-    username:{
-        type:String,
-        //required:true
+    state:{
+        type:String
     },
-    password:{
+    geoCoord:{
         type:String,
-        //required:true
+        required:true
     },
     profilePic:{
         type: Buffer,

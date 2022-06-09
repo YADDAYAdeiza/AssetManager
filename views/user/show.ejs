@@ -16,13 +16,7 @@
 </div>
 
 <%-include('../partials/deleteForm', {url:`/user/${user.id}`})%>
-<ul>
-    <% allAssets.forEach(asset=>{ %>
-        <div style="background-color: yellow; height:60px;margin-bottom:5px">
-            <a href="/asset/<%=asset.id%>"><li><%=asset.assetCode%></li></a>
-        </div>
-    <%})%>
-</ul>
+
 
 <%if (assetsByUser.length >0){%>
     <h2>Assets of User</h2>
@@ -30,7 +24,15 @@
         <%}%>
     </div>
 
-    <div id = "assetList" class="assetList">Assign</div>
+    <div id = "assetList" class="assetList">
+        <ul>
+            <% allAssets.forEach(asset=>{ %>
+                <div style="background-color: yellow; height:60px;margin-bottom:5px">
+                   <li><a href="/asset/<%=asset.id%>"><%=asset.assetCode%></a></li>
+                </div>
+            <%})%>
+        </ul>
+    </div>
         
     <script>
         let assetListGrab = document.getElementsByClassName('assetList')[0];
@@ -42,8 +44,9 @@
         // });
 
         function showAssetList(){
-            userShowDivGrab.classList.toggle('user-show-div2');
             userShowDivGrab.classList.toggle('user-show-div3');
+            userShowDivGrab.classList.toggle('user-show-div2');
+            // assetListGrab.classList.toggle('user-show-div3');
         }
     </script>
 </div>

@@ -66,21 +66,7 @@
 </head>
 <body>
 
-  <p>Recently Added Users</p>
-  <div>
-    <% if (locals.users !=null){ %>
-      <%= 'There are users' %>
-      <%  users.forEach(user=>{%>
-          <p><%=user.firstName%></p>
-         <p><%= user.userProfilePic %></p> 
-          <p><img height= "100" width="120" src="<%= "/uploads/profilePics/"+user.profilePic%>" alt="Some pic"></p>
-      <%})%>
-  <% } %> 
-  </div>
 
-  <p>Recently Added Assets</p>
-  <p>Recently Added AssetTypes</p>
-  <p>Recently Added Contractors</p>
 
   <form class = "signUp" action="/action_page.php">
     <h1 class="titleHead">SIGN UP</h1>

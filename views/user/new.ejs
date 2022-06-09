@@ -13,17 +13,36 @@
     <p><input placeholder="Phone..." oninput="this.className = ''" name = "phone" value="<%=user.phone%>"></p>
   </div>
   
-  <div class="tab">Birthday:
-    <p><input placeholder="dd" oninput="this.className = ''" name = "day"></p>
-    <p><input placeholder="mm" oninput="this.className = ''" name = "month"></p>
-    <p><input placeholder="yyyy" oninput="this.className = ''" name = "year"></p>
+  <div class="tab">User Created At:
+    <p><input type = 'date' oninput="this.className = ''" name = "createdAt" value = "2022-12-11"></p>
+    <p><select name = 'state'>
+      <option value = '{"state":"Abia", "latLng":{"lat":"5.532003041", "lng":"7.486002487"}}'>Abia</option>
+      <option value = '{"state":"Anambra", "latLng":{"lat":"6.210433572", "lng":"7.06999711"}}'>Anambra</option>
+      <option value = '{"state":"Ogun", "latLng":{"lat":"7.160427265", "lng":"3.350017455"}}'>Ogun</option>
+      <option value = '{"state":"Ekiti", "latLng":{"lat":"7.630372741", "lng":"5.219980834"}}'>Ekiti</option>
+      </select></p>
     <input type="file" name="photo" class = "filepond">
   </div>
   
-  <div class="tab">Login Info:
-    <p><input placeholder="Username..." oninput="this.className = ''" name = "username"></p>
-    <p><input placeholder="Password..." oninput="this.className = ''" name = "password"></p>
-    
+  <div class="tab">Cadre and Rank:
+    <p><select name = "cadre" onchange = 'changeOfficerType(this)'>
+      <option value = 'regCadre'>Regulatory Officer</option>
+      <option value = 'adminCadre'>Admin Officer</option>
+      <option value = ''>Laboratory Officer</option>
+      <option>Legal Officer</option>
+      <option value = 'accountCadre'>Accout Officer</option>
+    </select><p>
+    <p><select id='rankSel' name="rank">
+      <option>ROII</option>
+      <option>ROI</option>
+      <option>SRO</option>
+      <option>PRO</option>
+      <option>ACRO</option>
+      <option>CRO</option>
+      <option>AD</option>
+      <option>DD</option>
+      <option>Director</option>
+    </select></p>
   </div>
   
   <div style="overflow:auto;">
@@ -45,3 +64,31 @@
   </div>
   
   </form>
+
+  <script defer>
+    let objCadre ={
+      regCadre:['ROII', 'ROI', 'SRO', 'PRO', 'ACRO', 'CRO', 'AD', 'DD', 'Director'],
+      adminCadre:['AOII', 'AOI', 'SAO', 'PAO', 'ACAO', 'CAO', 'AD', 'DD', 'Director'],
+      accountCadre:['ACAII', 'ACAOI', 'SCAO', 'PCAO', 'ACACO', 'CACO', 'AD', 'DD', 'Director']
+    }
+    let regCadre = ['ROII', 'ROI', 'SRO', 'PRO', 'ACRO', 'CRO', 'AD', 'DD', 'Director'];
+    let adminCadre = ['AOII', 'AOI', 'SAO', 'PAO', 'ACAO', 'CAO', 'AD', 'DD', 'Director'];
+    let accountCadre = ['ACAII', 'ACAOI', 'SCAO', 'PCAO', 'ACACO', 'CACO', 'AD', 'DD', 'Director'];
+
+    let rankSelGrab = document.getElementById('rankSel');
+    let cadreArr;
+
+  function changeOfficerType(this2){
+    console.log(adminCadre);
+    console.log(objCadre);
+    console.log(objCadre[this2.value]);
+    let cadreArr = objCadre[this2.value]
+    cadreArr.forEach((arrItem, i)=>{
+      rankSelGrab.options[i] = new Option(arrItem)
+    })
+    // console.log(typeof(this2.value));
+    // var la = JSON.parse(this2.value);
+    // console.log(la);
+
+  }
+  </script>

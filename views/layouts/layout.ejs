@@ -61,7 +61,7 @@
 	            </ul>
 	          </li>
 	          <li>
-	              <a href="#userSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">User</a>
+	              <a href="#userSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle" onclick = "backgroundChange(this)">User</a>
 				  <ul class="collapse list-unstyled" id="userSubmenu">
 					<li>
 						<a href="/user/index">List Users</a>
@@ -81,7 +81,7 @@
 				  </ul> 	
 	          </li>
 	          <li>
-              <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">New Asset</a>
+              <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle" onclick = "backgroundChange(this)">New Asset</a>
               <ul class="collapse list-unstyled" id="pageSubmenu">
                 <li>
                     <a href="/asset/index">List Asset</a>
@@ -95,7 +95,7 @@
               </ul>
 	          </li>
 	          <li>
-              <a href= "#auditSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Audit</a>
+              <a href= "#auditSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle" onclick = "backgroundChange(this)">Audit</a>
 			  <ul class="collapse list-unstyled" id="auditSubmenu">
                 <li>
                     <a href="/audit/index">Pending Audits</a>
@@ -106,7 +106,7 @@
 				</ul>
 	          </li>
 	          <li>
-              <a href="#assetTypeSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Register Asset</a>
+              <a href="#assetTypeSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle" onclick = "backgroundChange(this)">Register Asset</a>
 			  <ul class="collapse list-unstyled" id="assetTypeSubmenu">
                 <li>
                     <a href="/assetType/index">List Asset Type</a>
@@ -117,8 +117,8 @@
                 
               </ul>
 	          </li>
-			  <li>
-				<a href="#contractorSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Contractors</a>
+			  <li >
+				<a href="#contractorSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle" onclick = "backgroundChange(this)">Contractors</a>
 				<ul class="collapse list-unstyled" id="contractorSubmenu">
 				  <li>
 					  <a href="/contractor/index">List Contractors</a>
@@ -130,7 +130,18 @@
 				</ul>
 				</li>
 				<li>
-					<a href="#recentSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Recents</a>
+					<a href="#overviewSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle" onclick = "backgroundChange(this)">Overview</a>
+					<ul class="collapse list-unstyled" id="overviewSubmenu">
+					  <li>
+						  <a href="/overview/national">National</a>
+					  </li>
+					  <li>
+						  <a href="/overview/metrics">Metrics</a>
+					  </li>
+					</ul> 	
+				</li>
+				<li>
+					<a href="#recentSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle" onclick = "backgroundChange(this)">Recents</a>
 					<ul class="collapse list-unstyled" id="recentSubmenu">
 					  <li>
 						  <a href="/recent/index">Recent Activity</a>
@@ -151,7 +162,6 @@
 
         
       <div id="content" class="p-4 p-md-5 pt-5">
-		  <%- include('../partials/errPartial.ejs') %>
 		  
 		  <p>
 			  <%- body %>
@@ -164,7 +174,11 @@
     <script src="/js/bootstrap.min.js"></script>
     <script src="/js/main.js"></script>
 
-	<script src="/multistep.js">
+	<script src="/multistep.js"></script>
+	<script>
+		function backgroundChange(this2){
+			this2.classList.toggle('menuBackgroundColorChange');
+		}
 	</script>
   </body>
 </html>

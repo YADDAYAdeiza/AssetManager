@@ -3,6 +3,7 @@
 @import 'shared/button.css';
 @import 'shared/user.css';
 @import 'shared/asset.css';
+@import 'shared/overview.css';
 
 #regForm {
   background-color: #ffffff;
@@ -55,4 +56,12 @@ input.invalid {
 
 .error-message{
   color:red;
+}
+.noError{
+  color:green;
+}
+
+/* class to chaange color of clicked menu */
+.menuBackgroundColorChange{
+background-color: silver;
 }

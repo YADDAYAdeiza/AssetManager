@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDuYptvwFszij8WWugKw5jQ6PkhiYqBo2c&callback=initMap&libraries=&v=weekly">
+    </script>
+
+</head>
+<body>
+    <div class='div-cont'>
+        <div id = 'nationalMap'>Map goes in here</div>
+        <div class = 'div-ctrl'>
+            <p><select onchange="categoryOptions(this)">
+                <option>Users</option>
+                <option value= "/assetType/index">Asset Types</option>
+                <option value= "asset/index">Assets</option>
+                <option value= "contractor/index">Contractor</option>
+            </select>
+            </p>
+
+            <p><select id='selVar'>
+                <option>Regulatory Officer</option>
+                <option>Admin Officer</option>
+                <option>Laboratory Officer</option>
+                <option>Account Officer</option>
+                <option>Legal Officer</option>
+            </select>
+            </p>
+
+            <p>
+                <button>Map Spread</button>
+            </p>
+        </div>
+    <div>
+  <script defer>
+      let mapSet = new google.maps.Map(document.getElementById('nationalMap'), {zoom:6, center:{lat:9, lng:7}});
+      console.log(mapSet);
+    
+      let getVar = new XMLHttpRequest();
+
+      var selVarGrab = document.getElementById('selVar');
+
+      function categoryOptions(this2){
+        getVar.onload = function(){
+            console.log(getVar.responseText);
+            var getVarJSON = (JSON.parse(getVar.responseText));
+            getVarJSON.assetTypes.forEach((item,i)=>{
+                selVarGrab.options[i] = new Option(item.assetTypeClass);
+            })
+            // selVarGrab
+            
+        }
+
+        getVar.open("GET", this2.value+'/justJson', true);
+        getVar.send()
+      }
+  </script>
+</body>
+</html>
+

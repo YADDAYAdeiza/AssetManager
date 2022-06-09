@@ -11,15 +11,19 @@
 
 .user-show-div{
 display: grid;
-grid-template-columns: 90% 10%;
-transition: 0.4s;
-width:80vw;
+grid-template-columns: 100% 0%;
+width:1276px;
+transition:  0.4s;
+/* width:100vw; */
+
 }
 
 .user-show-div2{
-    grid-template-columns: 70% 30%;
+    grid-template-columns: 60% 40%;
+    /* width: 80vw; */
 }
 
 .user-show-div3 > #assetList{
     width:100%;
+    display:block;
 }

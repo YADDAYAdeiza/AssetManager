@@ -55,6 +55,7 @@ let userRoute = require('./routes/user.js');
 let assetRoute = require('./routes/asset.js');
 let assetTypeRoute = require('./routes/assetType.js');
 let contractorRoute = require('./routes/contractor.js');
+let overviewRoute = require('./routes/overview.js');
 let recentRoute = require('./routes/recent.js');
 
 let userModel = require('./models/user.js');
@@ -77,6 +78,8 @@ app.use('/user', userRoute);
 app.use('/asset', assetRoute);
 app.use('/assetType', assetTypeRoute);
 app.use('/contractor', contractorRoute);
+app.use('/overview', overviewRoute);
+
 app.use('/recent', recentRoute);
 
 

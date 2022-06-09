@@ -30,6 +30,17 @@ route.get('/index', async (req, res)=>{
     res.render('assetType/index.ejs', {assetTypes:assetTypes});
 })
 
+route.get('/index/justJson', async (req, res)=>{
+    // res.send('Book stuff...')
+    var assetTypes = await assetTypeModel.find({}, "assetTypeClass");
+
+    // var assetTypes2 = assetTypes.map(arrItem=>{
+    //     delete arrItem.assetTypeImageType;
+    //     delete arrItem.assetTypeImageName;
+    // })
+    res.send({assetTypes});
+})
+
 //get the create new form for new book
 route.get('/new', async (req,res)=>{
     // res.send('What item now');

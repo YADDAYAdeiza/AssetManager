@@ -23,8 +23,7 @@ route.use(express.static('public'));
 let userVar = 'trial';
 //get all users of assets
 route.get('/index', async (req, res)=>{
-    // res.send('From user route')
-    //res.render('userform.ejs');
+    
     let query = userModel.find();
     if (req.query.userNameSearch != null && req.query.userNameSearch != ""){
         query = query.regex('firstName', new RegExp(req.query.userNameSearch, 'i'));
@@ -46,12 +45,13 @@ route.get('/index', async (req, res)=>{
         res.render('user/index.ejs', {
             users:users,
             searchParams:req.query,
-            msg: `An error occured`
+            msg: `Listed fine`,
+            msgClass:'noError'
         }); //tying the view to the moongoose model
         
     }catch {
-        
-        res.render('user/index.ejs', {msg: `An error occurred`}); //tying the view to the moongoose model
+
+        res.render('user/index.ejs', {msg: `An error occurred getting the list`, msgClass:'error-message'}); //tying the view to the moongoose model
     }
     //msg:"error goes in here", 
 })
@@ -176,11 +176,13 @@ route.post('/',   async (req,res)=>{
         lastName:req.body.lastName,
         firstName:req.body.firstName,
         email:req.body.email,
+        state:JSON.parse(req.body.state).state,
+        geoCoord:JSON.stringify(JSON.parse(req.body.state).latLng),
+        date:req.body.createdAt,
         phone:req.body.phone,
-        username:req.body.username,
-        password:req.body.password,
+        cadre:req.body.cadre,
+        rank:req.body.rank,
         assetType:req.body.assetTypeName
-        // asset:"0012"
     });
 
     saveProfilePic(user, req.body.photo);
