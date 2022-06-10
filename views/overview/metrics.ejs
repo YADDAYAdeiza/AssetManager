@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .graph-cont{
+            display:grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            justify-content:center;
+            align-items: center;
+            column-gap: 50px;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+<body>
+    <div class="graph-cont">
+
+        <div>
+            <canvas id="myChart" width="50" height="50"></canvas>
+        </div>
+        <div>
+            <canvas id="myChart2" width="50" height="50"></canvas>
+        </div>
+
+        <div>
+            <canvas id="myChart3" width="50" height="50"></canvas>
+        </div>
+        <div>
+            <label>Asset Type</label>
+            <select onchange = 'getAssetNumber(this)'>
+               <%uniqueAssetModelItems.forEach(assetTypeItem=>{%>
+                    <option value = '/overview/<%=assetTypeItem.id%>/metrics'><%=assetTypeItem.assetTypeClass%></option>
+                <%})%>
+                <option value = '/overview/all/metrics'>All</option>
+            </select>
+        </div>
+    </div>
+    <script>
+        var assetObj = {num: [2,3, 20, 13]}
+        const ctx = document.getElementById('myChart').getContext('2d');
+        
+        
+        const ctx2 = document.getElementById('myChart2').getContext('2d');
+        
+        const ctx3 = document.getElementById('myChart3').getContext('2d');
+        var ctxArr = [{chartDiv:ctx, graph:'bar'}, {chartDiv:ctx2, graph:'pie'}, {chartDiv:ctx3, graph:'line'}];
+
+        let myChart3Arr = [];
+
+    function chartNow (assetObj) {
+        ctxArr.forEach((ctxItem)=>{
+
+       let myChart3 = new Chart(ctxItem.chartDiv, {
+            type: ctxItem.graph,
+            data: {
+                labels: Object.keys(assetObj),
+                datasets: [{
+                    label: '# of Votes',
+                    data: Object.values(assetObj),
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+        myChart3Arr.push(myChart3);
+        
+    })
+}
+// chartNow(assetObj);
+    let getAsset = new XMLHttpRequest();
+    function getAssetNumber(this2){
+        
+        var assetObj = {}
+        getAsset.onreadystatechange = function(){
+            // var getAsset = (JSON.parse(getAsset.responseJSON));
+            if(getAsset.readyState == 4 && getAsset.status == 200){
+                var assets = JSON.parse(getAsset.response);
+                console.log(assets);
+                assets.forEach((arrItem, i)=>{
+                    console.log(arrItem.assetType.assetTypeClass);
+                    var itemProp =  (arrItem.assetType['assetTypeClass']);
+                    assetObj[itemProp] = 0;
+                })
+
+                assets.forEach((arrItem, i)=>{
+                    assetObj[arrItem.assetType.assetTypeClass] = assetObj[arrItem.assetType.assetTypeClass]+1;
+                })
+                console.log(assetObj);
+                console.log(Object.keys(assetObj));
+                console.log(Object.values(assetObj));
+                // var assetObj = {type:assets[0].assetType.assetTypeClass, num:[(assets.length)+1]}; 
+                if (myChart3Arr.length){
+                    // alert('Destroying')
+                    myChart3Arr.forEach((myChart3)=>{
+                        myChart3.destroy();
+                    })
+                } 
+                chartNow(assetObj);
+            }
+           
+        }
+
+        getAsset.open("GET", this2.value, true);
+        getAsset.send()
+    }
+    </script>
+   
+</body>
+</html>

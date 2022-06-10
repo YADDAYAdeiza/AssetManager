@@ -86,6 +86,7 @@ async function renderFormPage(res, asset, assetTypeModelVar, form, hasError = fa
     }
 }
 
+
 route.get('/:id', async (req, res)=>{
     try {
         const asset = await assetModel.findById(req.params.id).populate('assetType').exec();
