@@ -28,8 +28,8 @@ root:{
 .assetList{
     display: grid;
     /* justify-items: center; */
-    justify-content: stretch;
-    align-items: center;
+    /* justify-content: stretch; */
+    /* align-items: center; */
     height: 80vh;
     width: 0;
     background-color: silver;

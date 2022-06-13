@@ -6,17 +6,12 @@
 <a href="/user/<%=user.id%>/edit">Edit</a> |
 <!-- change this href to the populated version of user -->
 <a href="/user/<%=user.id%>/edit">View Asset</a> |
-<div class="user-assign-deAssign">
-    <button onclick="showAssetList()" class='assignShowButton'>Assign</button>
-    <button>DeAssign</button>
-</div>
 
-<div>
-    <button>Done</button>
-</div>
+<%-include('_userContent', {btnVal:`Asset Pool`})%>
 
 <%-include('../partials/deleteForm', {url:`/user/${user.id}`})%>
 
+<!-- <div><button id = 'done-btn' disabled='false'>Done</button></div> -->
 
 <%if (assetsByUser.length >0){%>
     <h2>Assets of User</h2>
@@ -25,10 +20,10 @@
     </div>
 
     <div id = "assetList" class="assetList">
-        <ul>
+        <ul class="user-asset-pool">
             <% allAssets.forEach(asset=>{ %>
-                <div style="background-color: yellow; height:60px;margin-bottom:5px">
-                   <li><a href="/asset/<%=asset.id%>"><%=asset.assetCode%></a></li>
+                <div style="background-color:yellow;height:60px;margin-bottom:5px" onclick = 'triggerClickCheckbox(this)'>
+                   <li><input type="checkbox" class = 'user-asset-pool-checkbox' style="display:inline; width:10%"><a href="/asset/<%=asset.id%>"><%=asset.assetCode%></a></li>
                 </div>
             <%})%>
         </ul>
@@ -39,14 +34,61 @@
         let userShowDivGrab = document.getElementsByClassName('user-show-div')[0];
 
         let assignShowButtonGrab = document.getElementsByClassName('assignShowButton')[0];
-        // allAsset.forEach(aAsset => {
-        //     console.log(aAsset);
-        // });
 
-        function showAssetList(){
-            userShowDivGrab.classList.toggle('user-show-div3');
-            userShowDivGrab.classList.toggle('user-show-div2');
-            // assetListGrab.classList.toggle('user-show-div3');
+        let userAssetPoolGrab = document.getElementsByClassName('user-asset-pool')[0];
+        let userAssetPoolCheckboxGrab;
+        let userAssetsDivGrab = document.getElementsByClassName('user-assets-div')[0];
+        let doneBtnGrab =  document.getElementsByClassName('done-btn')[0];
+        
+        // allAsset.forEach(aAsset => {
+            //     console.log(aAsset);
+            // });
+            
+            function showAssetList(){
+                userShowDivGrab.classList.toggle('user-show-div3');
+                userShowDivGrab.classList.toggle('user-show-div2');
+                userAssetPoolCheckboxGrab = document.getElementsByClassName('user-asset-pool-checkbox');
+            }
+            
+            function userAssetAssign(this2){
+                
+                userAssetPoolCheckboxGrab = document.getElementsByClassName('user-asset-pool-checkbox');
+                console.log(userAssetPoolCheckboxGrab);
+                var trueBoxes =  [...userAssetPoolCheckboxGrab].filter(item=>{
+                    return item.checked == true;
+                })
+                console.log(trueBoxes);
+                console.log(userAssetPoolGrab); 
+                trueBoxes.forEach(item=>{
+                    userAssetsDivGrab.appendChild(item.parentNode.parentNode); 
+                })
+
+                if (userAssetsDivGrab.children.length){
+                    doneBtnGrab.classList.toggle('btn-deActivate'); 
+                }
+           }
+
+        function userAssetDeassign(){
+            // console.log()
+            var inputChecks = userAssetsDivGrab.getElementsByClassName('user-asset-pool-checkbox');
+            var trueBoxes =  [...inputChecks].filter(item=>{
+                return item.checked == true;
+            })
+            console.log(trueBoxes);
+            trueBoxes.forEach(item=>{
+                userAssetPoolGrab.appendChild(item.parentNode.parentNode); 
+            })
+            console.log(userAssetsDivGrab);
+            console.log(userAssetsDivGrab.children.length);
+            if (!userAssetsDivGrab.children.length){
+                    doneBtnGrab.classList.toggle('btn-deActivate'); 
+            }
+        }  
+
+        function triggerClickCheckbox(this2){
+        console.log(this2);
+           var checkGrab = this2.getElementsByTagName('input')[0];
+           checkGrab.checked = !checkGrab.checked;
         }
     </script>
 </div>

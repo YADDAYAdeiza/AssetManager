@@ -38,3 +38,11 @@
     color:white;
     background-color: red;
 }
+
+.btn:hover{
+    background-color: green;
+}
+
+.btn-deActivate{
+    pointer-events: none;
+}
