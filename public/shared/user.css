@@ -1,3 +1,11 @@
+.profileCreatedMsgDivCont{
+    text-align: center;
+}
+
+.profileCreatedMsg{
+    color:green;
+}
+
 .user-name{
     font-size: 1.5rem;
 
@@ -28,8 +36,25 @@ transition:  0.4s;
     display:block;
 }
 
-.user-assets-div{
+.user-assets-div, .user-assetsOwn-div{
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     border: 1px solid red; 
+}
+
+.divContLi{
+    background-color: yellow;
+    height:60px;
+    margin-bottom:5px;
+}
+
+.divContLi:hover a{
+    color:white;
+    text-decoration:dashed;
+}
+
+.divContLi:hover{
+    background-color: rgb(172, 182, 86);
+    transform:scale(1.04);
+    color:white;
 }

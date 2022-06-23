@@ -21,11 +21,13 @@ let userSchema = new mongoose.Schema({
     },
     rank:{
         type:String,
+        uppercase:true,
         required:true
     },
     email:{
         type:String,
-        //required:true
+        lowercase:true,
+        required:true
     },
     phone:{
         type:Number,
@@ -39,33 +41,50 @@ let userSchema = new mongoose.Schema({
         required:true
     },
     profilePic:{
-        type: Buffer,
-        required:true
+        type: Buffer
     },
     profilePicType:{
-        type:String,
-        required:true
+        type:String
     },
     assetType:{
         type:mongoose.Schema.Types.ObjectId,
-        reference:assetTypeModel
-    },
-    asset:{
-        type:mongoose.Schema.Types.ObjectId,
-        reference:assetModel,
+        ref:assetTypeModel
     },
     dateCreated:{
         type:Date,
         required:true,
-        default:Date.now
+        default: ()=>{
+            return Date.now()
+        },
+        immutable:true
+    },
+    userAsset:{
+        id:{
+            type:[[mongoose.Schema.ObjectId]],
+            ref:assetModel,
+            required:true
+        },
+        assignDate:{
+            type:[Date],
+            default:()=>{
+                return Date.now()
+            }
+        }
     }
+    
 });
 
 userSchema.virtual('userProfilePic').get(function(){
      if (this.profilePic != null && this.profilePicType != null){
          return `data:${this.profilePicType};charset=utf-8;base64,${this.profilePic.toString('base64')}`
+     }else{ //this gives it a default image
+        return '/nafdac_logo.png';
      }
 });
+
+// userSchema.methods.blow = function(){
+//     return `My full name is ${this.firstName} ${this.lastName}`
+// }
 
 userSchema.pre('remove', function(next){
     console.log('Gotten in preRemove..');

@@ -5,8 +5,35 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
-        .graph-cont{
+        .add-metric-btn{
+            border-radius: 50%;
+            width:50px;
+            height: 50px;
+        }
+
+        .add-metric-btn:hover{
+            background-color: silver;
+        }
+
+        .row{
+            margin-top:50px;
+        }
+
+        .topCtrl{
+            text-align: right;
+        }
+
+        .ctrl-div{
+            text-align:right;
+        }
+        .graph-contContainer{
+            display: grid;
+            grid-template-columns: 4fr 1fr;
+        }
+        .graph-cont-row{
             display:grid;
             grid-template-columns: 1fr 1fr 1fr 1fr;
             justify-content:center;
@@ -18,29 +45,67 @@
 
 </head>
 <body>
-    <div class="graph-cont">
-
-        <div>
-            <canvas id="myChart" width="50" height="50"></canvas>
+    <div class="topCtrl">
+        <p>
+            <!-- fa-2x -->
+                <button  class="add-metric-btn" onclick = "AddDivSel(['bar','pie','line'], itemSel)"><i class="fa fa-plus fa-lg"></i></button>
+         
+      <p>
+          <select name="itemSel" id="itemSel">
+              <option value='{"labelName":"By StateVal", "queryVal":"state"}'>By State</option>
+              <option>By User</option>
+              <option>By Type</option>
+              <option value='{"labelName":"By Cadre", "queryVal":"cadre"}'>By Cadre</option>
+              <option>By Directorate</option>
+              <option>By Zone</option>
+          </select>
+      </p> 
+        </p>
+    </div>
+    
+    <div class = 'graph-contContainer'>
+        <div class="graph-cont">
+            <div class="graph-cont-row row">
+                <div>
+                    <canvas id="myChart" width="200" height="200"></canvas>
+                </div>
+                <div>
+                    <canvas id="myChart2" width="100" height="100"></canvas>
+                </div>
+        
+                <div>
+                    <canvas id="myChart3" width="100" height="100"></canvas>
+                </div>
+            </div>
+           
         </div>
-        <div>
-            <canvas id="myChart2" width="50" height="50"></canvas>
-        </div>
-
-        <div>
-            <canvas id="myChart3" width="50" height="50"></canvas>
-        </div>
-        <div>
-            <label>Asset Type</label>
-            <select onchange = 'getAssetNumber(this)'>
-               <%uniqueAssetModelItems.forEach(assetTypeItem=>{%>
-                    <option value = '/overview/<%=assetTypeItem.id%>/metrics'><%=assetTypeItem.assetTypeClass%></option>
-                <%})%>
-                <option value = '/overview/all/metrics'>All</option>
-            </select>
+        <div class = 'ctrl-div'>
+            <div class="ctrl-div-row row">
+                <label>Asset Type</label>
+                <select onchange = 'getAssetNumber(this)'>
+                   <%uniqueAssetModelItems.forEach(assetTypeItem=>{%>
+                        <option value = '/overview/<%=assetTypeItem.id%>/metrics'><%=assetTypeItem.assetTypeClass%></option>
+                    <%})%>
+                    <option value = '/overview/all/metrics'>All</option>
+                </select>
+            </div>
         </div>
     </div>
-    <script>
+    
+    <script defer>
+        //grabbing ejs values
+        var ejsVar = {
+            state:<%- JSON.stringify(uniqueStates) %>,
+            cadre: <%- JSON.stringify(uniqueCadres) %>
+        }
+
+        //Grabing Divs
+        var itemSelGrab = document.getElementById('itemSel');
+        var graphContGrab = document.getElementsByClassName('graph-cont')[0];
+        var ctrlDivGrab = document.getElementsByClassName('ctrl-div')[0];
+        var graphContRowGrab = document.getElementsByClassName('graph-cont-row')[0];
+        var ctrlDivRowGrab = document.getElementsByClassName('ctrl-div-row')[0]
+
         var assetObj = {num: [2,3, 20, 13]}
         const ctx = document.getElementById('myChart').getContext('2d');
         
@@ -49,10 +114,14 @@
         
         const ctx3 = document.getElementById('myChart3').getContext('2d');
         var ctxArr = [{chartDiv:ctx, graph:'bar'}, {chartDiv:ctx2, graph:'pie'}, {chartDiv:ctx3, graph:'line'}];
+        var ctxArrObj = {}
+        var ctxArrAll = [];
 
         let myChart3Arr = [];
+        let myChart4Obj = {}
 
     function chartNow (assetObj) {
+        myChart3Arr = [];
         ctxArr.forEach((ctxItem)=>{
 
        let myChart3 = new Chart(ctxItem.chartDiv, {
@@ -90,13 +159,15 @@
             }
         });
         myChart3Arr.push(myChart3);
+        console.log('Pushing first chart')
+        console.log(myChart3Arr);
         
     })
 }
 // chartNow(assetObj);
     let getAsset = new XMLHttpRequest();
     function getAssetNumber(this2){
-        
+        console.log(this2);
         var assetObj = {}
         getAsset.onreadystatechange = function(){
             // var getAsset = (JSON.parse(getAsset.responseJSON));
@@ -116,20 +187,223 @@
                 console.log(Object.keys(assetObj));
                 console.log(Object.values(assetObj));
                 // var assetObj = {type:assets[0].assetType.assetTypeClass, num:[(assets.length)+1]}; 
+                console.log(myChart3Arr)
                 if (myChart3Arr.length){
-                    // alert('Destroying')
-                    myChart3Arr.forEach((myChart3)=>{
-                        myChart3.destroy();
+                     alert('Destroying')
+                     myChart3Arr.forEach((myChart3)=>{
+                         myChart3.destroy();
                     })
                 } 
                 chartNow(assetObj);
             }
-           
+            
         }
-
+        
         getAsset.open("GET", this2.value, true);
         getAsset.send()
     }
+    
+    
+    var thisSelClassName;
+    function getOtherMetric(this2, divNum){
+        console.log(this2);
+        console.log(thisSelClassName == this2.className);
+        
+        ctxArrAll = [];
+        // if (this2.className != thisSelClassName){
+            // alert('Clearing...')
+            // ctxArrObj[this2.className] =[];
+            // }
+            // ctxArrObj[this2.className]
+
+
+            ctxArrObj[this2.className] =[];
+            thisSelClassName = this2.className;
+            
+        var jointClassName = this2.className;
+        var jointDiv = graphContGrab.getElementsByClassName(jointClassName)[0];
+
+        console.log(jointDiv);
+        console.log(jointClassName);
+       console.log(jointDiv.children)
+       console.log(jointDiv.getElementsByTagName('canvas'));
+      var arrJoinDiv = [...jointDiv.getElementsByTagName('canvas')];
+
+      arrJoinDiv.forEach((item, i)=>{
+            // var graphDiv = newGraphContRowGrab.appendChild(document.createElement('div'));
+            // var graphDivCanvas = graphDiv.appendChild(document.createElement('canvas'));
+            var ctxAgain = item.getContext('2d');
+            // graphDiv.innerHTML = item;
+            console.log(ctxAgain);
+            console.log(divNum[i]);
+            var chartDivTypeObj ={
+                chartDiv:ctxAgain,
+                graph:divNum[i]
+            }
+            ctxArrAll.push(chartDivTypeObj);
+            ctxArrObj[this2.className].push(chartDivTypeObj);
+        })
+
+        console.log(this2);
+        var assetObj = {}
+        getAsset.onreadystatechange = function(){
+
+            if(getAsset.readyState == 4 && getAsset.status == 200){
+                console.log(this2);
+                console.log(this2.dataset);
+                var presentItemSelVal = this2.getAttribute('data-sel-name');
+                console.log('This is presentItemSelVal, ', presentItemSelVal);
+                var assets = JSON.parse(getAsset.response);
+                console.log(assets);
+                assets.forEach((arrItem, i)=>{
+                    var itemProp =  (arrItem[presentItemSelVal]);
+                    assetObj[itemProp] = 0;
+                })
+
+                assets.forEach((arrItem, i)=>{
+                    assetObj[arrItem[presentItemSelVal]] = assetObj[arrItem[presentItemSelVal]]+1;
+                })
+                console.log(assetObj);
+                console.log(Object.keys(assetObj));
+                console.log(Object.values(assetObj));
+                console.log('??????????');
+                console.log(myChart4Obj);
+                
+                    
+                    if (myChart4Obj[this2.className].length){
+                        myChart4Obj[this2.className].forEach(myChart4=>{
+                            myChart4.destroy();
+                        })
+                    }
+                
+                
+
+                chartNowAll(assetObj, ctxArrObj[this2.className], this2);
+            }
+           
+        }
+        //alert(this2.options[this2.selectedIndex].label)
+        getAsset.open("GET", `/overview/${this2.value}/${this2.options[this2.selectedIndex].label}/metricOther`, true);
+        getAsset.send()
+    }
+
+    function AddDivSel(divNumber, itemSel){
+        AddDiv(divNumber);
+        AddSel(divNumber, itemSel);
+
+        //get Array for select
+        // var XMLHttpRequestObj = new XMLHttpRequest();
+
+        // XMLHttpRequestObj('GET', ,true)
+        // XMLHttpRequestObj.send();
+        
+    }
+var selDivCounter = 0;
+    function AddDiv(divNum){
+        console.log('adding divs');
+        let newGraphContRowGrab = document.createElement('div');
+        newGraphContRowGrab.setAttribute('class', 'graph-cont-row row divSelectTeam'+ ++selDivCounter)
+        console.log(newGraphContRowGrab);
+        divNum.forEach((item, i)=>{
+            var graphDiv = newGraphContRowGrab.appendChild(document.createElement('div'));
+            var graphDivCanvas = graphDiv.appendChild(document.createElement('canvas'));
+            var ctx = graphDivCanvas.getContext('2d');
+            // graphDiv.innerHTML = item;
+            // var chartDivTypeObj ={
+            //     chartDiv:ctx,
+            //     graph:item
+            // }
+            // ctxArrAll.push(chartDivTypeObj);
+        })
+        // console.log(ctxArrAll);
+        
+        // newGraphContRowGrab.className = "graph-cont-row row";
+        graphContGrab.appendChild(newGraphContRowGrab);
+    }
+
+
+    function AddSel(divNum, itemSel){
+        // var states = ['All', 'Abia', 'Anambra','Kwara', 'Kogi'];
+        
+        console.log(ejsVar);
+        // console.log(ejsVar[states]);
+        console.log('adding sels');
+        let newCtrlDivRowGrab = document.createElement('div');
+        // divNum.forEach((item, i)=>{
+            var label = newCtrlDivRowGrab.appendChild(document.createElement('label'));
+            var selDiv = newCtrlDivRowGrab.appendChild(document.createElement('select'));
+            selDiv.setAttribute('class', 'divSelectTeam'+selDivCounter);
+            selDiv.setAttribute('data-sel-name', JSON.parse(itemSel.value).queryVal);
+            selDiv.onchange = function (){
+                getOtherMetric(this, divNum);
+            }
+            label.innerHTML = JSON.parse(itemSel.value).labelName;
+            
+            ejsVar[JSON.parse(itemSel.value).queryVal].forEach((item, i)=>{
+                console.log(item)
+                selDiv.options[i] = new Option(item);
+                selDiv.options[i].label = item;
+                selDiv.options[i].value = JSON.parse(itemSel.value).queryVal;
+            })
+            selDiv.options[selDiv.options.length] = new Option('All');
+            selDiv.options[selDiv.options.length-1].label = 'All';
+            selDiv.options[selDiv.options.length -1].value =JSON.parse(itemSel.value).queryVal;       
+            newCtrlDivRowGrab.appendChild(selDiv);
+            newCtrlDivRowGrab.className = 'ctrl-div-row row';
+        // });
+        
+        // newGraphContRowGrab.className = "graph-cont-row";
+        ctrlDivGrab.appendChild(newCtrlDivRowGrab);
+        
+        ctxArrObj[selDiv.className] = [];
+        myChart4Obj[selDiv.className] = [];
+    }
+
+
+    function chartNowAll (assetObj, ctxArrAll, this2) {
+        myChart4Obj[this2.className] =[];
+        ctxArrAll.forEach((ctxItem)=>{
+
+       let myChart4 = new Chart(ctxItem.chartDiv, {
+            type: ctxItem.graph,
+            data: {
+                labels: Object.keys(assetObj),
+                datasets: [{
+                    label: '# of Votes',
+                    data: Object.values(assetObj),
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+        myChart4Obj[this2.className].push(myChart4)
+        console.log('Pushing second chart');
+        console.log(myChart4Obj[this2.className]);
+        
+    })
+}
     </script>
    
 </body>

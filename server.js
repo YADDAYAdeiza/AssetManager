@@ -12,6 +12,9 @@ let app = express();
 const http = require('http');
 const https = require('https');
 const methodOverride = require('method-override')
+const bcrypt =  require('bcrypt');
+
+// const userModel = require('models/user.js');
 
 const {v4:uuidV4} = require('uuid');
 var server = require('http').Server(app);
@@ -57,11 +60,24 @@ let assetTypeRoute = require('./routes/assetType.js');
 let contractorRoute = require('./routes/contractor.js');
 let overviewRoute = require('./routes/overview.js');
 let recentRoute = require('./routes/recent.js');
+const passport = require('passport');
+const flash = require ('express-flash');
+const session = require ('express-session');
+ let userCredModel = require('./models/userCred.js');
+ const initializePassport = require('./passport-config');
 
-let userModel = require('./models/user.js');
+ initializePassport(passport,   async(email)=>{
+ let user = await userCredModel.find({email:email});
+ console.log(user);
+ console.log([1,2,3,4]);
+ return user[0];
+
+},  async (id)=>{
+   let user = await userCredModel.find({id:id});
+   return user[0];
+ })
 
 const bodyParser = require('body-parser');
-// const { fstat } = require('fs');
 
 
 
@@ -74,50 +90,120 @@ app.use(layout);
 app.use(methodOverride('_method'));
 app.use(express.static('public'));
 
-app.use('/user', userRoute);
-app.use('/asset', assetRoute);
-app.use('/assetType', assetTypeRoute);
-app.use('/contractor', contractorRoute);
-app.use('/overview', overviewRoute);
 
 app.use('/recent', recentRoute);
 
+app.use(flash());
+app.use(session({
+  secret:process.env.SESSION_SECRET,
+  resave:false,
+  saveUninitialized:false
+}))
+
+app.use(passport.initialize())
+app.use(passport.session())
 
 
 
 // app.use('/user', userRoute);
 
 // var sega= [
-//   {datal:"I love you", model:'alphanumeric'},
-//   {datal: '200', model: "numeric"}
-// ]
-// var segaVar = JSON.stringify(sega);
-
-app.get('/', async (req, res)=>{
+  //   {datal:"I love you", model:'alphanumeric'},
+  //   {datal: '200', model: "numeric"}
+  // ]
+  // var segaVar = JSON.stringify(sega);
+  
+  app.get('/', async (req, res)=>{
+    console.log('This is the user');
     // res.send('Working too')
-    var user;
-    try{
-      user = await userModel.find().sort({dateCreated:'desc'}).limit(3).exec();//775, 780
-    }catch{
-      user = [];
-    }
-
+    
+    
     // QRCode.toDataURL(segaVar, {type:'terminal'}, function(err, url){
-    //   res.render('userform', {code:url, users:user});
+      //   res.render('userform', {code:url, users:user});
     // })
-    res.render('userform', { users:user});//code:url,
+    res.render('landingPage');//code:url,
     //, {msg:'error message goes in here'}
   });
+  
+  app.get('/login', checkNotAutheticated, (req, res)=>{
+    res.render('userform');
+  })
+  
+  app.post('/login', checkNotAutheticated, passport.authenticate('local',{
+    successRedirect:'/user/new',
+    failureRedirect:'/login',
+    failureFlash:true
+  }));
+  
+  
+  app.get('/register', checkNotAutheticated, (req, res)=>{
+    res.render('register');
+    // res.render('landingPage');//code:url,
+  });
+  
+  app.post('/register', checkNotAutheticated, async (req, res)=>{
+    try {
+      const hashedPassword = await bcrypt.hash(req.body.password, 10);
+      const user = new userCredModel({
+        userName:req.body.name,
+        email:req.body.email,
+        password:hashedPassword
+      });
+      console.log(user);
+      await user.save();
+      res.redirect('/login');
+    }catch (e){
+      console.log(e.message)
+      res.redirect('/register');
+    }
+  });
+  
+  app.get('/home', checkAuthenticated, async (req, res)=>{
+    console.log(await req.user);
+    console.log('This is email: ', await req.user.email);
+    console.log(await req.user);
+    res.render('home', {name: await req.user.userName});
+  })
 
+  
+  app.delete('/logout', (req, res, next)=>{
+    req.logOut(function (err){
+      if (err) next(err);
+      res.redirect('/login');
+    });
+  })
+  
+  function checkAuthenticated(req, res, next){
+    if(req.isAuthenticated()){
+      return next()
+    }
+    
+    res.redirect('/login')
+  }
+  
+  function checkNotAutheticated(req, res, next){
+    if (req.isAuthenticated()){
+      return res.redirect('/home')
+    }
+    next();
+  }
+  
+  
+  app.use('/user', checkAuthenticated, userRoute);
+  app.use('/asset', checkAuthenticated, assetRoute);
+  app.use('/assetType', checkAuthenticated, assetTypeRoute);
+  app.use('/contractor', checkAuthenticated, contractorRoute);
+  app.use('/overview', checkAuthenticated, overviewRoute);
+  
 
+  
+  
+  // httpServer.listen(process.env.PORT || 4000);
+  // httpsServer.listen(process.env.PORT || 3000);
+  // app.listen(process.env.PORT || 2000)
 
-
-// httpServer.listen(process.env.PORT || 4000);
-// httpsServer.listen(process.env.PORT || 3000);
-// app.listen(process.env.PORT || 2000)
-
-
-//app.listen(process.env.PORT || 2000);
-
+  
+  //app.listen(process.env.PORT || 2000);
+  
 // module.exports = io;
 //module.exports = "This is going somewhere";

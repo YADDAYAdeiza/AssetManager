@@ -5,9 +5,9 @@
     
     form for search goes in here
     <form method="get" action="/user/index">
-        <p><input type="text" name="userNameSearch"></p>
-        <p><input type="date" name="userDateBeforeSearch"></p>
-        <p><input type="date" name="userDateAfterSearch"></p>
+        <p><input type="text" name="userNameSearch" value = <%=searchParams.userNameSearch%>></p>
+        <p><input type="date" name="userDateBeforeSearch" value = <%=searchParams.userDateBeforeSearch%>></p>
+        <p><input type="date" name="userDateAfterSearch" value = <%=searchParams.userDateAfterSearch%>></p>
         <p><button value="submit">Submit</button></p>
     </form>
     
@@ -15,7 +15,7 @@
         <%= 'There are users' %>
         <%  users.forEach(user=>{%>
             <a href="/user/<%= user.id %>">
-                <p><img height= "100" width="120" src="<%= user.userProfilePic%>"></p>
+                <p><img height= "100" width="120" src="<%= user.userProfilePic%>" alt="<%= user.userProfilePic%>"></p>
             </a>
             <div class="user-name"><%=user.firstName%></div>
     

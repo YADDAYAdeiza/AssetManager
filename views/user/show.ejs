@@ -1,4 +1,11 @@
+<div class = "profileCreatedMsgDivCont">
+   <h1>
+       <p class = 'profileCreatedMsg'>Profile succesfully created!</p>
+   </h1>
+</div>
+
 <div class="user-show-div">
+        
     <div>
         <h2><%=user.firstName%></h2>
 <p><img height= "100" width="120" src="<%= user.userProfilePic%>"></p>
@@ -7,10 +14,31 @@
 <!-- change this href to the populated version of user -->
 <a href="/user/<%=user.id%>/edit">View Asset</a> |
 
+
 <%-include('_userContent', {btnVal:`Asset Pool`})%>
-
 <%-include('../partials/deleteForm', {url:`/user/${user.id}`})%>
+<form id = 'updateForm' method="POST" >
+    <button class = 'btn btn-delete' type="submit">Update</button>
+</form>
 
+<div class="user-assetsOwn-div">Own Assets
+    
+    <% ownAssets.forEach(asset=>{ %>
+        <div class="divContLi" onclick = 'triggerClickCheckbox(this)' data-asset-id="<%=asset.id%>">
+            <li><input type="checkbox" class = 'user-asset-pool-checkbox' style="display:inline; width:10%"><a href="/asset/<%=asset.id%>"><%=asset.assetCode%></a></li>
+        </div>
+        <%})%>
+        
+    </div>
+    <button onclick = "userAssetDeassign(this, 'user-assetsOwn-div')">DeAssign</button>
+    <%-include('_userContent', {btnVal:`Asset Pool`})%> 
+    <form id = 'updateForm' method="POST" >
+        <button class = 'btn btn-delete' type="submit">Update</button>
+    </form>
+    <div class="user-assetsRequested-div">Requistion</div>
+    
+    
+    
 <!-- <div><button id = 'done-btn' disabled='false'>Done</button></div> -->
 
 <%if (assetsByUser.length >0){%>
@@ -22,74 +50,108 @@
     <div id = "assetList" class="assetList">
         <ul class="user-asset-pool">
             <% allAssets.forEach(asset=>{ %>
-                <div style="background-color:yellow;height:60px;margin-bottom:5px" onclick = 'triggerClickCheckbox(this)'>
+                <div class="divContLi" onclick = 'triggerClickCheckbox(this)' data-asset-id="<%=asset.id%>">
                    <li><input type="checkbox" class = 'user-asset-pool-checkbox' style="display:inline; width:10%"><a href="/asset/<%=asset.id%>"><%=asset.assetCode%></a></li>
                 </div>
             <%})%>
         </ul>
     </div>
         
-    <script>
-        let assetListGrab = document.getElementsByClassName('assetList')[0];
-        let userShowDivGrab = document.getElementsByClassName('user-show-div')[0];
+    
+</div>
 
-        let assignShowButtonGrab = document.getElementsByClassName('assignShowButton')[0];
 
-        let userAssetPoolGrab = document.getElementsByClassName('user-asset-pool')[0];
-        let userAssetPoolCheckboxGrab;
-        let userAssetsDivGrab = document.getElementsByClassName('user-assets-div')[0];
-        let doneBtnGrab =  document.getElementsByClassName('done-btn')[0];
+<script defer>
+    let userID = '<%- user.id %>';
+    let profileCreatedMsgGrab = document.getElementsByClassName('profileCreatedMsg')[0];
+    let idObj = {};
+    let updateFormGrab = document.getElementById('updateForm');
+    let assetListGrab = document.getElementsByClassName('assetList')[0];
+    let userShowDivGrab = document.getElementsByClassName('user-show-div')[0];
+
+    let assignShowButtonGrab = document.getElementsByClassName('assignShowButton')[0];
+
+    let userAssetPoolGrab = document.getElementsByClassName('user-asset-pool')[0];
+    let userAssetPoolCheckboxGrab;
+    let assetGrab = document.getElementsByClassName('user-assets-div')[0];
+    let userAssetsOwnDivGrab = document.getElementsByClassName('user-assetsOwn-div')[0];
+    let doneBtnGrab =  document.getElementsByClassName('done-btn')[0];
+    
+    // allAsset.forEach(aAsset => {
+        //     console.log(aAsset);
+        // });
+       
+
+
+        function showAssetList(){
+            userShowDivGrab.classList.toggle('user-show-div3');
+            userShowDivGrab.classList.toggle('user-show-div2');
+            userAssetPoolCheckboxGrab = document.getElementsByClassName('user-asset-pool-checkbox');
+        }
         
-        // allAsset.forEach(aAsset => {
-            //     console.log(aAsset);
-            // });
+        function userAssetAssign(this2){
+            console.log(userID)
+            var obj = {url:`/user/ls`}
+            console.log(obj);
             
-            function showAssetList(){
-                userShowDivGrab.classList.toggle('user-show-div3');
-                userShowDivGrab.classList.toggle('user-show-div2');
-                userAssetPoolCheckboxGrab = document.getElementsByClassName('user-asset-pool-checkbox');
-            }
-            
-            function userAssetAssign(this2){
-                
-                userAssetPoolCheckboxGrab = document.getElementsByClassName('user-asset-pool-checkbox');
-                console.log(userAssetPoolCheckboxGrab);
-                var trueBoxes =  [...userAssetPoolCheckboxGrab].filter(item=>{
-                    return item.checked == true;
-                })
-                console.log(trueBoxes);
-                console.log(userAssetPoolGrab); 
-                trueBoxes.forEach(item=>{
-                    userAssetsDivGrab.appendChild(item.parentNode.parentNode); 
-                })
-
-                if (userAssetsDivGrab.children.length){
-                    doneBtnGrab.classList.toggle('btn-deActivate'); 
-                }
-           }
-
-        function userAssetDeassign(){
-            // console.log()
-            var inputChecks = userAssetsDivGrab.getElementsByClassName('user-asset-pool-checkbox');
-            var trueBoxes =  [...inputChecks].filter(item=>{
+            console.log(assetListGrab);
+            userAssetPoolCheckboxGrab = assetListGrab.getElementsByClassName('user-asset-pool-checkbox');
+            console.log(userAssetPoolCheckboxGrab);
+            var trueBoxes =  [...userAssetPoolCheckboxGrab].filter(item=>{
                 return item.checked == true;
             })
             console.log(trueBoxes);
+            console.log(userAssetPoolGrab);
             trueBoxes.forEach(item=>{
-                userAssetPoolGrab.appendChild(item.parentNode.parentNode); 
+                assetGrab.appendChild(item.parentNode.parentNode); 
             })
-            console.log(userAssetsDivGrab);
-            console.log(userAssetsDivGrab.children.length);
-            if (!userAssetsDivGrab.children.length){
-                    doneBtnGrab.classList.toggle('btn-deActivate'); 
-            }
-        }  
 
-        function triggerClickCheckbox(this2){
+            if (assetGrab.children.length){
+                doneBtnGrab.classList.toggle('btn-deActivate'); 
+            }
+            idObj.userId = userID;
+            getObjectIds(assetGrab);
+            console.log(idObj);
+            updateFormGrab.action = `/user/${JSON.stringify(idObj)}?_method=PUT`;
+       }
+    
+       function getObjectIds(assetDiv){
+        idObj['idArr'] = [];
+           let assetDivGrab = assetDiv.getElementsByClassName('divContLi');
+           [...assetDivGrab].forEach(divItem=>{
+               idObj['idArr'].push(divItem.getAttribute('data-asset-id'));
+           })
+           console.log(idObj)
+       }
+
+    function userAssetDeassign(this2, assetDiv){
+        // console.log()
         console.log(this2);
-           var checkGrab = this2.getElementsByTagName('input')[0];
-           checkGrab.checked = !checkGrab.checked;
+        console.log(assetDiv);
+        assetGrab = document.getElementsByClassName(assetDiv)[0];
+        var inputChecks = assetGrab.getElementsByClassName('user-asset-pool-checkbox');
+        var trueBoxes =  [...inputChecks].filter(item=>{
+            return item.checked == true;
+        })
+        console.log(trueBoxes);
+        trueBoxes.forEach(item=>{
+            userAssetPoolGrab.appendChild(item.parentNode.parentNode); 
+        })
+        console.log(assetGrab);
+        console.log(assetGrab.children.length);
+        if (!assetGrab.children.length){
+                doneBtnGrab.classList.toggle('btn-deActivate'); 
         }
-    </script>
-</div>
+    }  
+
+    function triggerClickCheckbox(this2){
+    console.log(this2);
+       var checkGrab = this2.getElementsByTagName('input')[0];
+       checkGrab.checked = !checkGrab.checked;
+    }
+
+    setTimeout(function(){
+            profileCreatedMsgGrab.style.display = 'none';
+        }, 3000)
+</script>
 

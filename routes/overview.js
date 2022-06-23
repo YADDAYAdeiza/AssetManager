@@ -33,8 +33,11 @@ res.render('overview/national.ejs')
 route.get('/metrics', async (req, res)=>{
     // let uniqueAssetModelItems = await assetTypeModel.find().distinct('assetTypeClass');
     let uniqueAssetModelItems = await assetTypeModel.find({}, '_id, assetTypeClass').exec();
+    let uniqueStates = await userModel.find({}, '_id, state').distinct('state').exec();
+    let uniqueCadres = await userModel.find({}, '_id, cadre').distinct('cadre').exec();
     console.log(uniqueAssetModelItems);
-    res.render('overview/metrics.ejs', {uniqueAssetModelItems});
+    console.log(uniqueStates);
+    res.render('overview/metrics.ejs', {uniqueAssetModelItems, uniqueStates, uniqueCadres});
 })
 
 route.get('/:id/metrics', async(req, res)=>{
@@ -44,8 +47,31 @@ route.get('/:id/metrics', async(req, res)=>{
         if (req.params.id =='all'){
             console.log('*****inside all')
             var asset = await assetModel.find({}, 'assetCode assetType').populate('assetType', 'assetTypeClass').exec();
+            console.log(asset);
         }else{
             var asset = await assetModel.find({assetType:mongoose.Types.ObjectId(req.params.id)}, 'assetCode assetType').populate('assetType', 'assetTypeClass').exec();
+            console.log(asset);
+        }
+        res.send(JSON.stringify(asset));
+    }catch (e){
+        console.log(e);
+    }
+});
+
+route.get('/:id/:jd/metricOther', async(req, res)=>{
+    console.log('Metric: this is overview Other id ', req.params.id)
+    console.log('Metric: this is overview Other jd', req.params.jd)
+    // const asset = await assetModel.find({id:mongoose.Types.ObjectId(req.params.id)}, 'assetCode, assetType').exec();
+    try{
+        if (req.params.jd =='All'){
+            //users with assets
+            console.log('*****inside all')
+            var asset = await userModel.find().where(req.params.id).ne(null).select(`_id, lastName, ${req.params.id}`) //, 'assetCode assetType').populate('assetType', 'assetTypeClass').exec(); //.where('userAsset').ne(null)
+            console.log(asset);
+        }else{
+            //users with specific assets
+            console.log('Not All--');
+            var asset = await userModel.find().where(req.params.id).equals(req.params.jd).select(`_id, lastName, ${req.params.id}`)// {assetType:mongoose.Types.ObjectId(req.params.id)}, 'assetCode assetType').populate('assetType', 'assetTypeClass').exec(); //.where('userAsset').ne(null)
             console.log(asset);
         }
         res.send(JSON.stringify(asset));
