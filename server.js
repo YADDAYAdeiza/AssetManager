@@ -4,9 +4,9 @@ if (process.env.NODE_ENV !=='production'){
   dotEnv.config();
 }
 
-// const { PeerServer } = require('peer');
+const { PeerServer } = require('peer');
 
-// const peerServer = PeerServer({ port: 9000, path: '/assetmanger.herokuapp.com' });
+const peerServer = PeerServer({ port: 9000, path: '/assetmanger.herokuapp.com' });
 
 
 let express = require('express');
@@ -53,7 +53,7 @@ io.on('connection', socket=>{
   })
 
   
-  // server.listen(process.env.PORT || 2000);
+  server.listen(process.env.PORT || 2000);
   
   
 mongoose.connect(process.env.DATABASE_URL, {useNewUrlParser:true }); //play around with this
@@ -216,15 +216,16 @@ app.use(passport.session())
 
   // const http = require('http');
 
-const pServer = http.createServer(app);
-const peerServer = ExpressPeerServer(pServer, {
-  debug: true,
-  path: '/assetmanger.herokuapp.com'
-});
+  //
+// const pServer = http.createServer(app);
+// const peerServer = ExpressPeerServer(pServer, {
+//   debug: true,
+//   path: '/assetmanger.herokuapp.com'
+// });
 
-app.use('/peerjs', peerServer);
+// app.use('/peerjs', peerServer);
 
-pServer.listen(9000)
+// pServer.listen(9000)
   
   
   // httpServer.listen(process.env.PORT || 4000);
