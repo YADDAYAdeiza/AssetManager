@@ -35,7 +35,7 @@ app.get('/audit', (req,res)=>{
     res.redirect(`/audit/${uuidV4()}`)
 })
 
-app.get('/audit/:room', (req,res)=>{
+app.get('/peerjs/:room', (req,res)=>{
     // res.send('Getting room...');
     res.render('audit/room', {roomId:req.params.room})
 })
