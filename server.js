@@ -205,13 +205,26 @@ app.use(passport.session())
   app.use('/overview', checkAuthenticated, overviewRoute);
   
   //
-  const pServer = app.listen(9000);
+  // const pServer = app.listen(9000);
 
-  const peerServer = ExpressPeerServer(pServer, {
-    path: '/assetmanger.herokuapp.com'
-  });
+  // const peerServer = ExpressPeerServer(pServer, {
+  //   path: '/assetmanger.herokuapp.com'
+  // });
 
-  app.use('/peerjs', peerServer);
+  // app.use('/peerjs', peerServer);
+
+
+  const http = require('http');
+
+const pServer = http.createServer(app);
+const peerServer = ExpressPeerServer(pServer, {
+  debug: true,
+  path: '/assetmanger.herokuapp.com'
+});
+
+app.use('/peerjs', peerServer);
+
+pServer.listen(9000)
   
   
   // httpServer.listen(process.env.PORT || 4000);
