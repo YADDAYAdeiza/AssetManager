@@ -63,6 +63,7 @@ route.get('/:id/:jd/metricOther', async(req, res)=>{
     console.log('Metric: this is overview Other jd', req.params.jd)
     // const asset = await assetModel.find({id:mongoose.Types.ObjectId(req.params.id)}, 'assetCode, assetType').exec();
     try{
+
         if (req.params.jd =='All'){
             //users with assets
             console.log('*****inside all')
