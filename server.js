@@ -53,7 +53,7 @@ io.on('connection', socket=>{
   })
 
   
-  server.listen(process.env.PORT || 2000);
+  // server.listen(process.env.PORT || 2000);
   
   
 mongoose.connect(process.env.DATABASE_URL, {useNewUrlParser:true }); //play around with this
