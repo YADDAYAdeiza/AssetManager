@@ -4,12 +4,15 @@ if (process.env.NODE_ENV !=='production'){
   dotEnv.config();
 }
 
-const { PeerServer } = require('peer');
+// const { PeerServer } = require('peer');
 
-const peerServer = PeerServer({ port: 9000, path: '/assetmanger.herokuapp.com' });
+// const peerServer = PeerServer({ port: 9000, path: '/assetmanger.herokuapp.com' });
 
 
 let express = require('express');
+//
+const { ExpressPeerServer } = require('peer');
+//
 let ejs = require('ejs');
 let layout = require('express-ejs-layouts');
 let mongoose = require('mongoose');
@@ -201,7 +204,14 @@ app.use(passport.session())
   app.use('/contractor', checkAuthenticated, contractorRoute);
   app.use('/overview', checkAuthenticated, overviewRoute);
   
+  //
+  const pServer = app.listen(9000);
 
+  const peerServer = ExpressPeerServer(pServer, {
+    path: '/myapp'
+  });
+
+  app.use('/assetmanger.herokuapp.com', peerServer);
   
   
   // httpServer.listen(process.env.PORT || 4000);
