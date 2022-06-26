@@ -208,10 +208,10 @@ app.use(passport.session())
   const pServer = app.listen(9000);
 
   const peerServer = ExpressPeerServer(pServer, {
-    path: '/myapp'
+    path: '/assetmanger.herokuapp.com'
   });
 
-  app.use('/assetmanger.herokuapp.com', peerServer);
+  app.use('/peerjs', peerServer);
   
   
   // httpServer.listen(process.env.PORT || 4000);
