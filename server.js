@@ -1,7 +1,13 @@
 if (process.env.NODE_ENV !=='production'){
   var dotEnv =  require('dotenv');
+
   dotEnv.config();
 }
+
+const { PeerServer } = require('peer');
+
+const peerServer = PeerServer({ port: 9000, path: '/assetmanger.herokuapp.com' });
+
 
 let express = require('express');
 let ejs = require('ejs');
