@@ -60,7 +60,7 @@ let userSchema = new mongoose.Schema({
     },
     userAsset:{
         id:{
-            type:[[mongoose.Schema.ObjectId]],
+            type:[String],
             ref:assetModel,
             required:true
         },

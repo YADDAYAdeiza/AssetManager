@@ -9,7 +9,10 @@ const assetModel = require('../models/asset.js');
 const { rawListeners } = require('../models/assetType.js');
 const { response } = require('express');
 const imageMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
+let userLogModel = require('../models/userLog');
 
+//authentication
+const {adminAuth} = require('../basicAuth');
 
 
 //route.set('layout', 'layouts/layout');
@@ -57,12 +60,20 @@ route.get('/index', async (req, res)=>{
 })
 
 //get the create new form for user
-route.get('/new',  async (req,res)=>{
+route.get('/new', adminAuth, async (req,res)=>{ //adminAuth
     // res.send('What item now');
+    console.log('Within new');
+    console.log(await req.user);
+    console.log(await req.user.authSetting);
+
+    console.log(req.authSetting)
+    // console.log('And this is req');
+    // console.log(req)
     let user = new userModel();
     let msg = {
         message:'Input profile details',
-        class:'green'
+        class:'green',
+        authMsg:{assignShowButtonGrab:'hidePool', auditSubmenuAnchorGrab:'hideAudit'}
     }
     renderNewPage(res, user, msg)
 })
@@ -98,13 +109,14 @@ route.get('/:id', async (req, res)=>{
     var ownAssets=[];
     try {
        const user =await userModel.findById(req.params.id);
-       const asset = await assetModel.find({user:user.id}).limit(6).exec();
+       const asset = await assetModel.find({user:user.id}).exec(); //.limit(10)
        const allAsset = await assetModel.find();
-       
+       const assetTypeDistinct = await assetTypeModel.find().select('assetTypeClass status description').exec();
+       console.log('-----------');
+       console.log(assetTypeDistinct);
+       console.log('End of distinct...')
        user.userAsset.id.forEach(async itemArr=>{
-            itemArr.forEach(async item=>{
-                ownAssets.push(item);
-            })
+                ownAssets.push(itemArr);
         });
 
         const records = await assetModel.find().where('_id').in(ownAssets).select('assetCode assetType status').exec();
@@ -113,7 +125,8 @@ route.get('/:id', async (req, res)=>{
            user:user,
            assetsByUser:asset,
            allAssets:allAsset,
-           ownAssets:records
+           ownAssets:records,
+           assetTypeAll:assetTypeDistinct
        });
 
     }catch (e){
@@ -122,8 +135,34 @@ route.get('/:id', async (req, res)=>{
     }
 });
 
+async function userLogSave(user, assignedAsset, assignment, req){
+    const userLog = new userLogModel({ //we're later getting asset from the form
+        user:user.id,  
+        userAsset:{
+            id:assignedAsset
+        },
+        activity:assignment,
+        assignedBy:req.user.id
+    });
+    console.log('Saving now+++++++++++++++');
+    await userLog.save();
+}
+
+
+// lastName:user.lastName,
+// firstName:user.firstName,
+// email:user.email,
+// state:user.state,
+// date:req.body.createdAt,
+// phone:user.phone,
+// cadre:user.cadre,
+// rank:user.rank,
+// assetType:req.body.assetTypeName
 
 route.put('/:id', async (req,res)=>{
+    console.log(req.query.assignment);
+    console.log('This is req.query');
+    console.log(req.query);
     let user;
     let allAsset;
     let newIdArr = [];
@@ -131,16 +170,41 @@ route.put('/:id', async (req,res)=>{
     console.log(req.method);
     console.log(req.params.id);
     let userAssetArr = JSON.parse(req.params.id);
-    
+    console.log(userAssetArr);
+    console.log(userAssetArr.userId);
+
     try{
         user = await userModel.findById(userAssetArr.userId); //, 'firstName lastName cadre userAsset'
+        // console.log('This is user:');
+        // console.log(user);
+        console.log('Here is user Asset:')
+        console.log(user.userAsset.id)
+        console.log('Here is user idArr:')
+        console.log(userAssetArr.idArr)
         allAsset = await assetModel.find();
-        userAssetArr.idArr.forEach(assetId=>{
-            console.log(assetId);
-            newIdArr.push(assetId)
-        })
-        user.userAsset.id.push(newIdArr);
-        user.save();
+
+        if (req.query.assignment == 'Assign'){
+            console.log('Assign')
+            userAssetArr.idArr.forEach(assetId=>{
+                newIdArr.push(assetId)
+            })
+            newIdArr.forEach(arrItem=>{
+                user.userAsset.id.push(arrItem);
+            })
+        }
+        
+        if (req.query.assignment == 'DeAssign'){
+            console.log('DeAssign')
+            newIdArr = user.userAsset.id.filter(item=>{
+                return userAssetArr.idArr.indexOf(item) != -1
+            }) 
+            user.userAsset.id=newIdArr;
+        }
+        console.log('Here is new arr++++++++++++')
+        console.log(newIdArr);
+
+
+        await user.save();
         msg = {
             message:'User Asset updated!',
             class:'green'
@@ -152,14 +216,16 @@ route.put('/:id', async (req,res)=>{
 
         //     })
         // });
-
-        res.render('user/show', {
-            user:user,
-            assetsByUser:[],
-            allAssets:allAsset,
-            ownAssets:[],
-            msg
-        });
+        
+        userLogSave(user, newIdArr, req.query.assignment, req);
+        res.redirect(`/user/${userAssetArr.userId}`);
+        // res.render('user/show', {
+        //     user:user,
+        //     assetsByUser:[],
+        //     allAssets:allAsset,
+        //     ownAssets:[],
+        //     msg
+        // });
     } catch(e){
         console.log(e.message);
 

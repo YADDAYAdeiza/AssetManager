@@ -58,3 +58,24 @@ transition:  0.4s;
     transform:scale(1.04);
     color:white;
 }
+
+
+/* .hideAudit{
+    display: none;
+} */
+
+
+.divMiniLi button{
+    background-color: white;
+    border: none;
+    transition: all 0.5s;
+    margin-right:5px;
+}
+.divMiniLi:hover button{
+    background-color: silver;
+    border:1px black solid
+}
+
+.divMiniLi:hover li{
+    color:black;
+}

@@ -1,12 +1,11 @@
 if (process.env.NODE_ENV !=='production'){
   var dotEnv =  require('dotenv');
-
   dotEnv.config();
 }
 
-const { PeerServer } = require('peer');
+// const { PeerServer } = require('peer');
 
-const peerServer = PeerServer({ port: 9000, path: '/assetmanger.herokuapp.com' });
+// const peerServer = PeerServer({ port: 9000, path: '/assetmanger.herokuapp.com' });
 
 
 let express = require('express');
@@ -22,6 +21,13 @@ const http = require('http');
 const https = require('https');
 const methodOverride = require('method-override')
 const bcrypt =  require('bcrypt');
+
+//authentication
+let {role} = require('./role.js');
+
+
+
+console.log(role);
 
 // const userModel = require('models/user.js');
 
@@ -52,8 +58,8 @@ io.on('connection', socket=>{
     })
   })
 
-  
-  server.listen(process.env.PORT || 2000);
+
+server.listen(process.env.PORT || 2000);
   
   
 mongoose.connect(process.env.DATABASE_URL, {useNewUrlParser:true }); //play around with this
@@ -82,8 +88,11 @@ const session = require ('express-session');
  return user[0];
 
 },  async (id)=>{
-   let user = await userCredModel.find({id:id});
-   return user[0];
+   let user = await userCredModel.findById(id);
+    console.log('User gotten by id:')
+    console.log(user);
+   console.log('----')
+   return user;
  })
 
 const bodyParser = require('body-parser');
@@ -104,13 +113,13 @@ app.use('/recent', recentRoute);
 
 app.use(flash());
 app.use(session({
-  secret:process.env.SESSION_SECRET,
+  secret:'secret',
   resave:false,
   saveUninitialized:false
-}))
+}));
 
-app.use(passport.initialize())
-app.use(passport.session())
+app.use(passport.initialize());
+app.use(passport.session());
 
 
 
@@ -182,8 +191,10 @@ app.use(passport.session())
     });
   })
   
-  function checkAuthenticated(req, res, next){
+  async function checkAuthenticated(req, res, next){
     if(req.isAuthenticated()){
+      console.log('In authenticated...')
+      console.log(await req.user);
       return next()
     }
     
@@ -217,15 +228,15 @@ app.use(passport.session())
   // const http = require('http');
 
   //
-// const pServer = http.createServer(app);
-// const peerServer = ExpressPeerServer(pServer, {
-//   debug: true,
-//   path: '/assetmanger.herokuapp.com'
-// });
+const pServer = http.createServer(app);
+const peerServer = ExpressPeerServer(pServer, {
+  debug: true,
+  path: '/assetmanger.herokuapp.com'
+});
 
-// app.use('/peerjs', peerServer);
+app.use('/peerjs', peerServer);
 
-// pServer.listen(9000)
+pServer.listen(9000)
   
   
   // httpServer.listen(process.env.PORT || 4000);

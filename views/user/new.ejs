@@ -3,6 +3,8 @@
 </form>
 <p style = "color:<%=msg.class%>"><%=msg.message%></p>
 
+
+
 <form id="regForm" action="/user" method = "post" style="background-color: skyblue;">
 
   <h1>Register User:</h1>
@@ -71,6 +73,22 @@
   </form>
 
   <script defer>
+     var authVar = {
+            auth:<%- JSON.stringify(msg.authMsg) %>
+        }
+
+        // authVar['auth'].forEach(authItem=>{
+        //   console.log(authItem);
+        // })
+
+        
+        console.log('--------')
+        console.log(authVar['auth']);
+        var auditSubmenuAnchorGrab = document.getElementById('auditSubmenuAnchor');
+        
+        auditSubmenuAnchorGrab.classList.add(authVar['auth']['auditSubmenuAnchorGrab']);
+        console.log(auditSubmenuAnchorGrab);
+        
     let objCadre ={
       regCadre:['ROII', 'ROI', 'SRO', 'PRO', 'ACRO', 'CRO', 'AD', 'DD', 'Director'],
       adminCadre:['AOII', 'AOI', 'SAO', 'PAO', 'ACAO', 'CAO', 'AD', 'DD', 'Director'],

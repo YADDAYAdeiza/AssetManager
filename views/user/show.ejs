@@ -30,12 +30,27 @@
         <%})%>
         
     </div>
-    <button onclick = "userAssetDeassign(this, 'user-assetsOwn-div')">DeAssign</button>
+    <button onclick = "userAssetDeassign(this, 'user-assetsOwn-div', 'updateFormOwn')">DeAssign</button>
     <%-include('_userContent', {btnVal:`Asset Pool`})%> 
-    <form id = 'updateForm' method="POST" >
+    <form id = 'updateFormOwn' method="POST" >
         <button class = 'btn btn-delete' type="submit">Update</button>
     </form>
-    <div class="user-assetsRequested-div">Requistion</div>
+    <div class="user-assetsRequested-div">Requisition
+        <select id = 'select-requisition'size="10" multiple="true">
+           <%assetTypeAll.forEach(arrItem=>{%>
+                <option value="<%=arrItem%>"  onclick = "resetSelToOne()"><%=arrItem.assetTypeClass%></option>
+                <% });%>
+        </select>
+        <p>Requisitioned Assets:</p>
+        <div class="assets-requisitioned-div"></div>
+        Qty(Change last): <input type="number" min="1" id = 'qtyRequisitionInpt' value = '1'>
+        <button onclick="addRequisition('assets-requisitioned-div')">Add Asset</button>
+        <button onclick="resetRequisition()">Reset</button>
+
+        <div>
+            <ul id = 'ulRequisition'></ul>
+        </div>
+    </div>
     
     
     
@@ -62,6 +77,12 @@
 
 
 <script defer>
+
+
+        // authVar['auth'].forEach(authItem=>{
+        //   console.log(authItem);
+        // })
+
     let userID = '<%- user.id %>';
     let profileCreatedMsgGrab = document.getElementsByClassName('profileCreatedMsg')[0];
     let idObj = {};
@@ -76,20 +97,25 @@
     let assetGrab = document.getElementsByClassName('user-assets-div')[0];
     let userAssetsOwnDivGrab = document.getElementsByClassName('user-assetsOwn-div')[0];
     let doneBtnGrab =  document.getElementsByClassName('done-btn')[0];
+
+    var lastAssignmentBtn;
+
     
     // allAsset.forEach(aAsset => {
         //     console.log(aAsset);
         // });
        
-
+//Auth
+// assignShowButtonGrab.classList.add(authVar['auth']['assignShowButtonGrab']);
 
         function showAssetList(){
             userShowDivGrab.classList.toggle('user-show-div3');
             userShowDivGrab.classList.toggle('user-show-div2');
             userAssetPoolCheckboxGrab = document.getElementsByClassName('user-asset-pool-checkbox');
         }
-        
         function userAssetAssign(this2){
+            alert(this2.innerHTML);
+            lastAssignmentBtn = this2.value;
             console.log(userID)
             var obj = {url:`/user/ls`}
             console.log(obj);
@@ -112,7 +138,9 @@
             idObj.userId = userID;
             getObjectIds(assetGrab);
             console.log(idObj);
-            updateFormGrab.action = `/user/${JSON.stringify(idObj)}?_method=PUT`;
+            updateFormGrab.action = `/user/${JSON.stringify(idObj)}?_method=PUT&assignment=${this2.innerHTML}`;
+            console.log(updateFormGrab.action);
+
        }
     
        function getObjectIds(assetDiv){
@@ -124,8 +152,8 @@
            console.log(idObj)
        }
 
-    function userAssetDeassign(this2, assetDiv){
-        // console.log()
+    function userAssetDeassign(this2, assetDiv, updateForm){
+        alert(this2.innerHTML);
         console.log(this2);
         console.log(assetDiv);
         assetGrab = document.getElementsByClassName(assetDiv)[0];
@@ -142,6 +170,12 @@
         if (!assetGrab.children.length){
                 doneBtnGrab.classList.toggle('btn-deActivate'); 
         }
+        idObj.userId = userID;
+            getObjectIds(assetGrab);
+            console.log(idObj);
+            console.log(document.getElementById(updateForm));
+        document.getElementById(updateForm).action = `/user/${JSON.stringify(idObj)}?_method=PUT&assignment=${this2.innerHTML}`;
+        console.log(updateFormGrab.action);
     }  
 
     function triggerClickCheckbox(this2){
@@ -153,5 +187,88 @@
     setTimeout(function(){
             profileCreatedMsgGrab.style.display = 'none';
         }, 3000)
+
+    var assetsRequisitionedDiv;
+    var qtyRequisitionInptGrab = document.getElementById('qtyRequisitionInpt');
+    var ulRequisitionGrab = document.getElementById('ulRequisition');
+    var selectRequisitionGrab;
+    var objRequisition;
+
+    objRequisition = {}
+    function addRequisition(divId){
+        console.log(objRequisition);
+        selectRequisitionGrab = document.getElementById('select-requisition').selectedOptions;
+        console.log(selectRequisitionGrab);
+        assignUlElement(selectRequisitionGrab, divId);
+               
+        //assetsRequisitionedDiv.appendChild(document.createElement('ul'));
+    }
+
+    function assignUlElement(selectRequisitionGrab2, divId){
+        [...selectRequisitionGrab2].forEach(selItem=>{
+            if (objRequisition[selItem.innerHTML]){
+                console.log('Exists');
+                objRequisition[selItem.innerHTML] =  +objRequisition[selItem.innerHTML] + parseInt(qtyRequisitionInptGrab.value);
+            }else{
+                objRequisition[selItem.innerHTML] = qtyRequisitionInptGrab.value;
+            }
+            // objRequisition[selItem.innerHTML] = (objRequisition[selItem.innerHTML] != undefined) ? objRequisition[selItem.innerHTML] + qtyRequisitionInptGrab.value: qtyRequisitionInptGrab.value;
+        });
+        console.log('@@@@@@@@@@@');
+        console.log(objRequisition);
+        assetsRequisitionedDiv = document.getElementById(divId);
+        ulRequisitionGrab.innerHTML = '';
+        Object.keys(objRequisition).forEach(arrItem=>{
+            var divMiniCont = document.createElement('div');
+                divMiniCont.setAttribute('class', 'divMiniLi')
+            var liElm = document.createElement('li');
+                liElm.style.display = 'inline'
+            var btnPlus = document.createElement('button');
+            var btnPlus = document.createElement('button');
+                btnPlus.innerHTML = '+';
+                btnPlus.onclick = function(){
+                    changeObjRequisition(this);
+                }
+            var btnMinus = document.createElement('button')
+                btnMinus.onclick = function(){
+                    changeObjRequisition(this);
+                }
+                btnMinus.innerHTML = '-';
+            liElm.innerHTML = arrItem +'('+objRequisition[arrItem]+')';
+            divMiniCont.appendChild(btnMinus);
+            divMiniCont.appendChild(btnPlus);
+            divMiniCont.appendChild(liElm);
+            ulRequisitionGrab.appendChild(divMiniCont);
+            // ulRequisitionGrab.appendChild(liElm);
+        })
+    }
+
+    function resetRequisition(){
+        objRequisition = {};
+    }
+
+    function resetSelToOne(){
+        qtyRequisitionInptGrab.value = 1;
+    }
+
+    function changeObjRequisition(this2){
+        qtyRequisitionInptGrab.value = 0;
+        if (this2.innerHTML == '+') {
+            // alert('Adding');
+            var liVal = this2.parentNode.getElementsByTagName('li')[0].innerHTML
+            liVal = liVal.slice(0, liVal.indexOf('('));
+            objRequisition[liVal] = +(objRequisition[liVal]) + 1;
+            console.log(objRequisition);
+            assignUlElement(selectRequisitionGrab)
+        }
+        if (this2.innerHTML == '-') {
+            // alert('Subtracting');
+            var liVal = this2.parentNode.getElementsByTagName('li')[0].innerHTML
+            liVal = liVal.slice(0, liVal.indexOf('('));
+            objRequisition[liVal] =  +(objRequisition[liVal]) - 1;
+            console.log(objRequisition);
+            assignUlElement(selectRequisitionGrab)
+        }
+    }
 </script>
 
