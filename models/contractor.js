@@ -4,11 +4,13 @@ mongoose.connect('mongodb://localhost/AssetManager');
 let contractorSchema = new mongoose.Schema({
     contractorCompanyName:{
         type:String,
-        required:true
+        required:true,
+        default:'Bla Company Ltd.'
     },
     contractorAddress:{
         type:String,
         required:true,
+        default:'91, Abula Street'
     },
     contractorClass:{
         type:String,
@@ -41,7 +43,24 @@ let contractorSchema = new mongoose.Schema({
     contractorDescription:{
         type:String,
         default:'Details of the contractor goes in here'
+    },
+    contractorFile:{
+        path:{
+            type:String,
+            required:true
+        },
+        filename:{
+            type:String,
+            required:true
+        }
+    },
+    contractorPw:String,
+    downloadCount:{
+        type:Number,
+        required:true,
+        default:0
     }
+
 });
 
 contractorSchema.pre('remove', function(next){

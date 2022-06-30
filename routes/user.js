@@ -15,6 +15,9 @@ let userLogModel = require('../models/userLog');
 const {adminAuth} = require('../basicAuth');
 
 
+
+
+
 //route.set('layout', 'layouts/layout');
 
 route.use(express.static('public'));
@@ -135,15 +138,29 @@ route.get('/:id', async (req, res)=>{
     }
 });
 
-async function userLogSave(user, assignedAsset, assignment, req){
+async function userLogSave(user, list, assignment, req){
     const userLog = new userLogModel({ //we're later getting asset from the form
-        user:user.id,  
-        userAsset:{
-            id:assignedAsset
-        },
+        user:user.id,
         activity:assignment,
         assignedBy:req.user.id
     });
+
+    switch(assignment){
+        case 'Requisition':
+            console.log('Requisition!')
+            userLog.userRequisition = list;
+            break;
+            case 'Assign':
+            console.log('Assign')
+            userLog.userAsset.id = list;
+            break;
+            case 'DeAssign':
+            console.log('DeAssign')
+            userLog.userAsset.id = list;
+            break;
+        default:
+        console.log('Does not fit');
+    }
     console.log('Saving now+++++++++++++++');
     await userLog.save();
 }
@@ -219,18 +236,28 @@ route.put('/:id', async (req,res)=>{
         
         userLogSave(user, newIdArr, req.query.assignment, req);
         res.redirect(`/user/${userAssetArr.userId}`);
-        // res.render('user/show', {
-        //     user:user,
-        //     assetsByUser:[],
-        //     allAssets:allAsset,
-        //     ownAssets:[],
-        //     msg
-        // });
     } catch(e){
         console.log(e.message);
 
     }
 });
+
+route.put('/requisition/:id', async (req, res)=>{
+    console.log(req.query.assignment);
+    let assetRequisitioned = JSON.parse(req.params.id);
+    let userId = req.query.userId;
+    try{
+        let user = await userModel.findById(userId).select('firstName lastName cadre rank');
+        console.log(user);
+        user.userRequisition = assetRequisitioned;
+        await user.save();
+        userLogSave(user, assetRequisitioned, req.query.assignment, req);
+        res.redirect(`/user/${user.id}`);
+    } catch (e){
+        console.error(e);
+    }
+
+})
 
 route.delete('/:id', async(req,res)=>{
     let user;

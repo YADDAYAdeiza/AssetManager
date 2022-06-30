@@ -4,6 +4,11 @@ let ejs = require('ejs');
 // let layout = require('express-ejs-layouts');
 
 let contractorModel = require('../models/contractor');
+const multer = require('multer');
+const upload = multer({
+    dest:'upload'
+})
+const bcrypt = require('bcrypt');
 
 const imageMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
 
@@ -25,6 +30,49 @@ route.use(express.static('public'));
 //    var da =  await assetTypeModel.find({}).where('assetClass').equals(req.query.selAssType);
 //     res.json({'done': da[da.length-1].assetTypeCode});
 // })
+
+route.route('/download/:id').get(handleDownload).post(handleDownload);
+// route.get('/download/:id', handleDownload);
+// route.post('/download/:id', handleDownload);
+
+async function handleDownload(req, res){
+    let contractor = await contractorModel.findById(req.params.id);
+
+    if (contractor.contractorPw != null){
+        if (req.body.fPassword == null){
+            console.log('Entered here...');
+            res.render('contractor/show.ejs', {contractor, fileLink:`${req.headers.origin}/contractor/download/${contractor.id}`, pwBool:true});
+            return;
+    // res.render()
+        }
+        if (!(await bcrypt.compare(req.body.fPassword, contractor.contractorPw))){
+            console.log('Comparing...not equal');
+            res.render('contractor/show.ejs', {contractor, fileLink:`${req.headers.origin}/contractor/download/${contractor.id}`, pwBool:true, pWError:true});
+            return
+        }
+    }
+
+    contractor.downloadCount++;
+    res.download(contractor.contractorFile.path, contractor.contractorFile.filename);
+    // res.send('Downloading...')
+}
+
+route.put('/uploadFile/:id', upload.single('file'), async (req, res)=>{
+    // res.send(req.file.originalname);
+    console.log('This is contractor id: ', req.params.id)
+    let contractor = await contractorModel.findById(req.params.id);
+    contractor.contractorFile.path = req.file.path;
+    contractor.contractorFile.filename =req.file.originalname;
+
+
+    if (req.body.fPassword !=null && req.body.fPassword != ""){
+        contractor.contractorPw = await bcrypt.hash(req.body.fPassword, 10);
+    }
+    await contractor.save();
+
+    res.render('contractor/show.ejs', {contractor, fileLink:`${req.headers.origin}/contractor/download/${contractor.id}`});
+
+});
 
 route.get('/index', async (req, res)=>{
     //  res.send('List all contractors...')

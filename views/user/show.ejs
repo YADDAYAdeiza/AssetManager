@@ -38,18 +38,23 @@
     <div class="user-assetsRequested-div">Requisition
         <select id = 'select-requisition'size="10" multiple="true">
            <%assetTypeAll.forEach(arrItem=>{%>
-                <option value="<%=arrItem%>"  onclick = "resetSelToOne()"><%=arrItem.assetTypeClass%></option>
+            <option value="<%=arrItem%>"  onclick = "resetSelToOne()"><%=arrItem.assetTypeClass%></option>
                 <% });%>
         </select>
         <p>Requisitioned Assets:</p>
         <div class="assets-requisitioned-div"></div>
         Qty(Change last): <input type="number" min="1" id = 'qtyRequisitionInpt' value = '1'>
-        <button onclick="addRequisition('assets-requisitioned-div')">Add Asset</button>
+        <button onclick="addRequisition()">Add Asset</button>
         <button onclick="resetRequisition()">Reset</button>
 
+        
         <div>
             <ul id = 'ulRequisition'></ul>
         </div>
+        <form id = 'updateFormRequistion' method="POST" >
+            <button class = 'btn btn-delete' type="submit">Update</button>
+        </form>
+
     </div>
     
     
@@ -79,10 +84,11 @@
 <script defer>
 
 
-        // authVar['auth'].forEach(authItem=>{
-        //   console.log(authItem);
-        // })
+      
 
+    let serverUserUserRequisition = '<%- JSON.stringify(user.userRequisition)%>';
+
+    
     let userID = '<%- user.id %>';
     let profileCreatedMsgGrab = document.getElementsByClassName('profileCreatedMsg')[0];
     let idObj = {};
@@ -99,6 +105,9 @@
     let doneBtnGrab =  document.getElementsByClassName('done-btn')[0];
 
     var lastAssignmentBtn;
+    let updateFormRequistionGrab = document.getElementById('updateFormRequistion');
+
+    let divId = document.getElementById('assets-requisitioned-div');
 
     
     // allAsset.forEach(aAsset => {
@@ -192,25 +201,30 @@
     var qtyRequisitionInptGrab = document.getElementById('qtyRequisitionInpt');
     var ulRequisitionGrab = document.getElementById('ulRequisition');
     var selectRequisitionGrab;
-    var objRequisition;
+    var objRequisition = {};
+    console.log(serverUserUserRequisition);
+    if (serverUserUserRequisition){
+        objRequisition = JSON.parse(serverUserUserRequisition);
+        addRequisition();
+    }
 
-    objRequisition = {}
-    function addRequisition(divId){
+    // objRequisition = {}
+    function addRequisition(){
         console.log(objRequisition);
         selectRequisitionGrab = document.getElementById('select-requisition').selectedOptions;
         console.log(selectRequisitionGrab);
-        assignUlElement(selectRequisitionGrab, divId);
+        assignUlElement(selectRequisitionGrab, this);
                
         //assetsRequisitionedDiv.appendChild(document.createElement('ul'));
     }
 
-    function assignUlElement(selectRequisitionGrab2, divId){
+    function assignUlElement(selectRequisitionGrab2, this2){
         [...selectRequisitionGrab2].forEach(selItem=>{
             if (objRequisition[selItem.innerHTML]){
                 console.log('Exists');
                 objRequisition[selItem.innerHTML] =  +objRequisition[selItem.innerHTML] + parseInt(qtyRequisitionInptGrab.value);
             }else{
-                objRequisition[selItem.innerHTML] = qtyRequisitionInptGrab.value;
+                objRequisition[selItem.innerHTML] = +qtyRequisitionInptGrab.value;
             }
             // objRequisition[selItem.innerHTML] = (objRequisition[selItem.innerHTML] != undefined) ? objRequisition[selItem.innerHTML] + qtyRequisitionInptGrab.value: qtyRequisitionInptGrab.value;
         });
@@ -239,7 +253,12 @@
             divMiniCont.appendChild(btnPlus);
             divMiniCont.appendChild(liElm);
             ulRequisitionGrab.appendChild(divMiniCont);
-            // ulRequisitionGrab.appendChild(liElm);
+            
+            //set FORM action
+            console.log('Use in action, ', this2.innerHTML);
+            console.log('The String, ', JSON.stringify(objRequisition));
+            updateFormRequistionGrab.action = `/user/requisition/${JSON.stringify(objRequisition)}?_method=PUT&userId=${userID}&assignment=Requisition`;
+
         })
     }
 
@@ -259,7 +278,7 @@
             liVal = liVal.slice(0, liVal.indexOf('('));
             objRequisition[liVal] = +(objRequisition[liVal]) + 1;
             console.log(objRequisition);
-            assignUlElement(selectRequisitionGrab)
+            assignUlElement(selectRequisitionGrab, this2)
         }
         if (this2.innerHTML == '-') {
             // alert('Subtracting');
@@ -267,7 +286,7 @@
             liVal = liVal.slice(0, liVal.indexOf('('));
             objRequisition[liVal] =  +(objRequisition[liVal]) - 1;
             console.log(objRequisition);
-            assignUlElement(selectRequisitionGrab)
+            assignUlElement(selectRequisitionGrab, this2)
         }
     }
 </script>

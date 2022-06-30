@@ -15,3 +15,42 @@
             <p>There was an error showing the contractor</p>
         <a href="/contractor/index">Go back to Contractor List</a>
         <%}%>
+        
+        
+        <%if(locals.fileLink !=null){%>
+            <div style="margin-bottom: 1rem;">
+                Your file is uploaded
+                <a href="<%=locals.fileLink%>"><%=locals.fileLink%></a>
+            </div>
+        <%}%>
+        <div>
+            <form method ="POST" action="/contractor/uploadFile/<%= contractor.id %>?_method=PUT" enctype="multipart/form-data" style="display:grid;gap:0.5rem;grid-template-columns:1fr 4fr;margin: 0 auto;">
+                <label for="file">File</label>
+                <input type="file" name="file" id="file">
+                <label for="fPassword">Password</label>
+                <input type="password" name="fPassword" id="fPassword">
+                <button style="grid-column: span 2;">Upload</button>
+            </form>
+        </div>
+
+        <div>
+            <a href="/contractor/download">Download</a>
+        </div>
+
+        <div>
+
+            <%if(locals.pWError){%>
+                <div style="margin-bottom: 1rem;color:red">
+                    Incorrect password
+                </div>
+            <%}%>
+            
+           <% if(locals.pwBool){%>
+               <% console.log('pwBool is true');%>
+               <form method ="POST" action="/contractor/download/<%= contractor.id %>" style="display:grid;gap:0.5rem;grid-template-columns:1fr 4fr;margin: 0 auto;">
+                <label for="fPassword">Password</label>
+                <input type="password" id="fPassword" name="fPassword" placeholder="Input password">
+                <button style="grid-column: span 2;">Download</button>
+            </form>
+            <% }%>
+        </div>

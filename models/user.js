@@ -70,6 +70,9 @@ let userSchema = new mongoose.Schema({
                 return Date.now()
             }
         }
+    },
+    userRequisition:{
+        type:Object
     }
     
 });

@@ -33,6 +33,9 @@ let userLogSchema = new mongoose.Schema({
             required:true
         }
     },
+    userRequisition:{
+        type:Object
+    },
     assignedBy:{
         type:mongoose.Schema.Types.ObjectId,
         required:true,
