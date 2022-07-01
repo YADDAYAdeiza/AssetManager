@@ -25,7 +25,7 @@
         .topCtrl{
             text-align: right;
         }
-        
+
         .graph-cont{
             display: grid;
             align-items: end;
@@ -67,7 +67,7 @@
         <p>
             <!-- fa-2x -->
                 <button  class="add-metric-btn" onclick = "AddDivSel(['bar','pie','line'], itemSel)"><i class="fa fa-plus fa-lg"></i></button>
-         
+
       <p>
           <select name="itemSel" id="itemSel">
               <option value='{"labelName":"By StateVal", "queryVal":"state"}'>By State</option>
@@ -77,10 +77,10 @@
               <option>By Directorate</option>
               <option>By Zone</option>
           </select>
-      </p> 
+      </p>
         </p>
     </div>
-    
+
     <div class = 'graph-contContainer'>
         <div class="graph-cont">
             <div class="graph-cont-row row">
@@ -90,20 +90,27 @@
                 <div>
                     <canvas id="myChart2" width="100" height="100"></canvas>
                 </div>
-        
+
                 <div>
                     <canvas id="myChart3" width="100" height="100"></canvas>
                 </div>
             </div>
-           
+
         </div>
         <div class = 'ctrl-div'>
             <div class="ctrl-div-row row">
-                <label>Asset Type</label>
-                <input type="checkbox" class="dependCheck"/>
-                <select onchange = 'getAssetNumber(this)'>
+                
+                <input type="checkbox" class="dependCheck" value="assetAssigned" id = 'assetAssigned' onclick="getAssetNumber(assetSel)"/> <label for="assetAssigned">Total Assets Assigned</label>
+                <label for="requisition">Requisition</label>
+                <input type="checkbox" class="dependCheck" value="requisition" id = 'requisition' onclick="getAssetNumber(assetSel)"/>
+                
+                <label for="total">Asset Type</label>
+                <input type="checkbox" class="dependCheck" value="total" id = 'total' onclick="getAssetNumber(assetSel)"/>
+
+                <select id = 'assetSel' onchange = 'getAssetNumber(this)'>
                    <%uniqueAssetModelItems.forEach(assetTypeItem=>{%>
-                        <option value = '/overview/<%=assetTypeItem.id%>/metrics'><%=assetTypeItem.assetTypeClass%></option>
+        assetType
+                        <option value = '/overview/<%=assetTypeItem.id%>/metrics?assetId=<%=assetTypeItem.id%>'><%=assetTypeItem.assetTypeClass%></option>
                     <%})%>
                     <option value = '/overview/all/metrics'>All</option>
                 </select>
@@ -112,7 +119,7 @@
     </div>
 
     <button type="button" id = "downloadPdf"  onclick="demoFromHTML()">Download PDF</button>
-    
+
     <script defer>
         //grabbing ejs values
         var ejsVar = {
@@ -129,10 +136,10 @@
 
         var assetObj = {num: [2,3, 20, 13]}
         const ctx = document.getElementById('myChart').getContext('2d');
-        
-        
+
+
         const ctx2 = document.getElementById('myChart2').getContext('2d');
-        
+
         const ctx3 = document.getElementById('myChart3').getContext('2d');
         var ctxArr = [{chartDiv:ctx, graph:'bar'}, {chartDiv:ctx2, graph:'pie'}, {chartDiv:ctx3, graph:'line'}];
         var ctxArrObj = {}
@@ -185,7 +192,7 @@
         myChart3Arr.push(myChart3);
         console.log('Pushing first chart')
         console.log(myChart3Arr);
-        
+
     })
 }
 // chartNow(assetObj);
@@ -196,38 +203,62 @@
         getAsset.onreadystatechange = function(){
             // var getAsset = (JSON.parse(getAsset.responseJSON));
             if(getAsset.readyState == 4 && getAsset.status == 200){
-                var assets = JSON.parse(getAsset.response);
-                console.log(assets);
-                assets.forEach((arrItem, i)=>{
+                var assetObjServer = JSON.parse(getAsset.response);
+                console.log(assetObjServer);
+                assetObjServer.asset.forEach((arrItem, i)=>{
                     console.log(arrItem.assetType.assetTypeClass);
                     var itemProp =  (arrItem.assetType['assetTypeClass']);
                     assetObj[itemProp] = 0;
                 })
 
-                assets.forEach((arrItem, i)=>{
+                if (total.checked){
+                    assetObj[total.value] = 0
+                }
+
+                if (requisition.checked){
+                    assetObj[requisition.value] = 0
+                }
+                if (assetAssigned.checked){
+                    assetObj[assetAssigned.value] = 0
+                }
+
+                
+                assetObjServer.asset.forEach((arrItem, i)=>{
                     assetObj[arrItem.assetType.assetTypeClass] = assetObj[arrItem.assetType.assetTypeClass]+1;
                 })
+
+                if (total.checked){
+                    assetObj[total.value] =  assetObjServer[total.value];
+                }
+
+                if (requisition.checked){
+                    assetObj[requisition.value] = assetObjServer[requisition.value];
+                }
+                if (assetAssigned.checked){
+                    assetObj[assetAssigned.value] = assetObjServer[assetAssigned.value];
+                }
+                
                 console.log(assetObj);
                 console.log(Object.keys(assetObj));
                 console.log(Object.values(assetObj));
-                // var assetObj = {type:assets[0].assetType.assetTypeClass, num:[(assets.length)+1]}; 
+                // var assetObj = {type:assets[0].assetType.assetTypeClass, num:[(assets.length)+1]};
                 console.log(myChart3Arr)
                 if (myChart3Arr.length){
-                     alert('Destroying')
                      myChart3Arr.forEach((myChart3)=>{
                          myChart3.destroy();
                     })
-                } 
+                }
                 chartNow(assetObj);
             }
-            
+
         }
-        
+
+        // getAsset.open("GET", this2.value, true);
         getAsset.open("GET", this2.value, true);
         getAsset.send()
     }
-    
-    
+
+
     var thisSelClassName;
     function getOtherMetric(this2, divNum){
         var ctrlDivGrabNow = this2.parentNode.parentNode; //ie. ctrl-div
@@ -254,10 +285,10 @@
         selectElementArr.forEach(sel=>{
             console.log(sel.value);
         })
-    
+
         console.log(this2);
         console.log(thisSelClassName == this2.className);
-        
+
         ctxArrAll = [];
         // if (this2.className != thisSelClassName){
             // alert('Clearing...')
@@ -268,7 +299,7 @@
 
             ctxArrObj[this2.className] =[];
             thisSelClassName = this2.className;
-            
+
         var jointClassName = this2.className;
         var jointDiv = graphContGrab.getElementsByClassName(jointClassName)[0];
 
@@ -317,19 +348,19 @@
                 console.log(Object.values(assetObj));
                 console.log('??????????');
                 console.log(myChart4Obj);
-                
-                    
+
+
                     if (myChart4Obj[this2.className].length){
                         myChart4Obj[this2.className].forEach(myChart4=>{
                             myChart4.destroy();
                         })
                     }
-                
-                
+
+
 
                 chartNowAll(assetObj, ctxArrObj[this2.className], this2);
             }
-           
+
         }
         //alert(this2.options[this2.selectedIndex].label)
         getAsset.open("GET", `/overview/${this2.value}/${this2.options[this2.selectedIndex].label}/metricOther`, true);
@@ -345,7 +376,7 @@
 
         // XMLHttpRequestObj('GET', ,true)
         // XMLHttpRequestObj.send();
-        
+
     }
 var selDivCounter = 0;
     function AddDiv(divNum){
@@ -367,7 +398,7 @@ var selDivCounter = 0;
             // ctxArrAll.push(chartDivTypeObj);
         })
         // console.log(ctxArrAll);
-        
+
         // newGraphContRowGrab.className = "graph-cont-row row";
         graphContGrab.appendChild(newGraphContRowGrab);
     }
@@ -375,7 +406,7 @@ var selDivCounter = 0;
 
     function AddSel(divNum, itemSel){
         // var states = ['All', 'Abia', 'Anambra','Kwara', 'Kogi'];
-        
+
         console.log(ejsVar);
         // console.log(ejsVar[states]);
         console.log('adding sels');
@@ -392,8 +423,9 @@ var selDivCounter = 0;
             var checkDiv = newCtrlDivRowGrab.appendChild(document.createElement('input'));
             checkDiv.setAttribute('type', 'checkbox');
             checkDiv.setAttribute('class', 'dependCheck');
-            
-            
+            checkDiv.setAttribute('value', 'total');
+
+
             ejsVar[JSON.parse(itemSel.value).queryVal].forEach((item, i)=>{
                 console.log(item)
                 selDiv.options[i] = new Option(item);
@@ -402,14 +434,14 @@ var selDivCounter = 0;
             })
             selDiv.options[selDiv.options.length] = new Option('All');
             selDiv.options[selDiv.options.length-1].label = 'All';
-            selDiv.options[selDiv.options.length -1].value =JSON.parse(itemSel.value).queryVal;       
+            selDiv.options[selDiv.options.length -1].value =JSON.parse(itemSel.value).queryVal;
             newCtrlDivRowGrab.appendChild(selDiv);
             newCtrlDivRowGrab.className = 'ctrl-div-row row';
         // });
-        
+
         // newGraphContRowGrab.className = "graph-cont-row";
         ctrlDivGrab.appendChild(newCtrlDivRowGrab);
-        
+
         ctxArrObj[selDiv.className] = [];
         myChart4Obj[selDiv.className] = [];
     }
@@ -456,7 +488,7 @@ var selDivCounter = 0;
         myChart4Obj[this2.className].push(myChart4)
         console.log('Pushing second chart');
         console.log(myChart4Obj[this2.className]);
-        
+
     })
 }
 
@@ -466,9 +498,9 @@ function demoFromHTML() {
         // to an actual DOM element from which the text will be scraped.
         // source = $('#content')[0];
             source = document.getElementById('myChart');
-        // we support special element handlers. Register them with jQuery-style 
+        // we support special element handlers. Register them with jQuery-style
         // ID selector for either ID or node name. ("#iAmID", "div", "span" etc.)
-        // There is no support for any other type of selectors 
+        // There is no support for any other type of selectors
         // (class, of compound) at this time.
         specialElementHandlers = {
             // element with id of "bypass" - jQuery style selector
@@ -494,7 +526,7 @@ function demoFromHTML() {
             },
 
             function (dispose) {
-                // dispose: object with X, Y of the last line add to the PDF 
+                // dispose: object with X, Y of the last line add to the PDF
                 //          this allow the insertion of new lines after html
                 pdf.save('Test.pdf');
             }, margins
@@ -512,6 +544,6 @@ doc.fromHTML(elementHTML, 15, 15, {
 });
     }
     </script>
-   
+
 </body>
 </html>

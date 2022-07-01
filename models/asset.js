@@ -43,6 +43,9 @@ let assetSchema = new mongoose.Schema({
     assetDescription:{
         type:String,
         default:"Description, like date of purchase, history, blah blah, goes in here"
+    },
+    allocationStatus:{
+        type:Boolean
     }
 });
 

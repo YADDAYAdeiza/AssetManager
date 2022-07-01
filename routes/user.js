@@ -113,7 +113,7 @@ route.get('/:id', async (req, res)=>{
     try {
        const user =await userModel.findById(req.params.id);
        const asset = await assetModel.find({user:user.id}).exec(); //.limit(10)
-       const allAsset = await assetModel.find();
+       const allAsset = await (await assetModel.find().where('allocationStatus').ne(true));
        const assetTypeDistinct = await assetTypeModel.find().select('assetTypeClass status description').exec();
        console.log('-----------');
        console.log(assetTypeDistinct);
@@ -181,6 +181,7 @@ route.put('/:id', async (req,res)=>{
     console.log('This is req.query');
     console.log(req.query);
     let user;
+    let affectedAssets;
     let allAsset;
     let newIdArr = [];
     let msg = {};
@@ -199,6 +200,8 @@ route.put('/:id', async (req,res)=>{
         console.log('Here is user idArr:')
         console.log(userAssetArr.idArr)
         allAsset = await assetModel.find();
+        
+        affectedAssets = await assetModel.find().where('_id').in(userAssetArr.idArr).select('assetType status allocationStatus').exec();
 
         if (req.query.assignment == 'Assign'){
             console.log('Assign')
@@ -208,6 +211,12 @@ route.put('/:id', async (req,res)=>{
             newIdArr.forEach(arrItem=>{
                 user.userAsset.id.push(arrItem);
             })
+
+            //affecting assets
+            affectedAssets.forEach(async assetArr=>{
+                assetArr.allocationStatus = true;
+                await assetArr.save();
+             })
         }
         
         if (req.query.assignment == 'DeAssign'){
@@ -216,29 +225,29 @@ route.put('/:id', async (req,res)=>{
                 return userAssetArr.idArr.indexOf(item) != -1
             }) 
             user.userAsset.id=newIdArr;
+
+            affectedAssets.forEach(async assetArr=>{
+                assetArr.status = 'Used'; //this should have been done at the point of user receiving the item. In future, remove this and redo 
+                assetArr.allocationStatus = false;
+                await assetArr.save();
+             })
         }
         console.log('Here is new arr++++++++++++')
         console.log(newIdArr);
-
+        
 
         await user.save();
         msg = {
             message:'User Asset updated!',
             class:'green'
         };
-
-        //getting all user assets with user.userAsset.id
-        // user.userAsset.id.forEach(itemArr=>{
-        //     itemArr.forEach(item=>{
-
-        //     })
-        // });
+        
         
         userLogSave(user, newIdArr, req.query.assignment, req);
         res.redirect(`/user/${userAssetArr.userId}`);
     } catch(e){
         console.log(e.message);
-
+        
     }
 });
 

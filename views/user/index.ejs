@@ -15,7 +15,7 @@
         <%= 'There are users' %>
         <%  users.forEach(user=>{%>
             <a href="/user/<%= user.id %>">
-                <p><img height= "100" width="120" src="<%= user.userProfilePic%>" alt="<%= user.userProfilePic%>"></p>
+                <p><img width="120" height= "auto" src="<%= user.userProfilePic%>" alt="<%= user.userProfilePic%>"></p>
             </a>
             <div class="user-name"><%=user.firstName%></div>
     

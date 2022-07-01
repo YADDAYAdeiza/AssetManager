@@ -40,19 +40,36 @@ route.get('/metrics', async (req, res)=>{
     res.render('overview/metrics.ejs', {uniqueAssetModelItems, uniqueStates, uniqueCadres});
 })
 
+
+
 route.get('/:id/metrics', async(req, res)=>{
     console.log('Metric: this is overview ', req.params.id)
+    console.log('Using req.query', req.query);
     // const asset = await assetModel.find({id:mongoose.Types.ObjectId(req.params.id)}, 'assetCode, assetType').exec();
     try{
+        var assetLength =  (await assetModel.find()).length;
+        var assetAssignedLength =  (await assetModel.find().where('allocationStatus').equals(true)).length;
+        console.log('Affected Assets');
+        console.log(assetAssignedLength);
+        var requisitionLength =  (await userModel.find().where('userRequisition').ne(null)).length;
         if (req.params.id =='all'){
-            console.log('*****inside all')
+            console.log('*****inside all');
             var asset = await assetModel.find({}, 'assetCode assetType').populate('assetType', 'assetTypeClass').exec();
             console.log(asset);
+            console.log(assetLength);
         }else{
-            var asset = await assetModel.find({assetType:mongoose.Types.ObjectId(req.params.id)}, 'assetCode assetType').populate('assetType', 'assetTypeClass').exec();
+            var asset = await assetModel.find({assetType:mongoose.Types.ObjectId(req.query.assetId)}, 'assetCode assetType').populate('assetType', 'assetTypeClass').exec();
             console.log(asset);
+            console.log(assetLength);
+            console.log('Requisition length: ', requisitionLength);
         }
-        res.send(JSON.stringify(asset));
+        var assetObj = {
+            asset,
+            total:assetLength,
+            requisition:requisitionLength,
+            assetAssigned:assetAssignedLength
+        }
+        res.send(JSON.stringify(assetObj));
     }catch (e){
         console.log(e);
     }
