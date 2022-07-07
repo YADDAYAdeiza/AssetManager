@@ -36,8 +36,11 @@ let userSchema = new mongoose.Schema({
     state:{
         type:String
     },
+    directorate:{
+        type:String
+    },
     geoCoord:{
-        type:String,
+        type:Object,
         required:true
     },
     profilePic:{
@@ -73,6 +76,26 @@ let userSchema = new mongoose.Schema({
     },
     userRequisition:{
         type:Object
+    },
+    userRole:{
+        type:String,
+        default:'Basic'
+    },
+    approvalStatus:{
+        type:String
+    },
+    approvalSupId:{
+        type:String
+    },
+    userClassList:Object,
+    userDirectorateApproval:{ //activated for directorate managers
+        type:[Object]
+    },
+    userStoreApproval:{//activated for store managers.  Both approvals may be activated in a case where store manager is equal to directorate manager
+        type:[Object]
+    },
+    userIssuerApproval:{
+        type:[Object]
     }
     
 });

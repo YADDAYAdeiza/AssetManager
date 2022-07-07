@@ -16,6 +16,7 @@
 
 
 <%-include('_userContent', {btnVal:`Asset Pool`})%>
+<a href="/user/history/<%=user.id%>">History</a>
 <%-include('../partials/deleteForm', {url:`/user/${user.id}`})%>
 <form id = 'updateForm' method="POST" >
     <button class = 'btn btn-delete' type="submit">Update</button>
@@ -54,8 +55,16 @@
         <form id = 'updateFormRequistion' method="POST" >
             <button class = 'btn btn-delete' type="submit">Update</button>
         </form>
-
+            updateFormRequistionGrab.action = `/user/requisition/${JSON.stringify(objRequisition)}?_method=PUT&userId=${userID}&assignment=Requisition`;
+            <form id = 'approveFormRequistion' method="POST" onsubmit="return approveRequisition(this)">
+            <button class = 'btn btn-delete' type="submit">Directorate Approval</button>
+        </form>
+    </form>
+    <form id = 'approveFormRequistion2' method="POST" onsubmit="return approveRequisition(this)">
+    <button class = 'btn btn-delete' type="submit">Store Approval</button>
+</form>
     </div>
+    <a href="/user/requisitionApproval/<%=user._id%>" onclick="return approveRequisition()">Approve</a>
     
     
     
@@ -76,6 +85,35 @@
             <%})%>
         </ul>
     </div>
+
+    <div class="pending-requisition-approvals">
+        <ul>
+            <% if (user.userDirectorateApproval.length){%>
+                 <span>Something</span>
+                <% user.userDirectorateApproval.forEach(item=>{%>
+                    <%console.log('******', item._id);%>
+                    <li><a href = '/user/<%=item._id%>'><%=item.firstName%></a></li>
+                <% })%>
+             <%}%>
+        </ul>
+    </div>
+
+    <p>
+        <div class="pending-store-approvals">
+            <ul>
+                <% if (user.userStoreApproval.length){%>
+                    <%'Store Approvals here' %> 
+                    <%console.log('+++')%>
+                    <% console.log(user.userStoreApproval)%>
+                    <% user.userStoreApproval.forEach(item=>{%>
+                        <%console.log('******', item._id);%>
+                        <li><a href = '/user/<%=item._id%>'><%=item.firstName%></a></li>
+                    <% })%>
+                 <%}%>
+            </ul>
+        </div>
+
+    </p>
         
     
 </div>
@@ -88,7 +126,7 @@
 
     let serverUserUserRequisition = '<%- JSON.stringify(user.userRequisition)%>';
 
-    
+   
     let userID = '<%- user.id %>';
     let profileCreatedMsgGrab = document.getElementsByClassName('profileCreatedMsg')[0];
     let idObj = {};
@@ -146,10 +184,10 @@
             }
             idObj.userId = userID;
             getObjectIds(assetGrab);
+            console.log('!!!!!!');
             console.log(idObj);
             updateFormGrab.action = `/user/${JSON.stringify(idObj)}?_method=PUT&assignment=${this2.innerHTML}`;
             console.log(updateFormGrab.action);
-
        }
     
        function getObjectIds(assetDiv){
@@ -162,6 +200,7 @@
        }
 
     function userAssetDeassign(this2, assetDiv, updateForm){
+        console.log(updateForm);
         alert(this2.innerHTML);
         console.log(this2);
         console.log(assetDiv);
@@ -181,9 +220,12 @@
         }
         idObj.userId = userID;
             getObjectIds(assetGrab);
+            console.log('*****')
             console.log(idObj);
-            console.log(document.getElementById(updateForm));
-        document.getElementById(updateForm).action = `/user/${JSON.stringify(idObj)}?_method=PUT&assignment=${this2.innerHTML}`;
+            if (updateForm){
+                console.log(document.getElementById(updateForm));
+                document.getElementById(updateForm).action = `/user/${JSON.stringify(idObj)}?_method=PUT&assignment=${this2.innerHTML}`;
+            }
         console.log(updateFormGrab.action);
     }  
 
@@ -236,6 +278,7 @@
             var divMiniCont = document.createElement('div');
                 divMiniCont.setAttribute('class', 'divMiniLi')
             var liElm = document.createElement('li');
+                liElm.setAttribute('class', 'liRequisition');
                 liElm.style.display = 'inline'
             var btnPlus = document.createElement('button');
             var btnPlus = document.createElement('button');
@@ -252,12 +295,16 @@
             divMiniCont.appendChild(btnMinus);
             divMiniCont.appendChild(btnPlus);
             divMiniCont.appendChild(liElm);
+            console.log('==============');
+            console.log(divMiniCont);
             ulRequisitionGrab.appendChild(divMiniCont);
+
+            
             
             //set FORM action
             console.log('Use in action, ', this2.innerHTML);
             console.log('The String, ', JSON.stringify(objRequisition));
-            updateFormRequistionGrab.action = `/user/requisition/${JSON.stringify(objRequisition)}?_method=PUT&userId=${userID}&assignment=Requisition`;
+            updateFormRequistionGrab.action = `/user/requisition/${userID}?_method=PUT&userId=${userID}&requisitionApproval=${JSON.stringify(objRequisition)}&assignment=Requisition`;
 
         })
     }
@@ -289,5 +336,49 @@
             assignUlElement(selectRequisitionGrab, this2)
         }
     }
+
+    function userHistory(this2, userHistoryDiv){
+
+    }
+    let approveRequisitionObj ={}
+var objClassList = {}
+    function approveRequisition(this2){
+        makeObject();
+        //ulRequisitionGrab.classList.add('approvedRequisition');
+        objClassList['ulRequisitionGrab'] = 'approvedRequisition';
+        console.log(this2);
+        let requisitionApproval = this2.getElementsByTagName('button')[0].innerHTML;
+        if (requisitionApproval == 'Directorate Approval'){
+            this2.action = '/user/directorateRequisitionApproval/<%=user.id%>?_method=PUT&userClassList='+ JSON.stringify(objClassList)+`&directorateApproval=${JSON.stringify(approveRequisitionObj)}`+`&assignment=${this2.getElementsByTagName('button')[0].innerHTML}`;
+        }
+        if (requisitionApproval == 'Store Approval'){
+            this2.action = '/user/storeRequisitionApproval/<%=user.id%>?_method=PUT&userClassList='+ JSON.stringify(objClassList)+`&storeApproval=${JSON.stringify(approveRequisitionObj)}`+`&assignment=${this2.getElementsByTagName('button')[0].innerHTML}`;
+        }
+        return true;
+      
+    }
+
+    function makeObject(){
+        approveRequisitionObj = {};
+        alert('Making object');
+        var liRequisitionGrab = document.getElementsByClassName('liRequisition');
+        console.log(liRequisitionGrab);
+        // liRequisitionGrab.forEach(liItem=>{
+            // console.log(liItem.innerHTML);
+            alert(liRequisitionGrab.length);
+            
+            for (var a=0; a<liRequisitionGrab.length;a++){
+                // alert (liRequisitionGrab[a].innerHTML);
+                approveRequisitionObj[(liRequisitionGrab[a].innerHTML).slice(0, (liRequisitionGrab[a].innerHTML).indexOf('('))] = liRequisitionGrab[a].innerHTML.slice((liRequisitionGrab[a].innerHTML).indexOf('(')+1, liRequisitionGrab[a].innerHTML.indexOf(')'));
+            }
+            console.log(approveRequisitionObj);
+             
+        //    if (userMan){
+        //     alert('Yeah')
+        //    }
+        // })
+    }
 </script>
+
+
 

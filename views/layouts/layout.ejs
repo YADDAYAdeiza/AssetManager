@@ -21,6 +21,8 @@
     href="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css"
     rel="stylesheet"
 	/>
+	<link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+	
 	<script defer src="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.js"></script>
 	<script defer src="https://unpkg.com/filepond-plugin-file-encode/dist/filepond-plugin-file-encode.js"></script>
 	<script defer src="https://unpkg.com/filepond-plugin-image-resize/dist/filepond-plugin-image-resize.js"></script>
@@ -73,6 +75,10 @@
 						<a href="#">Delete User</a>
 					</li>
 					<li>
+						<li>
+							<a href="/user/other">Other Users</a>
+						</li>
+						<li>
 						<a href="/user/audit">Audit</a>
 					</li>
 					<li>
@@ -95,7 +101,7 @@
               </ul>
 	          </li>
 	          <li>
-              <a href= "#auditSubmenu" data-toggle="collapse" aria-expanded="false" id = "auditSubmenuAnchor" class="dropdown-toggle" onclick = "backgroundChange(this)">Audit</a>
+              <a href= "#auditSubmenu" data-toggle="collapse" aria-expanded="false" id = "auditSubmenuAnchor" class="dropdown-toggle hideAudit" onclick = "backgroundChange(this)">Audit</a>
 			  <ul class="collapse list-unstyled" id="auditSubmenu">
                 <li>
                     <a href="/audit/index">Pending Audits</a>

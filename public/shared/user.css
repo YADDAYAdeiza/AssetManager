@@ -60,9 +60,9 @@ transition:  0.4s;
 }
 
 
-/* .hideAudit{
+.hideAudit{
     display: none;
-} */
+}
 
 
 .divMiniLi button{
@@ -78,4 +78,8 @@ transition:  0.4s;
 
 .divMiniLi:hover li{
     color:black;
+}
+
+.approvedRequisition{
+    color:green;
 }

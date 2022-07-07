@@ -36,6 +36,12 @@ let userLogSchema = new mongoose.Schema({
     userRequisition:{
         type:Object
     },
+    userRequisitionDirectorateApproval:{
+        type:Object
+    },
+    userRequisitionDirectorateApproval:{
+        type:Object
+    },
     assignedBy:{
         type:mongoose.Schema.Types.ObjectId,
         required:true,

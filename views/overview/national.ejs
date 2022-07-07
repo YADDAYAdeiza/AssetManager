@@ -16,19 +16,19 @@
         <div id = 'nationalMap'>Map goes in here</div>
         <div class = 'div-ctrl'>
             <p><select onchange="categoryOptions(this)">
-                <option>Users</option>
-                <option value= "/assetType/index">Asset Types</option>
-                <option value= "asset/index">Assets</option>
-                <option value= "contractor/index">Contractor</option>
+                <option value= "/overview/user/index">Users</option>
+                <option value= "/overview/assetType/index">Asset Types</option>
+                <option value= "/overview/asset/index">Assets</option>
+                <option value= "/overview/contractor/index">Contractor</option>
             </select>
             </p>
 
             <p><select id='selVar'>
-                <option>Regulatory Officer</option>
-                <option>Admin Officer</option>
-                <option>Laboratory Officer</option>
-                <option>Account Officer</option>
-                <option>Legal Officer</option>
+                <option>Regulatory Officers</option>
+                <option>Admin Officers</option>
+                <option>Laboratory Officers</option>
+                <option>Account Officers</option>
+                <option>Legal Officers</option>
             </select>
             </p>
 
@@ -45,18 +45,35 @@
 
       var selVarGrab = document.getElementById('selVar');
 
+      var markerArr = []
       function categoryOptions(this2){
-        getVar.onload = function(){
-            console.log(getVar.responseText);
-            var getVarJSON = (JSON.parse(getVar.responseText));
-            getVarJSON.assetTypes.forEach((item,i)=>{
-                selVarGrab.options[i] = new Option(item.assetTypeClass);
+        getVar.onreadystatechange = function(){
+            if(getVar.readyState == 4 && getVar.status == 200){ 
+            console.log(getVar.response);
+            let responseObj = JSON.parse(getVar.response);
+            // console.log(responseObj[48].geoCoord);
+            responseObj.forEach(item=>{
+                console.log(item.geoCoord);
+                markerArr.push(item.geoCoord);
+            });
+
+            markerArr.forEach(marker=>{
+                new google.maps.Marker({
+                    position: {lat:+marker['lat'], lng:+marker['lng']},
+                    map:mapSet,
+                    title: "Hello World!",
+                    draggable:true
+                });
             })
+            
+        }
             // selVarGrab
             
         }
 
-        getVar.open("GET", this2.value+'/justJson', true);
+
+
+        getVar.open("GET", this2.value, true);
         getVar.send()
       }
   </script>

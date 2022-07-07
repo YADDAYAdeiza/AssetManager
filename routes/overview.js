@@ -8,6 +8,7 @@ let ejs = require('ejs');
 let userModel = require('../models/user');
 const assetTypeModel = require('../models/assetType.js');
 const assetModel = require('../models/asset.js');
+const { reset } = require('nodemon');
 // const { rawListeners } = require('../models/assetType.js');
 const imageMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
 
@@ -24,6 +25,12 @@ route.use(express.static('public'));
 
 // let userVar = 'trial';
 //get all users of assets
+
+route.get('/user/index', async (req, res)=>{
+    
+    let users = await userModel.find({}).select('firstName lastName state geoCoord');
+    res.json(users);
+})
 
 route.get('/national', (req, res)=>{
 res.render('overview/national.ejs')

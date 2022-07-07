@@ -149,6 +149,7 @@ app.use(passport.session());
   
   app.post('/login', checkNotAutheticated, passport.authenticate('local',{
     successRedirect:'/user/new',
+    successRedirect:'user/showOrNew',
     failureRedirect:'/login',
     failureFlash:true
   }));
