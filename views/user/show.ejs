@@ -47,6 +47,8 @@
         Qty(Change last): <input type="number" min="1" id = 'qtyRequisitionInpt' value = '1'>
         <button onclick="addRequisition()">Add Asset</button>
         <button onclick="resetRequisition()">Reset</button>
+        <button onclick="requisitionHistory()">Requisition History</button>
+       
 
         
         <div>
@@ -77,12 +79,47 @@
     </div>
 
     <div id = "assetList" class="assetList">
+        <!-- create buttons -->
+        <button class="tablinks" onclick="openCity(event, 'London')">Tables</button>
+        <button class="tablinks" onclick="openCity(event, 'Paris')">Chairs</button>
+        <button class="tablinks" onclick="openCity(event, 'Tokyo')">Televisions</button>
+        
+
+        <%var assetObject={};%>
+        <%var assetClassObject={};%>
+        
+        <!-- creating the select -->
+        <select name="" id="selAssetOption" onchange = "openCity(event, 'London')">
+            <%allAssetType.forEach(assetType=>{%>
+            <option value="<%=assetType.assetTypeClass%>"><%=assetType.assetTypeClass%></option>
+            <%assetObject[assetType._id.toString()] = [];%>
+            <%assetClassObject[assetType._id.toString()] = assetType.assetTypeClass;%>
+            <%})%>
+        </select>
+        
+
+        <% allAssets.forEach(asset=>{ %>
+            <%assetObject[asset.assetType.toString()].push(asset)%>
+        <%})%>
+        <%console.log('&&&&&&');%>
+        <%console.log(assetObject)%>
+        <!-- creating the ul and li -->
         <ul class="user-asset-pool">
-            <% allAssets.forEach(asset=>{ %>
-                <div class="divContLi" onclick = 'triggerClickCheckbox(this)' data-asset-id="<%=asset.id%>">
-                   <li><input type="checkbox" class = 'user-asset-pool-checkbox' style="display:inline; width:10%"><a href="/asset/<%=asset.id%>"><%=asset.assetCode%></a></li>
+            <%Object.keys(assetObject).forEach(assetTypeIdProperty=>{%>
+                <div  id="<%=assetClassObject[assetTypeIdProperty]%>" class="tabcontent">
+                    <h3><%=assetClassObject[assetTypeIdProperty]%></h3>
+                    <p><%=assetClassObject[assetTypeIdProperty]%> is the capital city of England.</p>
+                    <% assetObject[assetTypeIdProperty].forEach(asset=>{%>
+                        <%console.log("[[[[[[[[[[[[[[[[[[[[[[" +assetObject[assetTypeIdProperty]);%>
+                    <div class="divContLi" onclick = "triggerClickCheckbox(this)" data-asset-id="<%=asset.id%>">
+                        <li><input type="checkbox" class = "user-asset-pool-checkbox" style="display:inline; width:10%"><a href="/asset/<%=asset.id%>"><%=asset.assetCode%></a></li>
+                    </div>
+                    <%})%>
                 </div>
             <%})%>
+                
+
+            
         </ul>
     </div>
 
@@ -99,7 +136,7 @@
     </div>
 
     <p>
-        <div class="pending-store-approvals">
+        <div class="pending-store-approvals" style="position:relative;">
             <ul>
                 <% if (user.userStoreApproval.length){%>
                     <%'Store Approvals here' %> 
@@ -111,6 +148,10 @@
                     <% })%>
                  <%}%>
             </ul>
+            <div id="req-History">
+        </div>
+
+
         </div>
 
     </p>
@@ -146,6 +187,8 @@
     let updateFormRequistionGrab = document.getElementById('updateFormRequistion');
 
     let divId = document.getElementById('assets-requisitioned-div');
+    let reqHistoryGrab = document.getElementById('req-History');
+    let selAssetOptionGrab = document.getElementById('selAssetOption');
 
     
     // allAsset.forEach(aAsset => {
@@ -155,6 +198,64 @@
 //Auth
 // assignShowButtonGrab.classList.add(authVar['auth']['assignShowButtonGrab']);
 
+//sorting code, just in case
+// const arr = [1,1,2,2,3,4,4,5];
+// const extractUnique = arr => {
+//    const res = [];
+//    for(let i = 0; i < arr.length; i++){
+//       if(arr.lastIndexOf(arr[i]) !== arr.indexOf(arr[i])){
+//          continue;
+//       };
+//       res.push(arr[i]);
+//    };
+//    return res;
+// };
+// console.log(extractUnique(arr));
+
+
+function openCity(evt, cityName) {
+    // Declare all variables
+    var i, tabcontent, tablinks;
+
+    // Get all elements with class="tabcontent" and hide them
+    tabcontent = document.getElementsByClassName("tabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+    }
+
+    // Get all elements with class="tablinks" and remove the class "active"
+    // tablinks = document.getElementsByClassName("tablinks");
+    // for (i = 0; i < tablinks.length; i++) {
+    //     tablinks[i].className = tablinks[i].className.replace(" active", "");
+    // }
+
+    // Show the current tab, and add an "active" class to the button that opened the tab
+    // console.log(selAssetOptionGrab);
+    alert(selAssetOptionGrab.value);
+    document.getElementById(selAssetOptionGrab.value).style.display = "block";
+    // evt.currentTarget.className += " active";
+}
+
+
+function requisitionHistory(){
+    let getRequisitionObj = new XMLHttpRequest();
+
+            getRequisitionObj.onreadystatechange = function (){
+                if (getRequisitionObj.readyState == 4 && getRequisitionObj.status == 200){
+                    console.log(JSON.parse(getRequisitionObj.response));
+                    let reqHistoryObj = JSON.parse(getRequisitionObj.response);
+                    reqHistoryObj.forEach(item=>{
+                        var pElm = document.createElement('p');
+                        pElm.innerHTML = "userRequistion: "+JSON.stringify(item.userRequisition).replace('{', '').replace('}', '');
+                        reqHistoryGrab.appendChild(pElm);
+                        reqHistoryGrab.classList.add('div-req-out');
+                    })
+                }
+            }
+
+            getRequisitionObj.open("GET", `/user/getHistory/${userID}`, true);
+            getRequisitionObj.send();
+}
         function showAssetList(){
             userShowDivGrab.classList.toggle('user-show-div3');
             userShowDivGrab.classList.toggle('user-show-div2');
@@ -377,6 +478,21 @@ var objClassList = {}
         //     alert('Yeah')
         //    }
         // })
+
+        // function requisitionHistory(){
+        //     let getRequisitionObj = new XMLHttpRequest();
+
+        //     getRequisitionObj.onreadystatechange = function (){
+        //         if (getRequisitionObj.readyState == 4 && getRequisitionObj.status == 200){
+        //             console.log(getRequisitionObj.response);
+        //         }
+        //     }
+
+        //     getRequisitionObj.open("GET", `/user/getHistory/${userID}`, true);
+        //     getRequisitionObj.send();
+        // }
+
+
     }
 </script>
 

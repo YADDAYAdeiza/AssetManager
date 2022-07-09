@@ -1,5 +1,6 @@
 let express = require('express');
 let route = express.Router();
+let mongoose = require('mongoose');
 
 let ejs = require('ejs');
 // let layout = require('express-ejs-layouts');
@@ -31,11 +32,14 @@ route.use(express.static('public'));
 let userVar = 'trial';
 //get all users of assets
 
-
+route.get('/getHistory/:id', async (req,res)=>{
+   let userHistory = await userLogModel.find().where('activity').equals('Requisition').where('user').equals(mongoose.Types.ObjectId(req.params.id));
+   
+    res.json(userHistory);
+})
 //This is for determining if, straight from login success, to go to Register New User or User profile.
 route.get('/showOrNew', (req, res)=>{
     console.log('In showOrNew=====================================');
-    console.log(req.user);
     if (req.user.profileId){
         // res.send(req.user.profileId);
         res.redirect(`/user/${req.user.profileId}`);
@@ -89,8 +93,6 @@ route.get('/other', async (req, res)=>{
 
 //Designate certain profiles as supervisors
 route.put('/other', async(req, res)=>{
-    console.log(req.method);
-    console.log(req.body.selName);
     try{
         let user = await userModel.findById(req.body.selName);
         user.userRole = req.body.userRole;
@@ -108,13 +110,6 @@ route.put('/other', async(req, res)=>{
 //get the create new form for user
 route.get('/new', adminAuth, async (req,res)=>{ //adminAuth
     // res.send('What item now');
-    console.log('Within new');
-    console.log(await req.user);
-    console.log(await req.user.authSetting);
-
-    console.log(req.authSetting)
-    // console.log('And this is req');
-    // console.log(req)
     let user = new userModel();
     let msg = {
         message:'Input profile details',
@@ -149,39 +144,33 @@ route.get('/:id/edit',  async (req,res)=>{
     }
     // let user = new userModel();
 })
-route.get('/history/:id', async (req, res)=>{
-    console.log(req.params.id);
-    let user = await userLogModel.find({'user':req.params.id});//.populate('user')
-    console.log(user);
-    res.json(user);
-})
+
+
 route.get('/:id', async (req, res)=>{
     // res.send('Getting the User Page...'+req.params.id);
     var ownAssets=[];
     try {
        const user =await userModel.findById(req.params.id);
+       const allAssetType = await assetTypeModel.find();//.distinct('assetTypeClass')
        const asset = await assetModel.find({user:user.id}).exec(); //.limit(10)
        const allAsset = await (await assetModel.find().where('allocationStatus').ne(true));
        const assetTypeDistinct = await assetTypeModel.find().select('assetTypeClass status description').exec();
-       console.log('-----------');
-       console.log(assetTypeDistinct);
-       console.log('End of distinct...')
        user.userAsset.id.forEach(async itemArr=>{
                 ownAssets.push(itemArr);
         });
 
         const records = await assetModel.find().where('_id').in(ownAssets).select('assetCode assetType status').exec();
-        console.log(records);
        res.render('user/show', {
            user:user,
            assetsByUser:asset,
            allAssets:allAsset,
+           allAssetType,
            ownAssets:records,
            assetTypeAll:assetTypeDistinct
        });
 
     }catch (e){
-        console.log(e);
+        console.log(e.message);
         res.redirect('/index')
     }
 });
@@ -327,9 +316,6 @@ route.put('/requisition/:id', async (req, res)=>{
             console.log(user);
             user.userRequisition = assetRequisitioned;
             await user.save();
-            console.log('???');
-            console.log('This is user: ', user);
-            console.log('This is userId: ', user.id);
         let userDirectorateApprover = await userModel.find().where('userRole').equals('directorateApproval').where('approvalStatus').in([user.directorate, 'All']).select('firstName directorate approvalStatus userDirectorateApproval');
             console.log('This is userDirectorateApprover: ', userDirectorateApprover);
             userDirectorateApprover[0].userDirectorateApproval.push(user);
@@ -350,19 +336,6 @@ route.put('/directorateRequisitionApproval/:id', async (req, res)=>{
     let userId = req.params.id;
     try{
         let user = await userModel.findById(userId).select('firstName lastName cadre rank directorate approvalStatus');
-            console.log(user);
-            // user.userRequisition = assetRequisitioned;
-            // await user.save();
-            // console.log('???');
-            // console.log('This is user: ', user);
-            // console.log('This is userId: ', user.id);
-        
-        //     let userDirectorateApprover = await userModel.find().where('userRole').equals('directorateApproval').where('approvalStatus').in(user.directorate, 'NCS').select('firstName directorate approvalStatus userDirectorateApproval');
-        //     console.log('This is userDirectorateApprover: ', userDirectorateApprover);
-        //     userDirectorateApprover[0].userDirectorateApproval.push(user);
-        //     await userDirectorateApprover[0].save();
-        //     userLogSave(user, assetRequisitioned, req.query.assignment, req);
-        // res.redirect(`/user/${user.id}`);
 
         let userStoreApprover = await userModel.find().where('userRole').equals('storeApproval').where('approvalStatus').in([user.directorate, 'All'])
         userStoreApprover[0].userStoreApproval.push(user);
