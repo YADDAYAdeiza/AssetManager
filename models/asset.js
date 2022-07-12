@@ -11,7 +11,7 @@ let assetSchema = new mongoose.Schema({
     },
     assetType:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:'AssetTypeCol',
+        ref:assetTypeModel,
         required:true
     },
     status:{

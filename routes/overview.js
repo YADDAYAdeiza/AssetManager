@@ -55,11 +55,16 @@ route.get('/:id/metrics', async(req, res)=>{
     // const asset = await assetModel.find({id:mongoose.Types.ObjectId(req.params.id)}, 'assetCode, assetType').exec();
     try{
         var assetLength =  (await assetModel.find()).length;
-        var assetAssignedLength =  (await assetModel.find().where('allocationStatus').equals(true)).length;
+        var assetAssigned =  (await assetModel.find().where('allocationStatus').equals(true).populate('assetType', 'assetTypeClass').select('assetType status assetTypeClass'));
+        var assetAssignedLength = assetAssigned.length;
         console.log('Affected Assets');
         console.log(assetAssignedLength);
-        var requisitionLength =  (await userModel.find().where('userRequisition').ne(null)).length;
-        if (req.params.id =='all'){
+        console.log('Assets are: ', assetAssigned);
+        var requisition =  (await userModel.find().where('userRequisition').ne(null).select('userRequisition'));//.length
+        var requisitionLength = requisition.length;
+        if (req.params.id =='none'){
+            var asset = [];
+        }else if (req.params.id =='all'){
             console.log('*****inside all');
             var asset = await assetModel.find({}, 'assetCode assetType').populate('assetType', 'assetTypeClass').exec();
             console.log(asset);
@@ -70,12 +75,45 @@ route.get('/:id/metrics', async(req, res)=>{
             console.log(assetLength);
             console.log('Requisition length: ', requisitionLength);
         }
+        
+        
+            //simplifying assetAssigned, to take just an array of objects and their numbers
+            var assetAssignedTrimmedObj = {};
+            var requisitionTrimmedObj = {};
+            assetAssigned.forEach(arrItem=>{
+                assetAssignedTrimmedObj [arrItem.assetType.assetTypeClass] = 0;
+            })
+
+            assetAssigned.forEach(arrItem=>{
+                ++assetAssignedTrimmedObj [arrItem.assetType.assetTypeClass];
+            })
+        
+        
+             //simplifying requisition
+            requisition.forEach(arrItem=>{
+                Object.keys(arrItem.userRequisition).forEach(reqItem=>{
+                    requisitionTrimmedObj[reqItem] = 0;
+                })
+            });
+
+            requisition.forEach(arrItem=>{
+                Object.keys(arrItem.userRequisition).forEach(reqItem=>{
+                    requisitionTrimmedObj[reqItem] += arrItem.userRequisition[reqItem];
+                })
+            })
+
+        console.log('This is trimmed asset ', assetAssignedTrimmedObj);
+        console.log('This is requisition', requisition);
+
         var assetObj = {
             asset,
             total:assetLength,
             requisition:requisitionLength,
-            assetAssigned:assetAssignedLength
+            assetAssigned:assetAssignedLength,
+            assetAssignedBrokenDown:assetAssignedTrimmedObj,
+            requisitionBrokenDown:requisitionTrimmedObj
         }
+        console.log('This is obj to be sent ', assetObj);
         res.send(JSON.stringify(assetObj));
     }catch (e){
         console.log(e);

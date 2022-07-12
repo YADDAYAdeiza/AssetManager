@@ -3,6 +3,11 @@
        <p class = 'profileCreatedMsg'>Profile succesfully created!</p>
    </h1>
 </div>
+<%if(msg){%>
+    <p><%=msg%></p>
+<%}else{%>
+    <p>No Message</p>   
+<%}%>
 
 <div class="user-show-div">
         
@@ -89,7 +94,7 @@
         <%var assetClassObject={};%>
         
         <!-- creating the select -->
-        <select name="" id="selAssetOption" onchange = "openCity(event, 'London')">
+        <select name="" id="selAssetOption" onchange = "openCity(event, 'sel')">
             <%allAssetType.forEach(assetType=>{%>
             <option value="<%=assetType.assetTypeClass%>"><%=assetType.assetTypeClass%></option>
             <%assetObject[assetType._id.toString()] = [];%>
@@ -97,12 +102,14 @@
             <%})%>
         </select>
         
-
+        <!-- creating other controls -buttons -->
+        <%allAssetType.forEach(assetType=>{%>
+            <button class="tablinks sel-asset-option-btns" onclick="openCity(event, 'btn')"><%=assetType.assetTypeClass%></button>
+        <%})%>
+        
         <% allAssets.forEach(asset=>{ %>
             <%assetObject[asset.assetType.toString()].push(asset)%>
         <%})%>
-        <%console.log('&&&&&&');%>
-        <%console.log(assetObject)%>
         <!-- creating the ul and li -->
         <ul class="user-asset-pool">
             <%Object.keys(assetObject).forEach(assetTypeIdProperty=>{%>
@@ -110,7 +117,6 @@
                     <h3><%=assetClassObject[assetTypeIdProperty]%></h3>
                     <p><%=assetClassObject[assetTypeIdProperty]%> is the capital city of England.</p>
                     <% assetObject[assetTypeIdProperty].forEach(asset=>{%>
-                        <%console.log("[[[[[[[[[[[[[[[[[[[[[[" +assetObject[assetTypeIdProperty]);%>
                     <div class="divContLi" onclick = "triggerClickCheckbox(this)" data-asset-id="<%=asset.id%>">
                         <li><input type="checkbox" class = "user-asset-pool-checkbox" style="display:inline; width:10%"><a href="/asset/<%=asset.id%>"><%=asset.assetCode%></a></li>
                     </div>
@@ -128,7 +134,6 @@
             <% if (user.userDirectorateApproval.length){%>
                  <span>Something</span>
                 <% user.userDirectorateApproval.forEach(item=>{%>
-                    <%console.log('******', item._id);%>
                     <li><a href = '/user/<%=item._id%>'><%=item.firstName%></a></li>
                 <% })%>
              <%}%>
@@ -140,10 +145,7 @@
             <ul>
                 <% if (user.userStoreApproval.length){%>
                     <%'Store Approvals here' %> 
-                    <%console.log('+++')%>
-                    <% console.log(user.userStoreApproval)%>
                     <% user.userStoreApproval.forEach(item=>{%>
-                        <%console.log('******', item._id);%>
                         <li><a href = '/user/<%=item._id%>'><%=item.firstName%></a></li>
                     <% })%>
                  <%}%>
@@ -189,11 +191,9 @@
     let divId = document.getElementById('assets-requisitioned-div');
     let reqHistoryGrab = document.getElementById('req-History');
     let selAssetOptionGrab = document.getElementById('selAssetOption');
+    let selAssetOptionBtnsGrab = document.getElementsByClassName('sel-asset-option-btns');
 
     
-    // allAsset.forEach(aAsset => {
-        //     console.log(aAsset);
-        // });
        
 //Auth
 // assignShowButtonGrab.classList.add(authVar['auth']['assignShowButtonGrab']);
@@ -213,7 +213,7 @@
 // console.log(extractUnique(arr));
 
 
-function openCity(evt, cityName) {
+function openCity(evt, ctrlName) {
     // Declare all variables
     var i, tabcontent, tablinks;
 
@@ -231,8 +231,15 @@ function openCity(evt, cityName) {
 
     // Show the current tab, and add an "active" class to the button that opened the tab
     // console.log(selAssetOptionGrab);
-    alert(selAssetOptionGrab.value);
-    document.getElementById(selAssetOptionGrab.value).style.display = "block";
+    // alert(selAssetOptionGrab.value);
+    // console.log(evt.target);
+
+    if (ctrlName =='sel'){
+        document.getElementById(selAssetOptionGrab.value).style.display = "block";
+    }
+    if (ctrlName =='btn'){
+        document.getElementById(evt.target.innerHTML).style.display = "block";
+    }
     // evt.currentTarget.className += " active";
 }
 

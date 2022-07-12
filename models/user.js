@@ -114,16 +114,21 @@ userSchema.virtual('userProfilePic').get(function(){
 
 userSchema.pre('remove', function(next){
     console.log('Gotten in preRemove..');
-    assetModel.find({user: this.id}, (err, assets)=>{
-        if (err){
-            next(err)
-        } else if (assets.length > 0){ //if assets attached to user
-            next(new Error('This user has assets still'))
-        } else { //if no errors, and if no assets attached to user
-            next()
-        }
-    });
-})
+    if (this.userAsset.id.length){
+        next(new Error('This user has assets still'))
+    }else{
+        next();
+    }
+    // assetModel.find({user: this.id}, (err, assets)=>{
+    //     if (err){
+    //         next(err)
+    //     } else if (assets.length > 0){ //if assets attached to user
+    //         next(new Error('This user has assets still'))
+    //     } else { //if no errors, and if no assets attached to user
+    //         next()
+    //     }
+    // });
+});
 
 //We may have to do for asset, assetType and contractor, but think about this
 let userModel = mongoose.model('UserCol', userSchema);

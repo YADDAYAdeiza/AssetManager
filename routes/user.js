@@ -11,6 +11,7 @@ const { rawListeners } = require('../models/assetType.js');
 const { response } = require('express');
 const imageMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
 let userLogModel = require('../models/userLog');
+let userCredModel = require('../models/userCred');
 
 //authentication
 const {adminAuth} = require('../basicAuth');
@@ -38,48 +39,56 @@ route.get('/getHistory/:id', async (req,res)=>{
     res.json(userHistory);
 })
 //This is for determining if, straight from login success, to go to Register New User or User profile.
-route.get('/showOrNew', (req, res)=>{
+route.get('/showOrNew', (req, res)=>{ //admin middleware may be used here to grant full authorization
     console.log('In showOrNew=====================================');
-    if (req.user.profileId){
+    if (req.user.profileId.length){
         // res.send(req.user.profileId);
-        res.redirect(`/user/${req.user.profileId}`);
+        // res.redirect(`/user/${req.user.profileId}`);
+        indexRedirect(req, res, 'My Profile(s)', 'noError') 
+
     } else{
         res.redirect('/user/new');
 
     }
 })
 
-route.get('/index', async (req, res)=>{
-    
-    let query = userModel.find();
-    if (req.query.userNameSearch != null && req.query.userNameSearch != ""){
-        query = query.regex('firstName', new RegExp(req.query.userNameSearch, 'i'));
-    }
-    if (req.query.userDateBeforeSearch != null && req.query.userDateBeforeSearch != ""){
-        query = query.lte('dateCreated', req.query.userDateBeforeSearch);
-    }
-    if (req.query.afterDateBeforeSearch != null && req.query.afterDateBeforeSearch != ""){
-        query = query.gte('dateCreated', req.query.afterDateBeforeSearch);
-    }
+                        async function indexRedirect(req, res, msg, msgClass){
+                            let query = userModel.find();
+                            if (req.query.userNameSearch != null && req.query.userNameSearch != ""){
+                                query = query.regex('firstName', new RegExp(req.query.userNameSearch, 'i'));
+                            }
+                            if (req.query.userDateBeforeSearch != null && req.query.userDateBeforeSearch != ""){
+                                query = query.lte('dateCreated', req.query.userDateBeforeSearch);
+                            }
+                            if (req.query.afterDateBeforeSearch != null && req.query.afterDateBeforeSearch != ""){
+                                query = query.gte('dateCreated', req.query.afterDateBeforeSearch);
+                            }
 
-    try{
-        const users = await query.exec()
-        var para = {
-            users:users,
-            searchParams:req.query,
-            msg: `An error occured`
-        }
-        res.render('user/index.ejs', {
-            users:users,
-            searchParams:req.query,
-            msg: `Listed fine`,
-            msgClass:'noError'
-        }); //tying the view to the moongoose model
-        
-    }catch {
-        res.render('user/index.ejs', {msg: `An error occurred getting the list`, searchParams:req.query, msgClass:'error-message'}); //tying the view to the moongoose model
-    }
-    //msg:"error goes in here", 
+                            //coming from authorization ; things like this should be temporary and is to be fixed in authorization middleware?
+                            //Rather than set admin to req.user.profileId, we'll set it to a wild card, that'll allow anything. 
+                            console.log('This is message:', msg);
+                            if (msg == 'My Profile(s)'){
+                                console.log('=%')
+                                query = query.where('_id', req.user.profileId); //work on this
+                            }
+
+                            try{
+                                const users = await query.exec()
+                                
+                                res.render('user/index.ejs', {
+                                    users:users,
+                                    searchParams:req.query,
+                                    msg,
+                                    msgClass
+                                }); //tying the view to the moongoose model
+                                
+                            }catch {
+                                res.render('user/index.ejs', {msg: `An error occurred getting the list`, searchParams:req.query, msgClass:'error-message'}); //tying the view to the moongoose model
+                            }
+                            //msg:"error goes in here",
+                        }
+route.get('/index', async (req, res)=>{
+    indexRedirect(req, res, 'Listed fine', 'noError') 
 })
 
 route.get('/other', async (req, res)=>{
@@ -145,34 +154,38 @@ route.get('/:id/edit',  async (req,res)=>{
     // let user = new userModel();
 })
 
+                        async function idRedirect(req,res, msg){
+                            // res.send('Getting the User Page...'+req.params.id);
+                            var ownAssets=[];
+                            try {
+                            const user =await userModel.findById(req.params.id);
+                            const allAssetType = await assetTypeModel.find();//.distinct('assetTypeClass')
+                            const asset = await assetModel.find({user:user.id}).exec(); //.limit(10)
+                            const allAsset = await (await assetModel.find().where('allocationStatus').ne(true));
+                            const assetTypeDistinct = await assetTypeModel.find().select('assetTypeClass status description').exec();
+                            user.userAsset.id.forEach(async itemArr=>{
+                                        ownAssets.push(itemArr);
+                                });
+                                // let msg = 'User found';
 
+                                const records = await assetModel.find().where('_id').in(ownAssets).select('assetCode assetType status').exec();
+                            res.render('user/show', {
+                                user:user,
+                                assetsByUser:asset,
+                                allAssets:allAsset,
+                                allAssetType,
+                                ownAssets:records,
+                                assetTypeAll:assetTypeDistinct,
+                                msg
+                            });
+
+                            }catch (e){
+                                console.log(e.message);
+                                res.redirect('/index')
+                            }
+                        }
 route.get('/:id', async (req, res)=>{
-    // res.send('Getting the User Page...'+req.params.id);
-    var ownAssets=[];
-    try {
-       const user =await userModel.findById(req.params.id);
-       const allAssetType = await assetTypeModel.find();//.distinct('assetTypeClass')
-       const asset = await assetModel.find({user:user.id}).exec(); //.limit(10)
-       const allAsset = await (await assetModel.find().where('allocationStatus').ne(true));
-       const assetTypeDistinct = await assetTypeModel.find().select('assetTypeClass status description').exec();
-       user.userAsset.id.forEach(async itemArr=>{
-                ownAssets.push(itemArr);
-        });
-
-        const records = await assetModel.find().where('_id').in(ownAssets).select('assetCode assetType status').exec();
-       res.render('user/show', {
-           user:user,
-           assetsByUser:asset,
-           allAssets:allAsset,
-           allAssetType,
-           ownAssets:records,
-           assetTypeAll:assetTypeDistinct
-       });
-
-    }catch (e){
-        console.log(e.message);
-        res.redirect('/index')
-    }
+    idRedirect(req, res, 'User found');
 });
 
 async function userLogSave(user, list, assignment, req){
@@ -375,12 +388,30 @@ route.delete('/:id', async(req,res)=>{
     try {
         let user = await userModel.findById(req.params.id);
         await user.remove();
+        //now taking care of req.user.proile info on userCredModel
+            let userWhoCreated = await userCredModel.find().where('profileId').equals(req.params.id);
+            console.log('This is user who Created:', userWhoCreated);
+            // userWhoCreated[0].profileId = "";
+
+           let remainingProfiles = userWhoCreated[0].profileId.filter(profileId=>{
+                console.log("profileId: ", profileId, " req.params.id: ", req.params.id);        
+                return profileId != req.params.id;
+            });
+            console.log('This is remainingProfiles', remainingProfiles);
+            userWhoCreated[0].profileId = remainingProfiles;
+            // userWhoCreated[0].profileId = userWhoCreated[0].profileId.slice(0, userWhoCreated[0].profileId.indexOf(req.params.id));
+            
+            await userWhoCreated[0].save();
+
+            //lets go on
         console.log('Passed Here')
         res.redirect("/user/index");
     } catch(e){
+        console.log(e.message);
         if (user == null){
             console.log('Entered here');
-            res.redirect('/user/index');
+            idRedirect(req, res, 'User still has assets');
+            // res.redirect(`/user/${req.params.id}`);
         }else{
             res.redirect(`/user/${user.id}`)
         }
@@ -420,7 +451,7 @@ route.post('/',   async (req,res)=>{
                 // req.user = user;
                 console.log('***************************************************************************')
                 console.log(req.user);
-                req.user.profileId = newUser.id; //now, when this user logs in again, he get's redirected to his profile, not createUser page
+                req.user.profileId.push(newUser.id); //now, when this user logs in again, he get's redirected to his profile, not createUser page
                 await req.user.save(); 
                 console.log(req.user);
                 userVar = user;

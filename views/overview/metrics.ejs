@@ -113,8 +113,14 @@
                         <option value = '/overview/<%=assetTypeItem.id%>/metrics?assetId=<%=assetTypeItem.id%>'><%=assetTypeItem.assetTypeClass%></option>
                     <%})%>
                     <option value = '/overview/all/metrics'>All</option>
+                    <option value = '/overview/none/metrics'>None</option>
                 </select>
             </div>
+        </div>
+    </div>
+    <div class = 'graph-cont-broken-down'>
+        <div>
+            <canvas id="myChartBrokenDown" width="200" height="100"></canvas>
         </div>
     </div>
 
@@ -135,18 +141,20 @@
         var ctrlDivRowGrab = document.getElementsByClassName('ctrl-div-row')[0]
 
         var assetObj = {num: [2,3, 20, 13]}
-        const ctx = document.getElementById('myChart').getContext('2d');
+        const ctx = document.getElementById('myChart');
 
 
-        const ctx2 = document.getElementById('myChart2').getContext('2d');
+        const ctx2 = document.getElementById('myChart2');
 
-        const ctx3 = document.getElementById('myChart3').getContext('2d');
+        const ctx3 = document.getElementById('myChart3');
         var ctxArr = [{chartDiv:ctx, graph:'bar'}, {chartDiv:ctx2, graph:'pie'}, {chartDiv:ctx3, graph:'line'}];
         var ctxArrObj = {}
         var ctxArrAll = [];
 
         let myChart3Arr = [];
-        let myChart4Obj = {}
+        let myChart4Obj = {};
+        var assetObjServer;
+        let myChartBrokenDown;
 
         var downloadPdfGrab = document.getElementById('downloadPdf');
         // downloadPdfGrab.addEvent
@@ -189,11 +197,79 @@
                 }
             }
         });
+
+        // (function(ctxItem){
+            ctxItem.chartDiv.addEventListener('click', function(click){
+                alert('I am clicked');
+                console.log(this);
+                console.log(click);
+                console.log('I am there now');
+                let points =myChart3.getElementsAtEventForMode(click, 'nearest', {intersect:true}, true);
+                console.log(points);
+                const firstPoint = points[0];
+                const value = myChart3.data.labels[firstPoint.index];
+                const value2 = myChart3.data.datasets[firstPoint.datasetIndex].data[firstPoint.index];
+                console.log(value);
+                console.log(value2);
+                chartBrokenDown(value);
+            });
+            
         myChart3Arr.push(myChart3);
         console.log('Pushing first chart')
         console.log(myChart3Arr);
 
     })
+}
+
+function chartBrokenDown(val){
+    alert('Calling');
+    console.log(val);
+    val+='BrokenDown';
+    console.log(val);
+    var brokenDownObj = assetObjServer[val];
+    console.log(brokenDownObj);
+    var brokenDownArrKeys = Object.keys(brokenDownObj);
+    var brokenDownArrVals = Object.values(brokenDownObj);
+    const ctxbrokenDown = document.getElementById('myChartBrokenDown');
+
+    if (myChartBrokenDown){
+        myChartBrokenDown.destroy();
+    }
+    myChartBrokenDown = new Chart(ctxbrokenDown, {
+            type: 'bar',
+            data: {
+                labels: Object.keys(brokenDownObj),
+                datasets: [{
+                    label: '# in general',
+                    data: Object.values(brokenDownObj),
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
 }
 // chartNow(assetObj);
     let getAsset = new XMLHttpRequest();
@@ -203,7 +279,7 @@
         getAsset.onreadystatechange = function(){
             // var getAsset = (JSON.parse(getAsset.responseJSON));
             if(getAsset.readyState == 4 && getAsset.status == 200){
-                var assetObjServer = JSON.parse(getAsset.response);
+                assetObjServer = JSON.parse(getAsset.response);
                 console.log(assetObjServer);
                 assetObjServer.asset.forEach((arrItem, i)=>{
                     console.log(arrItem.assetType.assetTypeClass);

@@ -23,7 +23,7 @@ let userCredSchema = new mongoose.Schema({
         default:'basic'
     },
     profileId:{
-        type:String
+        type:[String]
     }
 });
 
