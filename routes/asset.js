@@ -29,6 +29,9 @@ route.get('/index', async (req, res)=>{
 })
 
 //get the create new form for new asset
+route.get('trial', (res, req)=>{
+    res.render('asset/trial', {assetSerial:req.query.asset});
+})
 route.get('/new', async (req,res)=>{
     var assetTypeModelVar = await assetTypeModel.find({});
     assetTypeModelVar.sort((a,b)=>{
