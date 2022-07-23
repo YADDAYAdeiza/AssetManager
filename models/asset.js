@@ -11,8 +11,12 @@ let assetSchema = new mongoose.Schema({
     },
     assetType:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:assetTypeModel,
+        ref:'AssetTypeCol',
         required:true
+    },
+    assetName:{
+        type:String,
+        default:'Chair'
     },
     status:{
         type:String,

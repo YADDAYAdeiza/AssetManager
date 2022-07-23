@@ -36,6 +36,9 @@ let userSchema = new mongoose.Schema({
     state:{
         type:String
     },
+    zone:{
+        type:String
+    },
     directorate:{
         type:String
     },
@@ -51,7 +54,7 @@ let userSchema = new mongoose.Schema({
     },
     assetType:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:assetTypeModel
+        ref:'assetTypeModel'
     },
     dateCreated:{
         type:Date,
@@ -63,8 +66,12 @@ let userSchema = new mongoose.Schema({
     },
     userAsset:{
         id:{
+            type:[mongoose.Schema.Types.ObjectId],
+            ref:'AssetCol',
+            required:true
+        },
+        idType:{
             type:[String],
-            ref:assetModel,
             required:true
         },
         assignDate:{
@@ -114,11 +121,16 @@ userSchema.virtual('userProfilePic').get(function(){
 
 userSchema.pre('remove', function(next){
     console.log('Gotten in preRemove..');
+
+    //taking care of assets
     if (this.userAsset.id.length){
         next(new Error('This user has assets still'))
     }else{
         next();
     }
+
+    
+
     // assetModel.find({user: this.id}, (err, assets)=>{
     //     if (err){
     //         next(err)

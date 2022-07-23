@@ -269,7 +269,7 @@ function requisitionHistory(){
             userAssetPoolCheckboxGrab = document.getElementsByClassName('user-asset-pool-checkbox');
         }
         function userAssetAssign(this2){
-            alert(this2.innerHTML);
+            //alert(this2.innerHTML);
             lastAssignmentBtn = this2.value;
             console.log(userID)
             var obj = {url:`/user/ls`}
@@ -299,17 +299,22 @@ function requisitionHistory(){
        }
     
        function getObjectIds(assetDiv){
+        console.log('--')
+        console.log(assetDiv);
         idObj['idArr'] = [];
            let assetDivGrab = assetDiv.getElementsByClassName('divContLi');
+           console.log('**')
+           console.log(assetDivGrab);
            [...assetDivGrab].forEach(divItem=>{
                idObj['idArr'].push(divItem.getAttribute('data-asset-id'));
            })
+           console.log('$$');
            console.log(idObj)
        }
-
+       var ownAssetIDArr=[]
     function userAssetDeassign(this2, assetDiv, updateForm){
         console.log(updateForm);
-        alert(this2.innerHTML);
+        //alert(this2.innerHTML);
         console.log(this2);
         console.log(assetDiv);
         assetGrab = document.getElementsByClassName(assetDiv)[0];
@@ -320,14 +325,19 @@ function requisitionHistory(){
         console.log(trueBoxes);
         trueBoxes.forEach(item=>{
             userAssetPoolGrab.appendChild(item.parentNode.parentNode); 
+            ownAssetIDArr.push(item.parentNode.parentNode.getAttribute('data-asset-id'))
         })
+        idObj['idArr'] = ownAssetIDArr;
+        console.log('This is own AssetId to be deassigned: ', ownAssetIDArr);
         console.log(assetGrab);
         console.log(assetGrab.children.length);
         if (!assetGrab.children.length){
                 doneBtnGrab.classList.toggle('btn-deActivate'); 
         }
         idObj.userId = userID;
-            getObjectIds(assetGrab);
+            console.log(userAssetsOwnDivGrab);
+            
+            // getObjectIds(userAssetsOwnDivGrab);
             console.log('*****')
             console.log(idObj);
             if (updateForm){
@@ -473,7 +483,7 @@ var objClassList = {}
         console.log(liRequisitionGrab);
         // liRequisitionGrab.forEach(liItem=>{
             // console.log(liItem.innerHTML);
-            alert(liRequisitionGrab.length);
+            //alert(liRequisitionGrab.length);
             
             for (var a=0; a<liRequisitionGrab.length;a++){
                 // alert (liRequisitionGrab[a].innerHTML);

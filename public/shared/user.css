@@ -124,3 +124,15 @@ transition:  0.4s;
     border: 1px solid #ccc;
     border-top: none;
   }
+
+  .sel-check-div {
+    width:50%;
+    justify-items: left;
+    background-color: pink;
+    text-align: left;
+    grid-column: span 2;
+  }
+
+  .sel-check-div input{
+    display: inline-block;
+}

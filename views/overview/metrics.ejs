@@ -74,8 +74,8 @@
               <option>By User</option>
               <option>By Type</option>
               <option value='{"labelName":"By Cadre", "queryVal":"cadre"}'>By Cadre</option>
-              <option>By Directorate</option>
-              <option>By Zone</option>
+              <option value = '{"labelName":"By Directorate", "queryVal":"directorate"}'>By Directorate</option>
+              <option value = '{"labelName":"By Zone", "queryVal":"zone"}'>By Zone</option>
           </select>
       </p>
         </p>
@@ -99,22 +99,24 @@
         </div>
         <div class = 'ctrl-div'>
             <div class="ctrl-div-row row">
-                
-                <input type="checkbox" class="dependCheck" value="assetAssigned" id = 'assetAssigned' onclick="getAssetNumber(assetSel)"/> <label for="assetAssigned">Total Assets Assigned</label>
+                <label for="assetAssigned">Total Assets Assigned</label>
+                <input type="checkbox" class="dependCheck" value="assetAssigned" id = 'assetAssigned' onclick="getAssetNumber(assetSel)"/>
                 <label for="requisition">Requisition</label>
                 <input type="checkbox" class="dependCheck" value="requisition" id = 'requisition' onclick="getAssetNumber(assetSel)"/>
                 
                 <label for="total">Asset Type</label>
                 <input type="checkbox" class="dependCheck" value="total" id = 'total' onclick="getAssetNumber(assetSel)"/>
-
-                <select id = 'assetSel' onchange = 'getAssetNumber(this)'>
-                   <%uniqueAssetModelItems.forEach(assetTypeItem=>{%>
-        assetType
-                        <option value = '/overview/<%=assetTypeItem.id%>/metrics?assetId=<%=assetTypeItem.id%>'><%=assetTypeItem.assetTypeClass%></option>
-                    <%})%>
-                    <option value = '/overview/all/metrics'>All</option>
-                    <option value = '/overview/none/metrics'>None</option>
-                </select>
+                
+                <!-- <div class = 'sel-check-div'> -->
+                    <select id = 'assetSel' class= "divSelect" onchange = 'getAssetNumber(this)'>
+                        <%uniqueAssetModelItems.forEach(assetTypeItem=>{%>
+                            <option value = '/overview/<%=assetTypeItem.id%>/metrics?assetId=<%=assetTypeItem.id%>'><%=assetTypeItem.assetTypeClass%></option>
+                            <%})%>
+                            <option value = '/overview/all/metrics' selected>All</option>
+                            <option value = '/overview/none/metrics'>None</option>
+                        </select>
+                        <input type="checkbox" class="dependCheck dependency assetDepend" value="assetDepend" id = 'assetDepend' onclick="getAssetNumber(assetSel)" data-ctrlOnChange = 'ctrlOnChange'/>
+                <!-- </div> -->
             </div>
         </div>
     </div>
@@ -130,7 +132,9 @@
         //grabbing ejs values
         var ejsVar = {
             state:<%- JSON.stringify(uniqueStates) %>,
-            cadre: <%- JSON.stringify(uniqueCadres) %>
+            cadre: <%- JSON.stringify(uniqueCadres) %>,
+            directorate:<%- JSON.stringify(uniqueDirectorates) %>,
+            zone:<%- JSON.stringify(uniqueZones) %>
         }
 
         //Grabing Divs
@@ -273,7 +277,25 @@ function chartBrokenDown(val){
 }
 // chartNow(assetObj);
     let getAsset = new XMLHttpRequest();
+    var dependencyArr;
     function getAssetNumber(this2){
+
+        
+        
+        // Getting dependencyArray to call onchange on
+        dependencyArr =[];
+        [...document.getElementsByClassName('dependency')].forEach(inpt=>{
+            if (inpt.type == 'checkbox' && inpt.checked){
+                if(this2.id !== inpt.parentNode.getElementsByTagName('select')[0].id){
+                    dependencyArr.push(inpt.parentNode.getElementsByTagName('select')[0]);
+                }
+                //dependencyArr.push(inpt);    
+            }
+        })
+
+
+        console.log('============')
+        console.log(dependencyArr);
         console.log(this2);
         var assetObj = {}
         getAsset.onreadystatechange = function(){
@@ -325,6 +347,11 @@ function chartBrokenDown(val){
                     })
                 }
                 chartNow(assetObj);
+                // dependencyArr.forEach(sel=>{
+                //     sel.onchange();
+                // });
+
+                dependencyArr[0].onchange();
             }
 
         }
@@ -337,6 +364,45 @@ function chartBrokenDown(val){
 
     var thisSelClassName;
     function getOtherMetric(this2, divNum){
+
+
+         //grab checked checkboxes for dependency
+         var dependencyGrab = this2.parentNode.parentNode.getElementsByClassName('dependency');
+                //Grab select corresponding with checked checkboxes
+                var divSelectGrab = this2.parentNode.parentNode.getElementsByTagName('select');
+                var divSelectGrabArr = [...divSelectGrab];
+                console.log('This is array:', divSelectGrabArr);
+                var filteredCheck =[];
+                [...dependencyGrab].forEach((arrItem, i)=>{
+                    if (arrItem.checked){
+                        var checkVal = arrItem.value;
+                        console.log(arrItem.value);
+                        console.log(checkVal);
+                        var selectText = divSelectGrabArr[i].options[divSelectGrabArr[i].selectedIndex].text;
+                        console.log('++', selectText);
+                        var objSelCheck={};
+                        objSelCheck[checkVal] = selectText;
+                        filteredCheck.push(objSelCheck);
+                        // filteredCheck.push({checkVal:selectText});
+                        // console.log({(arrItem.value):selectText})
+                    } 
+                })
+
+                var dependencyStr = "";
+                console.log('This is filteredCheck:');
+                console.log(filteredCheck);
+
+                filteredCheck.forEach((arrItem,i)=>{
+                    dependencyStr += '&'+Object.keys(arrItem)[0]+'='+Object.values(arrItem)[0];
+                    // dependencyStr += '&'+JSON.stringify(arrItem).replace('{', "").replace('}', '').replace(':', '=');
+                });
+
+                // filteredCheck.forEach((arrItem,i)=>{
+                //     dependencyStr += '&'+Object.keys(arrItem)[0]+'='+Object.values(arrItem)[0];
+                //     // dependencyStr += '&'+JSON.stringify(arrItem).replace('{', "").replace('}', '').replace(':', '=');
+                // });
+                console.log('This is dependencyStr',  dependencyStr);
+        
         var ctrlDivGrabNow = this2.parentNode.parentNode; //ie. ctrl-div
         console.log(ctrlDivGrabNow);
         var dependCheckGrab = ctrlDivGrabNow.getElementsByClassName('dependCheck');
@@ -392,7 +458,7 @@ function chartBrokenDown(val){
             // graphDiv.innerHTML = item;
             console.log(ctxAgain);
             console.log(divNum[i]);
-            var chartDivTypeObj ={
+            var chartDivTypeObj = {
                 chartDiv:ctxAgain,
                 graph:divNum[i]
             }
@@ -435,15 +501,43 @@ function chartBrokenDown(val){
 
 
                 chartNowAll(assetObj, ctxArrObj[this2.className], this2);
+                console.log('%%%%%%%%%%%%%%%%%%%%%%');
+                console.log(dependencyArr);
+                    for (var a=1;a<dependencyArr.length;a++){
+                        alert('in here')
+                       dependencyArr[a].onchange();
+                    }
+                    dependencyArr=[];
+                   ;
+                
             }
 
         }
         //alert(this2.options[this2.selectedIndex].label)
-        getAsset.open("GET", `/overview/${this2.value}/${this2.options[this2.selectedIndex].label}/metricOther`, true);
+        console.log([document.getElementsByClassName('dependCheck')]);
+        dependCheckBool = true;
+        [...document.getElementsByClassName('dependCheck')].forEach(checkItem=>{
+            if(checkItem.checked){
+                // getAsset.open("GET", `/overview/${this2.value}/${this2.options[this2.selectedIndex].label}/metricOther?first=${assetSel.value}`, true);//assetSel.options[assetSel.selectedIndex].label
+                dependCheckBool = true;
+            }
+        })
+        if (dependCheckBool){
+            getAsset.open("GET", `/overview/${this2.value}/${this2.options[this2.selectedIndex].label}/metricOther?first=${assetSel.value}`+dependencyStr, true);//assetSel.options[assetSel.selectedIndex].label
+        }else{
+            alert('Second one');
+            getAsset.open("GET", `/overview/${this2.value}/${this2.options[this2.selectedIndex].label}/metricOther`, true);
+
+        }
         getAsset.send()
     }
 
     function AddDivSel(divNumber, itemSel){
+        
+
+
+
+
         AddDiv(divNumber);
         AddSel(divNumber, itemSel);
 
@@ -491,6 +585,7 @@ var selDivCounter = 0;
             var label = newCtrlDivRowGrab.appendChild(document.createElement('label'));
             var selDiv = newCtrlDivRowGrab.appendChild(document.createElement('select'));
             selDiv.setAttribute('class', 'divSelectTeam'+selDivCounter);
+            selDiv.setAttribute('class', 'divSelectTeam'+selDivCounter);
             selDiv.setAttribute('data-sel-name', JSON.parse(itemSel.value).queryVal);
             selDiv.onchange = function (){
                 getOtherMetric(this, divNum);
@@ -498,8 +593,8 @@ var selDivCounter = 0;
             label.innerHTML = JSON.parse(itemSel.value).labelName;
             var checkDiv = newCtrlDivRowGrab.appendChild(document.createElement('input'));
             checkDiv.setAttribute('type', 'checkbox');
-            checkDiv.setAttribute('class', 'dependCheck');
-            checkDiv.setAttribute('value', 'total');
+            checkDiv.setAttribute('class', 'dependCheck dependency');
+            checkDiv.setAttribute('value', JSON.parse(itemSel.value).queryVal+'Depend');
 
 
             ejsVar[JSON.parse(itemSel.value).queryVal].forEach((item, i)=>{
@@ -509,17 +604,22 @@ var selDivCounter = 0;
                 selDiv.options[i].value = JSON.parse(itemSel.value).queryVal;
             })
             selDiv.options[selDiv.options.length] = new Option('All');
+            // selDiv.options[selDiv.options.length].setAttribute('required', true)
             selDiv.options[selDiv.options.length-1].label = 'All';
             selDiv.options[selDiv.options.length -1].value =JSON.parse(itemSel.value).queryVal;
+            selDiv.options[selDiv.options.length -1].selected = true;
             newCtrlDivRowGrab.appendChild(selDiv);
             newCtrlDivRowGrab.className = 'ctrl-div-row row';
         // });
 
         // newGraphContRowGrab.className = "graph-cont-row";
-        ctrlDivGrab.appendChild(newCtrlDivRowGrab);
 
+        
+        ctrlDivGrab.appendChild(newCtrlDivRowGrab);
+        
         ctxArrObj[selDiv.className] = [];
         myChart4Obj[selDiv.className] = [];
+        selDiv.onchange();
     }
 
 
@@ -619,6 +719,8 @@ doc.fromHTML(elementHTML, 15, 15, {
     'elementHandlers': specialElementHandlers
 });
     }
+  
+    assetSel.onchange();
     </script>
 
 </body>

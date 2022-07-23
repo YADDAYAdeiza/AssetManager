@@ -34,7 +34,7 @@ let userVar = 'trial';
 //get all users of assets
 
 route.get('/getHistory/:id', async (req,res)=>{
-   let userHistory = await userLogModel.find().where('activity').equals('Requisition').where('user').equals(mongoose.Types.ObjectId(req.params.id));
+   let userHistory = await userLogModel.find().where('activity').in(['Requisition', 'Directorate Approval', 'Store Approval']).where('user').equals(mongoose.Types.ObjectId(req.params.id));
    
     res.json(userHistory);
 })
@@ -167,7 +167,8 @@ route.get('/:id/edit',  async (req,res)=>{
                                         ownAssets.push(itemArr);
                                 });
                                 // let msg = 'User found';
-
+                                console.log('This is asset:')
+                                console.log(asset);
                                 const records = await assetModel.find().where('_id').in(ownAssets).select('assetCode assetType status').exec();
                             res.render('user/show', {
                                 user:user,
@@ -243,7 +244,7 @@ route.put('/:id', async (req,res)=>{
     let user;
     // let affectedAssets;
     let allAsset;
-    let newIdArr = [];
+    let newIdArr = []; //this will contain the filtered array to be reassigned (filtered of object to be deassgined)
     let msg = {};
     console.log(req.method);
     console.log(req.params.id);
@@ -268,8 +269,9 @@ route.put('/:id', async (req,res)=>{
             userAssetArr.idArr.forEach(assetId=>{
                 newIdArr.push(assetId)
             })
-            newIdArr.forEach(arrItem=>{
+            newIdArr.forEach((arrItem, i)=>{
                 user.userAsset.id.push(arrItem);
+                user.userAsset.idType.push(affectedAssets[i].assetType);
             })
             
             //affecting assets
@@ -281,18 +283,48 @@ route.put('/:id', async (req,res)=>{
         
         if (req.query.assignment == 'DeAssign'){
             console.log('DeAssign')
-            newIdArr = user.userAsset.id.filter(item=>{
-                return userAssetArr.idArr.indexOf(item) == -1
-            }) 
-            user.userAsset.id= userAssetArr.idArr;
-            // user.userAsset.id=userAssetArr.idArr;
-            let affectedAssets = await assetModel.find().where('_id').in(newIdArr).select('assetType status allocationStatus').exec();
             
-            affectedAssets.forEach(async assetArr=>{
-                    assetArr.status = 'Used'; //this should have been done at the point of user receiving the item. In future, remove this and redo 
-                    assetArr.allocationStatus = false;
-                await assetArr.save();
-             })
+            //
+            user.userAsset.id.forEach(item=>{
+                console.log(item)
+                console.log('This is item:', item.toString());
+                // if(userAssetArr.idArr.indexOf((item.toString()).slice((item.toString()).indexOf('(')+1, (item.toString()).indexOf(')'))) == -1){
+                //     newIdArr.push(item);
+                // } //string to mongoose.Types.ObjectId.  How to
+                if(userAssetArr.idArr.indexOf((item.toString())) == -1){
+                    newIdArr.push(item);
+                } //string to mongoose.Types.ObjectId.  How to
+            })
+            user.userAsset.id= newIdArr;
+            let assetsNamesToAssign = await assetModel.find().where('_id').in(newIdArr).select('assetType status allocationStatus').exec();
+            let affectedAssets = await assetModel.find().where('_id').in(userAssetArr.idArr).select('assetType status allocationStatus').exec();
+
+            // newIdArr = user.userAsset.id.filter(item=>{
+            //     console.log(item)
+            //     console.log(item.toString());
+            //     console.log('This is asset: ', (item.toString).splice((item.toString()).indexOf('(')+1, (item.toString()).indexOf(')'))) //string to mongoose.Types.ObjectId.  How to
+            //     return userAssetArr.idArr.indexOf((item.toString()).splice((item.toString()).indexOf('(')+1, (item.toString()).indexOf(')'))) == -1 //string to mongoose.Types.ObjectId.  How to
+            // })
+
+            // //
+            // user.userAsset.id= newIdArr;
+            // user.userAsset.id=userAssetArr.idArr;
+            // let affectedAssets = await assetModel.find().where('_id').in(newIdArr).select('assetType status allocationStatus').exec();
+            
+            var assetTypeArr = [];
+            assetsNamesToAssign.forEach(asset=>{
+                asset.allocationStatus = false;
+                assetTypeArr.push(asset.assetType)
+            })
+            user.userAsset.idType = assetTypeArr;
+            
+
+            // var newUserAsset = assetTypeArr.filter(assetType=>{
+            //         return user.userAsset.idType.indexOf(assetType) == -1
+            // })
+            // user.userAsset.idType = newUserAsset;
+
+             
 
             // newIdArr.forEach(async assetArr=>{
             //     assetArr.status = 'Used'; //this should have been done at the point of user receiving the item. In future, remove this and redo 
@@ -301,7 +333,6 @@ route.put('/:id', async (req,res)=>{
             //  })
         }
         console.log('Here is new arr++++++++++++')
-        console.log(newIdArr);
         
 
         await user.save();
@@ -425,6 +456,7 @@ route.post('/',   async (req,res)=>{
         firstName:req.body.firstName,
         email:req.body.email,
         state:JSON.parse(req.body.state).state,
+        zone:JSON.parse(req.body.state).zone,
         directorate:req.body.directorate,
         geoCoord:JSON.parse(req.body.state).latLng,
         phone:req.body.phone,
