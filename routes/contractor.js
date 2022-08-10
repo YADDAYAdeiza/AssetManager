@@ -36,7 +36,7 @@ route.route('/download/:id').get(handleDownload).post(handleDownload);
 // route.post('/download/:id', handleDownload);
 
 async function handleDownload(req, res){
-    let contractor = await contractorModel.findById(req.params.id);
+    let contractor = await contractorModel.findById(req.params.id)
 
     if (contractor.contractorPw != null){
         if (req.body.fPassword == null){

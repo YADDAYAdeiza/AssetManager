@@ -22,6 +22,13 @@ const https = require('https');
 const methodOverride = require('method-override')
 const bcrypt =  require('bcrypt');
 
+let cors = require('cors');
+const server = require('http').Server(app);
+const io = require('socket.io')(server);
+const {v4:uuidV4} = require('uuid');
+
+// app.use(cors());
+
 //authentication
 let {role} = require('./role.js');
 
@@ -31,9 +38,7 @@ console.log(role);
 
 // const userModel = require('models/user.js');
 
-const {v4:uuidV4} = require('uuid');
-var server = require('http').Server(app);
-var io = require('socket.io')(server);
+ 
 
 
 app.get('/audit', (req,res)=>{
@@ -51,9 +56,11 @@ io.on('connection', socket=>{
       socket.join(roomId)
       socket.to(roomId).emit('user-connected', userId)
       // socket.broadcast.to(roomId).emit("hello", "world");
+      //socket.to(roomId).broadcast.emit('user-connected', userId)
 
       socket.on('disconnect', ()=>{
         socket.to(roomId).emit('user-disconnected', userId)
+        // socket.to(roomId).broadcast.emit('user-disconnected', userId)
       })
     })
   })
@@ -237,7 +244,7 @@ const peerServer = ExpressPeerServer(pServer, {
 
 app.use('/peerjs', peerServer);
 
-pServer.listen(9000)
+pServer.listen(9000);
   
   
   // httpServer.listen(process.env.PORT || 4000);

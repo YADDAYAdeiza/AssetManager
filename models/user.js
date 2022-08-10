@@ -47,7 +47,7 @@ let userSchema = new mongoose.Schema({
         required:true
     },
     profilePic:{
-        type: Buffer
+        type: String
     },
     profilePicType:{
         type:String
@@ -107,12 +107,20 @@ let userSchema = new mongoose.Schema({
     
 });
 
+// userSchema.virtual('userProfilePic').get(function(){
+//      if (this.profilePic != null && this.profilePicType != null){
+//          return `data:${this.profilePicType};charset=utf-8;base64,${this.profilePic.toString('base64')}`
+//      }else{ //this gives it a default image
+//         return '/nafdac_logo.png';
+//      }
+// });
+
 userSchema.virtual('userProfilePic').get(function(){
-     if (this.profilePic != null && this.profilePicType != null){
-         return `data:${this.profilePicType};charset=utf-8;base64,${this.profilePic.toString('base64')}`
-     }else{ //this gives it a default image
-        return '/nafdac_logo.png';
-     }
+    if (this.profilePic != null && this.profilePicType != null){
+        return `https://ams-users.s3.us-west-1.amazonaws.com/users/${this.profilePic}`
+    }else{ //this gives it a default image
+       return '/nafdac_logo.png';
+    }
 });
 
 // userSchema.methods.blow = function(){

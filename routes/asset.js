@@ -8,6 +8,7 @@ let assetModel = require('../models/asset.js');
 let assetTypeModel = require('../models/assetType.js');
 // const { rawListeners } = require('../models/asset.js');
 const userModel = require('../models/user.js');
+let {v4:uuidv4} = require('uuid');
 //route.set('layout', 'layouts/layout');
 
 const imageMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
@@ -44,13 +45,10 @@ route.get('/new', async (req,res)=>{
         if (a.assetTypeClass < b.assetTypeClass){
             return -1
         }
-        
+     
         return 0;
     });
-    console.log("+++++++++++++++++++++++++++++++")
-    assetTypeModelVar.forEach((item)=>{
-        console.log(item.assetTypeClass)
-    });
+    
     renderNewPage(res, new assetModel(), assetTypeModelVar, 'new');
 })
 
@@ -75,6 +73,7 @@ async function renderFormPage(res, asset, assetTypeModelVar, form, hasError = fa
             params.assetTypeArr = assetTypeModelVar
         }else{
             params.assetType = assetTypeModelVar
+            params.serialNumber = uuidv4();
         }
 
         if (hasError){
@@ -193,6 +192,7 @@ route.delete('/:id', async (req, res)=>{
 route.post('/', async (req,res)=>{
     
     var assetItem = new assetModel({
+        assetCode: req.body.assetNumber,
         assetType: req.body.selAssetType
     })
 

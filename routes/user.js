@@ -17,6 +17,14 @@ let userCredModel = require('../models/userCred');
 const {adminAuth} = require('../basicAuth');
 // const { reset } = require('nodemon');
 
+let multer = require('multer');
+let upload = multer({dest:'uploads/', fileFilter:(req, file, callback)=>{
+                        callback(null, imageMimeTypes.includes(file.mimetype))
+                    }
+                 });
+
+
+
 
 
 
@@ -450,7 +458,7 @@ route.delete('/:id', async(req,res)=>{
 });
 
 //create new user
-route.post('/',   async (req,res)=>{
+route.post('/', upload.single('photo'), async (req,res)=>{
     const user = new userModel({ //we're later getting asset from the form
         lastName:req.body.lastName,
         firstName:req.body.firstName,
@@ -502,6 +510,7 @@ route.post('/',   async (req,res)=>{
         
     }catch (e) {
         console.error(e);
+        console.log('This is error above')
         let msg = {
             message:'email already exists',
             class:'red'
@@ -509,6 +518,7 @@ route.post('/',   async (req,res)=>{
         renderNewPage(res, user, msg);
     }
 
+ 
 })
 
 
@@ -525,12 +535,17 @@ route.get('/audit2', (req, res)=>{
 
 function saveProfilePic(user, encodedProfile){
     if (encodedProfile == null) return
+    console.log(encodedProfile);
+    console.log('Above is photo')
+    // const profile = JSON.parse(encodedProfile);
+    // if (profile !=null && imageMimeTypes.includes(profile.type)){
+    //     user.profilePic = new Buffer.from(profile.data, 'base64');
+    //     user.profilePicType = profile.type;
+    // }
 
-    const profile = JSON.parse(encodedProfile);
-    if (profile !=null && imageMimeTypes.includes(profile.type)){
-        user.profilePic = new Buffer.from(profile.data, 'base64');
-        user.profilePicType = profile.type;
-    }
+        user.profilePic = encodedProfile;
+        user.profilePicType = 'An Image';
+   
 
 }
 

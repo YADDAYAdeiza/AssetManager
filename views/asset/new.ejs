@@ -1,19 +1,18 @@
 <form id="regForm" action="/asset" method = "post">
 
     <h1>Register Asset:</h1>
+
     
     <!-- One "tab" for each step in the form: -->
+    <!-- assetType.assetCode -->
     <div class="tab">Name:
-      <p><input placeholder="Asset Type Serial No..." oninput="this.className = ''" name = "assetNumber" id="serialInpt" value="<%=assetType.assetCode%>"></p>
-      <p><input placeholder="Asset Type..." oninput = "checkSelectOptions(this.value)" oninput="this.className = ''" id = "inputAssetType" name = "assetTypeName" value="<%=assetType.assetType%>"></p>
-      <p><input type="file" name="assetPic" class = "asset-pic filepond"></p>
+      <p><input placeholder="Asset Type Serial No..." oninput="this.className = ''" name = "assetNumber" id="serialInpt" value="AS-<%=locals.serialNumber%>" readonly></p>
       <p><select  onchange = "SetAssetValue(this)" id = "selAsset" name="selAssetType">
         <% assetType.forEach(assetTypeItem =>{ %>
-          
           <option label = "<%= assetTypeItem.assetTypeClass %>" value =<%=assetTypeItem._id%> ></option>
-
-          <%  })%>
+        <% }) %>
       </select></p>
+      <p><input type="file" name="assetPic" class = "asset-pic filepond"></p>
     </div>
     >
     <div class="tab">Contact Info:

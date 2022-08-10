@@ -2,13 +2,17 @@
 <%if (locals.msg){ %>
     <h6><%= msg %></h6>
     <%}%>
-<form action = '/assetType' method = 'GET'>
+<form action = '/assetType/index' method = 'GET'>
     <div>
-        <input type="text" name="assetTypeName" value = <%=assetTypes.assetTypeCode %>  >
+        <input type="text" name="assetTypeNameSearch" value = <%=assetTypes.assetTypeCode %>  >
     </div>
 
     <div>
-        <input type="date" name="assetTypeDate" value = "<%=assetTypes %>">
+        <input type="date" name="assetTypeDateAfter" value = "<%=assetTypes %>">
+    </div>
+    
+    <div>
+        <input type="date" name="assetTypeDateBeforeSearch" value = "<%=assetTypes %>">
     </div>
     <button type="submit">Search</button>
 </form>
