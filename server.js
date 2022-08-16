@@ -235,27 +235,29 @@ app.use(passport.session());
 
   // const http = require('http');
 
-  //
-const pServer = http.createServer(app);
-/////assetmanger.herokuapp.com
-const peerServer = ExpressPeerServer(pServer, {
-  debug: true,
-  path: '/assetmangerer.herokuapp.com'
-});
+//   
 
-app.use('/peerjs', peerServer);
 
-pServer.on('connection', function(client){
-  console.log(client);
-  console.log('Connected right now!');
-});
+// const pServer = http.createServer(app);
+// /////assetmanger.herokuapp.com
+// const peerServer = ExpressPeerServer(pServer, {
+//   debug: true,
+//   path: '/assetmangerer.herokuapp.com'
+// });
 
-pServer.on('disconnect', (client)=>{
-  console.log(client);
-  console.log('Thing is disconnected...');
-});
+// app.use('/peerjs', peerServer);
 
-pServer.listen(9000);
+// pServer.on('connection', function(client){
+//   console.log(client);
+//   console.log('Connected right now!');
+// });
+
+// pServer.on('disconnect', (client)=>{
+//   console.log(client);
+//   console.log('Thing is disconnected...');
+// });
+
+// pServer.listen(9000);
   
   
   // httpServer.listen(process.env.PORT || 4000);
