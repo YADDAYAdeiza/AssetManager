@@ -240,10 +240,20 @@ const pServer = http.createServer(app);
 /////assetmanger.herokuapp.com
 const peerServer = ExpressPeerServer(pServer, {
   debug: true,
-  path: '/assetmanger.herokuapp.com'
+  path: '/assetmangerer.herokuapp.com'
 });
 
 app.use('/peerjs', peerServer);
+
+pServer.on('connection', function(client){
+  console.log(client);
+  console.log('Connected right now!');
+});
+
+pServer.on('disconnect', (client)=>{
+  console.log(client);
+  console.log('Thing is disconnected...');
+});
 
 pServer.listen(9000);
   
