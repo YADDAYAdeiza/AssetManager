@@ -27,12 +27,14 @@ myPeer.on('call', call=>{
     
 })
 socket.on('user-connected', userId=>{
-    connectToNewUser(userId, stream)
+    connectToNewUser(userId, stream);
+    console.log('User connected production...');
     setTimeout(connectToNewUser,1000,userId,stream)
 })
 })
 
 socket.on('user-disconnected', userId=>{
+    console.log('User disconnected...');
     if(peers[userId]){
         peers[userId].close()
     }
