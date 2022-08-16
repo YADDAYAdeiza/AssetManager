@@ -27,7 +27,7 @@ myPeer.on('call', call=>{
     
 })
 socket.on('user-connected', userId=>{
-    connectToNewUser(userId, stream);
+    // connectToNewUser(userId, stream);
     console.log('User connected production...');
     setTimeout(connectToNewUser,1000,userId,stream)
 })
