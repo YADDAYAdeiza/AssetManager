@@ -1,6 +1,13 @@
-<form id="editForm" action="/user/<%= user.id %>?_method=PUT" method = "post" style="background-color: skyblue;">
+<form action = '/logout?_method=DELETE' method="POST">
+  <button type="submit">Logout</button>
+</form>
+<p style = "color:<%=msg.class%>"><%=msg.message%></p>
 
-  <h1>Edit User:</h1>
+
+
+<form id="regForm" method = "post" action="/user/<%=user._id%>?_method=PUT" style="background-color: skyblue;">
+
+  <h1>Register User:</h1>
   
   <!-- One "tab" for each step in the form: -->
   <div class="tab">Name:
@@ -9,33 +16,92 @@
   </div>
   
   <div class="tab">Contact Info:
-    <p><input placeholder="E-mail..." oninput="this.className = ''" name = "email" value="<%=user.email%>"></p>
+    <p><input style = "color:<%=msg.class%>" placeholder="E-mail..." oninput="this.className = ''" name = "email" value="<%=user.email%>"></p>
     <p><input placeholder="Phone..." oninput="this.className = ''" name = "phone" value="<%=user.phone%>"></p>
   </div>
   
-  <div class="tab">Birthday:
-    <p><input placeholder="dd" oninput="this.className = ''" name = "day"></p>
-    <p><input placeholder="mm" oninput="this.className = ''" name = "month"></p>
-    <p><input placeholder="yyyy" oninput="this.className = ''" name = "year"></p>
+  <div class="tab">Directorate:
+    <!-- <p><input type = 'date' oninput="this.className = ''" name = "createdAt" value = "2022-12-11"></p> -->
+    <p><select name="directorate">
+      <option label = 'DER' value="DER"></option>
+      <option label = 'FSAN' value="FSAN"></option>
+      <option label = 'R&R' value="R&R"></option>
+      <option label = 'A&HR' value="A&HR"></option>
+      <option label = 'F&A' value="F&A"></option>
+      <option label = 'NCS' value="NCS"></option>
+      <option label = 'CER' value="CER"></option>
+      <option label = 'VMAP' value="VMAP"></option>
+      <option label = 'DGO' value="DGO"></option>
+      <option label = 'Legal' value="Legal"></option>
+      <option label = 'PID' value="PID"></option>
+    </select></p>
+    <p><select name = 'state'>
+      <option value = '{"state":"Abia", "zone":"South-East", "latLng":{"lat":"5.532003041", "lng":"7.486002487"}}'>Abia</option>
+      <option value = '{"state":"Anambra", "zone":"South-East", "latLng":{"lat":"6.210433572", "lng":"7.06999711"}}'>Anambra</option>
+      <option value = '{"state":"Adamawa", "zone":"North-East", "latLng":{"lat":"10.2703408", "lng":"13.2700321"}}'>Adamawa</option>
+      <option value = '{"state":"Akwa Ibom", "zone":"South-South", "latLng":{"lat":"5.007996056", "lng":"7.849998524"}}'>Akwa Ibom</option>
+      <option value = '{"state":"Bauchi",  "zone":"North-East", "latLng":{"lat":"11.68040977", "lng":"10.19001339"}}'>Bauchi</option>
+      <option value = '{"state":"Bayelsa", "zone":"South-South", "latLng":{"lat":"4.664030", "lng":"6.036987"}}'>Bauchi</option>
+      <option value = '{"state":"Benue", "zone":"North-Central", "latLng":{"lat":"7.190399596", "lng":"8.129984089"}}'>Benue</option>
+      <option value = '{"state":"Borno", "zone":"North-East", "latLng":{"lat":"10.62042279", "lng":"12.18999467"}}'>Borno</option>
+      <option value = '{"state":"Cross River", "zone":"South-South", "latLng":{"lat":"4.960406513", "lng":"8.330023558"}}'>Cross River</option>
+      <option value = '{"state":"Delta", "zone":"South-South", "latLng":{"lat":"5.890427265", "lng":"5.680004434"}}'>Delta</option>
+      <option value = '{"state":"Ebonyi","zone":"South-East", "latLng":{"lat":"6.2500", "lng":"8.0833"}}'>Ebonyi</option>
+      <option value = '{"state":"Edo", "zone":"South-South", "latLng":{"lat":"6.340477314", "lng":"5.620008096"}}'>Edo</option>
+      <option value = '{"state":"Ekiti", "zone":"South-West","latLng":{"lat":"7.630372741", "lng":"5.219980834"}}'>Ekiti</option>
+      <option value = '{"state":"Enugu", "zone":"South-East", "latLng":{"lat":"6.867034321", "lng":"7.383362995"}}'>Enugu</option>
+      <option value = '{"state":"Federal Capital Territory", "zone":"FCT", "latLng":{"lat":"9.083333149", "lng":"7.533328002"}}'>Federal Capital Territory</option>
+      <option value = '{"state":"Gombe", "zone":"North-East", "latLng":{"lat":"10.29044293", "lng":"11.16995357"}}'>Gombe</option>
+      <option value = '{"state":"Imo", "zone":"South-East", "latLng":{"lat":"5.492997053", "lng":"7.026003588"}}'>Imo</option>
+      <option value = '{"state":"Jigawa", "zone":"North-West", "latLng":{"lat":"11.7991891", "lng":"9.350334607"}}'>Jigawa</option>
+      <option value = '{"state":"Kaduna", "zone":"North-West", "latLng":{"lat":"11.0799813", "lng":"7.710009724"}}'>Kaduna</option>
+      <option value = '{"state":"Kano", "zone":"North-West", "latLng":{"lat":"11.99997683", "lng":"8.5200378"}}'>Kano</option>
+      <option value = '{"state":"Katsina", "zone":"North-West", "latLng":{"lat":"11.5203937", "lng":"7.320007689"}}'>Katsina</option>
+      <option value = '{"state":"Kebbi", "zone":"North-West", "latLng":{"lat":"12.45041445", "lng":"4.199939737"}}'>Kebbi</option>
+      <option value = '{"state":"Kogi", "zone":"North-Central", "latLng":{"lat":"7.800388203", "lng":"6.739939737"}}'>Kogi</option>
+      <option value = '{"state":"Kwara", "zone":"North-Central", "latLng":{"lat":"8.490010192", "lng":"4.549995889"}}'>Kwara</option>
+      <option value = '{"state":"Lagos", "zone":"South-West", "latLng":{"lat":"6.443261653", "lng":"3.391531071"}}'>Lagos</option>
+      <option value = '{"state":"Nassarawa", "zone":"North-Central", "latLng":{"lat":"8.490423603", "lng":"8.5200378"}}'>Nassarawa</option>
+      <option value = '{"state":"Niger", "zone":"North-Central", "latLng":{"lat":"10.4003587", "lng":"5.469939737"}}'>Niger</option>
+      <option value = '{"state":"Ogun", "zone":"South-West", "latLng":{"lat":"7.160427265", "lng":"3.350017455"}}'>Ogun</option>
+      <option value = '{"state":"Ondo", "zone":"South-West", "latLng":{"lat":"7.250395934", "lng":"5.199982054"}}'>Ondo</option>
+      <option value = '{"state":"Osun", "zone":"South-West", "latLng":{"lat":"7.629959329", "lng":"4.179992634"}}'>Osun</option>
+      <option value = '{"state":"Oyo", "zone":"South-West", "latLng":{"lat":"7.970016092", "lng":"3.590002806"}}'>Oyo</option>
+      <option value = '{"state":"Plateau", "zone":"North-Central", "latLng":{"lat":"9.929973978", "lng":"8.890041055"}}'>Plateau</option>
+      <option value = '{"state":"Rivers", "zone":"South-South", "latLng":{"lat":"4.810002257", "lng":"7.010000772"}}'>Rivers</option>
+      <option value = '{"state":"Sokoto", "zone":"North-West", "latLng":{"lat":"13.06001548", "lng":"5.240031289"}}'>Sokoto</option>
+      <option value = '{"state":"Taraba", "zone":"North-East", "latLng":{"lat":"7.870409769", "lng":"9.780012572"}}'>Taraba</option>
+      <option value = '{"state":"Yobe", "zone":"North-East", "latLng":{"lat":"11.74899608", "lng":"11.96600457"}}'>Yobe</option>
+      <option value = '{"state":"Zamfara", "zone":"North-West", "latLng":{"lat":"12.1704057", "lng":"6.659996296"}}'>Zamfara</option>
+      </select></p>
     <input type="file" name="photo" class = "filepond">
   </div>
   
-  <div class="tab">Login Info:
-    <p><input placeholder="Username..." oninput="this.className = ''" name = "username"></p>
-    <p><input placeholder="Password..." oninput="this.className = ''" name = "password"></p>
-    <select name="assetTypeName" id="assetTypeID">
-     <% if(assetTypeArr!=null && assetTypeArr.length >0){ %>
-      <% assetTypeArr.forEach(item=>{ %>
-         <option label="<%= item.assetClass%>" value = "<%= item._id%>"></option>
-         <% }); %>
-   <% } %>
-
-    </select>
+  <div class="tab">Cadre and Rank:
+    <p><select name = "cadre" onchange = 'changeOfficerType(this)'>
+      <option value = 'regCadre'>Regulatory Officer</option>
+      <option value = 'adminCadre'>Admin Officer</option>
+      <option value = 'accountCadre'>Accounts Officer</option>
+      <option value = 'labCadre'>Laboratory Officer</option>
+      <option value = 'ictCadre'>ICT Officer</option>
+      <option value = 'legalCadre'>Legal Officer</option>
+    </select><p>
+    <p><select id='rankSel' name="rank">
+      <option>ROII</option>
+      <option>ROI</option>
+      <option>SRO</option>
+      <option>PRO</option>
+      <option>ACRO</option>
+      <option>CRO</option>
+      <option>AD</option>
+      <option>DD</option>
+      <option>Director</option>
+    </select></p>
   </div>
   
   <div style="overflow:auto;">
     <div style = "float:left;">
-      <a href = "/user/<%=user.id%>" id="cancelBtn">Cancel</a>
+      <a href = "./new" id="cancelBtn">Cancel</a>
     </div>
     <div style="float:right;">
       <button type="button" id="prevBtn" onclick="nextPrev(-1)">Previous</button>
@@ -52,3 +118,34 @@
   </div>
   
   </form>
+
+  <script defer>
+     
+        
+    let objCadre ={
+      regCadre:['ROII', 'ROI', 'SRO', 'PRO', 'ACRO', 'CRO', 'AD', 'DD', 'Director'],
+      adminCadre:['AOII', 'AOI', 'SAO', 'PAO', 'ACAO', 'CAO', 'AD', 'DD', 'Director'],
+      accountCadre:['AII', 'ACI', 'SA', 'PA', 'ACA', 'CA', 'AD', 'DD', 'Director'],
+      labCadre:['LTII', 'LTI', 'SLT', 'PLT', 'ACLT', 'CLT', 'AD', 'DD', 'Director'],
+      ictCadre:['CAII', 'CAI', 'SCA', 'PCA', 'ACCA', 'CCA', 'AD', 'DD', 'Director'],
+      legalCadre:['LOII', 'LOI', 'SLO', 'PLO', 'ACLO', 'CLO', 'AD', 'DD', 'Director']
+    }
+
+    // let regCadre = ['ROII', 'ROI', 'SRO', 'PRO', 'ACRO', 'CRO', 'AD', 'DD', 'Director'];
+    // let adminCadre = ['AOII', 'AOI', 'SAO', 'PAO', 'ACAO', 'CAO', 'AD', 'DD', 'Director'];
+    // let accountCadre = ['AII', 'ACI', 'SA', 'PA', 'ACA', 'CA', 'AD', 'DD', 'Director'];
+    // let accountCadre = ['AII', 'ACI', 'SA', 'PA', 'ACA', 'CA', 'AD', 'DD', 'Director'];
+
+    let rankSelGrab = document.getElementById('rankSel');
+    let cadreArr;
+
+  function changeOfficerType(this2){
+    // console.log(adminCadre);
+    console.log(objCadre[this2.value]);
+    let cadreArr = objCadre[this2.value]
+    cadreArr.forEach((arrItem, i)=>{
+      rankSelGrab.options[i] = new Option(arrItem)
+    })
+
+  }
+  </script>

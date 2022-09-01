@@ -7,10 +7,34 @@ let {v4:uuidv4} = require('uuid');
 
 const imageMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
 
+let cors = require('cors');
+
+
 
 //route.set('layout', 'layouts/layout');
 
 route.use(express.static('public'));
+// route.use(cors({
+//     origin:true,
+
+// }))
+
+// route.use(cors({
+//     origin:"http://localhost:2000",
+//     method:["GET", "POST", "PUT"]
+//   }));
+
+route.use(function(req,res,next) {
+    // req.connection.setNoDelay(true)
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    res.header("Access-Control-Allow-Credentials", true);
+        res.header("Access-Control-Allow-Origin", "*"); 
+
+    res.header('Access-Control-Expose-Headers', 'Content-Disposition');
+    // res.header('Access-Control-Expose-Headers', 'agreementrequired');
+  
+    next()
+})
 
 //route.use('/user', userRoute);
 
@@ -19,7 +43,9 @@ route.use(express.static('public'));
 
 let userVar = 'trial';
 //get all assets
-
+route.get('get-file', (req, res)=>{
+    console.log('Hitting here...');
+});
 route.get('/serial', async (req, res)=>{
 
    var da =  await assetTypeModel.find({}).where('assetClass').equals(req.query.selAssType);
@@ -92,41 +118,67 @@ route.get("/:id", async (req, res)=>{
 route.get("/:id/edit", async (req, res)=>{
     // res.send('Editing AssetType with id: '+req.params.id);
     try{
-        let newAssetType = await assetTypeModel.findById(req.params.id);
-        res.render('assetType/edit.ejs',{assetType:newAssetType}); //tying the view to the moongoose model //, 
+        let assetType = await assetTypeModel.findById(req.params.id);//
+        let assetTypeArr = await assetTypeModel.find({}).distinct('assetTypeClass');
+        //  console.log('This is the object to be edited, ',newAssetType)
+        //  console.log('This is the object to be edited, ',assetTypeArr)
+
+        res.render('assetType/edit.ejs',{assetType, assetTypeArr}); //tying the view to the moongoose model //, 
 
     } catch (e){
-        console.log(e);
+        console.error(e.message);
         res.redirect('/assetType/index')
     }
 })
 
 route.put('/:id', async(req, res)=>{
     // res.send('updating AssetType with id: '+ req.params.id);
+    console.log('Id affected ', req.params.id);
+    console.log('Id affected len ', req.params.id.length);
 
     try {
-        let assetType = await assetTypeModel.findById(req.params.id);
+        let assetType = await assetTypeModel.findById(req.params.id).select('assetTypeClass assetTypeCode assetManufacturer assetPurchased');
+        console.log(assetType);
+        // console.log('------------------------------------');
+        // console.log(assetType.assetPurchased);
+        // console.log(assetType.assetPurchased.toLocaleDateString());
+        // console.log(assetType.assetPurchased.toISOString().split('T')[0]);
+        // console.log(assetType.assetPurchased.toString()).slice((assetType.assetPurchased.toString()).indexOf('T'));
+        // console.log(typeof assetType.assetPurchased);
         
-        assetType.assetTypeCode = req.body.assetCode;
-        assetType.assetTypeClass = req.body.assetType;
-        assetType.Status = req.body.Status;
-        assetType.description = req.body.description;
-        assetType.assignDate = req.body.assignDate;
-        assetType.user = req.body.user;
-        assetType.assetDescription = req.body.assetDescription;
-        // user.asset = "0012"; //we're later getting asset from the form
-        
-        saveAssetImageDetails(asset, req.body.assetTypePic);
-        
+        assetType.assetTypeCode = req.body.assetNumber,
+        assetType.assetTypeClass = req.body.assetTypeName,
+        assetType.assetManufacturer = req.body.assetManufacturerName,
+        assetType.assetPurchased = req.body.assetPurchased,
+        assetType.assetStoreLocation = req.body.assetStoreLocation,
+        assetType.assetValue = req.body.assetValue,
+        assetType.assetQty = req.body.assetQty,
+        assetType.assetLifeCycle = req.body.assetLifeCycle,
+        assetType.status = req.body.assetStatus,
+        assetType.assetDescription = req.body.assetDescription
+
+
+        // assetType.assetTypeCode = req.body.assetTypeCode;
+        // assetType.assetTypeClass = req.body.assetTypeClass;
+        // assetType.status = req.body.status;
+        // // assetType.assetDescription = req.body.description;
+        // assetType.assetPurchased = req.body.assetPurchased;
+        // //assetType.user = req.body.user;
+        // assetType.assetDescription = req.body.assetDescription;
+        // // user.asset = "0012"; //we're later getting asset from the form
+        console.log('Got here');
+        saveAssetTypeImageDetails(assetType, req.body.assetTypePic);
+        console.log('Scaled here');
         await assetType.save();
+        console.log('Saved');
     
         res.redirect("/assetType/${assetType.id}");
     } catch(e){
-        if (author == null){
-            res.redirect('/assetType')
-        }else{
-            res.render('assetType/edit.ejs', {msg:"An error updating the asset type occurred", assetType: assetType})
-        }
+        // if (assetType == null){
+            // res.redirect('/assetType');
+        // }else{
+            res.render('/assetType/edit.ejs', {msg:"An error updating the asset type occurred", assetType: assetType})
+        // }
         
     }
 })
@@ -227,7 +279,8 @@ function saveAssetTypeImageDetails(assetType, encodedProfile){
         // assetType.assetTypeImageName = new Buffer.from(profile.data, 'base64');
         // assetType.assetTypeImageType = profile.type;
         console.log('This is the name of photo', encodedProfile);
-        assetType.assetTypeImageName = encodedProfile;
+        console.log(encodedProfile.slice(encodedProfile.lastIndexOf('/')+1));
+        assetType.assetTypeImageName = encodedProfile.slice(encodedProfile.lastIndexOf('/')+1);
         assetType.assetTypeImageType = 'An Image';
     
 

@@ -28,12 +28,14 @@
 </form>
 
 <div class="user-assetsOwn-div">Own Assets
-    
-    <% ownAssets.forEach(asset=>{ %>
-        <div class="divContLi" onclick = 'triggerClickCheckbox(this)' data-asset-id="<%=asset.id%>">
-            <li><input type="checkbox" class = 'user-asset-pool-checkbox' style="display:inline; width:10%"><a href="/asset/<%=asset.id%>"><%=asset.assetCode%></a></li>
-        </div>
-        <%})%>
+
+    <%if (ownAssets){%>
+        <% ownAssets.forEach(asset=>{ %>
+            <div class="divContLi" onclick = 'triggerClickCheckbox(this)' data-asset-id="<%=asset.id%>">
+                <li><input type="checkbox" class = 'user-asset-pool-checkbox' style="display:inline; width:10%"><a href="/asset/<%=asset.id%>"><%=asset.assetCode%></a></li>
+            </div>
+            <%})%>
+        <%}%>
         
     </div>
     <button onclick = "userAssetDeassign(this, 'user-assetsOwn-div', 'updateFormOwn')">DeAssign</button>
@@ -95,6 +97,8 @@
         
         <!-- creating the select -->
         <select name="" id="selAssetOption" onchange = "openCity(event, 'sel')">
+            <%console.log('This is it')%>
+           <% console.log(allAssetType)%>
             <%allAssetType.forEach(assetType=>{%>
             <option value="<%=assetType.assetTypeClass%>"><%=assetType.assetTypeClass%></option>
             <%assetObject[assetType._id.toString()] = [];%>
@@ -294,7 +298,7 @@ function requisitionHistory(){
             getObjectIds(assetGrab);
             console.log('!!!!!!');
             console.log(idObj);
-            updateFormGrab.action = `/user/${JSON.stringify(idObj)}?_method=PUT&assignment=${this2.innerHTML}`;
+            updateFormGrab.action = `/user/assignDeassign/${JSON.stringify(idObj)}?_method=PUT&assignment=${this2.innerHTML}`;
             console.log(updateFormGrab.action);
        }
     
@@ -342,7 +346,7 @@ function requisitionHistory(){
             console.log(idObj);
             if (updateForm){
                 console.log(document.getElementById(updateForm));
-                document.getElementById(updateForm).action = `/user/${JSON.stringify(idObj)}?_method=PUT&assignment=${this2.innerHTML}`;
+                document.getElementById(updateForm).action = `/user/assignDeassign/${JSON.stringify(idObj)}?_method=PUT&assignment=${this2.innerHTML}`;
             }
         console.log(updateFormGrab.action);
     }  

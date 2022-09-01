@@ -27,7 +27,19 @@ const server = require('http').Server(app);
 const io = require('socket.io')(server);
 const {v4:uuidV4} = require('uuid');
 
-// app.use(cors());
+
+app.use((req, res, next) => {
+  res.append('Access-Control-Allow-Origin', ['*']);
+  res.append('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+  res.append('Access-Control-Allow-Headers', 'Content-Type');
+  res.append('Access-Control-Expose-Headers', 'Content-Disposition');
+  next();
+});
+
+app.use(cors({
+  origin:"*",
+  method:["GET", "POST", "PUT"]
+}));
 
 //authentication
 let {role} = require('./role.js');
@@ -38,7 +50,7 @@ console.log(role);
 
 // const userModel = require('models/user.js');
 
- 
+
 
 
 app.get('/audit', (req,res)=>{
@@ -59,8 +71,8 @@ io.on('connection', socket=>{
       //socket.to(roomId).broadcast.emit('user-connected', userId)
 
       socket.on('disconnect', ()=>{
-        //socket.to(roomId).emit('user-disconnected', userId)
-        socket.to(roomId).broadcast.emit('user-disconnected', userId)
+        socket.to(roomId).emit('user-disconnected', userId)
+        // socket.to(roomId).broadcast.emit('user-disconnected', userId)
       })
     })
   })

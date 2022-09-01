@@ -153,10 +153,11 @@ route.get('/:id/edit',  async (req,res)=>{
     try{
         let userModelArr = await userModel.findById(req.params.id);
         let assetTypeModelArr = await assetTypeModel.find({});
-        res.render('user/edit.ejs',{user: userModelArr, assetTypeArr:assetTypeModelArr}); //tying the view to the moongoose model //, 
+        msg = "Making changes";
+        res.render('user/edit.ejs',{user: userModelArr, assetTypeArr:assetTypeModelArr, msg}); //tying the view to the moongoose model //, 
 
     } catch (e){
-
+        
         res.redirect('/user/index')
     }
     // let user = new userModel();
@@ -167,10 +168,10 @@ route.get('/:id/edit',  async (req,res)=>{
                             var ownAssets=[];
                             try {
                             const user =await userModel.findById(req.params.id);
-                            const allAssetType = await assetTypeModel.find();//.distinct('assetTypeClass')
+                            const allAssetType = await assetTypeModel.find().select('_id assetTypeClass status description').exec();//.distinct('assetTypeClass');
                             const asset = await assetModel.find({user:user.id}).exec(); //.limit(10)
                             const allAsset = await (await assetModel.find().where('allocationStatus').ne(true));
-                            const assetTypeDistinct = await assetTypeModel.find().select('assetTypeClass status description').exec();
+                            const assetTypeDistinct = await assetTypeModel.find().select('_id assetTypeClass status description').exec();
                             user.userAsset.id.forEach(async itemArr=>{
                                         ownAssets.push(itemArr);
                                 });
@@ -178,18 +179,30 @@ route.get('/:id/edit',  async (req,res)=>{
                                 console.log('This is asset:')
                                 console.log(asset);
                                 const records = await assetModel.find().where('_id').in(ownAssets).select('assetCode assetType status').exec();
+                            // console.log('This is allAssetType ', allAssetType);
+                                
+                            var allAssetTypeMap2 = allAssetType.map(arrItem=>{
+                                return arrItem.assetTypeClass;
+                            })
+                            let allAssetType2 = [];
+                                allAssetTypeMap2.forEach((arrItem, index, self)=>{
+                                    if (self.lastIndexOf(arrItem) == index){
+                                        allAssetType2.push(allAssetType[index]);
+                                    }
+                                })
+                                // console.log('This is allAssetType2', allAssetTypeMap2);
                             res.render('user/show', {
                                 user:user,
-                                assetsByUser:asset,
                                 allAssets:allAsset,
-                                allAssetType,
+                                assetsByUser:asset, 
+                                allAssetType:allAssetType2,
                                 ownAssets:records,
-                                assetTypeAll:assetTypeDistinct,
+                                assetTypeAll:allAssetType2,//assetTypeDistinct
                                 msg
                             });
 
                             }catch (e){
-                                console.log(e.message);
+                                console.error(e.message);
                                 res.redirect('/index')
                             }
                         }
@@ -245,7 +258,48 @@ async function userLogSave(user, list, assignment, req){
 // rank:user.rank,
 // assetType:req.body.assetTypeName
 
-route.put('/:id', async (req,res)=>{
+route.put('/:id', async(req,res)=>{
+    console.log(req.params.id);
+    console.log(req.params.id.length);
+    console.log(req.body.firstName);
+    console.log(req.body.state);
+
+
+    // let user = await userModel.find({id:req.params.id});
+    
+    try{
+        let user = await userModel.findById(req.params.id);
+    console.log('This is user ', user);
+    console.log('Putting now...');
+    // console.log(typeof user.date);
+    // console.log(user.date);
+        user.lastName = req.body.lastName;
+        user.firstName = req.body.firstName;
+        user.email = req.body.email;
+        user.state = JSON.parse(req.body.state).state;
+        user.zone = JSON.parse(req.body.state).zone;
+        user.directorate = req.body.directorate;
+        user.geoCoord = JSON.parse(req.body.state).latLng;
+        user.phone = req.body.phone;
+        user.cadre = req.body.cadre;
+        user.rank = req.body.rank;
+        user.assetType = req.body.assetTypeName;
+
+        if (req.body.photo){
+            saveProfilePic(user, req.body.photo);
+        }
+    console.log('Done putting...');
+        await user.save();
+        msg = "Update made";
+        idRedirect(req,res, msg)
+        // res.render('./user/show', {user});
+    }catch (e){
+        console.error(e.message);
+    }
+
+})
+
+route.put('/assignDeassign/:id', async (req,res)=>{
     console.log(req.query.assignment);
     console.log('This is req.query');
     console.log(req.query);
@@ -341,7 +395,7 @@ route.put('/:id', async (req,res)=>{
             //  })
         }
         console.log('Here is new arr++++++++++++')
-        
+       
 
         await user.save();
         msg = {
