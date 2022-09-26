@@ -1,0 +1,755 @@
+<div class = "profileCreatedMsgDivCont">
+    <h1>This is show2</h1>
+   <h1>
+       <p class = 'profileCreatedMsg'>Profile succesfully created!</p>
+   </h1>
+</div>
+<%if(msg){%>
+    <p><%=msg%></p>
+<%}else{%>
+    <p>No Message</p>   
+<%}%>
+
+<div class="user-show-div">
+        
+    <div>
+        <h2><%=user.firstName%></h2>
+<p><img width="120" height= "auto" src="<%= user.userProfilePic%>"></p>
+
+<a href="/user/<%=user.id%>/edit">Edit</a> |
+<!-- change this href to the populated version of user -->
+<a href="/user/<%=user.id%>/edit">View Asset</a> |
+
+
+<%-include('_userContent', {btnVal:`Asset Pool`})%>
+<a href="/user/history/<%=user.id%>">History</a>
+<%-include('../partials/deleteForm', {url:`/user/${user.id}`})%>
+<form id = 'updateForm' method="POST" >
+    <button class = 'btn btn-delete' type="submit">Update</button>
+</form>
+
+<div class="user-assetsOwn-div">Own Assets
+
+    <%if (ownAssets){%>
+        <% ownAssets.forEach(asset=>{ %>
+            <div class="divContLi" data-asset-id="<%=asset.id%>" data-asset-assetName = "<%= asset.assetName %>">
+                <li><input type="checkbox" class = 'user-asset-pool-checkbox' style="display:inline; width:10%"><a href="/asset/<%=asset.id%>"><%=asset.assetCode%></a></li>
+                
+            </div>
+            <%})%>
+        <%}%>
+        
+    </div>
+    <button onclick = "userAssetAssign(this, 'user-assetsOwn-div', 'updateFormOwn')">Assign</button>
+    <button onclick = "userAssetDeassign(this, 'user-assetsOwn-div', 'updateFormOwn')">DeAssign</button>
+    <%-include('_userContent', {btnVal:`Asset Pool`})%> 
+    <form id = 'updateFormOwn' method="POST" >
+        <button class = 'btn btn-delete' type="submit">Update</button>
+    </form>
+    <div class="user-assetsRequested-div">Requisition
+        <select id = 'select-requisition'size="10" multiple="true">
+           <%assetTypeAll.forEach(arrItem=>{%>
+            <option value="<%=arrItem%>"  onclick = "resetSelToOne()"><%=arrItem.assetTypeClass%></option>
+                <% });%>
+        </select>
+        <p>Requisitioned Assets:</p>
+        <div class="assets-requisitioned-div"></div>
+        Qty(Change last): <input type="number" min="1" id = 'qtyRequisitionInpt' value = '1'>
+        <button onclick="addRequisition()">Add Asset</button>
+        <button onclick="resetRequisition()">Reset</button>
+        <button onclick="requisitionHistory()">Requisition History</button>
+       
+
+        
+        <div>
+            <ul id = 'ulRequisition'></ul>
+        </div>
+        <form id = 'updateFormRequistion' method="POST" >
+            <button class = 'btn btn-delete' type="submit">Update</button>
+        </form>
+            updateFormRequistionGrab.action = `/user/requisition/${JSON.stringify(objRequisition)}?_method=PUT&userId=${userID}&assignment=Requisition`;
+            <form id = 'approveFormRequistion' method="POST" onsubmit="return approveRequisition(this)">
+            <button class = 'btn btn-delete' type="submit">Directorate Approval</button>
+        </form>
+    </form>
+    <form id = 'approveFormRequistion2' method="POST" onsubmit="return approveRequisition(this)">
+    <button class = 'btn btn-delete' type="submit">Store Approval</button>
+</form>
+    </div>
+    <a href="/user/requisitionApproval/<%=user._id%>" onclick="return approveRequisition()">Approve</a>
+    
+    
+    
+<!-- <div><button id = 'done-btn' disabled='false'>Done</button></div> -->
+
+<%if (assetsByUser.length >0){%>
+    <h2>Assets of User</h2>
+        <%}%>
+    </div>
+
+    <div id = "assetList" class="assetList">
+        create buttons
+        <!-- <button class="tablinks" onclick="openCity(event, 'London')">Tables</button>
+        <button class="tablinks" onclick="openCity(event, 'Paris')">Chairs</button>
+        <button class="tablinks" onclick="openCity(event, 'Tokyo')">Televisions</button> -->
+        
+
+        <%var assetObject={};%>
+        <%var assetClassObject={};%>
+        
+        <!-- creating the select -->
+        <select name="" id="selAssetOption" onchange = "openCity(event, 'sel')">
+            <%console.log('This is it')%>
+           <% console.log(allAssetType)%>
+            <%allAssetType.forEach(assetType=>{%>
+            <option value="<%=assetType.assetTypeClass%>"><%=assetType.assetTypeClass%></option>
+            <%assetObject[assetType._id.toString()] = [];%>
+            <%assetClassObject[assetType._id.toString()] = assetType.assetTypeClass;%>
+            <%})%>
+        </select>
+        
+        <!-- creating other controls -buttons -->
+        <%allAssetType.forEach(assetType=>{%>
+            <button class="tablinks sel-asset-option-btns" onclick="openCity(event, 'btn', this); bringUsed(this)" data-assetCode-prop = '<%=assetType._id%>' data-assetName-prop = '<%=assetType.assetTypeClass%>'><%=assetType.assetTypeClass%></button>
+            <%})%>
+            
+            <!-- creating divs for each button -->
+            <%allAssetType.forEach(assetType=>{%>
+                <div id="<%=assetClassObject[assetType._id.toString()]%>" class="tabcontent" data-asset-qty = '<%=assetType.assetTypeQty%>' data-open-bool = true>
+                    <h3 style = "display:inline"><%=assetClassObject[assetType._id.toString()]%></h3><h3 id = 'assetQtyId' class = 'assetQtyClass' style = "display:inline">(<%=assetType.assetTypeQty%>)</h3>
+                    <p><%=assetClassObject[assetType._id.toString()]%> is the capital city of England now now.</p>
+                    <% assetObject[assetType._id.toString()].forEach(asset=>{%>
+                    <div class="divContLi" onclick = "triggerClickCheckbox(this)" data-asset-id="<%=asset.id%>" data-asset-assetName = "<%= asset.assetName %>">
+                        <li><input type="checkbox" class = "user-asset-pool-checkbox" style="display:inline; width:10%"><a href="/asset/<%=asset.id%>"><%=asset.assetCode%>(<%=asset.assetTypeQty%>)</a></li>
+                    </div>
+                    
+                    <%})%>
+                    <div class ="usedAssetContainer">
+                        There is something here.
+                    </div>
+                </div>
+                <%})%>
+
+            
+        <!-- creating the ul and li -->
+        <ul class="user-asset-pool">
+            <%Object.keys(assetObject).forEach(assetTypeIdProperty=>{%> 
+                <div  id="<%=assetClassObject[assetTypeIdProperty]%>" class="tabcontent">
+                    <h3><%=assetClassObject[assetTypeIdProperty]%></h3>
+                    <p><%=assetClassObject[assetTypeIdProperty]%> is the capital city of England.</p>
+                    <% assetObject[assetTypeIdProperty].forEach(asset=>{%>
+                    <div class="divContLi" onclick = "triggerClickCheckbox(this)" data-asset-id="<%=asset.id%>" data-asset-assetName = "<%= asset.assetName %>">
+                        <li><input type="checkbox" class = "user-asset-pool-checkbox" style="display:inline; width:10%"><a href="/asset/<%=asset.id%>"><%=asset.assetCode%></a></li>
+                    </div>
+                    <%})%>
+                </div>
+            <%})%>
+                
+
+            
+        </ul>
+    </div>
+
+    <div class="pending-requisition-approvals">
+        <ul>
+            <% if (user.userDirectorateApproval.length){%>
+                 <span>Something</span>
+                <% user.userDirectorateApproval.forEach(item=>{%>
+                    <li><a href = '/user/<%=item._id%>'><%=item.firstName%></a></li>
+                <% })%>
+             <%}%>
+        </ul>
+    </div>
+
+    <p>
+        <div class="pending-store-approvals" style="position:relative;">
+            <ul>
+                <% if (user.userStoreApproval.length){%>
+                    <%'Store Approvals here' %> 
+                    <% user.userStoreApproval.forEach(item=>{%>
+                        <li><a href = '/user/<%=item._id%>'><%=item.firstName%></a></li>
+                    <% })%>
+                 <%}%>
+            </ul>
+            <div id="req-History">
+        </div>
+
+
+        </div>
+
+    </p>
+        
+    
+</div>
+
+
+<script defer>
+    let assignBut1Grab = document.getElementById('assign-btn1');
+    let deassignBut1Grab = document.getElementById('deassign-btn1');
+    let assetQty;
+    let assetTypeIdTrack; //to track id of assetType on Assign;
+    let assetTypeNameTrack; //to track assetTypeName on button, for use on Assign
+    let serverUserUserRequisition = '<%- JSON.stringify(user.userRequisition)%>';
+
+    let userID = '<%- user.id %>';
+    let profileCreatedMsgGrab = document.getElementsByClassName('profileCreatedMsg')[0];
+    let idObj = {};
+    let updateFormGrab = document.getElementById('updateForm');
+    let assetListGrab = document.getElementsByClassName('assetList')[0];
+    let userShowDivGrab = document.getElementsByClassName('user-show-div')[0];
+
+    let assignShowButtonGrab = document.getElementsByClassName('assignShowButton')[0];
+
+    let userAssetPoolGrab = document.getElementsByClassName('user-asset-pool')[0];
+    let userAssetPoolCheckboxGrab;
+    let assetGrab = document.getElementsByClassName('user-assets-div')[0];
+    let userAssetsOwnDivGrab = document.getElementsByClassName('user-assetsOwn-div')[0];
+    let doneBtnGrab =  document.getElementsByClassName('done-btn')[0];
+
+    var lastAssignmentBtn;
+    let updateFormRequistionGrab = document.getElementById('updateFormRequistion');
+
+    let divId = document.getElementById('assets-requisitioned-div');
+    let reqHistoryGrab = document.getElementById('req-History');
+    let selAssetOptionGrab = document.getElementById('selAssetOption');
+    let selAssetOptionBtnsGrab = document.getElementsByClassName('sel-asset-option-btns');
+
+    
+       
+//Auth
+// assignShowButtonGrab.classList.add(authVar['auth']['assignShowButtonGrab']);
+
+//sorting code, just in case
+// const arr = [1,1,2,2,3,4,4,5];
+// const extractUnique = arr => {
+//    const res = [];
+//    for(let i = 0; i < arr.length; i++){
+//       if(arr.lastIndexOf(arr[i]) !== arr.indexOf(arr[i])){
+//          continue;
+//       };
+//       res.push(arr[i]);
+//    };
+//    return res;
+// };
+// console.log(extractUnique(arr));
+
+async function bringUsed(this2){
+    //alert('fetching...');
+    let obj = await fetch(`/user/fetcher/${this2.innerHTML}`);
+    let objTex = await obj.json();
+    console.log(objTex);
+
+    let buttonDiv = document.getElementById(this2.innerHTML);
+    let buttonDivUsedAssetContainer = buttonDiv.getElementsByClassName('usedAssetContainer')[0];
+    buttonDivUsedAssetContainer.innerHTML = ""; //blanking it;
+    objTex.forEach(asset=>{
+        // alert(typeof asset.assetAssignDate);
+        // alert(Date.parse(asset.assetAssignDate));
+        // alert(Date.now() - Date.parse(asset.assetAssignDate));
+        // alert(Math.round((Date.now() - Date.parse(asset.assetAssignDate))/86400000));
+        let formedAssetDiv = formAsset(asset,'data-asset-id', 'View Asset', 'Used');
+        buttonDivUsedAssetContainer.appendChild(formedAssetDiv);
+    })
+}
+
+function formAsset(asset2, dataId, anchorText, status){
+    var divContLi = document.createElement('div');
+                    divContLi.setAttribute('class', 'divContLi')
+                    divContLi.setAttribute(dataId, asset2._id)
+                    // divContLi.setAttribute('data-assetType-id', assetTypeIdTrack);
+                    divContLi.setAttribute('data-asset-assetName', asset2.assetName);
+                    divContLi.innerHTML = asset2.assetCode;
+                    divContLi.setAttribute('data-status', status);
+                    var liElm =  document.createElement('li');
+                    var divContLiInputElm =  document.createElement('input')
+                    divContLiInputElm.setAttribute('type', 'checkbox');
+                    divContLiInputElm.setAttribute('class', 'user-asset-pool-checkbox');
+                    divContLiInputElm.style.display = 'inline';
+                    divContLiInputElm.style.width = '10%';
+                let age = Math.round((Date.now() - Date.parse(asset2.assetAssignDate))/86400000);
+                var divContLiInputAnchorElm =  document.createElement('a');
+                divContLiInputAnchorElm.innerHTML =  '<a href=' +`/asset/${asset2._id}`+ '>'+anchorText+'</a>' +` (Used -${age}Days Old)`;
+                    liElm.appendChild(divContLiInputElm);
+                    liElm.appendChild(divContLiInputAnchorElm);
+
+                    divContLi.append(liElm);
+                    
+                    return divContLi;
+         
+}
+
+var tabContentBoolObj = {};
+let evtVar;
+function tabContentBoolFunc(){
+    tabcontent = document.getElementsByClassName("tabcontent");
+         tabContentBoolObj = {};
+        for (i = 0; i < tabcontent.length; i++) {
+            console.log(tabcontent[i]);
+            console.log(tabcontent[i].id)
+            tabContentBoolObj[tabcontent[i].id] = true;
+        }
+}
+
+function openCity(evt, ctrlName, this2) {
+    // Declare all variables
+    assetQty = document.getElementById(evt.target.innerHTML).getAttribute('data-asset-qty')
+    assetTypeIdTrack = this2.getAttribute('data-assetCode-prop');
+    assetTypeNameTrack = this2.getAttribute('data-assetName-prop');
+    
+    
+    var i, tabcontent, tablinks;
+    if (evtVar == undefined){
+        tabContentBoolFunc();
+    }
+    if (evt.target.innerHTML != evtVar){
+        tabContentBoolFunc();
+    }
+    console.log(evtVar);
+    evtVar = evt.target.innerHTML;
+
+    // Get all elements with class="tabcontent" and hide them
+    tabcontent = document.getElementsByClassName("tabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+        tabcontent[i].classList.remove('assignDeassignTrack');
+    }
+    console.log(tabContentBoolObj);
+
+    if (ctrlName =='sel'){
+        document.getElementById(selAssetOptionGrab.value).style.display = "block";
+    }
+    if (ctrlName =='btn' && tabContentBoolObj[document.getElementById(evt.target.innerHTML).id]){ //(document.getElementById(evt.target.innerHTML).getAttribute('data-open-bool') == 'true')){
+        console.log(assignBut1Grab);
+
+            //activating assign1 and deassign1 buttons
+            assignBut1Grab.disabled = false;
+            deassignBut1Grab.disabled = false;
+
+        document.getElementById(evt.target.innerHTML).style.display = "block";
+        document.getElementById(evt.target.innerHTML).classList.add('assignDeassignTrack');
+        tabContentBoolObj[document.getElementById(evt.target.innerHTML).id] = false// !(tabContentBoolObj[document.getElementById(evt.target.innerHTML).id])
+        
+        if (assetQty > 0){
+            document.getElementById(evt.target.innerHTML).style.backgroundColor = "green";
+        } else {
+            document.getElementById(evt.target.innerHTML).style.backgroundColor = "red";
+        }
+    }else {
+            //deactivating assign deassign buttons
+            assignBut1Grab.disabled = true;
+            deassignBut1Grab.disabled = true;
+
+        document.getElementById(evt.target.innerHTML).style.display = "none";
+        tabContentBoolObj[document.getElementById(evt.target.innerHTML).id] = true//!(tabContentBoolObj[document.getElementById(evt.target.innerHTML).id])
+
+
+    }
+}
+
+
+function requisitionHistory(){
+    let getRequisitionObj = new XMLHttpRequest();
+
+            getRequisitionObj.onreadystatechange = function (){
+                if (getRequisitionObj.readyState == 4 && getRequisitionObj.status == 200){
+                    console.log(JSON.parse(getRequisitionObj.response));
+                    let reqHistoryObj = JSON.parse(getRequisitionObj.response);
+                    reqHistoryObj.forEach(item=>{
+                        var pElm = document.createElement('p');
+                        pElm.innerHTML = "userRequistion: "+JSON.stringify(item.userRequisition).replace('{', '').replace('}', '');
+                        reqHistoryGrab.appendChild(pElm);
+                        reqHistoryGrab.classList.add('div-req-out');
+                    })
+                }
+            }
+
+            getRequisitionObj.open("GET", `/user/getHistory/${userID}`, true);
+            getRequisitionObj.send();
+}
+        function showAssetList(){
+            userShowDivGrab.classList.toggle('user-show-div3');
+            userShowDivGrab.classList.toggle('user-show-div2');
+            userAssetPoolCheckboxGrab = document.getElementsByClassName('user-asset-pool-checkbox');
+        }
+        function userAssetAssign(this2, assetDiv){
+            //Grabbing asset div -whether temporary landing div or permanent landing div
+            let assetGrab = document.getElementsByClassName(assetDiv)[0];
+            // console.log('This is assetDiva ', assetDiva);
+            let usedAssetCheckedBoxesArr = [];
+            console.log(document.getElementsByClassName('tabcontent assignDeassignTrack')[0]);
+            let usedAssetCheckedBoxes = document.getElementsByClassName('tabcontent assignDeassignTrack')[0].getElementsByClassName('usedAssetContainer')[0].getElementsByClassName('user-asset-pool-checkbox');
+            [ ...usedAssetCheckedBoxes].forEach(check=>{
+                if(check.checked){
+                    usedAssetCheckedBoxesArr.push(check);
+                }
+            })
+
+            if (usedAssetCheckedBoxesArr.length){ //if old assets are checked, assign these ones
+                    alert ('Old Assets present');
+                    usedAssetCheckedBoxesArr.forEach(checkedAsset=>{
+                        assetGrab.appendChild(checkedAsset.parentNode.parentNode);
+                    })
+                    idObj.userId = userID;
+                    getObjectIds(assetGrab);
+                    updateFormGrab.action = `/user/assignDeassign2/${JSON.stringify(idObj)}?_method=PUT&assignment=${this2.innerHTML}`;
+        
+            } else { //or else, create new assets and assign
+                    console.log(assetGrab);
+                    assetQty = document.getElementsByClassName('tabcontent assignDeassignTrack')[0].getAttribute('data-asset-qty');
+                        if (assetDiv == 'user-assets-div'){
+                            if (assetQty > 0){
+                                --assetQty;
+                                //tying assetQty to displayed asset Div, for use within (Qty)
+                                document.getElementsByClassName('tabcontent assignDeassignTrack')[0].setAttribute('data-asset-qty', assetQty);
+                                console.log(document.getElementsByClassName('assetQtyClass')[0]);
+                                console.log('This is asset Quantity ', assetQty);
+                                document.getElementsByClassName('tabcontent assignDeassignTrack')[0].getElementsByClassName('assetQtyClass')[0].innerHTML = '('+assetQty+')';//  document.getElementsByClassName('tabcontent assignDeassignTrack')[0].getAttribute('data-asset-qty');
+                                
+                                // alert(this2.innerHTML);
+                                // let assignDiv = document.getElementsByClassName('assignDeassign')[0];
+                                // ++assignDiv.getAttribute('data-asset-qty')
+                                lastAssignmentBtn = this2.value;
+                                console.log(userID);
+                                var obj = {url:`/user/ls`};
+                                console.log(obj);
+                                
+                                // console.log(assetListGrab);
+                                // userAssetPoolCheckboxGrab = assetListGrab.getElementsByClassName('user-asset-pool-checkbox');
+                                // console.log(userAssetPoolCheckboxGrab);
+                                // var trueBoxes =  [...userAssetPoolCheckboxGrab].filter(item=>{
+                                //     return item.checked == true;
+                                // })
+                                // console.log(trueBoxes);
+                                // console.log(userAssetPoolGrab);
+                                // trueBoxes.forEach(item=>{
+                                //     assetGrab.appendChild(item.parentNode.parentNode); 
+                                // })
+
+                                // var divContLi = document.createElement('div');
+                                //     divContLi.setAttribute('class', 'divContLi')
+                                //     divContLi.setAttribute('data-assetType-id', assetTypeIdTrack);
+                                //     divContLi.setAttribute('data-asset-assetName', assetTypeNameTrack);
+                                //     divContLi.innerHTML = 'AssetAssigned';
+                                //     var liElm =  document.createElement('li');
+                                //     var divContLiInputElm =  document.createElement('input')
+                                //     divContLiInputElm.setAttribute('type', 'checkbox');
+                                //     divContLiInputElm.setAttribute('class', 'user-asset-pool-checkbox');
+                                //     divContLiInputElm.style.display = 'inline';
+                                //     divContLiInputElm.style.width = '10%';
+                                
+                                // var divContLiInputAnchorElm =  document.createElement('a');
+                                //     liElm.appendChild(divContLiInputElm);
+                                //     liElm.appendChild(divContLiInputAnchorElm);
+
+                                    
+                                
+                                //     divContLi.append(liElm)
+                                let formedAssetDiv = formAsset({_id:assetTypeIdTrack, assetName: assetTypeNameTrack, assetCode:'Not Assigned (Code)'}, 'data-assetType-id', 'View Asset now', 'New');
+                                    assetGrab.appendChild(formedAssetDiv); 
+                                    // assetGrab.appendChild(divContLi); 
+                                if (assetGrab.children.length){
+                                    doneBtnGrab.classList.toggle('btn-deActivate'); 
+                                }
+                                idObj.userId = userID;
+                                getObjectIds(assetGrab);
+                                console.log('!!!!!!');
+                                console.log(idObj);
+                                updateFormGrab.action = `/user/assignDeassign2/${JSON.stringify(idObj)}?_method=PUT&assignment=${this2.innerHTML}`;
+                                console.log(updateFormGrab.action);
+                                if (assetQty == 0){
+                                    document.getElementsByClassName('tabcontent assignDeassignTrack')[0].style.backgroundColor = 'red'
+                                }else {
+                                    document.getElementsByClassName('tabcontent assignDeassignTrack')[0].style.backgroundColor = 'green'
+                                }
+                            } else {//end of if assets > 0
+                                alert('Asset exhausted')
+                            }
+                    }// end of if (assetDiv ==)
+
+                    if (assetDiv == 'user-assetsOwn-div'){
+                        alert('From pool');
+                        let checkedOldAssetsInputs = document.getElementsByClassName('assetList')[0].getElementsByClassName('user-asset-pool-checkbox');
+                        console.log(document.getElementsByClassName('assetList')[0]);
+                        console.log(checkedOldAssetsInputs);
+                        [ ...checkedOldAssetsInputs].forEach(inptElm=>{
+                        console.log(inptElm);
+                        if (inptElm.checked){
+                            userAssetsOwnDivGrab.appendChild(inptElm.parentNode.parentNode);
+                        }
+                    });
+                    }
+        }
+       }
+    
+       function getObjectIds(assetDiv){
+        console.log('--')
+        console.log(assetDiv);
+        idObj['idArr'] = []; //tracks new assets (with assetTypes)
+        idObj['idArrAsset'] = []; //tracks old assets (with assetIDs)
+           let assetDivGrab = assetDiv.getElementsByClassName('divContLi');
+           console.log('**');
+           console.log(assetDivGrab);
+           [...assetDivGrab].forEach(divItem=>{
+               if (divItem.getAttribute('data-status') == 'New'){
+                    console.log(divItem.getAttribute('data-status'))
+                   idObj['idArr'].push(divItem.getAttribute('data-assetType-id'));
+               }else {
+                    idObj['idArrAsset'].push(divItem.getAttribute('data-asset-id'));
+               }
+           })
+
+           console.log('$$');
+           console.log(idObj)
+       }
+
+
+       function userAssetDeassign(this2, assetDiv, updateForm){
+        var ownAssetIDArr=[]; //should this be out of the userAssetDeassign function?
+        var ownAssetNameArr = [];
+
+        // let arrToDeassign = [];
+
+        console.log(updateForm);
+        //alert(this2.innerHTML);
+        console.log(this2);
+        console.log(assetDiv);
+        console.log('++++');
+        assetGrab = document.getElementsByClassName(assetDiv)[0];
+        var inputChecks = assetGrab.getElementsByClassName('user-asset-pool-checkbox');
+        var trueBoxes =  [...inputChecks].filter(item=>{
+            return item.checked == true;
+        })
+        //
+        
+        if (updateForm){ // if we are deassigning from the owned assets, not just from tentative assets
+            alert('From own assets')
+            trueBoxes.forEach(item=>{
+                let assetName = item.parentNode.parentNode.getAttribute('data-asset-assetName');
+                alert(assetName);
+                // document.getElementById(assetName).appendChild(item.parentNode.parentNode); 
+                console.log(document.getElementById(assetName));
+                console.log(document.getElementById(assetName).getElementsByClassName('usedAssetContainer')[0]);
+
+                //visual confirmation
+                document.getElementById(assetName).getElementsByClassName('usedAssetContainer')[0].appendChild(item.parentNode.parentNode);
+                
+                //ready for server Update
+                ownAssetIDArr.push(item.parentNode.parentNode.getAttribute('data-asset-id'));
+            })
+            idObj['idArr'] = ownAssetIDArr;
+            console.log('This is own AssetId to be deassigned: ', ownAssetIDArr);
+            console.log(assetGrab);
+            console.log(assetGrab.children.length);
+            if (!assetGrab.children.length){
+                doneBtnGrab.classList.toggle('btn-deActivate'); 
+            }
+            idObj.userId = userID;
+            console.log(userAssetsOwnDivGrab);
+            
+            // getObjectIds(userAssetsOwnDivGrab);
+            console.log('*****')
+            console.log(idObj);
+            console.log(document.getElementById(updateForm)); // if updateForm moved from one line above
+            document.getElementById(updateForm).action = `/user/assignDeassign2/${JSON.stringify(idObj)}?_method=PUT&assignment=${this2.innerHTML}`;
+        } else{ //deassigning from assetsDiv
+
+            trueBoxes.forEach(item=>{
+                ownAssetNameArr.push(item.parentNode.parentNode);//.getAttribute('data-asset-assetName'));
+                console.log('This is ownAssetNameArr: ', ownAssetNameArr);
+            })
+            //trueBoxes.forEach((item, i)=>{
+                ownAssetNameArr.forEach(assetName=>{
+                    // console.log(assetName);
+                    // console.log(assetName.innerHTML);
+                    if (assetName.getAttribute('data-status') == 'New'){
+
+                        console.log(assetName);
+                        // let qtyDivGrab = document.getElementById(assetName);
+                        var qtyAssetQtyDivGrab = document.getElementById(assetName.getAttribute('data-asset-assetName')).getElementsByClassName('assetQtyClass')[0]; //gets the h3
+                        console.log('==');
+                        let assetQty = (+document.getElementById(assetName.getAttribute('data-asset-assetName')).getAttribute('data-asset-qty'));
+                        console.log('assetQty: ', assetQty);
+                        ++assetQty;
+                        console.log(document.getElementById(assetName.getAttribute('data-asset-assetName')));
+                        qtyAssetQtyDivGrab.innerHTML ="(" + assetQty  +")";
+                        document.getElementById(assetName.getAttribute('data-asset-assetName')).setAttribute('data-asset-qty', assetQty);
+                        // userAssetPoolGrab.appendChild(assetName);
+                        assetGrab.removeChild(assetName);
+                    }else {
+                        let oldAssetDivName = assetName.getAttribute('data-asset-assetname');
+                        document.getElementById(oldAssetDivName).getElementsByClassName('usedAssetContainer')[0].appendChild(assetName);
+                    }
+                })
+        }
+        
+        console.log(updateFormGrab.action);
+    }  
+
+    function triggerClickCheckbox(this2){
+    console.log(this2);
+       var checkGrab = this2.getElementsByTagName('input')[0];
+       checkGrab.checked = !checkGrab.checked;
+    }
+
+    setTimeout(function(){
+            profileCreatedMsgGrab.style.display = 'none';
+        }, 3000)
+
+    var assetsRequisitionedDiv;
+    var qtyRequisitionInptGrab = document.getElementById('qtyRequisitionInpt');
+    var ulRequisitionGrab = document.getElementById('ulRequisition');
+    var selectRequisitionGrab;
+    var objRequisition = {};
+    console.log(serverUserUserRequisition);
+    if (serverUserUserRequisition){
+        objRequisition = JSON.parse(serverUserUserRequisition);
+        addRequisition();
+    }
+
+    // objRequisition = {}
+    function addRequisition(){
+        console.log(objRequisition);
+        selectRequisitionGrab = document.getElementById('select-requisition').selectedOptions;
+        console.log(selectRequisitionGrab);
+        assignUlElement(selectRequisitionGrab, this);
+               
+        //assetsRequisitionedDiv.appendChild(document.createElement('ul'));
+    }
+
+    function assignUlElement(selectRequisitionGrab2, this2){
+        [...selectRequisitionGrab2].forEach(selItem=>{
+            if (objRequisition[selItem.innerHTML]){
+                console.log('Exists');
+                objRequisition[selItem.innerHTML] =  +objRequisition[selItem.innerHTML] + parseInt(qtyRequisitionInptGrab.value);
+            }else{
+                objRequisition[selItem.innerHTML] = +qtyRequisitionInptGrab.value;
+            }
+            // objRequisition[selItem.innerHTML] = (objRequisition[selItem.innerHTML] != undefined) ? objRequisition[selItem.innerHTML] + qtyRequisitionInptGrab.value: qtyRequisitionInptGrab.value;
+        });
+        console.log('@@@@@@@@@@@');
+        console.log(objRequisition);
+        assetsRequisitionedDiv = document.getElementById(divId);
+        ulRequisitionGrab.innerHTML = '';
+        Object.keys(objRequisition).forEach(arrItem=>{
+            var divMiniCont = document.createElement('div');
+                divMiniCont.setAttribute('class', 'divMiniLi')
+            var liElm = document.createElement('li');
+                liElm.setAttribute('class', 'liRequisition');
+                liElm.style.display = 'inline'
+            var btnPlus = document.createElement('button');
+            var btnPlus = document.createElement('button');
+                btnPlus.innerHTML = '+';
+                btnPlus.onclick = function(){
+                    changeObjRequisition(this);
+                }
+            var btnMinus = document.createElement('button')
+                btnMinus.onclick = function(){
+                    changeObjRequisition(this);
+                }
+                btnMinus.innerHTML = '-';
+            liElm.innerHTML = arrItem +'('+objRequisition[arrItem]+')';
+            divMiniCont.appendChild(btnMinus);
+            divMiniCont.appendChild(btnPlus);
+            divMiniCont.appendChild(liElm);
+            console.log('==============');
+            console.log(divMiniCont);
+            ulRequisitionGrab.appendChild(divMiniCont);
+
+            
+            
+            //set FORM action
+            console.log('Use in action, ', this2.innerHTML);
+            console.log('The String, ', JSON.stringify(objRequisition));
+            updateFormRequistionGrab.action = `/user/requisition/${userID}?_method=PUT&userId=${userID}&requisitionApproval=${JSON.stringify(objRequisition)}&assignment=Requisition`;
+
+        })
+    }
+
+    function resetRequisition(){
+        objRequisition = {};
+    }
+
+    function resetSelToOne(){
+        qtyRequisitionInptGrab.value = 1;
+    }
+
+    function changeObjRequisition(this2){
+        qtyRequisitionInptGrab.value = 0;
+        if (this2.innerHTML == '+') {
+            // alert('Adding');
+            var liVal = this2.parentNode.getElementsByTagName('li')[0].innerHTML
+            liVal = liVal.slice(0, liVal.indexOf('('));
+            objRequisition[liVal] = +(objRequisition[liVal]) + 1;
+            console.log(objRequisition);
+            assignUlElement(selectRequisitionGrab, this2)
+        }
+        if (this2.innerHTML == '-') {
+            // alert('Subtracting');
+            var liVal = this2.parentNode.getElementsByTagName('li')[0].innerHTML
+            liVal = liVal.slice(0, liVal.indexOf('('));
+            objRequisition[liVal] =  +(objRequisition[liVal]) - 1;
+            console.log(objRequisition);
+            assignUlElement(selectRequisitionGrab, this2)
+        }
+    }
+
+    function userHistory(this2, userHistoryDiv){
+
+    }
+    let approveRequisitionObj ={}
+var objClassList = {}
+    function approveRequisition(this2){
+        makeObject();
+        //ulRequisitionGrab.classList.add('approvedRequisition');
+        objClassList['ulRequisitionGrab'] = 'approvedRequisition';
+        console.log(this2);
+        let requisitionApproval = this2.getElementsByTagName('button')[0].innerHTML;
+        if (requisitionApproval == 'Directorate Approval'){
+            this2.action = '/user/directorateRequisitionApproval/<%=user.id%>?_method=PUT&userClassList='+ JSON.stringify(objClassList)+`&directorateApproval=${JSON.stringify(approveRequisitionObj)}`+`&assignment=${this2.getElementsByTagName('button')[0].innerHTML}`;
+        }
+        if (requisitionApproval == 'Store Approval'){
+            this2.action = '/user/storeRequisitionApproval/<%=user.id%>?_method=PUT&userClassList='+ JSON.stringify(objClassList)+`&storeApproval=${JSON.stringify(approveRequisitionObj)}`+`&assignment=${this2.getElementsByTagName('button')[0].innerHTML}`;
+        }
+        return true;
+      
+    }
+
+    function makeObject(){
+        approveRequisitionObj = {};
+        alert('Making object');
+        var liRequisitionGrab = document.getElementsByClassName('liRequisition');
+        console.log(liRequisitionGrab);
+        // liRequisitionGrab.forEach(liItem=>{
+            // console.log(liItem.innerHTML);
+            //alert(liRequisitionGrab.length);
+            
+            for (var a=0; a<liRequisitionGrab.length;a++){
+                // alert (liRequisitionGrab[a].innerHTML);
+                approveRequisitionObj[(liRequisitionGrab[a].innerHTML).slice(0, (liRequisitionGrab[a].innerHTML).indexOf('('))] = liRequisitionGrab[a].innerHTML.slice((liRequisitionGrab[a].innerHTML).indexOf('(')+1, liRequisitionGrab[a].innerHTML.indexOf(')'));
+            }
+            console.log(approveRequisitionObj);
+             
+        //    if (userMan){
+        //     alert('Yeah')
+        //    }
+        // })
+
+        // function requisitionHistory(){
+        //     let getRequisitionObj = new XMLHttpRequest();
+
+        //     getRequisitionObj.onreadystatechange = function (){
+        //         if (getRequisitionObj.readyState == 4 && getRequisitionObj.status == 200){
+        //             console.log(getRequisitionObj.response);
+        //         }
+        //     }
+
+        //     getRequisitionObj.open("GET", `/user/getHistory/${userID}`, true);
+        //     getRequisitionObj.send();
+        // }
+
+
+    }
+</script>
+
+
+

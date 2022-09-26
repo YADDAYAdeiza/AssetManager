@@ -12,33 +12,33 @@ let assetTypeSchema = new mongoose.Schema({
         type:String,
         required:true,
     },
-    assetManufacturer:{
+    assetTypeManufacturer:{
         type:String,
         required:true,
         default: 'Open Market'
     },
-    assetPurchased:{
+    assetTypePurchased:{
         type:Date,
         required:true,
         default:function(){
             return Date.now();
         }
     },
-    assetStoreLocation:{
+    assetTypeStoreLocation:{
         type:String,
         required:true
     },
-    assetValue:{
+    assetTypeValue:{
         type:Number
     },
-    assetQty:{
+    assetTypeQty:{
         type:Number,
         required:true
     },
     assetLifeCycle:{
         type:Number
     },
-    status:{
+    assetTypeStatus:{
         type:String,
         required:true,
         default:'New'
@@ -51,7 +51,7 @@ let assetTypeSchema = new mongoose.Schema({
         type:String,
         required:true
     },
-    assetDescription:{
+    assetTypeDescription:{
         type:String,
         default:"The Asset Type description goes in here "
     }

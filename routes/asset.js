@@ -8,6 +8,7 @@ let assetModel = require('../models/asset.js');
 let assetTypeModel = require('../models/assetType.js');
 // const { rawListeners } = require('../models/asset.js');
 const userModel = require('../models/user.js');
+const userLogModel = require('../models/userLog.js');
 let {v4:uuidv4} = require('uuid');
 //route.set('layout', 'layouts/layout');
 
@@ -22,6 +23,14 @@ route.use(express.static('public'));
 
 
 let userVar = 'trial';
+
+route.get('/fromLogAssetDuration/:assetId', async (req,res)=>{
+    console.log('Getting...', req.params.assetId);
+    // let assetlog = await userLogModel.find({}).where('user').equals(req.params.userId).where('userAsset.id').in(req.params.assetId)
+    let assetlog = await userLogModel.find({}).where('userAsset.id').equals(req.params.assetId);
+    console.log('This is it ', assetlog);
+    res.send(assetlog);
+})
 //get all assets
 route.get('/index', async (req, res)=>{
     // res.send('Book stuff...');
@@ -92,8 +101,10 @@ async function renderFormPage(res, asset, assetTypeModelVar, form, hasError = fa
 
 
 route.get('/:id', async (req, res)=>{
+    console.log('Entered here now');
     try {
-        const asset = await assetModel.findById(req.params.id).populate('assetType').exec();
+        const asset = await assetModel.findById(req.params.id).populate('assetType assetUserHistory assetLocationHistory').exec();
+        console.log('Successful...');
         res.render('asset/show', {
             asset:asset
         });
@@ -131,6 +142,12 @@ route.get('/:id/edit', async(req, res)=>{
 route.put('/:id', async(req,res)=>{
     let user;
 
+            var today = new Date();
+            var dd = String(today.getDate()).padStart(2, '0');
+            var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+            var yyyy = today.getFullYear();
+            today = mm + '/' + dd + '/' + yyyy;
+
     var assetTypeModelVar = await assetTypeModel.find({});
     assetTypeModelVar.sort((a,b)=>{
         if (a.assetTypeClass > b.assetTypeClass){
@@ -149,10 +166,9 @@ route.put('/:id', async(req,res)=>{
         
         asset.assetCode = req.body.assetCode;
         asset.assetType = req.body.assetType;
-        asset.Status = req.body.Status;
-        asset.description = req.body.description;
-        asset.assignDate = new Date(req.body.assignDate);
-        asset.user = req.body.user;
+        asset.assetStatus = req.body.assetStatus;
+        asset.assetAssignDate = new Date(); //req.body.assetAssignDate
+        asset.assetUser = req.body.user;
         asset.assetDescription = req.body.assetDescription;
         // user.asset = "0012"; //we're later getting asset from the form
         if (req.body.assetPic != null && req.body.assetPic !== ""){

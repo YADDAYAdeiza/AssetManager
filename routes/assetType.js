@@ -20,15 +20,16 @@ route.use(express.static('public'));
 // }))
 
 // route.use(cors({
-//     origin:"http://localhost:2000",
-//     method:["GET", "POST", "PUT"]
+//     origin:"*",
+//     method:["GET", "POST", "PUT"],
+//     allowedHeaders: "*",
+//     exposedHeaders:"content-disposition"
 //   }));
-
 route.use(function(req,res,next) {
     // req.connection.setNoDelay(true)
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    res.header("Access-Control-Allow-Headers", "*");
     res.header("Access-Control-Allow-Credentials", true);
-        res.header("Access-Control-Allow-Origin", "*"); 
+        res.header("Access-Control-Allow-Origin", "https:127.0.0.1:2000"); 
 
     res.header('Access-Control-Expose-Headers', 'Content-Disposition');
     // res.header('Access-Control-Expose-Headers', 'agreementrequired');
@@ -146,16 +147,16 @@ route.put('/:id', async(req, res)=>{
         // console.log(assetType.assetPurchased.toString()).slice((assetType.assetPurchased.toString()).indexOf('T'));
         // console.log(typeof assetType.assetPurchased);
         
-        assetType.assetTypeCode = req.body.assetNumber,
+        assetType.assetTypeCode = req.body.assetTypeNumber,
         assetType.assetTypeClass = req.body.assetTypeName,
-        assetType.assetManufacturer = req.body.assetManufacturerName,
-        assetType.assetPurchased = req.body.assetPurchased,
-        assetType.assetStoreLocation = req.body.assetStoreLocation,
-        assetType.assetValue = req.body.assetValue,
-        assetType.assetQty = req.body.assetQty,
-        assetType.assetLifeCycle = req.body.assetLifeCycle,
-        assetType.status = req.body.assetStatus,
-        assetType.assetDescription = req.body.assetDescription
+        assetType.assetTypeManufacturer = req.body.assetTypeManufacturerName,
+        assetType.assetTypePurchased = req.body.assetTypePurchased,
+        assetType.assetTypeStoreLocation = req.body.assetTypeStoreLocation,
+        assetType.assetTypeValue = req.body.assetTypeValue,
+        assetType.assetTypeQty = req.body.assetTypeQty,
+        assetType.assetTypeLifeCycle = req.body.assetTypeLifeCycle,
+        assetType.assetTypestatus = req.body.assetTypeStatus,
+        assetType.assetTyp;eDescription = req.body.assetTypeDescription
 
 
         // assetType.assetTypeCode = req.body.assetTypeCode;
@@ -206,16 +207,16 @@ route.post('/',  async (req,res)=>{
     var assetTypes = await assetTypeModel.find({});
     
     var assetType = new assetTypeModel({
-        assetTypeCode: req.body.assetNumber,
+        assetTypeCode: req.body.assetTypeNumber,
         assetTypeClass:req.body.assetTypeName,
-        assetManufacturer:req.body.assetManufacturerName,
-        assetPurchased:req.body.assetPurchased,
-        assetStoreLocation:req.body.assetStoreLocation,
-        assetValue:req.body.assetValue,
-        assetQty:req.body.assetQty,
-        assetLifeCycle:req.body.assetLifeCycle,
-        status:req.body.assetStatus,
-        assetDescription:req.body.assetDescription
+        assetTypeManufacturer:req.body.assetTypeManufacturerName,
+        assetTypePurchased:req.body.assetTypePurchased,
+        assetTypeStoreLocation:req.body.assetTypeStoreLocation,
+        assetTypeValue:req.body.assetTypeValue,
+        assetTypeQty:req.body.assetTypeQty,
+        assetTypeLifeCycle:req.body.assetTypeLifeCycle,
+        assetTypeStatus:req.body.assetTypeStatus,
+        assetTypeDescription:req.body.assetTypeDescription
 
     });
 

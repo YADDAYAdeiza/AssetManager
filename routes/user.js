@@ -3,6 +3,8 @@ let route = express.Router();
 let mongoose = require('mongoose');
 
 let ejs = require('ejs');
+let {v4:uuidv4} = require('uuid');
+
 // let layout = require('express-ejs-layouts');
 let userModel = require('../models/user');
 const assetTypeModel = require('../models/assetType.js');
@@ -40,6 +42,13 @@ route.use(express.static('public'));
 
 let userVar = 'trial';
 //get all users of assets
+
+route.get('/fetcher/:id', async (req,res)=>{
+    console.log('Fetching...');
+    console.log('This is button requesting fetch: ', req.params.id)
+    let usedAssets = await assetModel.find().where('assetAllocationStatus').equals('false').where('assetName').equals(req.params.id); //used assets
+    res.json(usedAssets);
+})
 
 route.get('/getHistory/:id', async (req,res)=>{
    let userHistory = await userLogModel.find().where('activity').in(['Requisition', 'Directorate Approval', 'Store Approval']).where('user').equals(mongoose.Types.ObjectId(req.params.id));
@@ -164,21 +173,22 @@ route.get('/:id/edit',  async (req,res)=>{
 })
 
                         async function idRedirect(req,res, msg){
+                            console.log('Redirecting to '+req.params.id);
                             // res.send('Getting the User Page...'+req.params.id);
                             var ownAssets=[];
                             try {
                             const user =await userModel.findById(req.params.id);
-                            const allAssetType = await assetTypeModel.find().select('_id assetTypeClass status description').exec();//.distinct('assetTypeClass');
+                            const allAssetType = await assetTypeModel.find().select('_id assetTypeCode assetTypeClass assetTypeStatus assetTypeDescription assetTypeQty').exec();//.distinct('assetTypeClass');
                             const asset = await assetModel.find({user:user.id}).exec(); //.limit(10)
-                            const allAsset = await (await assetModel.find().where('allocationStatus').ne(true));
-                            const assetTypeDistinct = await assetTypeModel.find().select('_id assetTypeClass status description').exec();
+                            const allAsset = await (await assetModel.find().where('assetAllocationStatus').ne(true).select('_id assetType'));
+                            const assetTypeDistinct = await assetTypeModel.find().select('_id assetTypeClass assetTypeStatus assetTypeDescription').exec();
                             user.userAsset.id.forEach(async itemArr=>{
                                         ownAssets.push(itemArr);
                                 });
                                 // let msg = 'User found';
                                 console.log('This is asset:')
-                                console.log(asset);
-                                const records = await assetModel.find().where('_id').in(ownAssets).select('assetCode assetType status').exec();
+                                // console.log(asset);
+                                const records = await assetModel.find().where('_id').in(ownAssets).select('assetCode assetName assetType assetStatus').exec();
                             // console.log('This is allAssetType ', allAssetType);
                                 
                             var allAssetTypeMap2 = allAssetType.map(arrItem=>{
@@ -191,7 +201,8 @@ route.get('/:id/edit',  async (req,res)=>{
                                     }
                                 })
                                 // console.log('This is allAssetType2', allAssetTypeMap2);
-                            res.render('user/show', {
+                                console.log('This is allAsset now', allAsset);
+                            res.render('user/show2', {
                                 user:user,
                                 allAssets:allAsset,
                                 assetsByUser:asset, 
@@ -224,12 +235,12 @@ async function userLogSave(user, list, assignment, req){
             break;
         case 'Assign':
             console.log('Assign')
-            // userLog.userAsset.id = list;
+            userLog.userAsset.id = list;
             userLog.userRequisition = list;
             break;
         case 'DeAssign':
             console.log('DeAssign')
-            // userLog.userAsset.id = list;
+            userLog.userAsset.id = list;
             userLog.userRequisition = list;
             break;
         case 'Directorate Approval':
@@ -351,12 +362,20 @@ route.put('/assignDeassign/:id', async (req,res)=>{
                 console.log(item)
                 console.log('This is item:', item.toString());
                 // if(userAssetArr.idArr.indexOf((item.toString()).slice((item.toString()).indexOf('(')+1, (item.toString()).indexOf(')'))) == -1){
-                //     newIdArr.push(item);
-                // } //string to mongoose.Types.ObjectId.  How to
-                if(userAssetArr.idArr.indexOf((item.toString())) == -1){
-                    newIdArr.push(item);
-                } //string to mongoose.Types.ObjectId.  How to
-            })
+                    //     newIdArr.push(item);
+                    // } //string to mongoose.Types.ObjectId.  How to
+                    if(userAssetArr.idArr.indexOf((item.toString())) == -1){
+                        newIdArr.push(item);
+                    } //string to mongoose.Types.ObjectId.  How to
+                })
+                //  ... = userAssetArr.idArr()
+                let affectedAssetsToDeassign = await assetModel.find().where('_id').in(userAssetArr.idArr).select('assetType status allocationStatus').exec();
+                
+                affectedAssetsToDeassign.forEach(async asset=>{
+                    asset.assetAllocationStatus = false; //making it an old asset
+                    await asset.save();
+                });
+
             user.userAsset.id= newIdArr;
             let assetsNamesToAssign = await assetModel.find().where('_id').in(newIdArr).select('assetType status allocationStatus').exec();
             let affectedAssets = await assetModel.find().where('_id').in(userAssetArr.idArr).select('assetType status allocationStatus').exec();
@@ -408,6 +427,210 @@ route.put('/assignDeassign/:id', async (req,res)=>{
     } catch(e){
         console.log(e.message);
         
+    }
+});
+
+route.put('/assignDeassign2/:id', async (req,res)=>{
+    let userAssetArrIdArrObj = {};
+    let affectedAssetTypeObj = {};
+    console.log('Inside assignDeassign2');
+    console.log(req.query.assignment);
+    console.log('This is req.query');
+    console.log(req.query);
+    let user;
+    // let affectedAssets;
+    let allAsset;
+    let newIdArr = []; //this will contain the filtered array to be reassigned (filtered of object to be deassigned)
+    let msg = {};
+    console.log(req.method);
+    console.log(req.params.id);
+    let userAssetArr = JSON.parse(req.params.id);
+    console.log(userAssetArr);
+    console.log(userAssetArr.userId);
+
+    try{
+        user = await userModel.findById(userAssetArr.userId); //, 'firstName lastName cadre userAsset'
+        // console.log('This is user:');
+        // console.log(user);
+        console.log('Here is user Asset:');
+        console.log(user.userAsset.id)
+        console.log('Here is user idArr:')
+        console.log(userAssetArr.idArr)
+        allAsset = await assetModel.find();
+        
+                userAssetArr.idArr.forEach(assetId=>{
+                    userAssetArrIdArrObj[assetId] = 0;
+                })
+
+                userAssetArr.idArr.forEach(assetId=>{
+                    // assetId = assetId.slice(assetId.indexOf('"')+1, assetId.lastIndexOf('"'))
+                    userAssetArrIdArrObj[assetId]++;
+                })
+
+                console.log('This is userAssetArrIdArrObj: ');
+                console.log(userAssetArrIdArrObj)
+        
+        if (req.query.assignment == 'Assign'){
+            //takes all assetTypesIds from tentative asset div(upper) and appends them to present assets
+            if (userAssetArr.idArr.length){ //assigning new assets
+
+                    let affectedAssetType = await assetTypeModel.find().where('_id').in(userAssetArr.idArr).select('_id assetTypeQty assetTypeImageName assetTypeDescription assetTypeClass').exec();
+
+                        console.log('This is affectedType, ', affectedAssetType);
+                        affectedAssetType.forEach(assetTypeId=>{
+                            console.log('Now ',assetTypeId._id.toString());
+                            var assetTypeIdTrim = assetTypeId._id.toString();
+                            affectedAssetTypeObj[assetTypeIdTrim] = 0;
+                        })
+                        console.log('--------');
+                        affectedAssetType.forEach(assetTypeId=>{
+                            var assetTypeIdTrim = assetTypeId._id.toString();//.slice(assetTypeId._id.toString().indexOf('"')+1, assetTypeId._id.toString().lastIndexOf('"')+1)
+                            console.log(assetTypeIdTrim);
+                            affectedAssetTypeObj[assetTypeIdTrim] = userAssetArrIdArrObj[assetTypeIdTrim];
+                        })
+
+                    console.log('This is affectedAssetTypeObj, ', affectedAssetTypeObj);
+                    //Decrement assetTypeQty
+                    affectedAssetType.forEach(async (assetType, i)=>{
+                        // console.log('Witin each...');
+                        assetType.assetTypeQty -= affectedAssetTypeObj[assetType._id];
+                        await assetType.save();
+                        // console.log(typeof assetType.assetTypeQty)
+                        // console.log(typeof affectedAssetTypeObj[assetType._id])
+                        // console.log(assetType.assetTypeQty);
+                        // console.log('assetType saved', assetType);
+                    });
+
+                    //create assets
+                    let affectedAssetType2 = affectedAssetType.map(asset=>{
+                        return asset._id.toString();
+                    })
+                    console.log('This is mapped affectedAssetType ', affectedAssetType2);
+                    userAssetArr.idArr.forEach(async itemId =>{
+                            if (affectedAssetType2.indexOf(itemId) != -1){
+                                console.log('Match');
+                                let assetType = affectedAssetType[affectedAssetType2.indexOf(itemId)]
+                                let newAsset = new assetModel({
+                                    assetCode: uuidv4(),
+                                    assetType: assetType._id,
+                                    assetName: assetType.assetTypeClass,
+                                    assetStatus:'Assigned',
+                                    assetImageName: assetType.assetTypeImageName,
+                                    assetDescription:assetType.assetTypeDescription,
+                                    assetAllocationStatus:true
+                                })
+                                newAsset.assetUserHistory.push(user.id);
+                                newAsset.assetLocationHistory.push(user.id);
+                                let newAssetSaved = await newAsset.save();
+                                newIdArr.push(newAssetSaved._id); //for use in userLogSave()
+                                user.userAsset.id.push( newAssetSaved._id);
+                                user.userAsset.idType.push( newAssetSaved.assetName);
+                                console.log('This is newAssetSaved', newAssetSaved);
+                                
+                            }
+                        })
+                }
+                if (userAssetArr.idArrAsset.length){ //if we have old assets to assign
+                    let affectedAsset = await assetModel.find().where('_id').in(userAssetArr.idArrAsset).select('_id assetCode assetName assetUsedDuration assetDescription assetUserHistory assetLocationHistory').exec();
+                    console.log('Here is affected asset (not type):')
+                    console.log(affectedAsset);
+                    affectedAsset.forEach(async asset=>{
+                        console.log('Entered...')
+                        asset.assetAllocationStatus = true;
+                        asset.assetUserHistory.push(user.id);
+                        asset.assetLocationHistory.push(user.id);
+                        await asset.save();
+                        newIdArr.push(asset._id); //newIdArr for use in userLogSave
+                        user.userAsset.id.push(asset._id);
+                        user.userAsset.idType.push(asset.assetName);
+                    });
+                }
+            
+            await user.save();
+          
+
+            // saveAssetImageDetails(newAsset, req.body.assetPic);
+
+                                // function saveAssetImageDetails(user, encodedProfile){
+                                //     if (encodedProfile == null) return
+                                    
+                                //     const profile = JSON.parse(encodedProfile);
+                                //     console.log('-----------');
+                                //     console.log(profile.type);
+                                //     if (profile !=null && imageMimeTypes.includes(profile.type)){
+                                //         user.assetImageName = new Buffer.from(profile.data, 'base64');
+                                //         user.assetImageType = profile.type; 
+                                //     }
+                                // }
+            // affectedAssets
+            // Decrement AssetType
+            console.log('Assign')
+            // userAssetArr.idArr.forEach(assetId=>{
+            //     newIdArr.push(assetId)
+            // })
+            // newIdArr.forEach((arrItem, i)=>{
+            //     user.userAsset.id.push(arrItem);
+            //     user.userAsset.idType.push(affectedAssets[i].assetType);
+            // })
+            
+            //affecting assets
+            // affectedAssets.forEach(async assetArr=>{
+            //     assetArr.allocationStatus = true;
+            //     await assetArr.save();
+            // })
+            userLogSave(user, newIdArr, req.query.assignment, req);
+            
+        }
+        
+        if (req.query.assignment == 'DeAssign'){
+            //takes only ticked items from own list and subtracts it from user asset (user.userAsset.id)
+
+            console.log('DeAssign now');
+           
+            user.userAsset.id.forEach(item=>{
+                if(userAssetArr.idArr.indexOf((item.toString())) == -1){
+                    newIdArr.push(item);
+                } //string to mongoose.Types.ObjectId.  How to
+            })
+
+    //userAssetArr.idArr //items to deAssign
+
+            //reassign updated assetIds to user
+            user.userAsset.id= newIdArr;
+            let assetsNamesToAssign = await assetModel.find().where('_id').in(newIdArr).select('assetType status allocationStatus').exec();
+            let affectedAssets = await assetModel.find().where('_id').in(userAssetArr.idArr).select('assetType status allocationStatus').exec();
+
+            //return affected Assets to Asset pool (used)
+            affectedAssets.forEach(async asset=>{
+                asset.assetAllocationStatus = false;
+                await asset.save();
+            })
+            var assetTypeArr = [];
+            assetsNamesToAssign.forEach(asset=>{
+                asset.assetAllocationStatus = false; //we have to bring false assets and store them under their asset Divs as used items
+                assetTypeArr.push(asset.assetType)
+            })
+
+            //reassign updated assetId types to user
+            user.userAsset.idType = assetTypeArr; //very correct
+            console.log('--');
+            console.log('This is userAssetArr.idArr right before log: ', userAssetArr.idArr);
+            userLogSave(user, userAssetArr.idArr, req.query.assignment, req);
+            
+        }
+        console.log('Here is new arr++++++++++++');
+       
+
+        await user.save();
+        msg = {
+            message:'User Asset updated!',
+            class:'green'
+        };
+        
+        // userLogSave(user, newIdArr, req.query.assignment, req);
+        res.redirect(`/user/${userAssetArr.userId}`);
+    } catch(e){
+        console.log(e.message);
     }
 });
 

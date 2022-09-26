@@ -22,7 +22,7 @@ var s3 = new AWS.S3({
 });
 
 
-
+// header('Access-Control-Expose-Headers: Content-Disposition, Content-Length, X-Content-Transfer-Id');
 
 FilePond.create( document.querySelector('input[type="file"]'),
 	{
@@ -49,6 +49,7 @@ FilePond.create( document.querySelector('input[type="file"]'),
 	}
 )
 
+//, {mode:'cors', headers:{'Access-Control-Request-Origin':'*'}}
 
 
 

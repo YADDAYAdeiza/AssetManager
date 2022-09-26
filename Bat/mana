@@ -1,0 +1,5 @@
+echo "What is your name?"
+read -p "Name: " name
+echo "What is your password?"
+read -sp "Password: " pass
+echo "Your name is $name and your password is $pass"

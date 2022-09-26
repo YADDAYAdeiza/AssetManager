@@ -29,16 +29,18 @@ const {v4:uuidV4} = require('uuid');
 
 
 app.use((req, res, next) => {
-  res.append('Access-Control-Allow-Origin', ['*']);
-  res.append('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-  res.append('Access-Control-Allow-Headers', 'Content-Type');
-  res.append('Access-Control-Expose-Headers', 'Content-Disposition');
+  res.header('Access-Control-Allow-Origin', 'https:127.0.0.1:2000');
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  res.header('Access-Control-Expose-Headers', 'Content-Disposition');
   next();
 });
 
 app.use(cors({
-  origin:"*",
-  method:["GET", "POST", "PUT"]
+  origin:"https:127.0.0.1:2000",
+  method:["GET", "POST", "PUT"],
+  allowedHeaders: "*",
+  exposedHeaders:"content-disposition"
 }));
 
 //authentication
@@ -81,7 +83,7 @@ io.on('connection', socket=>{
 server.listen(process.env.PORT || 2000);
   
   
-mongoose.connect(process.env.DATABASE_URL, {useNewUrlParser:true }); //play around with this
+mongoose.connect(process.env.DATABASE_URL, {useNewUrlParser:true, useUnifiedTopology:true }); //play around with this
 const db = mongoose.connection;
 db.on('error', error => console.error(error))
 db.once('open', () => console.log('Connected to mongoose now'));

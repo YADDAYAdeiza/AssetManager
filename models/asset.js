@@ -18,16 +18,20 @@ let assetSchema = new mongoose.Schema({
         type:String,
         default:'Chair'
     },
-    status:{
+    assetStatus:{
         type:String,
         required:true,
         default:'New'
     },
-    description:{
+    assetUsedDuration:{
+        type:String,
+        default:'0 Day(s)'
+    },
+    assetDescription:{
         type:String,
         default:'Na so'
     },
-    assignDate: {
+    assetAssignDate: {
         type:Date,
         required:true,
         default:Date.now()
@@ -38,24 +42,35 @@ let assetSchema = new mongoose.Schema({
     }, 
     assetImageType:{
         type:String,
-        required: true
+        required: true,
+        default:'An image'
     },
-    user:{
+    assetUser:{
         type:mongoose.Schema.Types.ObjectId,
         ref: 'UserCol'
+    },
+    assetUserHistory:{
+        type:[mongoose.Schema.Types.ObjectId],
+        ref:'UserCol'
+    },
+    assetLocationHistory:{
+        type:[mongoose.Schema.Types.ObjectId],
+        ref:'UserCol'
     },
     assetDescription:{
         type:String,
         default:"Description, like date of purchase, history, blah blah, goes in here"
     },
-    allocationStatus:{
+    assetAllocationStatus:{
         type:Boolean
     }
 });
 
 assetSchema.virtual('assetImageDetails').get(function(){
     if (this.assetImageName != null && this.assetImageType != null){
-        return `data:${this.assetImageType};charset=utf-8;base64,${this.assetImageName.toString('base64')}`
+        // return `data:${this.assetImageType};charset=utf-8;base64,${this.assetImageName.toString('base64')}`
+        return `https://ams-users.s3.us-west-1.amazonaws.com/assetType/${this.assetImageName}`
+
     }
 })
 

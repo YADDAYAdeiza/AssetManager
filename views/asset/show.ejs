@@ -1,8 +1,13 @@
+<script
+src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDuYptvwFszij8WWugKw5jQ6PkhiYqBo2c&callback=initMap&libraries=&v=weekly">
+</script>
+
 <div class = "asset-details">
+    <%console.log('Here is asset, ', asset)%> 
     <h2><%=asset.assetCode%></h2>
     <h4>Asset Type: <%= asset.assetType.assetTypeClass%></h4>
     <h4>Asset Status: <%= asset.status%></h4>
-    <h4>Asset Assigned: <%= asset.assignDate.toDateString()%></h4>
+    <h4>Asset Assigned: <%= asset.assetAssignDate.toDateString()%></h4>
     
     
     <%if (asset.assetDescription != null){%>
@@ -23,3 +28,155 @@
             <h5>List of Former Users</h5>
         </div>
     </div>
+<button id = 'polyBut'>Track Path</button>
+    <div id="mapAsset">
+        Map to track goes in here
+    </div>
+
+    <script defer>
+        let assetVar = '<%-asset.id%>';
+        let geoCoord = '<%-asset.assetLocationHistory[0].geoCoord%>';
+        let assetObj = <%- JSON.stringify(asset)%>;
+        let mapAssetGrab = new google.maps.Map(document.getElementById('mapAsset'), {zoom:6, center:{lat:9, lng:7}});
+        let polyButGrab = document.getElementById('polyBut');
+        console.log(mapAssetGrab);
+        console.log(assetVar);
+        console.log(geoCoord.toString());
+        console.log('---');
+        console.log(assetObj);
+
+        let myLatLngArr = [];
+        let LocationArr = assetObj.assetLocationHistory;
+        let userActivityObj = {}; //keeps track of ... using a combination of Acitivity values (Assign/deAssign) and userId
+        let geoCoordArr =[];
+        let assignArr = [];
+        var drawPolyBool = false;
+        let flightPath; //for drawing poly
+        const lineSymbol = {
+                path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+            };
+
+        polyButGrab.addEventListener('click', drawPoly);
+
+        LocationArr.forEach( (user,i)=>{
+                user.geoCoord.lat = +user.geoCoord.lat;
+                user.geoCoord.lng = +user.geoCoord.lng;
+            geoCoordArr.push(new google.maps.LatLng(user.geoCoord.lat, user.geoCoord.lng));
+        })
+        
+        fetchFromLog();
+        async function fetchFromLog(){
+            userActivityObj =  await fetchDuration();
+            console.log('&&');
+            console.log(userActivityObj);
+
+            if (userActivityObj['Assign'] != userActivityObj['DeAssign']) { //odd number; no deAssign
+                console.log('??',userActivityObj['Assign'], userActivityObj['DeAssign'] );
+                console.log(userActivityObj);
+                //LocationArr[LocationArr.length -1]['_id']] -the last user in the array will always be the problematic one
+                if ((userActivityObj.Assign - userActivityObj.DeAssign) == 1) { //if asset is assigned (and not deAssigned in a pool)
+                    // if (userActivityObj['DeAssign'+'|'+ user._id] == undefined){//if this is not the case of a 2nd time assignment to same user
+                    if (userActivityObj['DeAssign'+'|'+ LocationArr[LocationArr.length-1]._id] == undefined){//if this is not the case of a 2nd time assignment to same user
+                        // userActivityObj['DeAssign'+'|'+ LocationArr[LocationArr.length -1]['_id']] = 0
+                        userActivityObj['DeAssign'+'|'+LocationArr[LocationArr.length-1]._id] = 0;
+                    }
+                    userActivityObj['DeAssign'+'|'+LocationArr[LocationArr.length-1]._id] += Date.now()/86400000;
+                }
+            
+            }
+
+            LocationArr.forEach(async (user,i)=>{
+                
+                console.log(user);
+                user.geoCoord.lat = +user.geoCoord.lat;
+                user.geoCoord.lng = +user.geoCoord.lng;
+                
+                
+                console.log('==')
+                    console.log(userActivityObj);
+    
+                console.log('Before Mapping, ', userActivityObj)
+                let iconVar = (i==0)? 'beginIcon.png': null;
+                if (i == 0){
+                    iconVar = 'beginIcon.png';
+                }else if (i < LocationArr.length-1){
+                    console.log(i, ' is less than ', LocationArr.length)
+                    iconVar = null;
+                } else {
+                    // alert('Enter here')
+                    iconVar = 'endIcon.png';  
+                }
+               var marker =  new google.maps.Marker({
+                    position: user.geoCoord,
+                    map:mapAssetGrab,
+                    icon:iconVar,
+                    title: user.firstName +', ' + Math.round(userActivityObj['DeAssign|'+user._id] - userActivityObj['Assign|'+user._id]) + 'Day(s)',
+                    draggable: true
+                });
+    
+                console.log('This is user', user);
+                // marker.setTitle(user.firstName);
+            })
+        }
+        
+
+        async function fetchDuration(){ //it doesn't seem to use this2 argument//what then is the use of calling over LocationArr loop
+            assignArr = [];
+           let data = await fetch(`/asset/fromLogAssetDuration/${assetObj._id}`);
+           let dataResponse = await data.json();
+           console.log('This is data response', dataResponse);
+
+           formUserActivityObject(dataResponse);
+           console.log('This is object ', userActivityObj);     
+            return userActivityObj;
+        }
+
+
+        function formUserActivityObject(dataResponse2){ //keeps track of ... using a combination of Acitivity values (Assign/deAssign) and userId
+            let user = dataResponse2[dataResponse2.length -1].user;
+            let date = dataResponse2[dataResponse2.length -1].activityDate;
+
+            dataResponse2.forEach(data=>{
+                userActivityObj[data.activity+'|'+data.user] = 0; // initiazlizing properties
+                userActivityObj[data.activity] = 0; //keeping track of nos of Assign and DeAssign
+            })
+            
+            dataResponse2.forEach(data=>{
+                user = data.user //this user will be the last Assigned User, without a DeAssign
+                userActivityObj[data.activity+'|'+data.user] += ((Date.parse(data.activityDate))/(86400000)); //1000*60*60*60*24
+                userActivityObj[data.activity] += 1; //keeping track of nos of Assign and DeAssign
+                 
+            })
+
+        }
+
+
+        function drawPoly(){
+            
+
+            if (drawPolyBool){
+                flightPath.setMap(null);
+                drawPolyBool = !drawPolyBool;
+            }else {
+                console.log(geoCoordArr);
+                flightPath = new google.maps.Polyline({
+                    path: geoCoordArr,
+                    icons:[
+                        {
+                            icon:lineSymbol,
+                            offset:"100%",
+                        },
+                    ],
+                    geodesic: true,
+                    strokeColor: "#FF0000",
+                    strokeOpacity: 1.0,
+                    strokeWeight: 2,
+                });
+                flightPath.setMap(mapAssetGrab);
+                drawPolyBool = !drawPolyBool;
+            }
+        }
+       
+
+
+    </script>

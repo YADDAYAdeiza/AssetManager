@@ -4,7 +4,7 @@
     
     <!-- One "tab" for each step in the form: -->
     <div class="tab">Name:
-      <p><input placeholder="Asset Type Serial No..." oninput="this.className = ''" name = "assetNumber" id="serialInpt" value="AST-<%=locals.serialNo%>" readonly></p>
+      <p><input placeholder="Asset Type Serial No..." oninput="this.className = ''" name = "assetTypeNumber" id="serialInpt" value="AST-<%=locals.serialNo%>" readonly></p>
       <p><input placeholder="Asset Type..." oninput = "checkSelectOptions(this.value)" oninput="this.className = ''" id = "selAsset" name = "assetTypeName" value="<%=assetType.assetType%>"></p>
       <p><input  type = 'file' placeholder = 'Asset Type Pic' name = 'assetTypePic' class="filepond"></p>
       <p><select onchange = "SetAssetValue(this)" id = "inputAssetType">
@@ -18,29 +18,29 @@
     </div>
     
     <div class="tab">Manufacturer Info:
-      <p><input placeholder="Name..." oninput="this.className = ''" name = "assetManufacturerName" value=""></p>
-      <p><select placeholder="Name..." oninput="this.className = ''" name = "assetManufacturerNameSel" value=""></select></p>
-      <p><input placeholder="Address..." oninput="this.className = ''" name = "assetManufacturerAddress" value="<%=assetType.phone%>"></p>
-      <p><input placeholder="Phone..." oninput="this.className = ''" name = "assetManufacturerPhone" value="<%=assetType.phone%>"></p>
-      <p><input placeholder="E-mail..." oninput="this.className = ''" name = "assetManufacturerEmail" value="<%=assetType.email%>"></p>
+      <p><input placeholder="Name..." oninput="this.className = ''" name = "assetTypeManufacturerName" value=""></p>
+      <p><select placeholder="Name..." oninput="this.className = ''" name = "assetTypeManufacturerNameSel" value=""></select></p>
+      <p><input placeholder="Address..." oninput="this.className = ''" name = "assetTypeManufacturerAddress" value="<%=assetType.phone%>"></p>
+      <p><input placeholder="Phone..." oninput="this.className = ''" name = "assetTypeManufacturerPhone" value="<%=assetType.phone%>"></p>
+      <p><input placeholder="E-mail..." oninput="this.className = ''" name = "assetTypeManufacturerEmail" value="<%=assetType.email%>"></p>
     </div>
     
     <div class="tab">Birthday:
-      <p><input placeholder="Qty..." oninput="this.className = ''" name = "assetQty" id="assetQty" value="<%=assetType.assetCode%>"></p>
-      <p><input placeholder="Asset Value..." oninput="this.className = ''" name = "assetValue" id="assetValue" value="<%=assetType.assetCode%>"></p>
-      <p><input placeholder="Life Cycle (yrs)..." oninput="this.className = ''" type = 'number' name = "assetLifeCycle" id="assetLifeCycle" value="<%=assetType.assetCode%>"></p>
-      <p><input placeholder="Asset Purchased..." oninput="this.className = ''" type = 'date' name = "assetPurchased" id="assetPurchased" value="<%=assetType.assetCode%>"></p>
+      <p><input placeholder="Qty..." oninput="this.className = ''" name = "assetTypeQty" id="assetTypeQty" value="<%=assetType.assetCode%>"></p>
+      <p><input placeholder="Asset Value..." oninput="this.className = ''" name = "assetTypeValue" id="assetTypeValue" value="<%=assetType.assetCode%>"></p>
+      <p><input placeholder="Life Cycle (yrs)..." oninput="this.className = ''" type = 'number' name = "assetTypeLifeCycle" id="assetTypeLifeCycle" value="<%=assetType.assetCode%>"></p>
+      <p><input placeholder="Asset Purchased..." oninput="this.className = ''" type = 'date' name = "assetTypePurchased" id="assetTypePurchased" value="<%=assetType.assetCode%>"></p>
     </div>
     
     <div class="tab">Login Info:
-      <p><textarea name =  "assetDescription" id = "assetDescription"> </textarea></p>
-      <p><select placeholder="Asset Status" oninput="this.className = ''" name = "assetStatus">
+      <p><textarea name =  "assetTypeDescription" id = "assetTypeDescription"> </textarea></p>
+      <p><select placeholder="Asset Status" oninput="this.className = ''" name = "assetTypeStatus">
       <option>New</option>
       <option>Old</option>
       <option>Used</option>
       <option>Damaged</option>
       </select></p>
-      <p><select placeholder="Store Location..." name = 'assetStoreLocation' id="assetStoreLocation">
+      <p><select placeholder="Store Location..." name = 'assetTypeStoreLocation' id="assetTypeStoreLocation">
         <option>Abuja</option>
         <option>Lagos</option>
       </select></p>
