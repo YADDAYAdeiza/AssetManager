@@ -24,10 +24,34 @@ route.use(express.static('public'));
 
 let userVar = 'trial';
 
+route.put('/updateLocation/:assetId/:assetPosCoord', async (req,res)=>{
+    console.log('Posting...', req.params.assetId);
+    console.log('Now at ', req.params.assetPosCoord);
+    console.log('Now at ', JSON.parse(req.params.assetPosCoord) );
+    let positionObj = JSON.parse(req.params.assetPosCoord);
+    try{
+        let assetNowTracked = await assetModel.find({}).where('_id').equals(req.params.assetId);
+            // console.log(assetNowTracked[0]);
+            assetNowTracked[0].assetTracked = true;
+            assetNowTracked[0].assetTrackedPosition = positionObj;
+
+            
+            // console.log(assetNowTracked[0]);
+            await assetNowTracked[0].save();
+            res.send(JSON.stringify(assetNowTracked[0]));
+    }catch(e){
+        console.error(e);
+    }
+    // // let assetlog = await userLogModel.find({}).where('user').equals(req.params.userId).where('userAsset.id').in(req.params.assetId)
+    // let assetlog = await userLogModel.find({}).where('userAsset.id').equals(req.params.assetId); //the result will be Assign/DeAssign, as an asset is tracked across many users, and it could not have gone across many users without being severally Assingned and DeAssigned
+    // console.log('This is it ', assetlog);
+    // res.send(assetlog);
+})
+
 route.get('/fromLogAssetDuration/:assetId', async (req,res)=>{
     console.log('Getting...', req.params.assetId);
     // let assetlog = await userLogModel.find({}).where('user').equals(req.params.userId).where('userAsset.id').in(req.params.assetId)
-    let assetlog = await userLogModel.find({}).where('userAsset.id').equals(req.params.assetId);
+    let assetlog = await userLogModel.find({}).where('userAsset.id').equals(req.params.assetId); //the result will be Assign/DeAssign, as an asset is tracked across many users, and it could not have gone across many users without being severally Assingned and DeAssigned
     console.log('This is it ', assetlog);
     res.send(assetlog);
 })
@@ -41,7 +65,7 @@ route.get('/index', async (req, res)=>{
 //get the create new form for new asset
 route.get('/trial', (req, res)=>{
     console.log('This is asset: ', req.query.asset);
-    res.render('asset/trial', {asset:req.query.asset, lngLat: req.query.lngLat});//
+    res.render('asset/trial', {asset:req.query.asset, lngLat: req.query.lngLat});
 })
 
 route.get('/new', async (req,res)=>{

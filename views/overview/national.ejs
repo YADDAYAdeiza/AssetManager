@@ -15,66 +15,168 @@
     <div class='div-cont'>
         <div id = 'nationalMap'>Map goes in here</div>
         <div class = 'div-ctrl'>
-            <p><select onchange="categoryOptions(this)">
-                <option value= "/overview/user/index">Users</option>
-                <option value= "/overview/assetType/index">Asset Types</option>
-                <option value= "/overview/asset/index">Assets</option>
-                <option value= "/overview/contractor/index">Contractor</option>
+            <p><select id = 'cat' onchange="categoryOptions(this)">
+                <option value= "/overview/mapping/user">Users</option>
+                <option value= "/overview/mapping/assetType">Asset Types</option>
+                <option value= "/overview/mapping/asset">Assets</option>
+                <option value= "/overview/mapping/contractor">Contractor</option>
             </select>
             </p>
 
-            <p><select id='selVar'>
+            <p><select id='subCat'>
                 <option>Regulatory Officers</option>
                 <option>Admin Officers</option>
                 <option>Laboratory Officers</option>
                 <option>Account Officers</option>
                 <option>Legal Officers</option>
+                <option selected>All</option>
             </select>
             </p>
 
             <p>
-                <button>Map Spread</button>
+                <button onclick="subCategoryOptions(getSubVar.value)">Map Spread</button> | <button onclick="catGrab.onchange()">Map All (Reset)</button>
+            </p>
+            
+            
+            <p>
+                <button id = 'trackFleet'>Track Fleet</button>
             </p>
         </div>
     <div>
   <script defer>
       let mapSet = new google.maps.Map(document.getElementById('nationalMap'), {zoom:6, center:{lat:9, lng:7}});
       console.log(mapSet);
-    
+      
       let getVar = new XMLHttpRequest();
+      let getSubVar = new XMLHttpRequest();
+      
+      var catGrab = document.getElementById('cat');
+      catGrab.onchange();
+      let subCatGrab;
 
-      var selVarGrab = document.getElementById('selVar');
+      var markerArr = [];
+      var mapMarkerArr = [];
 
-      var markerArr = []
+      let trackFleetGrab = document.getElementById('trackFleet');
+      trackFleetGrab.addEventListener('click', trackFleetNow);
+
       function categoryOptions(this2){
         getVar.onreadystatechange = function(){
+            //Clearing map if any markers
+            if (mapMarkerArr)
+            mapMarkerArr.forEach(marker=>{
+                    marker.setMap(null);
+            })
+            
+
+            markerArr = [];
+            mapMarkerArr = [];
+            // userArr = []
+            anyArr = []
+
             if(getVar.readyState == 4 && getVar.status == 200){ 
             console.log(getVar.response);
             let responseObj = JSON.parse(getVar.response);
             // console.log(responseObj[48].geoCoord);
-            responseObj.forEach(item=>{
-                console.log(item.geoCoord);
-                markerArr.push(item.geoCoord);
+            responseObj.resp.forEach(item=>{
+                console.log(item);
+                item.geoCoord? anyArr.push(item.firstName):anyArr.push(item.assetName);
+                markerArr.push(item.geoCoord?item.geoCoord:item.assetLocationHistory[0].geoCoord); //first option is for user, second for asset, because of differences in their object structure
             });
 
-            markerArr.forEach(marker=>{
-                new google.maps.Marker({
+            markerArr.forEach((marker,i)=>{
+                let mapMarker = new google.maps.Marker({
                     position: {lat:+marker['lat'], lng:+marker['lng']},
                     map:mapSet,
-                    title: "Hello World!",
+                    title: `${anyArr[i]}`,
                     draggable:true
                 });
+                mapMarkerArr.push(mapMarker);
             })
             
+            populateSubCatSel(responseObj.category)
         }
             // selVarGrab
+
             
         }
-
-
 
         getVar.open("GET", this2.value, true);
         getVar.send()
+      }
+
+      function populateSubCatSel(categoryArr){
+        subCatGrab = document.getElementById('subCat');
+            while (subCatGrab.options.length){
+                subCatGrab.remove(0);
+            }
+
+        categoryArr.forEach((category, i)=>{
+            subCatGrab.options[i] = new Option(category);
+            subCatGrab.options[i].value = `${catGrab.value}/${category}`;
+        })
+        // subCatGrab.options[categoryArr.options.length] = new Option('All');
+        // subCatGrab.options[categoryArr.options.length].value = `${catGrab.value}/All`;
+      }
+
+      async function trackFleetNow(){
+        let data = await fetch('/overview/trackFleet');
+        let dataResponse = await data.json();
+        console.log(dataResponse);
+        dataResponse.forEach(asset=>{
+            new google.maps.Marker({
+                    position: {lat:+asset.assetTrackedPosition['lat'], lng:+asset.assetTrackedPosition['lng']},
+                    map:mapSet,
+                    animation: google.maps.Animation.BOUNCE,
+                    title: asset.assetCode,
+                    draggable:true
+                });
+        })
+      }
+
+      function subCategoryOptions(){
+            // alert(subCatGrab.value)
+        getSubVar.onreadystatechange = function(){
+            //Clearing map if any markers
+            mapMarkerArr.forEach(marker=>{
+                    marker.setMap(null);
+            })
+            
+
+            markerArr = [];
+            mapMarkerArr = [];
+            // userArr = []
+            anyArr = []
+
+            if(getSubVar.readyState == 4 && getSubVar.status == 200){ 
+            console.log(getSubVar.response);
+            let responseObj = JSON.parse(getSubVar.response);
+            // console.log(responseObj[48].geoCoord);
+            responseObj.forEach(item=>{
+                console.log(item);
+                item.geoCoord? anyArr.push(item.firstName):anyArr.push(item.assetName);
+                markerArr.push(item.geoCoord?item.geoCoord:item.assetLocationHistory[0].geoCoord); //first option is for user, second for asset, because of differences in their object structure
+            });
+
+            markerArr.forEach((marker,i)=>{
+                let mapMarker = new google.maps.Marker({
+                    position: {lat:+marker['lat'], lng:+marker['lng']},
+                    map:mapSet,
+                    title: `${anyArr[i]}`,
+                    draggable:true
+                });
+                mapMarkerArr.push(mapMarker);
+            })
+            
+            // populateSubCatSel(responseObj.category)
+        }
+            // selVarGrab
+
+            
+        }
+
+        getSubVar.open("GET", subCatGrab.value, true);
+        getSubVar.send()
       }
   </script>
 </body>

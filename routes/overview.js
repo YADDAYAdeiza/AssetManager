@@ -26,10 +26,60 @@ route.use(express.static('public'));
 // let userVar = 'trial';
 //get all users of assets
 
-route.get('/user/index', async (req, res)=>{
+route.get('/trackFleet', async (req, res)=>{
+    console.log('Tracking Fleet...');
+    let trackedFleet =  await assetModel.find({}).where('assetTracked').equals(true).populate('assetType');
+    console.log(trackedFleet);
+    res.send(JSON.stringify(trackedFleet));
+})
+
+route.get('/mapping/:mapItem', async (req, res)=>{  
+    let response;
+    let trackableAssetType; //to bring out worthy assetTypes
+    try{
+        if (req.params.mapItem == 'user'){
+           response = await userModel.find({}).select('firstName lastName state geoCoord directorate zone');
+           responseDistinct = await userModel.find({}).distinct('directorate');
+        }
+        
+        if (req.params.mapItem == 'asset'){
+            trackableAssetType = await assetTypeModel.find({}).where('assetTypeTrackable').equals(true);
+            console.log('This is array ',trackableAssetType);
+            response = await assetModel.find({}).populate({path:'assetType', select:'assetTypeTrackable', match:{assetTypeTrackable:true}}).where('assetType').in(trackableAssetType).where('assetTracked').equals(true).populate('assetLocationHistory', 'firstName geoCoord').select('assetCode assetType assetName assetTrackable assetTracked assetLocationHistory firstName');
+            
+            responseDistinct = await assetModel.find({}).where('assetType').in(trackableAssetType).where('assetTracked').equals(true).select('assetName').distinct('assetName');
+        }
     
-    let users = await userModel.find({}).select('firstName lastName state geoCoord');
-    res.json(users);
+        if (req.params.mapItem == 'contractors'){
+            //  response = await assetModel.find({}).where('assetTracked').equals(true).select('assetCode assetType assetName assetTracked');
+        }
+        res.json({resp:response, category:responseDistinct});
+    }catch(e){
+        console.log(e.message);
+    }
+})
+
+route.get('/mapping/:mapItem/:subItem', async (req, res)=>{  
+    console.log('Hitting here second')
+    let response;
+    try{
+        if (req.params.mapItem == 'user'){
+           response = await userModel.find({}).where('directorate').equals(req.params.subItem).select('firstName lastName state geoCoord directorate zone');
+        //    responseDistinct = await userModel.find({}).distinct('directorate');
+        }
+        
+        if (req.params.mapItem == 'asset'){
+            response = await assetModel.find({}).where('assetTrackable').equals(true).where('assetTracked').equals(true).where('assetName').equals(req.params.subItem).populate('assetLocationHistory', 'firstName geoCoord').select('assetCode assetType assetName assetTrackable assetTracked assetLocationHistory firstName');
+            // responseDistinct = await assetModel.find({}).where('assetTracked').equals(true).select('assetName').distinct('assetName');
+        }
+    
+        if (req.params.mapItem == 'contractors'){
+            //  response = await assetModel.find({}).where('assetTracked').equals(true).select('assetCode assetType assetName assetTracked');
+        }
+        res.json(response);
+    }catch(e){
+        console.log(e.message);
+    }
 })
 
 route.get('/national', (req, res)=>{

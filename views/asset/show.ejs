@@ -28,7 +28,8 @@ src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDuYptvwFszij8WWugKw5jQ6Pk
             <h5>List of Former Users</h5>
         </div>
     </div>
-<button id = 'polyBut'>Track Path</button>
+<button id = 'traceBut'>Trace Path</button>
+<button id = 'trackBut'>Track Asset</button>
     <div id="mapAsset">
         Map to track goes in here
     </div>
@@ -38,7 +39,11 @@ src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDuYptvwFszij8WWugKw5jQ6Pk
         let geoCoord = '<%-asset.assetLocationHistory[0].geoCoord%>';
         let assetObj = <%- JSON.stringify(asset)%>;
         let mapAssetGrab = new google.maps.Map(document.getElementById('mapAsset'), {zoom:6, center:{lat:9, lng:7}});
-        let polyButGrab = document.getElementById('polyBut');
+        let traceButGrab = document.getElementById('traceBut');
+        let trackButGrab = document.getElementById('trackBut');
+        let id;
+        let watchPosOptions;
+
         console.log(mapAssetGrab);
         console.log(assetVar);
         console.log(geoCoord.toString());
@@ -56,7 +61,8 @@ src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDuYptvwFszij8WWugKw5jQ6Pk
                 path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
             };
 
-        polyButGrab.addEventListener('click', drawPoly);
+        traceButGrab.addEventListener('click', drawPoly);
+        trackButGrab.addEventListener('click', trackAsset);
 
         LocationArr.forEach( (user,i)=>{
                 user.geoCoord.lat = +user.geoCoord.lat;
@@ -153,7 +159,6 @@ src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDuYptvwFszij8WWugKw5jQ6Pk
 
         function drawPoly(){
             
-
             if (drawPolyBool){
                 flightPath.setMap(null);
                 drawPolyBool = !drawPolyBool;
@@ -176,7 +181,63 @@ src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDuYptvwFszij8WWugKw5jQ6Pk
                 drawPolyBool = !drawPolyBool;
             }
         }
-       
+
+        let trackingGeocoord = {};
+        function trackAsset(){
+            id = navigator.geolocation.watchPosition(success, error, watchPosOptions);
+            async function success(pos){
+                var posObj = {
+                    lat:pos.coords.latitude,
+                    lng:pos.coords.longitude
+                }
+
+                console.log('This is posObj', posObj);
+                // alert(JSON.stringify(pos.coords.latitude));
+                console.log('This is pos', pos)
+                // alert('Successful!');
+                // alert(pos.coords);
+                let posObjStringified = JSON.stringify(posObj);
+                alert(posObjStringified);
+                let data = await fetch(`/asset/updateLocation/${assetObj._id}/${posObjStringified}`, {method:'PUT'});
+                let dataDat = await data.json();
+                console.log('||');
+                console.log(dataDat);
+          
+                const crd = pos.coords;
+                trackingGeocoord.lat = pos.coords.latitude;
+                trackingGeocoord.lng = pos.coords.longitude;
+    
+                console.log(trackingGeocoord);
+    
+    
+                // mapAssetGrab.s
+                alert(crd.latitude);
+                console.log('??')
+                console.log(crd);
+                var marker =  new google.maps.Marker({
+                        position: trackingGeocoord,
+                        map:mapAssetGrab,
+                        title: 'Moving car',
+                        draggable: true,
+                        animation:'bounce'
+                    });
+    
+                navigator.geolocation.clearWatch(id);
+            }
+    
+            function error(err) {
+                alert('Not successful')
+                console.error(`ERROR(${err.code}): ${err.message}`);
+            }
+    
+            watchPosOptions = {
+                enableHighAccuracy: false,
+                timeout: 'Infinity',
+                maximumAge: 0
+            };
+        }
+
+            
 
 
     </script>

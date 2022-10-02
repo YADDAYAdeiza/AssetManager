@@ -63,6 +63,13 @@ let assetSchema = new mongoose.Schema({
     },
     assetAllocationStatus:{
         type:Boolean
+    },
+    assetTracked:{
+        type:Boolean,
+        defualt:false
+    },
+    assetTrackedPosition:{
+        type:Object
     }
 });
 

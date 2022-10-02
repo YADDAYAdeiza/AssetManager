@@ -43,6 +43,10 @@ let assetTypeSchema = new mongoose.Schema({
         required:true,
         default:'New'
     },
+    assetTypeTrackable:{
+        type:Boolean,
+        default:false
+    },
     assetTypeImageName:{
         type:String,
         required:true

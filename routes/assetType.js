@@ -216,6 +216,7 @@ route.post('/',  async (req,res)=>{
         assetTypeQty:req.body.assetTypeQty,
         assetTypeLifeCycle:req.body.assetTypeLifeCycle,
         assetTypeStatus:req.body.assetTypeStatus,
+        assetTypeTrackable:req.body.assetTypeTrackable,
         assetTypeDescription:req.body.assetTypeDescription
 
     });
