@@ -4,12 +4,20 @@
     </div>
     
     form for search goes in here
-    <form method="get" action="/user/index">
-        <p><input type="text" name="userNameSearch" value = <%=searchParams.userNameSearch%>></p>
-        <p><input type="date" name="userDateBeforeSearch" value = <%=searchParams.userDateBeforeSearch%>></p>
-        <p><input type="date" name="userDateAfterSearch" value = <%=searchParams.userDateAfterSearch%>></p>
-        <p><button value="submit">Submit</button></p>
+    <div id="searchContDiv">
+        <div>
+            <form method="get" action="/user/index">
+                <p><input type="text" name="userNameSearch" value = <%=searchParams.userNameSearch%>></p>
+                <p><input type="date" name="userDateBeforeSearch" value = <%=searchParams.userDateBeforeSearch%>></p>
+                <p><input type="date" name="userDateAfterSearch" value = <%=searchParams.userDateAfterSearch%>></p>
+                <p><button value="submit">Submit</button></p>
+        </div>
+        <div>
+            <input name='searchScope' type="checkbox" <%=searchParams.searchScope?"checked": ""%> />Own Accounts
+        </div>
     </form>
+
+    </div>
     
     <% if (locals.users !=null){ %>
         <%= 'There are users' %>

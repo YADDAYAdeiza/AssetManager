@@ -136,3 +136,9 @@ transition:  0.4s;
   .sel-check-div input{
     display: inline-block;
 }
+
+/* in view, user, index */
+#searchContDiv{
+    display:grid;
+    grid-template-columns: 70% 30%;
+}

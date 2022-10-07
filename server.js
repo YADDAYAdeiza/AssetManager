@@ -7,7 +7,6 @@ if (process.env.NODE_ENV !=='production'){
 
 // const peerServer = PeerServer({ port: 9000, path: '/assetmanger.herokuapp.com' });
 
-
 let express = require('express');
 //
 const { ExpressPeerServer } = require('peer');
@@ -27,6 +26,7 @@ const server = require('http').Server(app);
 const io = require('socket.io')(server);
 const {v4:uuidV4} = require('uuid');
 
+// console.log(authenticateRole().toString());
 
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', 'https:127.0.0.1:2000');

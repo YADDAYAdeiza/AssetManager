@@ -17,6 +17,8 @@ let userCredModel = require('../models/userCred');
 
 //authentication
 const {adminAuth} = require('../basicAuth');
+let {authenticateRole, authenticateRoleProfilePage, permitLists, permitListsLogin} = require('../basicAuth');
+
 // const { reset } = require('nodemon');
 
 let multer = require('multer');
@@ -56,21 +58,21 @@ route.get('/getHistory/:id', async (req,res)=>{
     res.json(userHistory);
 })
 //This is for determining if, straight from login success, to go to Register New User or User profile.
-route.get('/showOrNew', (req, res)=>{ //admin middleware may be used here to grant full authorization
+route.get('/showOrNew', permitListsLogin(), (req, res)=>{ //admin middleware may be used here to grant full authorization
     console.log('In showOrNew=====================================');
-    if (req.user.profileId.length){
-        // res.send(req.user.profileId);
-        // res.redirect(`/user/${req.user.profileId}`);
+    if (req.user.profileId.length){// show profiles, or
         indexRedirect(req, res, 'My Profile(s)', 'noError') 
 
-    } else{
+    } else{ //create new profile
         res.redirect('/user/new');
 
     }
 })
 
-                        async function indexRedirect(req, res, msg, msgClass){
-                            let query = userModel.find();
+                        async function indexRedirect(req, res, next, msg, msgClass){
+                            // let query = userModel.find();
+                            let query = req.queryObj; //from permitLists middleware
+                            console.log('Back here');
                             if (req.query.userNameSearch != null && req.query.userNameSearch != ""){
                                 query = query.regex('firstName', new RegExp(req.query.userNameSearch, 'i'));
                             }
@@ -84,10 +86,25 @@ route.get('/showOrNew', (req, res)=>{ //admin middleware may be used here to gra
                             //coming from authorization ; things like this should be temporary and is to be fixed in authorization middleware?
                             //Rather than set admin to req.user.profileId, we'll set it to a wild card, that'll allow anything. 
                             console.log('This is message:', msg);
-                            if (msg == 'My Profile(s)'){
-                                console.log('=%')
-                                query = query.where('_id', req.user.profileId); //work on this
-                            }
+
+                            //filtering
+                                    if (msg == 'My Profile(s)'){
+                                        console.log('=%')
+                                        query = query.where('_id', req.user.profileId); //work on this
+                                    } 
+
+
+                            // else{
+                            //     if (req.profile){
+                            //         query = (await query.where('_id').in(req.profile)); //work on this
+                            //     }
+                            // }
+                            
+                            //consider
+                            // req.queryObj = query;
+                            // req.msg = msg
+                            
+                            // next();
 
                             try{
                                 const users = await query.exec()
@@ -104,7 +121,9 @@ route.get('/showOrNew', (req, res)=>{ //admin middleware may be used here to gra
                             }
                             //msg:"error goes in here",
                         }
-route.get('/index', async (req, res)=>{
+route.get('/index', permitLists(), async (req, res)=>{
+    console.log('This is signed in user now', req.user);
+    console.log(req.query);
     indexRedirect(req, res, 'Listed fine', 'noError') 
 })
 
@@ -202,7 +221,7 @@ route.get('/:id/edit',  async (req,res)=>{
                                 })
                                 // console.log('This is allAssetType2', allAssetTypeMap2);
                                 console.log('This is allAsset now', allAsset);
-                            res.render('user/show2', {
+                            res.render(req.routeStr, { //req.routeStr, modified by authentication middleware to hold route address in views folder
                                 user:user,
                                 allAssets:allAsset,
                                 assetsByUser:asset, 
@@ -217,7 +236,7 @@ route.get('/:id/edit',  async (req,res)=>{
                                 res.redirect('/index')
                             }
                         }
-route.get('/:id', async (req, res)=>{
+route.get('/:id', authenticateRoleProfilePage(), async (req, res)=>{
     idRedirect(req, res, 'User found');
 });
 
@@ -766,7 +785,7 @@ route.post('/', upload.single('photo'), async (req,res)=>{
                 // res.redirect("/user/index");
                 res.redirect(`/user/${newUser.id}`);
                 // req.user = user;
-                console.log('***************************************************************************')
+                console.log('@@')
                 console.log(req.user);
                 req.user.profileId.push(newUser.id); //now, when this user logs in again, he get's redirected to his profile, not createUser page
                 await req.user.save(); 

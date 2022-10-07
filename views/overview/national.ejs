@@ -100,9 +100,8 @@
             let getVar = new XMLHttpRequest();
             getSubVar = new XMLHttpRequest();
             var catGrab = document.getElementById('cat');
-            // catGrab.addEventListener('change', );
-                catGrab.addEventListener('click', function(){
-                    alert('Clicked')
+
+                catGrab.addEventListener('change', function(){
                     categoryOptions(this);
                 });
 
@@ -112,7 +111,6 @@
 
                 console.log('//')
                 console.log(catGrab);
-                // catGrab.change();
                 
             var markerArr = [];
             mapMarkerArr = [];
@@ -129,6 +127,7 @@
                 }
                 alert('Here')
                 getVar.onreadystatechange = function(){
+
                     //Clearing map if any markers
                     if (mapMarkerArr)
                     mapMarkerArr.forEach(marker=>{
@@ -152,9 +151,6 @@
                         markerArr.push(item.geoCoord?item.geoCoord:item.assetLocationHistory[0].geoCoord); //first option is for user, second for asset, because of differences in their object structure
                         console.log(item.geoCoord?item.geoCoord:item.assetLocationHistory[0].geoCoord);
                         objCoord = item.geoCoord?item.geoCoord:item.assetLocationHistory[0].geoCoord
-                        // let {lat} = [...objCoord];
-                        // console.log(lat);
-                        // heatMapArr.push(new google.maps.LatLng(item.geoCoord?item.geoCoord:+item.assetLocationHistory[0].geoCoord));
                         heatMapArr.push(new google.maps.LatLng(objCoord.lat, objCoord.lng));//item.geoCoord?item.geoCoord:+item.assetLocationHistory[0].geoCoord));
                     });
 
@@ -182,8 +178,6 @@
                     
                     populateSubCatSel(responseObj.category)
                 }
-                    // selVarGrab
-
                     
                 }
 
@@ -201,8 +195,6 @@
                     subCatGrab.options[i] = new Option(category);
                     subCatGrab.options[i].value = `${catGrab.value}/${category}`;
                 })
-                // subCatGrab.options[categoryArr.options.length] = new Option('All');
-                // subCatGrab.options[categoryArr.options.length].value = `${catGrab.value}/All`;
             }
 
             async function trackFleetNow(){
@@ -227,10 +219,9 @@
       }
 
       function subCategoryOptions(){
-        // alert(heatMap)
         heatMapArr2 = [];
-                    // alert(subCatGrab.value)
                 getSubVar.onreadystatechange = function(){
+
                     //Clearing map if any markers
                     mapMarkerArr.forEach(marker=>{
                             marker.setMap(null);
@@ -239,20 +230,15 @@
 
                     markerArr = [];
                     mapMarkerArr = [];
-                    // userArr = []
                     anyArr = []
 
                     if(getSubVar.readyState == 4 && getSubVar.status == 200){ 
                     console.log(getSubVar.response);
                     let responseObj = JSON.parse(getSubVar.response);
-                    // console.log(responseObj[48].geoCoord);
                     responseObj.forEach(item=>{
                         console.log(item);
                         item.geoCoord? anyArr.push(item.firstName):anyArr.push(item.assetName);
                         let objCoord = item.geoCoord?item.geoCoord:item.assetLocationHistory[0].geoCoord
-                        // let {lat} = [...objCoord];
-                        // console.log(lat);
-                        // heatMapArr.push(new google.maps.LatLng(item.geoCoord?item.geoCoord:+item.assetLocationHistory[0].geoCoord));
                         heatMapArr2.push(new google.maps.LatLng(objCoord.lat, objCoord.lng));//item.geoCoord?item.geoCoord:+item
                         markerArr.push(item.geoCoord?item.geoCoord:item.assetLocationHistory[0].geoCoord); //first option is for user, second for asset, because of differences in their object structure
                     });
@@ -274,21 +260,9 @@
                     console.log('**');
                     console.log(heatMapArr2);
                     heatMap.setData(heatMapArr2);
-                    // heatMap.setDissipating(false);
-                    // heatMap.setRadius(1);
-
-                    // heatMap = new google.maps.visualization.HeatmapLayer({
-                    //     data:heatMapArr2,
-                    //     dissipating:false,
-                    //     radius:1,
-                    //     opacity:0.9
-                    // });
 
                     heatMap.setMap(mapSet);
-                    // populateSubCatSel(responseObj.category)
                 }
-                    // selVarGrab
-
                     
                 }
 
