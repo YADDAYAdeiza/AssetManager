@@ -1,4 +1,5 @@
-    <h2>List of users here</h2>
+   
+    <h4>Welcome, <%= userName %> </h4>
     <div class=<%=msgClass%>>
         <p><%=msg%></p>
     </div>
@@ -10,6 +11,15 @@
                 <p><input type="text" name="userNameSearch" value = <%=searchParams.userNameSearch%>></p>
                 <p><input type="date" name="userDateBeforeSearch" value = <%=searchParams.userDateBeforeSearch%>></p>
                 <p><input type="date" name="userDateAfterSearch" value = <%=searchParams.userDateAfterSearch%>></p>
+                <p><select name="userApprovalRole">
+                    <option value = "All">All</option>
+                    <%if (userApprovalRoles){%>
+                        <%userApprovalRoles.forEach(userRole=>{%>
+                            <%console.log('Here are option, ', userRole);%>
+                            <option value= <%=userRole%> <%=searchParams.userApprovalRole == userRole ? "Selected":"" %>><%=userRole%></option>
+                        <%})%>
+                    <%}%>
+                </select></p>
                 <p><button value="submit">Submit</button></p>
         </div>
         <div>
@@ -18,8 +28,10 @@
     </form>
 
     </div>
-    
+    <h2>List of Profiles:</h2>
     <% if (locals.users !=null){ %>
+        <%console.log('Here we go')%>
+        <%console.log(locals)%>
         <%= 'There are users' %>
         <%  users.forEach(user=>{%>
             <a href="/user/<%= user.id %>">
@@ -37,6 +49,21 @@
             </div>
         <%})%>
     <% } %> 
+
     
     <div class="assetList">Assign</div>
 </div>
+
+<script>
+        var settingsObj = <%- JSON.stringify(uiSettings)%>
+        console.log(settingsObj);
+        var settingsObjKeys = (Object.keys(settingsObj));
+        var settingsObjValues = (Object.values(settingsObj));
+        settingsObjKeys.forEach(className=>{
+            [ ...document.getElementsByClassName(className)].forEach(elm=>{
+                elm.style.display = settingsObj[className];
+            })
+        })
+        console.log(Object.values(settingsObj));
+    
+</script>

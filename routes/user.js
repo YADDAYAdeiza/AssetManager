@@ -17,7 +17,7 @@ let userCredModel = require('../models/userCred');
 
 //authentication
 const {adminAuth} = require('../basicAuth');
-let {authenticateRole, authenticateRoleProfilePage, permitLists, permitListsLogin} = require('../basicAuth');
+let {authenticateRole, authenticateRoleProfilePage, permitLists, permitListsLogin, hideNavMenu} = require('../basicAuth');
 
 // const { reset } = require('nodemon');
 
@@ -58,7 +58,7 @@ route.get('/getHistory/:id', async (req,res)=>{
     res.json(userHistory);
 })
 //This is for determining if, straight from login success, to go to Register New User or User profile.
-route.get('/showOrNew', permitListsLogin(), (req, res)=>{ //admin middleware may be used here to grant full authorization
+route.get('/showOrNew', permitListsLogin(), hideNavMenu(), (req, res)=>{ //admin middleware may be used here to grant full authorization
     console.log('In showOrNew=====================================');
     if (req.user.profileId.length){// show profiles, or
         indexRedirect(req, res, 'My Profile(s)', 'noError') 
@@ -71,6 +71,8 @@ route.get('/showOrNew', permitListsLogin(), (req, res)=>{ //admin middleware may
 
                         async function indexRedirect(req, res, next, msg, msgClass){
                             // let query = userModel.find();
+                            let userApprovalRoles = await userModel.find({}).where('approvalStatus').ne(null).distinct('approvalStatus');
+                            // let userStoreApprovalRoles = await userModel.find({}).where('userStoreApproval').ne(null).distinct('approvalStatus');
                             let query = req.queryObj; //from permitLists middleware
                             console.log('Back here');
                             if (req.query.userNameSearch != null && req.query.userNameSearch != ""){
@@ -79,10 +81,21 @@ route.get('/showOrNew', permitListsLogin(), (req, res)=>{ //admin middleware may
                             if (req.query.userDateBeforeSearch != null && req.query.userDateBeforeSearch != ""){
                                 query = query.lte('dateCreated', req.query.userDateBeforeSearch);
                             }
-                            if (req.query.afterDateBeforeSearch != null && req.query.afterDateBeforeSearch != ""){
-                                query = query.gte('dateCreated', req.query.afterDateBeforeSearch);
-                            }
+                            if (req.query.userApprovalRole != null && req.query.userApprovalRole != ""){
+                                // req.query.userApprovalRole = (req.query.userApprovalRole == 'All')? null: req.query.userApprovalRole
+                                if (req.query.userApprovalRole == 'All'){
+                                    //Don't add to the query: Leave as is.
+                                }else {
+                                    query = query.where('approvalStatus').equals(req.query.userApprovalRole);
+                                }
 
+                            }
+                            
+                            
+                            console.log('Logging req.query');
+                            console.log(req.query);
+                            console.log(req.dispSetting);
+                            let uiSettings = req.dispSetting;
                             //coming from authorization ; things like this should be temporary and is to be fixed in authorization middleware?
                             //Rather than set admin to req.user.profileId, we'll set it to a wild card, that'll allow anything. 
                             console.log('This is message:', msg);
@@ -105,7 +118,7 @@ route.get('/showOrNew', permitListsLogin(), (req, res)=>{ //admin middleware may
                             // req.msg = msg
                             
                             // next();
-
+                            console.log('userApprovalRoles: ', userApprovalRoles)
                             try{
                                 const users = await query.exec()
                                 
@@ -113,7 +126,10 @@ route.get('/showOrNew', permitListsLogin(), (req, res)=>{ //admin middleware may
                                     users:users,
                                     searchParams:req.query,
                                     msg,
-                                    msgClass
+                                    msgClass,
+                                    userName:req.user.userName,
+                                    uiSettings,
+                                    userApprovalRoles
                                 }); //tying the view to the moongoose model
                                 
                             }catch {

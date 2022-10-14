@@ -1,16 +1,26 @@
 <h2>List of Assets here</h2>
 
-<form action = '/assets' method = 'GET'>
+<div id="searchContDiv">
     <div>
-        <input type="text" name="assetName" value = <%=searchOptions %> />
+        <form action = '/asset/index' method = 'GET'>
+            
+                <p><input type="text" name="assetNameSearch" value = <%=searchParams.assetNameSearch %>></p>
+            
+                <p><input type="date" name="assetDateBeforeSearch" value = <%=searchParams.assetDateBeforeSearch%>></p>
+            
+                <p><input type="date" name="assetDateAfterSearch" value = <%=searchParams.assetDateAfterSearch %>></p>
+            
+            <button type="submit">Search</button>
     </div>
+    <div>
+        
+           <p><input name='searchAssetScope' type="checkbox" <%=searchParams.searchAssetScope?"checked": ""%>></p>Own Accounts
+        
+    </div>
+        </form>
 
-    <div>
-        <input type="date" name="assetDate" value = <%=searchOptions %>/>
-    </div>
-    <button type="submit">Search</button>
-</form>
-<br/>
+    <br/>
+</div>
 
 <% if (locals.asset !=null){ %>
     <%= 'There are assets' %>
@@ -26,3 +36,30 @@
         </div>
     <%})%>
 <% } %>
+
+<script>
+    // var regAssetTypeGrab = document.getElementById('regAssetType');
+    // console.log(regAssetTypeGrab);
+    // regAssetTypeGrab.style.display = 'none';
+
+    // uiSettings = {
+    // sideNav:{
+    //     'regAssetType':'none'
+    // }
+    
+// }
+
+
+    let settingsObj = <%- JSON.stringify(uiSettings)%>;
+    console.log(settingsObj);
+    var settingsObjKeys = (Object.keys(settingsObj));
+    var settingsObjValues = (Object.values(settingsObj));
+    settingsObjKeys.forEach(className=>{
+        [ ...document.getElementsByClassName(className)].forEach(elm=>{
+            elm.style.display = settingsObj[className];
+        })
+    })
+    
+
+    
+</script>

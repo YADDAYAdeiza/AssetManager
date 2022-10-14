@@ -7,6 +7,10 @@ if (process.env.NODE_ENV !=='production'){
 
 // const peerServer = PeerServer({ port: 9000, path: '/assetmanger.herokuapp.com' });
 
+let {hideNavMenu} = require('./basicAuth');
+
+// hideNavMenu
+
 let express = require('express');
 //
 const { ExpressPeerServer } = require('peer');

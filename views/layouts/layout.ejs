@@ -85,7 +85,7 @@
 						<a href="#">Delete User</a>
 					</li>
 					<li>
-						<li>
+						<li class = 'onlyAdmin'>
 							<a href="/user/other">Other Users</a>
 						</li>
 						<li>
@@ -114,7 +114,7 @@
               </ul>
 	          </li>
 	          <li>
-              <a href= "#auditSubmenu" data-toggle="collapse" aria-expanded="false" id = "auditSubmenuAnchor" class="dropdown-toggle hideAudit" onclick = "backgroundChange(this)">Audit</a>
+              <a class = 'onlyAdmin' href= "#auditSubmenu" data-toggle="collapse" aria-expanded="false" id = "auditSubmenuAnchor" class="dropdown-toggle hideAudit" onclick = "backgroundChange(this)">Audit</a>
 			  <ul class="collapse list-unstyled" id="auditSubmenu">
                 <li>
                     <a href="/audit/index">Pending Audits</a>
@@ -125,19 +125,19 @@
 				</ul>
 	          </li>
 	          <li>
-              <a href="#assetTypeSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle" onclick = "backgroundChange(this)">Register Asset</a>
+              <a class = 'onlyAdmin' id = 'regAssetType' href="#assetTypeSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle" onclick = "backgroundChange(this)">Register Asset</a>
 			  <ul class="collapse list-unstyled" id="assetTypeSubmenu">
                 <li>
                     <a href="/assetType/index">List Asset Type</a>
                 </li>
-                <li>
+                <li >
                     <a href="/assetType/new">Register Asset Type</a>
                 </li>
                 
               </ul>
 	          </li>
 			  <li >
-				<a href="#contractorSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle" onclick = "backgroundChange(this)">Contractors</a>
+				<a class = 'onlyAdmin' href="#contractorSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle" onclick = "backgroundChange(this)">Contractors</a>
 				<ul class="collapse list-unstyled" id="contractorSubmenu">
 				  <li>
 					  <a href="/contractor/index">List Contractors</a>

@@ -12,6 +12,8 @@ const userLogModel = require('../models/userLog.js');
 let {v4:uuidv4} = require('uuid');
 //route.set('layout', 'layouts/layout');
 
+let {permitAssetLists} = require('../basicAuth.js');
+
 const imageMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
 
 
@@ -56,10 +58,49 @@ route.get('/fromLogAssetDuration/:assetId', async (req,res)=>{
     res.send(assetlog);
 })
 //get all assets
-route.get('/index', async (req, res)=>{
-    // res.send('Book stuff...');
-   let assetModelVar = await assetModel.find({});
-    res.render('./asset/index.ejs', {asset:assetModelVar, searchOptions:"my name"});
+route.get('/index', permitAssetLists(), async (req, res)=>{
+    console.log('filtering...');
+    let query = req.queryObj
+    
+    let userModelVar = await query.exec();
+    let assetIds = [];
+    userModelVar.forEach(user=>{
+        user.userAsset.id.forEach(assetId=>{
+            assetIds.push(assetId.toString())
+        })
+    })
+
+    console.log('(((((((((((((Query');
+    console.log(req.query);
+    console.log(assetIds)
+    let assetQuery =  assetModel.find().where('_id').in(assetIds);
+    
+    if (req.query.assetNameSearch != null && req.query.assetNameSearch != ""){
+        assetQuery = assetQuery.regex('assetName', new RegExp(req.query.assetNameSearch, 'i'));
+    }
+    if (req.query.assetDateBeforeSearch != null && req.query.assetDateBeforeSearch != ""){
+        assetQuery = assetQuery.lte('assetAssignDate', req.query.assetDateBeforeSearch);
+    }
+    if (req.query.assetDateAfterSearch != null && req.query.assetDateAfterSearch != ""){
+        assetQuery = assetQuery.gte('assetAssignDate', req.query.assetDateAfterSearch);
+    }
+    
+    assetQuery =  assetQuery.where('_id').in(assetIds);
+    assetModelVar = await assetQuery.exec();
+// console.log('This is userModelVar', userModelVar)
+console.log('This is assetModelVar', assetModelVar)
+// uiSettings = {
+//     sideNav:{
+//         'regAssetType':'none'
+//     }
+// }
+
+let uiSettings = {
+    'onlyAdmin':'none'
+}
+    // res.render('./asset/index.ejs', {asset: assetModelVar, searchParams: req.body.searchAssetScope});
+    res.render('./asset/index.ejs', {asset: assetModelVar, searchParams: req.query, uiSettings});
+    // res.render('./asset/index.ejs');
 })
 
 //get the create new form for new asset
