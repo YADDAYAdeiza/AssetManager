@@ -54,7 +54,41 @@
     <div class="assetList">Assign</div>
 </div>
 
-<script>
+<script src="/socket.io/socket.io.js"></script>
+<script defer>
+            let userID = '<%- userEmail %>';
+
+            alert(`In here ${userID}`);
+            var socket = io('http://localhost:3000');
+
+            socket.on('connect', ()=>{
+                alert(`you connected on ${socket.id}`);
+            })
+
+            // document.addEventListener('click', ()=>{
+            //     socket.emit('clicka', 'Adeiza');
+            //     // alert('');
+            // })
+            // socket.on('clickaBack', (msg)=>{
+            //     console.log(msg)
+            // })
+
+
+            window.addEventListener('load', ()=>{
+                // socket.emit('clicka', 'Adeiza');
+                socket.emit('join-room',  userID, 'NotificationRoom', async(msg)=>{
+                console.log(msg);
+                let perm = await Notification.requestPermission()
+                alert (perm)
+                if (perm === 'granted'){
+                    new Notification(msg, {body:'Directorate Approval Granted Index'});
+                }
+            });
+            });
+
+
+            //
+
         var settingsObj = <%- JSON.stringify(uiSettings)%>
         console.log(settingsObj);
         var settingsObjKeys = (Object.keys(settingsObj));

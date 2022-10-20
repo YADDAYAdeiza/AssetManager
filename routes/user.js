@@ -15,6 +15,58 @@ const imageMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
 let userLogModel = require('../models/userLog');
 let userCredModel = require('../models/userCred');
 
+const io = require('socket.io')(3000, {
+    cors:
+    {
+        origin:['http://localhost:2000']
+    }
+});
+
+// function notifyUser(user){
+    io.on('connection', socket=>{
+        console.log('This is socket ', socket.id);
+    
+        socket.on('join-room', (id, room, cb)=>{
+            console.log(`${id} of socket ${socket.id} is joining room ${room}`)
+            socket.join(room);
+            // if (user.id === '633f06277f9b361fa2daa0fe'){
+                cb(`${id} joined room`);
+            // }
+            // socket.emit('room-joined', `${id} joined room`)
+        })
+    })
+// }
+
+
+
+// const express = require('express');
+// const app = express();
+// const http = require('http');
+// const server = http.createServer(app);
+// const { Server } = require("socket.io");
+// const io = new Server(server);
+
+// io.on('connection', (socket) => {
+//     console.log('--------------------------------------------------')
+//     console.log('a user connected', socket.id);
+//     socket.on('disconnect', () => {
+//       console.log('user disconnected');
+//     });
+//   });
+//   server.listen(3000, () => {
+//     console.log('listening on *:3000');
+//   });
+
+// console.log(authenticateRole().toString());
+
+
+
+
+
+
+
+
+
 //authentication
 const {adminAuth} = require('../basicAuth');
 let {authenticateRole, authenticateRoleProfilePage, permitLists, permitListsLogin, hideNavMenu} = require('../basicAuth');
@@ -128,9 +180,25 @@ route.get('/showOrNew', permitListsLogin(), hideNavMenu(), (req, res)=>{ //admin
                                     msg,
                                     msgClass,
                                     userName:req.user.userName,
+                                    userEmail:req.user.email,
                                     uiSettings,
                                     userApprovalRoles
                                 }); //tying the view to the moongoose model
+
+                                                        // function notifyUser(user){
+                                                                // io.on('connection', socket=>{
+                                                                //     console.log('This is socket ', socket.id);
+                                                                
+                                                                //     socket.on('join-room', (id, room, cb)=>{
+                                                                //         console.log(`${id} of socket ${socket.id} is joining room ${room}`)
+                                                                //         socket.join(room);
+                                                                //         // if (user.id === '633f06277f9b361fa2daa0fe'){
+                                                                //             cb(`${id} joined room`);
+                                                                //         // }
+                                                                //         // socket.emit('room-joined', `${id} joined room`)
+                                                                //     })
+                                                                // })
+                                                            // }
                                 
                             }catch {
                                 res.render('user/index.ejs', {msg: `An error occurred getting the list`, searchParams:req.query, msgClass:'error-message'}); //tying the view to the moongoose model
@@ -614,7 +682,7 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
             //     await assetArr.save();
             // })
             userLogSave(user, newIdArr, req.query.assignment, req);
-            
+            // notifyUser(user)
         }
         
         if (req.query.assignment == 'DeAssign'){
@@ -706,6 +774,21 @@ route.put('/directorateRequisitionApproval/:id', async (req, res)=>{
         await userStoreApprover[0].save();
         userLogSave(user, assetRequisitioned, req.query.assignment, req);
          res.redirect(`/user/${user.id}`);
+
+                            // function notifyUser(user){
+                        io.on('connection', socket=>{
+                            console.log('This is socket ', socket.id);
+                        
+                            socket.on('join-room', (id, room, cb)=>{
+                                console.log(`${id} of socket ${socket.id} is joining room ${room}`)
+                                socket.join(room);
+                                if (user.userEmail === id){
+                                    cb(`${id} joined room`);
+                                }
+                                // socket.emit('room-joined', `${id} joined room`)
+                            })
+                        })
+                    // }
     } catch (e){
         console.error(e);
     }
@@ -782,7 +865,8 @@ route.post('/', upload.single('photo'), async (req,res)=>{
         phone:req.body.phone,
         cadre:req.body.cadre,
         rank:req.body.rank,
-        assetType:req.body.assetTypeName
+        assetType:req.body.assetTypeName,
+        userEmail:req.user.email
     });
 
     let emailExist = await userModel.exists({email:req.body.email});

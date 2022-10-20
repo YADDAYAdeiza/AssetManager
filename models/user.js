@@ -103,7 +103,12 @@ let userSchema = new mongoose.Schema({
     },
     userIssuerApproval:{
         type:[Object]
-    }
+    },
+    userEmail:{
+        type:String,
+        lowercase:true,
+        required:true
+    },
     
 });
 

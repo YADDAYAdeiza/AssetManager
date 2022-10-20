@@ -7,9 +7,8 @@ if (process.env.NODE_ENV !=='production'){
 
 // const peerServer = PeerServer({ port: 9000, path: '/assetmanger.herokuapp.com' });
 
-let {hideNavMenu} = require('./basicAuth');
+// let {hideNavMenu} = require('./basicAuth');
 
-// hideNavMenu
 
 let express = require('express');
 //
@@ -29,6 +28,25 @@ let cors = require('cors');
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
 const {v4:uuidV4} = require('uuid');
+
+
+// const express = require('express');
+// const app = express();
+// const http = require('http');
+// const server = http.createServer(app);
+// const { Server } = require("socket.io");
+// const io = new Server(server);
+
+// io.on('connection', (socket) => {
+//     console.log('--------------------------------------------------')
+//     console.log('a user connected', socket.id);
+//     socket.on('disconnect', () => {
+//       console.log('user disconnected');
+//     });
+//   });
+//   server.listen(3000, () => {
+//     console.log('listening on *:3000');
+//   });
 
 // console.log(authenticateRole().toString());
 

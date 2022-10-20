@@ -83,7 +83,7 @@
 <!-- <div><button id = 'done-btn' disabled='false'>Done</button></div> -->
 
 <%if (assetsByUser.length >0){%>
-    <h2>Assets of User</h2>
+    <h2>Assets of User2</h2>
         <%}%>
     </div>
 
@@ -182,8 +182,40 @@
     
 </div>
 
-
+<script src="/socket.io/socket.io.js"></script>
 <script defer>
+    let userID = '<%- user.id %>';
+
+    // alert('In here')
+    var socket = io('http://localhost:3000');
+
+    // socket.on('connect', ()=>{
+    //     alert(`you connected on ${socket.id}`);
+    // })
+
+    // document.addEventListener('click', ()=>{
+    //     socket.emit('clicka', 'Adeiza');
+    //     // alert('');
+    // })
+    // socket.on('clickaBack', (msg)=>{
+    //     console.log(msg)
+    // })
+
+
+    // window.addEventListener('load', ()=>{
+    //     // socket.emit('clicka', 'Adeiza');
+    //     socket.emit('join-room',  userID, 'NotificationRoom', async(msg)=>{
+    //     console.log(msg);
+    //     let perm = await Notification.requestPermission()
+    //     alert (perm)
+    //     if (perm === 'granted'){
+    //         new Notification(msg, {body:'Directorate Approval Granted'});
+    //     }
+    // });
+    // });
+
+    // socket.on('room-joined');
+    console.log(socket);
     let assignBut1Grab = document.getElementById('assign-btn1');
     let deassignBut1Grab = document.getElementById('deassign-btn1');
     let assetQty;
@@ -191,7 +223,7 @@
     let assetTypeNameTrack; //to track assetTypeName on button, for use on Assign
     let serverUserUserRequisition = '<%- JSON.stringify(user.userRequisition)%>';
 
-    let userID = '<%- user.id %>';
+    // let userID = '<%- user.id %>';
     let profileCreatedMsgGrab = document.getElementsByClassName('profileCreatedMsg')[0];
     let idObj = {};
     let updateFormGrab = document.getElementById('updateForm');
@@ -214,7 +246,18 @@
     let selAssetOptionGrab = document.getElementById('selAssetOption');
     let selAssetOptionBtnsGrab = document.getElementsByClassName('sel-asset-option-btns');
 
-    
+    // updateFormGrab.onSubmit = function (){
+    //     e.preventDefault();
+
+    //     socket.emit('join-room',  userID, 'NotificationRoom', async(msg)=>{
+    //     console.log(msg);
+    //     let perm = await Notification.requestPermission()
+    //     alert (perm)
+    //     if (perm === 'granted'){
+    //         new Notification(msg, {body:'Directorate Approval Granted'});
+    //     }
+    // });
+    // }
        
 //Auth
 // assignShowButtonGrab.classList.add(authVar['auth']['assignShowButtonGrab']);
@@ -479,6 +522,17 @@ function requisitionHistory(){
                     });
                     }
         }
+                
+            //
+            // socket.emit('join-room',  userID, 'NotificationRoom', async(msg)=>{
+            //     console.log(msg);
+            //     let perm = await Notification.requestPermission()
+            //     alert (perm)
+            //     if (perm === 'granted'){
+            //         new Notification(msg, {body:'Directorate Approval Granted'});
+            //     }
+            // })
+
        }
     
        function getObjectIds(assetDiv){
