@@ -62,7 +62,7 @@
             var socket = io('http://localhost:3000');
 
             socket.on('connect', ()=>{
-                alert(`you connected on ${socket.id}`);
+                // alert(`you connected on ${socket.id}`);
             })
 
             // document.addEventListener('click', ()=>{
@@ -74,17 +74,22 @@
             // })
 
 
-            window.addEventListener('load', ()=>{
+            // window.addEventListener('load', ()=>{
                 // socket.emit('clicka', 'Adeiza');
-                socket.emit('join-room',  userID, 'NotificationRoom', async(msg)=>{
-                console.log(msg);
-                let perm = await Notification.requestPermission()
-                alert (perm)
-                if (perm === 'granted'){
-                    new Notification(msg, {body:'Directorate Approval Granted Index'});
-                }
-            });
-            });
+                
+                socket.on('DirectorateApproval', (msgApproval)=>{
+                    console.log('&&&&&', msgApproval)
+                    socket.emit('join-room',  userID, 'NotificationRoom', async(msg)=>{
+                        console.log('@@@@@Joined');
+                        console.log(msg);
+                        let perm = await Notification.requestPermission();
+                        alert (perm)
+                        if (perm === 'granted'){
+                            new Notification(msg, {body:'Directorate Approval Granted Index'});
+                        }
+                    });
+            })
+            // });
 
 
             //

@@ -29,6 +29,18 @@
   top: 70px;
   z-index: 5;
 }
+
+#video-grid{
+    display: grid;
+    grid-template-columns: repeat(autofill, 300px);
+    grid-auto-rows: 300px;
+}
+
+video{
+    width:100%;
+    height:100%;
+    object-fit: cover;
+}
     </style>
 
     <script
@@ -66,42 +78,258 @@
             </p>
 
             <p>
-                <button onclick="subCategoryOptions(getSubVar.value)">Map Spread</button> | <button id= 'mapAll' onclick="catGrab.onchange()">Map All (Reset)</button>
+                <!-- <button onclick="subCategoryOptions(getSubVar.value)">Map Spread</button> | <button id= 'mapAll' onclick="catGrab.onchange()">Map All (Reset)</button> -->
+                <button onclick="subCategoryOptions()">Map Spread</button> | <button id= 'mapAll' onclick="catGrab.onchange()">Map All (Reset)</button>
             </p>
             
             
             <p>
                 <button id = 'trackFleet'>Track Fleet</button>
+                <button id = 'videoLive'>Video Live</button>
             </p>
+            <div id="video-grid"></div>
         </div>
     <div>
+    <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
   <script>
+
+    var socket = io('http://localhost:2001');
+        const myPeer = new Peer(undefined, {
+            host:'/',
+            port:'3001'
+        })
+        
+    socket.on('connect', ()=>{
+        alert(`you connected national on...${socket.id}`);
+    });
+
+    socket.emit('adminMonitoringTracking', 'Fetching tracked...');
+    socket.on('trackPlots', (msg)=>{
+        console.log(msg);
+    })
+
+    
+    
+    // window.addEventListener('beforeunload', function(){
+        //     alert('closing...')
+        // })
+        // window.onbeforeunload = function () {
+            // alert("Do you really want to close?");
+            // };
+            socket.on('dutyOn', (msg)=>{//
+                msgObj = JSON.parse(msg)
+                
+                alert('dutyOn');
+                console.log('??');
+                console.log(msg);
+        posCoords = JSON.parse(msg);
+
+        mapMarker = new google.maps.Marker({
+            position: {lat:+posCoords['lat'], lng:+posCoords['lng']},
+            title: posCoords['assetCode'],
+            draggable:true,
+            animation: google.maps.Animation.BOUNCE,    
+            
+        });
+        
+                        trackFleetArr.push(mapMarker);
+                        
+                        
+                        Notification.requestPermission().then(perm=>{
+                            if (perm === 'granted'){
+                                var notification = new Notification(`${msgObj.assetCode}...is on the move`, {body:'Tap to follow'});
+                                
+                                notification.addEventListener('click', e=>{
+                    mapSet.setZoom(12);
+                    mapSet.setCenter(mapMarker.getPosition());
+                    mapSet.setHeading(320);
+                    mapSet.setTilt(90)
+                    // mapSet.setMapId('f899731c7a1d19be';)
+                    
+                    trackFleetArr.forEach(marker=>{
+                        alert('Clearing marker'+ marker.getTitle())
+                        marker.setMap(null)
+                    })
+                    mapMarker.setMap(mapSet);
+                    mapMarker.setAnimation(google.maps.Animation.BOUNCE);//google.maps.Animation.BOUNCE,
+                    
+                    //if something has been filtered, let's use the new filtered array, or else use the trackFleetArray
+                    
+                    // trackFleetArr2.length?(trackFleetArr = trackFleetArr2):(trackFleetArr = trackFleetArr);
+                    // console.log('--')
+                    // console.log(trackFleetArr, trackFleetArr[0].getTitle());
+                    //     trackFleetArr.forEach(trackMarker=>{
+                        //         // if (trackMarker.stopDuty != true){
+                            //             alert('This is markerBool ', trackMarker.markerBool);
+                            //         if (trackMarker.markerBool != true){
+                //             trackMarker.setMap(mapSet);
+                //             trackMarker.setAnimation(google.maps.Animation.BOUNCE);//google.maps.Animation.BOUNCE,
+                //         }
+                //     })
+                
+                //blanking markers
+                    mapMarkerArr.forEach(marker=>{
+                        marker.setMap(null);
+                    })
+                    heatMap.setMap(null);
+                    
+                })
+            }
+        })
+        
+    })
+    
+    socket.on('stopDutyOn', (assetCode)=>{
+        console.log('Here', trackFleetArr);
+        // trackFleetArr.forEach((marker, i)=>{
+            //    marker.setMap(null)
+            // });
+            
+            alert('Stopping in admin!');
+            // trackFleetArr2 = trackFleetArr.filter((marker, i)=>{
+                //    return marker.getTitle() != assetCode
+                //         // marker.stopDuty = true;
+                // })
+                
+                // console.log('Here2 ', trackFleetArr2);
+                mapMarkerArr.forEach(marker=>{
+                    marker.setMap(null)
+                });
+                
+                // trackFleetArr2.forEach(marker=>{
+                    //     marker.setMap(mapSet);
+                    // })
+                    
+        trackFleetArr.forEach(marker=>{
+            if (marker.getTitle() == assetCode && marker.markerBool == undefined){
+                marker.setMap(null);
+                marker.markerBool = true;
+            };
+        })
+        
+        // console.log(filteredMarker[0].getTitle());
+        // console.log(filteredMarker[0].setMap(null));
+        // alert('This is the length of trackFleetArr '+ trackFleetArr2.length);
+        Notification.requestPermission().then(perm=>{
+            if (perm === 'granted'){
+                new Notification(`${assetCode} is off duty`);
+            }
+        })
+    })
+    let roomId = "<%-roomId%>";
     let getSubVar;
     let subCatGrab;
+    let markerArr;
     let mapMarkerArr;
+    let mapMarker;
     let mapSet;
     let heatMap;
-    let heatMapArr2 =[];
+    let heatMapArr2 = [];
+    let trackFleetArr = [];
+    let trackFleetArr2 = [];
+    let trackFleetArrBool = true;
+    let toggleHeatMapGrab;
+    let trackFleetGrab;
+    let videoLiveGrab =  document.getElementById('videoLive');
+    
+    // alert(roomId);
+    // socket.emit('join-room', roomId, 10 ); //2dabcb54-47c4-4999-88d1-b75650767c19
+
+    let videoGrid = document.getElementById('video-grid');
+    let myVideo = document.createElement('video');
+    myVideo.muted= true;
+
+    const peers = {};
+
+    videoLiveGrab.addEventListener('click', ()=>{
+        navigator.mediaDevices.getUserMedia({
+            video:true,
+            audio:true
+        }).then(stream =>{
+            addVideoStream(myVideo, stream);
+            myPeer.on('call', call=>{
+                call.answer(stream);
+                const video = document.createElement('video');
+                call.on('stream', userVideoStream=>{
+                    alert('Receiving Stream...')
+                    addVideoStream(video, userVideoStream);
+                })
+            })
+            socket.emit('ready');
+            socket.on('user-joined', newUserId =>{
+                console.log('User joined ', newUserId);
+                console.log('Twice?');
+                videoLiveGrab.style.color = 'lime';
+                connectToNewUser(newUserId, stream)
+            })
+    
+            socket.on('user-disconnected', (userId)=>{
+               if (peers[userId]) peers[userId].close();
+    
+            })
+        });
+
+    })
+    
+
+    myPeer.on('open', id =>{
+            console.log('This is userId now: ',id);
+            socket.emit('join-room', '2dabcb54-47c4-4999-88d1-b75650767c19', {user:'admin', id}); //2dabcb54-47c4-4999-88d1-b75650767c19
+    })
+
+    socket.on('readyLight', (userId)=>{
+                alert('The admin is live');
+                console.log('The admin is live');
+                videoLiveGrab.style.backgroundColor = 'yellow';
+            });
+
+    function connectToNewUser(newUserId, stream){
+        console.log('Calling... ', newUserId)
+        const call = myPeer.call(newUserId, stream); //send your video
+        const video = document.createElement('video');
+        call.on('stream', userVideoStream=>{ //receive their video
+            console.log('Receiving from...', newUserId);
+            addVideoStream(video, userVideoStream)
+        })
+        call.on('close', ()=>{
+            video.remove();
+        })
+
+        peers[newUserId] = call;
+
+    }
+
+    function addVideoStream(video, stream){
+        video.srcObject = stream;
+        video.addEventListener('loadedmetadata', ()=>{
+            video.play();
+            videoGrid.append(video);
+        })
+    }
+
+    
+    let mapAllGrab;
     function initMap(){
-            let mapAllGrab = document.getElementById('mapAll');
-            let toggleHeatMapGrab = document.getElementById('toggle-heatmap');
-            
-            //toggling the heatmap
-            toggleHeatMapGrab.addEventListener('click', function(){
-                if (heatMap.getMap() !==null){
+        mapAllGrab = document.getElementById('mapAll');
+        toggleHeatMapGrab = document.getElementById('toggle-heatmap');
+        
+        //toggling the heatmap
+        toggleHeatMapGrab.addEventListener('click', function(){
+            if (heatMap.getMap() !== null){
                     heatMap.setMap(null)
                 }else{
                     heatMap.setMap(mapSet)
                 }
             })
-            mapSet = new google.maps.Map(document.getElementById('nationalMap'), {zoom:6, center:{lat:9, lng:7}});
+            mapSet = new google.maps.Map(document.getElementById('nationalMap'), {zoom:6, center:{lat:9, lng:7}, mapId:'f899731c7a1d19be'});
             console.log(mapSet);
             
             let getVar = new XMLHttpRequest();
             getSubVar = new XMLHttpRequest();
             var catGrab = document.getElementById('cat');
 
-                catGrab.addEventListener('change', function(){
+                catGrab.addEventListener('change', function(){     
                     categoryOptions(this);
                 });
 
@@ -112,16 +340,22 @@
                 console.log('//')
                 console.log(catGrab);
                 
-            var markerArr = [];
+            
+            markerArr = [];
             mapMarkerArr = [];
             
-            let trackFleetGrab = document.getElementById('trackFleet');
+            trackFleetGrab = document.getElementById('trackFleet');
             trackFleetGrab.addEventListener('click', trackFleetNow);
             
             categoryOptions(catGrab); //first call
 
             function categoryOptions(this2){
-                
+                    //clearing markers
+                    alert('Calling...')
+                        trackFleetArr.forEach(marker=>{
+                            marker.setMap(null);
+                        })
+
                 if (heatMap){
                     heatMap.setMap(null);
                 }
@@ -147,7 +381,7 @@
                     // console.log(responseObj[48].geoCoord);
                     responseObj.resp.forEach(item=>{
                         console.log(item);
-                        item.geoCoord? anyArr.push(item.firstName):anyArr.push(item.assetName);
+                        item.geoCoord? anyArr.push(item.firstName):anyArr.push(item.assetCode);
                         markerArr.push(item.geoCoord?item.geoCoord:item.assetLocationHistory[0].geoCoord); //first option is for user, second for asset, because of differences in their object structure
                         console.log(item.geoCoord?item.geoCoord:item.assetLocationHistory[0].geoCoord);
                         objCoord = item.geoCoord?item.geoCoord:item.assetLocationHistory[0].geoCoord
@@ -198,18 +432,59 @@
             }
 
             async function trackFleetNow(){
-                let data = await fetch('/overview/trackFleet');
-                let dataResponse = await data.json();
-                console.log(dataResponse);
-                dataResponse.forEach(asset=>{
-                    new google.maps.Marker({
-                            position: {lat:+asset.assetTrackedPosition['lat'], lng:+asset.assetTrackedPosition['lng']},
-                            map:mapSet,
-                            animation: google.maps.Animation.BOUNCE,
-                            title: asset.assetCode,
-                            draggable:true
-                        });
+                trackFleetArr.forEach(marker=>{
+                    alert('Clearing marker'+ marker.getTitle())
+                    marker.setMap(null)
                 })
+                //if something has been filtered, let's use the new filtered array, or else use the trackFleetArray
+                
+                trackFleetArr2.length?(trackFleetArr = trackFleetArr2):(trackFleetArr = trackFleetArr);
+                console.log('--')
+                console.log(trackFleetArr, trackFleetArr[0].getTitle());
+                    trackFleetArr.forEach(trackMarker=>{
+                        // if (trackMarker.stopDuty != true){
+                            alert('This is markerBool ', trackMarker.markerBool);
+                        if (trackMarker.markerBool != true){
+                            trackMarker.setMap(mapSet);
+                            trackMarker.setAnimation(google.maps.Animation.BOUNCE);//google.maps.Animation.BOUNCE,
+                        }
+                    })
+
+                    //blanking markers
+                    mapMarkerArr.forEach(marker=>{
+                        marker.setMap(null);
+                    })
+                    heatMap.setMap(null);
+                
+            }
+
+
+            function TrackFleetNowFollow(){
+                alert('Inside TrackFleetNowFollow')
+                trackFleetArr.forEach(marker=>{
+                    alert('Clearing marker'+ marker.getTitle())
+                    marker.setMap(null)
+                })
+                //if something has been filtered, let's use the new filtered array, or else use the trackFleetArray
+                
+                trackFleetArr2.length?(trackFleetArr = trackFleetArr2):(trackFleetArr = trackFleetArr);
+                console.log('--')
+                console.log(trackFleetArr, trackFleetArr[0].getTitle());
+                    trackFleetArr.forEach(trackMarker=>{
+                        // if (trackMarker.stopDuty != true){
+                            alert('This is markerBool ', trackMarker.markerBool);
+                        if (trackMarker.markerBool != true){
+                            trackMarker.setMap(mapSet);
+                            trackMarker.setAnimation(google.maps.Animation.BOUNCE);//google.maps.Animation.BOUNCE,
+                        }
+                    })
+
+                    //blanking markers
+                    mapMarkerArr.forEach(marker=>{
+                        marker.setMap(null);
+                    })
+                    heatMap.setMap(null);
+                
             }
 
             
@@ -219,12 +494,17 @@
       }
 
       function subCategoryOptions(){
+
         heatMapArr2 = [];
                 getSubVar.onreadystatechange = function(){
 
                     //Clearing map if any markers
                     mapMarkerArr.forEach(marker=>{
                             marker.setMap(null);
+                    })
+
+                    trackFleetArr.forEach(marker=>{
+                        marker.setMap(null)
                     })
                     
 
@@ -234,10 +514,11 @@
 
                     if(getSubVar.readyState == 4 && getSubVar.status == 200){ 
                     console.log(getSubVar.response);
+                    console.log('break here');
                     let responseObj = JSON.parse(getSubVar.response);
                     responseObj.forEach(item=>{
                         console.log(item);
-                        item.geoCoord? anyArr.push(item.firstName):anyArr.push(item.assetName);
+                        item.geoCoord? anyArr.push(item.firstName):anyArr.push(item.assetCode);
                         let objCoord = item.geoCoord?item.geoCoord:item.assetLocationHistory[0].geoCoord
                         heatMapArr2.push(new google.maps.LatLng(objCoord.lat, objCoord.lng));//item.geoCoord?item.geoCoord:+item
                         markerArr.push(item.geoCoord?item.geoCoord:item.assetLocationHistory[0].geoCoord); //first option is for user, second for asset, because of differences in their object structure

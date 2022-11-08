@@ -4,6 +4,8 @@ let route = express.Router();
 let mongoose = require('mongoose');
 
 let ejs = require('ejs');
+let {v4:uuidv4} = require('uuid');
+
 // let layout = require('express-ejs-layouts');
 let userModel = require('../models/user');
 const assetTypeModel = require('../models/assetType.js');
@@ -28,7 +30,10 @@ route.use(express.static('public'));
 
 route.get('/trackFleet', async (req, res)=>{
     console.log('Tracking Fleet...');
-    let trackedFleet =  await assetModel.find({}).where('assetTracked').equals(true).populate('assetType');
+    // let trackedFleet =  await assetModel.find({}).where('assetTracked').equals(true).populate('assetType');
+    trackableAssetType = await assetTypeModel.find({}).where('assetTypeTrackable').equals(true);
+    console.log('This is array ',trackableAssetType);
+    trackedFleet = await assetModel.find({}).populate({path:'assetType', select:'assetTypeTrackable', match:{assetTypeTrackable:true}}).where('assetType').in(trackableAssetType).where('assetTracked').equals(true).populate('assetLocationHistory', 'firstName geoCoord').select('assetCode assetType assetName assetTrackable assetTracked assetLocationHistory firstName');
     console.log(trackedFleet);
     res.send(JSON.stringify(trackedFleet));
 })
@@ -44,10 +49,14 @@ route.get('/mapping/:mapItem', async (req, res)=>{
         
         if (req.params.mapItem == 'asset'){
             trackableAssetType = await assetTypeModel.find({}).where('assetTypeTrackable').equals(true);
-            console.log('This is array ',trackableAssetType);
+            trackableAssetTypeDistinct = await assetTypeModel.find({}).where('assetTypeTrackable').equals(true).distinct('assetTypeClass');
+            console.log('This is array ', trackableAssetTypeDistinct);
             response = await assetModel.find({}).populate({path:'assetType', select:'assetTypeTrackable', match:{assetTypeTrackable:true}}).where('assetType').in(trackableAssetType).where('assetTracked').equals(true).populate('assetLocationHistory', 'firstName geoCoord').select('assetCode assetType assetName assetTrackable assetTracked assetLocationHistory firstName');
-            
-            responseDistinct = await assetModel.find({}).where('assetType').in(trackableAssetType).where('assetTracked').equals(true).select('assetName').distinct('assetName');
+            responseDistinct = await assetModel.find({}).where('assetType').in(trackableAssetType).select('assetName').distinct('assetName');
+                //but the below works too.
+            // responseDistinct = await assetModel.find({}).where('assetName').in(trackableAssetTypeDistinct).select('assetName').distinct('assetName');
+            console.log('This is response Distinct: ', responseDistinct);
+            // responseDistinct = await assetModel.find({}).where('assetTypeClass').in(trackableAssetType).select('assetName').distinct('assetName');
         }
     
         if (req.params.mapItem == 'contractors'){
@@ -60,7 +69,10 @@ route.get('/mapping/:mapItem', async (req, res)=>{
 })
 
 route.get('/mapping/:mapItem/:subItem', async (req, res)=>{  
-    console.log('Hitting here second')
+    // console.log('==');
+    console.log('Hitting here second');
+    // console.log('This is subItem: ', req.params.subItem);
+    // console.log(req.params);
     let response;
     try{
         if (req.params.mapItem == 'user'){
@@ -69,7 +81,8 @@ route.get('/mapping/:mapItem/:subItem', async (req, res)=>{
         }
         
         if (req.params.mapItem == 'asset'){
-            response = await assetModel.find({}).where('assetTrackable').equals(true).where('assetTracked').equals(true).where('assetName').equals(req.params.subItem).populate('assetLocationHistory', 'firstName geoCoord').select('assetCode assetType assetName assetTrackable assetTracked assetLocationHistory firstName');
+            // response = await assetModel.find({}).where('assetTrackable').equals(true).where('assetTracked').equals(true).where('assetName').equals(req.params.subItem).populate('assetLocationHistory', 'firstName geoCoord').select('assetCode assetType assetName assetTrackable assetTracked assetLocationHistory firstName');
+            response = await assetModel.find({}).where('assetName').equals(req.params.subItem).populate('assetLocationHistory', 'firstName geoCoord').select('assetCode assetType assetName assetTrackable assetTracked assetLocationHistory firstName');
             // responseDistinct = await assetModel.find({}).where('assetTracked').equals(true).select('assetName').distinct('assetName');
         }
     
@@ -83,7 +96,7 @@ route.get('/mapping/:mapItem/:subItem', async (req, res)=>{
 })
 
 route.get('/national', (req, res)=>{
-res.render('overview/national.ejs')
+res.render('overview/national.ejs', {roomId:uuidv4()})
 })
 
 

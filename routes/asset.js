@@ -12,6 +12,76 @@ const userLogModel = require('../models/userLog.js');
 let {v4:uuidv4} = require('uuid');
 //route.set('layout', 'layouts/layout');
 
+const io = require('socket.io')(2001, {
+    cors:
+    {
+        origin:['http://localhost:2000']
+    }
+});
+let adminSocket;
+
+
+io.on('connection', socket=>{
+    console.log('Connected...')
+    // get adminMonitoringTracking
+    socket.on('adminMonitoringTracking', (msg)=>{
+        //join other sockets to this room
+        console.log(msg)
+        //assign variable to admin socket
+        adminSocket = socket.id;
+        console.log(adminSocket);
+
+        io.emit('trackPlots', `Tracking... ${socket.id}`);
+    })
+
+    console.log('Connected now in 2001 on ', socket.id);
+    // (function (adminSocket){
+    socket.on('sendPos', (posMsg, room)=>{
+        console.log(`here is message ${posMsg}`);
+        console.log(`This is adminSocket ${adminSocket}`);
+        if (adminSocket){
+            console.log('...to admin now...')
+            socket.to(adminSocket).emit('dutyOn', posMsg );
+        }
+    });
+    socket.on('stopSendPos', (assetCodeMsg)=>{
+        console.log('Stop ', assetCodeMsg);
+        socket.to(adminSocket).emit('stopDutyOn', assetCodeMsg.assetCode );
+
+    })
+
+    //for video use
+    socket.on('join-room', (roomId, userId)=>{
+        console.log('Joined', roomId, ' on ', userId);
+        socket.join(roomId);
+
+        socket.on('ready', ()=>{
+            console.log('Called ready');
+            if(userId.user == 'admin'){
+                console.log(`From admin ${userId}`);
+                socket.broadcast.to(roomId).emit('user-joined', userId)
+                // socket.to(roomId).emit('readyLight', userId);
+
+            }else{
+                console.log(`From Driver... ${userId}`);
+                socket.broadcast.to(roomId).emit('user-joined', userId)
+                socket.broadcast.to(roomId).emit('readyLight', userId);
+
+            }
+        });
+        
+        socket.on('disconnect', ()=>{
+            socket.broadcast.to(roomId).emit('user-disconnected', userId)
+        })
+    })
+// })(adminSocket)
+
+
+
+});
+
+
+
 let {permitAssetLists} = require('../basicAuth.js');
 
 const imageMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];

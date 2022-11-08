@@ -23,17 +23,19 @@ const io = require('socket.io')(3000, {
 });
 
 // function notifyUser(user){
+
+// let socket;
     io.on('connection', socket=>{
         console.log('This is socket ', socket.id);
-    
-        socket.on('join-room', (id, room, cb)=>{
-            console.log(`${id} of socket ${socket.id} is joining room ${room}`)
-            socket.join(room);
-            // if (user.id === '633f06277f9b361fa2daa0fe'){
-                cb(`${id} joined room`);
-            // }
-            // socket.emit('room-joined', `${id} joined room`)
-        })
+    // socket = socket;
+        // socket.on('join-room', (id, room, cb)=>{
+        //     console.log(`${id} of socket ${socket.id} is joining room ${room}`)
+        //     socket.join(room);
+    //         // if (user.id === '633f06277f9b361fa2daa0fe'){
+    //             cb(`${id} joined room`);
+    //         // }
+    //         // socket.emit('room-joined', `${id} joined room`)
+        // })
     })
 // }
 
@@ -205,13 +207,13 @@ route.get('/showOrNew', permitListsLogin(), hideNavMenu(), (req, res)=>{ //admin
                             }
                             //msg:"error goes in here",
                         }
-route.get('/index', permitLists(), async (req, res)=>{
+route.get('/index', permitLists(),hideNavMenu(), async (req, res)=>{
     console.log('This is signed in user now', req.user);
     console.log(req.query);
     indexRedirect(req, res, 'Listed fine', 'noError') 
 })
 
-route.get('/other', async (req, res)=>{
+route.get('/other', hideNavMenu(), async (req, res)=>{
     try{
         let users = await userModel.find({}).select('firstName lastName email');
         res.render('user/other', {users});
@@ -305,6 +307,10 @@ route.get('/:id/edit',  async (req,res)=>{
                                 })
                                 // console.log('This is allAssetType2', allAssetTypeMap2);
                                 console.log('This is allAsset now', allAsset);
+                            let uiSettings = req.dispSetting;
+
+                            console.log('This is uiSettings', uiSettings);
+
                             res.render(req.routeStr, { //req.routeStr, modified by authentication middleware to hold route address in views folder
                                 user:user,
                                 allAssets:allAsset,
@@ -312,6 +318,7 @@ route.get('/:id/edit',  async (req,res)=>{
                                 allAssetType:allAssetType2,
                                 ownAssets:records,
                                 assetTypeAll:allAssetType2,//assetTypeDistinct
+                                uiSettings,
                                 msg
                             });
 
@@ -320,7 +327,7 @@ route.get('/:id/edit',  async (req,res)=>{
                                 res.redirect('/index')
                             }
                         }
-route.get('/:id', authenticateRoleProfilePage(), async (req, res)=>{
+route.get('/:id', authenticateRoleProfilePage(),hideNavMenu(), async (req, res)=>{
     idRedirect(req, res, 'User found');
 });
 
@@ -611,7 +618,7 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                     console.log('This is mapped affectedAssetType ', affectedAssetType2);
                     userAssetArr.idArr.forEach(async itemId =>{
                             if (affectedAssetType2.indexOf(itemId) != -1){
-                                console.log('Match');
+                                console.log('Match', req.user.email );
                                 let assetType = affectedAssetType[affectedAssetType2.indexOf(itemId)]
                                 let newAsset = new assetModel({
                                     assetCode: uuidv4(),
@@ -764,31 +771,35 @@ route.put('/directorateRequisitionApproval/:id', async (req, res)=>{
     
     console.log('Type of assignment: ', req.query.assignment);
     let assetRequisitioned = JSON.parse(req.query.directorateApproval);
-    console.log('Asset for directorate approval', assetRequisitioned);
+    console.log('Asset for directorate approval (directorate)', assetRequisitioned);
     let userId = req.params.id;
     try{
-        let user = await userModel.findById(userId).select('firstName lastName cadre rank directorate approvalStatus');
+        let user = await userModel.findById(userId).select('firstName lastName cadre rank directorate approvalStatus userEmail');
 
         let userStoreApprover = await userModel.find().where('userRole').equals('storeApproval').where('approvalStatus').in([user.directorate, 'All'])
         userStoreApprover[0].userStoreApproval.push(user);
         await userStoreApprover[0].save();
         userLogSave(user, assetRequisitioned, req.query.assignment, req);
-         res.redirect(`/user/${user.id}`);
 
                             // function notifyUser(user){
                         io.on('connection', socket=>{
-                            console.log('This is socket ', socket.id);
-                        
+                            console.log('This is socket (directorate) ', socket.id);
+                            io.emit('DirectorateApproval', 'Directorate Approval'); //or is io socket?
+                                console.log('Emitt');
                             socket.on('join-room', (id, room, cb)=>{
                                 console.log(`${id} of socket ${socket.id} is joining room ${room}`)
                                 socket.join(room);
+                                console.log('user.userEmail: ', user.userEmail);
+                                console.log('id: ', id);
                                 if (user.userEmail === id){
+                                    console.log('Equal');
                                     cb(`${id} joined room`);
                                 }
                                 // socket.emit('room-joined', `${id} joined room`)
                             })
                         })
                     // }
+         res.redirect(`/user/${user.id}`);
     } catch (e){
         console.error(e);
     }
@@ -919,7 +930,7 @@ route.post('/', upload.single('photo'), async (req,res)=>{
 
 
 
-route.get('/audit', (req, res)=>{
+route.get('/audit', hideNavMenu(), (req, res)=>{
 res.render('./user/audit.ejs')
 })
 

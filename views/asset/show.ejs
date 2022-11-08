@@ -1,5 +1,5 @@
 <script
-src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDuYptvwFszij8WWugKw5jQ6PkhiYqBo2c&callback=initMap&libraries=&v=weekly">
+src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDuYptvwFszij8WWugKw5jQ6PkhiYqBo2c&libraries=&v=weekly">
 </script>
 
 <div class = "asset-details">
@@ -28,14 +28,28 @@ src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDuYptvwFszij8WWugKw5jQ6Pk
             <h5>List of Former Users</h5>
         </div>
     </div>
+    <div id="video-grid"></div>
 <button id = 'traceBut'>Trace Path</button>
-<button id = 'trackBut'>Track Asset</button>
+<button id = 'trackBut' <%-asset.assetType.assetTypeTrackable ? "":"disabled"%> >Track Asset</button>
+<button id = 'videoLive'>Video Live</button>
+
     <div id="mapAsset">
         Map to track goes in here
     </div>
 
+    <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+
     <script defer>
+        var socket = io('http://localhost:2001');
+        const myPeer = new Peer(undefined, {
+            host:'/',
+            port:'3001'
+        })
+
+
         let assetVar = '<%-asset.id%>';
+        let assetCode = '<%-asset.assetCode%>';
         let geoCoord = '<%-asset.assetLocationHistory[0].geoCoord%>';
         let assetObj = <%- JSON.stringify(asset)%>;
         let mapAssetGrab = new google.maps.Map(document.getElementById('mapAsset'), {zoom:6, center:{lat:9, lng:7}});
@@ -43,6 +57,94 @@ src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDuYptvwFszij8WWugKw5jQ6Pk
         let trackButGrab = document.getElementById('trackBut');
         let id;
         let watchPosOptions;
+        let trackAssetBool = false;
+        let assetTrackable = '<%-asset.assetType.assetTypeTrackable%>';
+            let videoLiveGrab =  document.getElementById('videoLive');
+            let videoGrid = document.getElementById('video-grid');
+            let myVideo = document.createElement('video');
+            myVideo.muted= true;
+
+            const peers = {};
+            videoLiveGrab.addEventListener('click', ()=>{
+                navigator.mediaDevices.getUserMedia({
+                    video:true,
+                    audio:true
+                }).then(stream =>{
+                    addVideoStream(myVideo, stream);
+                    myPeer.on('call', call=>{
+                        call.answer(stream);
+                        const video = document.createElement('video');
+                        call.on('stream', userVideoStream=>{
+                            alert('Receiving Stream 2...')
+                            videoLiveGrab.style.backgroundColor = 'lime';
+                            addVideoStream(video, userVideoStream);
+                        })
+                    })
+                    socket.emit('ready');
+                    socket.on('user-joined', newUserId =>{
+                        console.log('User joined ', newUserId);
+
+                        connectToNewUser(newUserId, stream)
+                    })
+            
+                    socket.on('user-disconnected', (userId)=>{
+                    if (peers[userId]) peers[userId].close();
+            
+                    })
+                });
+
+            })
+
+            myPeer.on('open', id =>{
+                console.log('This is userId now: ',id);
+                socket.emit('join-room', '2dabcb54-47c4-4999-88d1-b75650767c19', id); //2dabcb54-47c4-4999-88d1-b75650767c19
+            })
+
+            // socket.on('readyLight', (userId)=>{
+            //     alert('The admin is live');
+            //     console.log('The admin is live');
+            //     videoLiveGrab.style.backgroundColor = 'lime';
+            // });
+
+            function connectToNewUser(newUserId, stream){
+                console.log('Calling... ', newUserId)
+                const call = myPeer.call(newUserId, stream); //send your video
+                const video = document.createElement('video');
+                call.on('stream', userVideoStream=>{ //receive their video
+                    console.log('Receiving from...', newUserId);
+                    addVideoStream(video, userVideoStream)
+                })
+                call.on('close', ()=>{
+                    video.remove();
+                })
+
+                peers[newUserId] = call;
+
+            }
+
+            function addVideoStream(video, stream){
+                video.srcObject = stream;
+                video.addEventListener('loadedmetadata', ()=>{
+                    video.play();
+                    videoGrid.append(video);
+                })
+            }
+
+
+        alert('Trackable ' + assetTrackable)
+
+        var socket = io('http://localhost:2001');
+        socket.on('connect', ()=>{
+                 alert(`you connected on...${socket.id}`);
+        })
+        
+        
+        //for video
+        // socket.emit('join-room', '2dabcb54-47c4-4999-88d1-b75650767c19', assetCode );
+                
+        // let uiSettings = {
+        //         'onlyAdmin':'block'
+        // }
 
         console.log(mapAssetGrab);
         console.log(assetVar);
@@ -69,6 +171,8 @@ src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDuYptvwFszij8WWugKw5jQ6Pk
                 user.geoCoord.lng = +user.geoCoord.lng;
             geoCoordArr.push(new google.maps.LatLng(user.geoCoord.lat, user.geoCoord.lng));
         })
+
+        
         
         fetchFromLog();
         async function fetchFromLog(){
@@ -183,14 +287,38 @@ src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDuYptvwFszij8WWugKw5jQ6Pk
         }
 
         let trackingGeocoord = {};
+        
         function trackAsset(){
-            id = navigator.geolocation.watchPosition(success, error, watchPosOptions);
-            async function success(pos){
+            trackAssetBool = !trackAssetBool;
+            if (trackAssetBool){
+
+                        this.innerHTML = 'Tracking...';
+                        this.style.backgroundColor = 'green';
+                        this.style.color = 'white';
+
+                id = navigator.geolocation.watchPosition(success, error, watchPosOptions);
+                alert(trackAssetBool);
+                alert(id)
+            } else{
+                        this.innerHTML = 'Track Asset';
+                        this.style.backgroundColor = 'Ghostwhite';
+                        this.style.color = 'black';
+                alert('Clearing...');
+                alert(id)
+                navigator.geolocation.clearWatch(id);
+                socket.emit('stopSendPos', {assetCode:assetCode});
+
+            }
+             function success(pos){
+                alert('Changing..');
+                console.log(`Polling... ${id}`);
+                console.log('This is assetCode ', assetCode);
                 var posObj = {
                     lat:pos.coords.latitude,
-                    lng:pos.coords.longitude
+                    lng:pos.coords.longitude,
+                    assetCode:assetCode
                 }
-
+                
                 console.log('This is posObj', posObj);
                 // alert(JSON.stringify(pos.coords.latitude));
                 console.log('This is pos', pos)
@@ -198,10 +326,14 @@ src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDuYptvwFszij8WWugKw5jQ6Pk
                 // alert(pos.coords);
                 let posObjStringified = JSON.stringify(posObj);
                 alert(posObjStringified);
-                let data = await fetch(`/asset/updateLocation/${assetObj._id}/${posObjStringified}`, {method:'PUT'});
-                let dataDat = await data.json();
-                console.log('||');
-                console.log(dataDat);
+                socket.emit('sendPos', posObjStringified);
+
+                //from here, socket it posObjStringified
+                
+                // let data = await fetch(`/asset/updateLocation/${assetObj._id}/${posObjStringified}`, {method:'PUT'});
+                // let dataDat = await data.json();
+                // console.log('||');
+                // console.log(dataDat);
           
                 const crd = pos.coords;
                 trackingGeocoord.lat = pos.coords.latitude;
