@@ -1,3 +1,5 @@
+const {instrument} = require('@socket.io/admin-ui');
+
 let express = require('express');
 let route = express.Router();
 
@@ -19,6 +21,10 @@ const io = require('socket.io')(2001, {
     }
 });
 let adminSocket;
+let adminAvailable;
+let driverAvailable;
+let adminSocketVar;
+let adminAvailableLightUp;
 
 
 io.on('connection', socket=>{
@@ -52,20 +58,74 @@ io.on('connection', socket=>{
 
     //for video use
     socket.on('join-room', (roomId, userId)=>{
-        console.log('Joined', roomId, ' on ', userId);
         socket.join(roomId);
+        if(userId.user !== 'admin'){
+            console.log('Enabling Track Button...')
+            if (adminAvailableLightUp){
+                console.log('Enable Track Button...')
+                console.log(socket.id);
+                console.log(socket.rooms);
+                // io.to(roomId).emit('enableTrackBut');
+                try{
+                    // socket.emit('enableTrackBut', 'Enabled' )
+                    socket.emit('enableTrackBut', 'Enabled' )
+                    console.log('Has it called?');
+                }catch(msg){
+                    console.log(msg);
+                }
+            }
+            socket.to(roomId).emit('enableTrackBut', 'Enabled' )
+
+        } else{
+            console.log('Admin');
+            adminAvailableLightUp = true;
+        }
+        console.log('Socket id ', socket.id, 'Joined', roomId, ' on ', userId);
+        // socket.broadcast.to(roomId).emit('user-joined', userId)
+        
+        // if(userId.user == 'admin'){
+        //     console.log('Admin joined')
+        //     adminAvailable = true
+        //     if (driverAvailable){
+        //         console.log('Driver is available');
+        //         socket.broadcast.to(roomId).emit('readyLight', userId);
+        //     }
+        //     console.log('Broadcasting socket: ', socket.id);
+        // }else{
+        //     console.log('Driver joined...')
+        //     console.log('Broadcasting socket: ', socket.id);
+        //     driverAvailable = true;
+        //     if (adminAvailable){
+        //         console.log('Broadcasting socket (with admin): ', socket.id);
+        //         socket.broadcast.to(roomId).emit('readyLight', userId);
+        //         // socket.emit('readyLight', userId);
+        //         io.to(socket.id).emit('readyLight', userId);
+        //     }
+        // }
 
         socket.on('ready', ()=>{
-            console.log('Called ready');
+            console.log('Called ready with socket ', socket.id);
+            console.log(`${socket.id} is in ${socket.rooms} room`)
             if(userId.user == 'admin'){
+                adminAvailable = true
                 console.log(`From admin ${userId}`);
                 socket.broadcast.to(roomId).emit('user-joined', userId)
                 // socket.to(roomId).emit('readyLight', userId);
+                adminSocketVar = socket;
 
             }else{
                 console.log(`From Driver... ${userId}`);
                 socket.broadcast.to(roomId).emit('user-joined', userId)
-                socket.broadcast.to(roomId).emit('readyLight', userId);
+                if (adminAvailable){
+
+                adminSocketVar.broadcast.to(roomId).emit('user-joined', userId)
+                    console.log('Admin is ', adminAvailable);
+                    socket.to(roomId).emit('readyLight', userId);
+                    console.log(`Admin to ${socket.id}`);
+                    adminSocketVar.to(socket.id).emit('readyLight', userId);
+                    console.log(`Admin2 to ${socket.id}`);
+                    // socket.to(roomId).emit('user-joined', userId)
+                }
 
             }
         });
@@ -73,13 +133,17 @@ io.on('connection', socket=>{
         socket.on('disconnect', ()=>{
             socket.broadcast.to(roomId).emit('user-disconnected', userId)
         })
+
     })
-// })(adminSocket)
-
-
-
+    // })(adminSocket)
+    
+    
+    
 });
 
+
+//for use with socket.io admin
+instrument(io, { auth: false });
 
 
 let {permitAssetLists} = require('../basicAuth.js');

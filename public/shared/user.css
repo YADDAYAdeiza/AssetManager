@@ -48,6 +48,24 @@ transition:  0.4s;
     margin-bottom:5px;
 }
 
+.divContLiGreen{
+    background-color: lime;
+    height:60px;
+    margin-bottom:5px;
+}
+
+.divContLiPurple{
+    background-color: purple;
+    height:60px;
+    margin-bottom:5px;
+}
+
+.divContLiCyan{
+    background-color: cyan;
+    height:60px;
+    margin-bottom:5px;
+}
+
 .divContLi:hover a{
     color:white;
     text-decoration:dashed;
@@ -141,4 +159,25 @@ transition:  0.4s;
 #searchContDiv{
     display:grid;
     grid-template-columns: 70% 30%;
+}
+
+
+/* approval normal state */
+.pending-store-approvals {
+    overflow: hidden;
+    height: 5%;
+}
+/* approval clicked and centered state */
+.popApproval{
+    position:fixed;
+    left:0;
+    top:0;
+    bottom:0;
+    width:50%; 
+    height: 60%; 
+    right:0; 
+    margin:auto;
+    background-color:silver;
+    overflow-y: scroll;
+    border: 2px grey solid;
 }

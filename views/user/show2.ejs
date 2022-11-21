@@ -31,17 +31,55 @@
 <div class="user-assetsOwn-div">Own Assets
 
     <%if (ownAssets){%>
+        <%console.log('approved assets ', approvedAssets);%>
+        <%console.log('Own assets ', ownAssets);%>
         <% ownAssets.forEach(asset=>{ %>
-            <div class="divContLi" data-asset-id="<%=asset.id%>" data-asset-assetName = "<%= asset.assetName %>">
-                <li><input type="checkbox" class = 'user-asset-pool-checkbox' style="display:inline; width:10%"><a href="/asset/<%=asset.id%>"><%=asset.assetCode%></a></li>
+            <%if (approvedAssets.includes(asset._id.toString())){%>
+                <%console.log('Includes Asset')%>
                 
-            </div>
+                <%if (directorateApprovedAssets.includes(asset._id.toString())){%>
+                    
+                    <%console.log('Directorate Approved')%>
+                    <%if (storeApprovedAssets.includes(asset._id.toString())){%>
+                        <%console.log('Store Approved')%>
+                        <div class="divContLiCyan" data-asset-id="<%=asset.id%>" data-asset-assetName = "<%= asset.assetName %>" data-assettype-id = "<%= asset.assetType %>">
+                            <li><input type="checkbox" class = 'user-asset-pool-checkbox' style="display:inline; width:10%"><a href="/asset/<%=asset.id%>"><%=asset.assetCode%></a></li>    
+                        </div>
+                        <%}else{%>
+                        <div class="divContLiPurple" data-asset-id="<%=asset.id%>" data-asset-assetName = "<%= asset.assetName %>" data-assettype-id = "<%= asset.assetType %>">
+                            <li><input type="checkbox" class = 'user-asset-pool-checkbox' style="display:inline; width:10%"><a href="/asset/<%=asset.id%>"><%=asset.assetCode%></a></li>    
+                        </div>
+                    <%}%>
+                <%} else{%>
+
+                    <div class="divContLiGreen" data-asset-id="<%=asset.id%>" data-asset-assetName = "<%= asset.assetName %>" data-assettype-id = "<%= asset.assetType %>">
+                        <li><input type="checkbox" class = 'user-asset-pool-checkbox' style="display:inline; width:10%"><a href="/asset/<%=asset.id%>"><%=asset.assetCode%></a></li>    
+                    </div>
+                <%}%>
+                <%} else{%>
+                    <%console.log('Not Includes Asset')%>
+                <div class="divContLi" data-asset-id="<%=asset.id%>" data-asset-assetName = "<%= asset.assetName %>" data-assettype-id = "<%= asset.assetType %>">
+                    <li><input type="checkbox" class = 'user-asset-pool-checkbox' style="display:inline; width:10%"><a href="/asset/<%=asset.id%>"><%=asset.assetCode%></a></li>    
+                </div>
+            <%}%>
             <%})%>
         <%}%>
+
+        <%if (approvedAssets.length == 0){%>
+                <%console.log('No approved assets')%>
+            <%}%>
+
         
     </div>
     <button onclick = "userAssetAssign(this, 'user-assetsOwn-div', 'updateFormOwn')">Assign</button>
     <button onclick = "userAssetDeassign(this, 'user-assetsOwn-div', 'updateFormOwn')">DeAssign</button>
+    <button onclick = "userAssetApprove(this, 'user-assetsOwn-div', 'updateFormOwn')">Approve</button>
+    <button onclick = "userAssetDeApprove(this, 'user-assetsOwn-div', 'updateFormOwn')">DeApprove</button>
+    <button onclick = "userAssetDirectorateApprove(this, 'user-assetsOwn-div', 'updateFormOwn')">D.Approve</button>
+    <button onclick = "userAssetDirectorateDeApprove(this, 'user-assetsOwn-div', 'updateFormOwn')">D.DeApprove</button>
+    <button onclick = "userAssetStoreApprove(this, 'user-assetsOwn-div', 'updateFormOwn')">Store.Approve</button>
+    <button onclick = "userAssetStoreDeApprove(this, 'user-assetsOwn-div', 'updateFormOwn')">Store.DeApprove</button>
+    
     <%-include('_userContent', {btnVal:`Asset Pool`})%> 
     <form id = 'updateFormOwn' method="POST" >
         <button class = 'btn btn-delete' type="submit">Update</button>
@@ -76,7 +114,9 @@
     <button class = 'btn btn-delete' type="submit">Store Approval</button>
 </form>
     </div>
-    <a href="/user/requisitionApproval/<%=user._id%>" onclick="return approveRequisition()">Approve</a>
+    <!-- <a href="/user/requisitionApproval/<%=user._id%>" onclick="return approveRequisition()" style="background-color: red;">Grant Approval</a> -->
+    <button onclick="popAssetApplications()">Grant Approval</button>
+    <a href="/user/requisitionApproval/<%=user._id%>" onclick="return approveRequisition()" style="background-color: red;">Grant Approval</a>
     
     
     
@@ -162,7 +202,7 @@
     </div>
 
     <p>
-        <div class="pending-store-approvals" style="position:relative;">
+        <div class="pending-store-approvals">
             <ul>
                 <% if (user.userStoreApproval.length){%>
                     <%'Store Approvals here' %> 
@@ -245,6 +285,7 @@
     let reqHistoryGrab = document.getElementById('req-History');
     let selAssetOptionGrab = document.getElementById('selAssetOption');
     let selAssetOptionBtnsGrab = document.getElementsByClassName('sel-asset-option-btns');
+    let pendingStoreApprovals = document.getElementsByClassName('pending-store-approvals')[0];
 
     // updateFormGrab.onSubmit = function (){
     //     e.preventDefault();
@@ -637,7 +678,444 @@ function requisitionHistory(){
         }
         
         console.log(updateFormGrab.action);
-    }  
+    }
+
+    function userAssetApprove(this2, assetDiv, updateForm){
+        alert('State Approval');
+        var ownAssetIDArr=[]; //should this be out of the userAssetDeassign function?
+        var ownAssetNameArr = [];
+
+       
+        console.log(updateForm);
+        console.log(this2);
+        console.log(assetDiv);
+        console.log('++++');
+        assetGrab = document.getElementsByClassName(assetDiv)[0];
+        var inputChecks = assetGrab.getElementsByClassName('user-asset-pool-checkbox');
+        var trueBoxes =  [...inputChecks].filter(item=>{
+            return item.checked == true;
+        })
+        //
+        
+        if (updateForm){ // if we are deassigning from the owned assets, not just from tentative assets
+            alert('From own assets')
+            trueBoxes.forEach(item=>{
+                let assetName = item.parentNode.parentNode.getAttribute('data-asset-assetName');
+                alert(assetName);
+                // document.getElementById(assetName).appendChild(item.parentNode.parentNode); 
+                console.log(document.getElementById(assetName));
+                console.log(document.getElementById(assetName).getElementsByClassName('usedAssetContainer')[0]);
+
+                //Is this applicable for approval?
+                        // document.getElementById(assetName).getElementsByClassName('usedAssetContainer')[0].appendChild(item.parentNode.parentNode);
+                
+                //ready for server Update
+
+            //     if (divItem.getAttribute('data-status') == 'New'){
+            //         console.log(divItem.getAttribute('data-status'))
+            //        idObj['idArr'].push(divItem.getAttribute('data-assetType-id'));
+            //    }else {
+            //         idObj['idArrAsset'].push(divItem.getAttribute('data-asset-id'));
+            //    }
+
+
+                ownAssetIDArr.push(item.parentNode.parentNode.getAttribute('data-asset-id'));
+                // ownAssetIDArr.push(item.parentNode.parentNode.getAttribute('data-assettype-id'));
+
+            })
+            idObj['idArr'] = ownAssetIDArr;
+            // idObj['idArr'].push(divItem.getAttribute('data-assetType-id'));
+            // idObj['idArr'].push(divItem.getAttribute('data-assettype-id'));
+            
+
+            console.log('This is own AssetId to be approved: ', ownAssetIDArr);
+            console.log(assetGrab);
+            console.log(assetGrab.children.length);
+            if (!assetGrab.children.length){
+                doneBtnGrab.classList.toggle('btn-deActivate'); 
+            }
+            idObj.userId = userID;
+            console.log(userAssetsOwnDivGrab);
+            
+            // getObjectIds(userAssetsOwnDivGrab);
+            console.log('*****')
+            console.log(idObj);
+            console.log(document.getElementById(updateForm)); // if updateForm moved from one line above
+            document.getElementById(updateForm).action = `/user/assignDeassign2/${JSON.stringify(idObj)}?_method=PUT&assignment=${this2.innerHTML}`;
+        } 
+        // else{ //deassigning from assetsDiv
+
+        //     trueBoxes.forEach(item=>{
+        //         ownAssetNameArr.push(item.parentNode.parentNode);//.getAttribute('data-asset-assetName'));
+        //         console.log('This is ownAssetNameArr: ', ownAssetNameArr);
+        //     })
+        //     //trueBoxes.forEach((item, i)=>{
+        //         ownAssetNameArr.forEach(assetName=>{
+        //             // console.log(assetName);
+        //             // console.log(assetName.innerHTML);
+        //             if (assetName.getAttribute('data-status') == 'New'){
+
+        //                 console.log(assetName);
+        //                 // let qtyDivGrab = document.getElementById(assetName);
+        //                 var qtyAssetQtyDivGrab = document.getElementById(assetName.getAttribute('data-asset-assetName')).getElementsByClassName('assetQtyClass')[0]; //gets the h3
+        //                 console.log('==');
+        //                 let assetQty = (+document.getElementById(assetName.getAttribute('data-asset-assetName')).getAttribute('data-asset-qty'));
+        //                 console.log('assetQty: ', assetQty);
+        //                 ++assetQty;
+        //                 console.log(document.getElementById(assetName.getAttribute('data-asset-assetName')));
+        //                 qtyAssetQtyDivGrab.innerHTML ="(" + assetQty  +")";
+        //                 document.getElementById(assetName.getAttribute('data-asset-assetName')).setAttribute('data-asset-qty', assetQty);
+        //                 // userAssetPoolGrab.appendChild(assetName);
+        //                 assetGrab.removeChild(assetName);
+        //             }else {
+        //                 let oldAssetDivName = assetName.getAttribute('data-asset-assetname');
+        //                 document.getElementById(oldAssetDivName).getElementsByClassName('usedAssetContainer')[0].appendChild(assetName);
+        //             }
+        //         })
+        // }
+        
+        console.log(updateFormGrab.action);
+    }
+
+    function userAssetDeApprove(this2, assetDiv, updateForm){
+        alert('State Deapproval');
+        var ownAssetIDArr=[]; //should this be out of the userAssetDeassign function?
+        var ownAssetNameArr = [];
+
+        // let arrToDeassign = [];
+
+        console.log(updateForm);
+        //alert(this2.innerHTML);
+        console.log(this2);
+        console.log(assetDiv);
+        console.log('++++');
+        assetGrab = document.getElementsByClassName(assetDiv)[0];
+        var inputChecks = assetGrab.getElementsByClassName('user-asset-pool-checkbox');
+        var trueBoxes =  [...inputChecks].filter(item=>{
+            return item.checked == true;
+        })
+        //
+        
+        if (updateForm){ // if we are deassigning from the owned assets, not just from tentative assets
+            alert('From own assets')
+            trueBoxes.forEach(item=>{
+                let assetName = item.parentNode.parentNode.getAttribute('data-asset-assetName');
+                alert(assetName);
+                // document.getElementById(assetName).appendChild(item.parentNode.parentNode); 
+                console.log(document.getElementById(assetName));
+                console.log(document.getElementById(assetName).getElementsByClassName('usedAssetContainer')[0]);
+
+                //visual confirmation
+                document.getElementById(assetName).getElementsByClassName('usedAssetContainer')[0].appendChild(item.parentNode.parentNode);
+                
+                //ready for server Update
+                ownAssetIDArr.push(item.parentNode.parentNode.getAttribute('data-asset-id'));
+            })
+            idObj['idArr'] = ownAssetIDArr;
+            console.log('This is own AssetId to be deassigned: ', ownAssetIDArr);
+            console.log(assetGrab);
+            console.log(assetGrab.children.length);
+            if (!assetGrab.children.length){
+                doneBtnGrab.classList.toggle('btn-deActivate'); 
+            }
+            idObj.userId = userID;
+            console.log(userAssetsOwnDivGrab);
+            
+            // getObjectIds(userAssetsOwnDivGrab);
+            console.log('*****')
+            console.log(idObj);
+            console.log(document.getElementById(updateForm)); // if updateForm moved from one line above
+            document.getElementById(updateForm).action = `/user/assignDeassign2/${JSON.stringify(idObj)}?_method=PUT&assignment=${this2.innerHTML}`;
+        }
+        
+        console.log(updateFormGrab.action);
+    }
+
+
+    function userAssetDirectorateApprove(this2, assetDiv, updateForm){
+        alert('Directorate Approval');
+        var ownAssetIDArr=[]; //should this be out of the userAssetDeassign function?
+        var ownAssetNameArr = [];
+
+       
+        console.log(updateForm);
+        console.log(this2);
+        console.log(assetDiv);
+        console.log('++++');
+        assetGrab = document.getElementsByClassName(assetDiv)[0];
+        var inputChecks = assetGrab.getElementsByClassName('user-asset-pool-checkbox');
+        var trueBoxes =  [...inputChecks].filter(item=>{
+            return item.checked == true;
+        })
+        //
+        
+        if (updateForm){ // if we are deassigning from the owned assets, not just from tentative assets
+            alert('From own assets')
+            trueBoxes.forEach(item=>{
+                let assetName = item.parentNode.parentNode.getAttribute('data-asset-assetName');
+                alert(assetName);
+                // document.getElementById(assetName).appendChild(item.parentNode.parentNode); 
+                console.log(document.getElementById(assetName));
+                console.log(document.getElementById(assetName).getElementsByClassName('usedAssetContainer')[0]);
+
+                //Is this applicable for approval?
+                        // document.getElementById(assetName).getElementsByClassName('usedAssetContainer')[0].appendChild(item.parentNode.parentNode);
+                
+                //ready for server Update
+
+            //     if (divItem.getAttribute('data-status') == 'New'){
+            //         console.log(divItem.getAttribute('data-status'))
+            //        idObj['idArr'].push(divItem.getAttribute('data-assetType-id'));
+            //    }else {
+            //         idObj['idArrAsset'].push(divItem.getAttribute('data-asset-id'));
+            //    }
+
+
+                ownAssetIDArr.push(item.parentNode.parentNode.getAttribute('data-asset-id'));
+                // ownAssetIDArr.push(item.parentNode.parentNode.getAttribute('data-assettype-id'));
+
+            })
+            idObj['idArr'] = ownAssetIDArr;
+            // idObj['idArr'].push(divItem.getAttribute('data-assetType-id'));
+            // idObj['idArr'].push(divItem.getAttribute('data-assettype-id'));
+            
+
+            console.log('This is own AssetId to be approved: ', ownAssetIDArr);
+            console.log(assetGrab);
+            console.log(assetGrab.children.length);
+            if (!assetGrab.children.length){
+                doneBtnGrab.classList.toggle('btn-deActivate'); 
+            }
+            idObj.userId = userID;
+            console.log(userAssetsOwnDivGrab);
+            
+            // getObjectIds(userAssetsOwnDivGrab);
+            console.log('*****')
+            console.log(idObj);
+            console.log(document.getElementById(updateForm)); // if updateForm moved from one line above
+            document.getElementById(updateForm).action = `/user/assignDeassign2/${JSON.stringify(idObj)}?_method=PUT&assignment=${this2.innerHTML}`;
+        } 
+        // else{ //deassigning from assetsDiv
+
+        //     trueBoxes.forEach(item=>{
+        //         ownAssetNameArr.push(item.parentNode.parentNode);//.getAttribute('data-asset-assetName'));
+        //         console.log('This is ownAssetNameArr: ', ownAssetNameArr);
+        //     })
+        //     //trueBoxes.forEach((item, i)=>{
+        //         ownAssetNameArr.forEach(assetName=>{
+        //             // console.log(assetName);
+        //             // console.log(assetName.innerHTML);
+        //             if (assetName.getAttribute('data-status') == 'New'){
+
+        //                 console.log(assetName);
+        //                 // let qtyDivGrab = document.getElementById(assetName);
+        //                 var qtyAssetQtyDivGrab = document.getElementById(assetName.getAttribute('data-asset-assetName')).getElementsByClassName('assetQtyClass')[0]; //gets the h3
+        //                 console.log('==');
+        //                 let assetQty = (+document.getElementById(assetName.getAttribute('data-asset-assetName')).getAttribute('data-asset-qty'));
+        //                 console.log('assetQty: ', assetQty);
+        //                 ++assetQty;
+        //                 console.log(document.getElementById(assetName.getAttribute('data-asset-assetName')));
+        //                 qtyAssetQtyDivGrab.innerHTML ="(" + assetQty  +")";
+        //                 document.getElementById(assetName.getAttribute('data-asset-assetName')).setAttribute('data-asset-qty', assetQty);
+        //                 // userAssetPoolGrab.appendChild(assetName);
+        //                 assetGrab.removeChild(assetName);
+        //             }else {
+        //                 let oldAssetDivName = assetName.getAttribute('data-asset-assetname');
+        //                 document.getElementById(oldAssetDivName).getElementsByClassName('usedAssetContainer')[0].appendChild(assetName);
+        //             }
+        //         })
+        // }
+        
+        console.log(updateFormGrab.action);
+    }
+    
+
+    function userAssetDirectorateDeApprove(this2, assetDiv, updateForm){
+        alert('State Deapproval');
+        var ownAssetIDArr=[]; //should this be out of the userAssetDeassign function?
+        var ownAssetNameArr = [];
+
+        // let arrToDeassign = [];
+
+        console.log(updateForm);
+        //alert(this2.innerHTML);
+        console.log(this2);
+        console.log(assetDiv);
+        console.log('++++');
+        assetGrab = document.getElementsByClassName(assetDiv)[0];
+        var inputChecks = assetGrab.getElementsByClassName('user-asset-pool-checkbox');
+        var trueBoxes =  [...inputChecks].filter(item=>{
+            return item.checked == true;
+        })
+        //
+        
+        if (updateForm){ // if we are deassigning from the owned assets, not just from tentative assets
+            alert('From own assets')
+            trueBoxes.forEach(item=>{
+                let assetName = item.parentNode.parentNode.getAttribute('data-asset-assetName');
+                alert(assetName);
+                // document.getElementById(assetName).appendChild(item.parentNode.parentNode); 
+                console.log(document.getElementById(assetName));
+                console.log(document.getElementById(assetName).getElementsByClassName('usedAssetContainer')[0]);
+
+                //visual confirmation
+                document.getElementById(assetName).getElementsByClassName('usedAssetContainer')[0].appendChild(item.parentNode.parentNode);
+                
+                //ready for server Update
+                ownAssetIDArr.push(item.parentNode.parentNode.getAttribute('data-asset-id'));
+            })
+            idObj['idArr'] = ownAssetIDArr;
+            console.log('This is own AssetId to be deassigned: ', ownAssetIDArr);
+            console.log(assetGrab);
+            console.log(assetGrab.children.length);
+            if (!assetGrab.children.length){
+                doneBtnGrab.classList.toggle('btn-deActivate'); 
+            }
+            idObj.userId = userID;
+            console.log(userAssetsOwnDivGrab);
+            
+            // getObjectIds(userAssetsOwnDivGrab);
+            console.log('*****')
+            console.log(idObj);
+            console.log(document.getElementById(updateForm)); // if updateForm moved from one line above
+            document.getElementById(updateForm).action = `/user/assignDeassign2/${JSON.stringify(idObj)}?_method=PUT&assignment=${this2.innerHTML}`;
+        }
+        
+        console.log(updateFormGrab.action);
+    }
+
+    
+
+    function userAssetStoreApprove(this2, assetDiv, updateForm){
+        alert('Store Approval');
+        var ownAssetIDArr=[]; //should this be out of the userAssetDeassign function?
+        var ownAssetNameArr = [];
+
+       
+        console.log(updateForm);
+        console.log(this2);
+        console.log(assetDiv);
+        console.log('++++');
+        assetGrab = document.getElementsByClassName(assetDiv)[0];
+        var inputChecks = assetGrab.getElementsByClassName('user-asset-pool-checkbox');
+        var trueBoxes =  [...inputChecks].filter(item=>{
+            return item.checked == true;
+        })
+        //
+        
+        if (updateForm){ // if we are deassigning from the owned assets, not just from tentative assets
+            alert('From own assets')
+            trueBoxes.forEach(item=>{
+                let assetName = item.parentNode.parentNode.getAttribute('data-asset-assetName');
+                alert(assetName);
+                // document.getElementById(assetName).appendChild(item.parentNode.parentNode); 
+                console.log(document.getElementById(assetName));
+                console.log(document.getElementById(assetName).getElementsByClassName('usedAssetContainer')[0]);
+
+                //Is this applicable for approval?
+                        // document.getElementById(assetName).getElementsByClassName('usedAssetContainer')[0].appendChild(item.parentNode.parentNode);
+                
+                //ready for server Update
+
+            //     if (divItem.getAttribute('data-status') == 'New'){
+            //         console.log(divItem.getAttribute('data-status'))
+            //        idObj['idArr'].push(divItem.getAttribute('data-assetType-id'));
+            //    }else {
+            //         idObj['idArrAsset'].push(divItem.getAttribute('data-asset-id'));
+            //    }
+
+
+                ownAssetIDArr.push(item.parentNode.parentNode.getAttribute('data-asset-id'));
+                // ownAssetIDArr.push(item.parentNode.parentNode.getAttribute('data-assettype-id'));
+
+            })
+            idObj['idArr'] = ownAssetIDArr;
+            // idObj['idArr'].push(divItem.getAttribute('data-assetType-id'));
+            // idObj['idArr'].push(divItem.getAttribute('data-assettype-id'));
+            
+
+            console.log('This is own AssetId to be approved: ', ownAssetIDArr);
+            console.log(assetGrab);
+            console.log(assetGrab.children.length);
+            
+            //Does this need more work
+            if (!assetGrab.children.length){
+                doneBtnGrab.classList.toggle('btn-deActivate'); 
+            }
+            idObj.userId = userID;
+            console.log(userAssetsOwnDivGrab);
+            
+            // getObjectIds(userAssetsOwnDivGrab);
+            console.log('*****')
+            console.log(idObj);
+            console.log(document.getElementById(updateForm)); // if updateForm moved from one line above
+            document.getElementById(updateForm).action = `/user/assignDeassign2/${JSON.stringify(idObj)}?_method=PUT&assignment=${this2.innerHTML}`;
+        } 
+        console.log(updateFormGrab.action);
+    }
+
+
+
+    function userAssetStoreDeApprove(this2, assetDiv, updateForm){
+        alert('Store Deapproval');
+        var ownAssetIDArr=[]; //should this be out of the userAssetDeassign function?
+        var ownAssetIDTypeArr = [];
+        var ownAssetNameArr = [];
+
+        // let arrToDeassign = [];
+
+        console.log(updateForm);
+        //alert(this2.innerHTML);
+        console.log(this2);
+        console.log(assetDiv);
+        console.log('++++');
+        assetGrab = document.getElementsByClassName(assetDiv)[0];
+        var inputChecks = assetGrab.getElementsByClassName('user-asset-pool-checkbox');
+        var trueBoxes =  [...inputChecks].filter(item=>{
+            return item.checked == true;
+        })
+        //
+        
+        if (updateForm){ // if we are deassigning from the owned assets, not just from tentative assets
+            alert('From own assets')
+            trueBoxes.forEach(item=>{
+                let assetName = item.parentNode.parentNode.getAttribute('data-asset-assetName');
+                alert(assetName);
+                // document.getElementById(assetName).appendChild(item.parentNode.parentNode); 
+                console.log(document.getElementById(assetName));
+                console.log(document.getElementById(assetName).getElementsByClassName('usedAssetContainer')[0]);
+
+                //visual confirmation
+                document.getElementById(assetName).getElementsByClassName('usedAssetContainer')[0].appendChild(item.parentNode.parentNode);
+                
+                //ready for server Update
+                ownAssetIDArr.push(item.parentNode.parentNode.getAttribute('data-asset-id'));
+                ownAssetIDTypeArr.push(item.parentNode.parentNode.getAttribute('data-assettype-id'));
+            })
+            idObj['idArr'] = ownAssetIDArr;
+            idObj['idTypeArr'] = ownAssetIDTypeArr; //for increasing quantities in server
+            console.log('This is own AssetId to be deassigned: ', ownAssetIDArr);
+            console.log(assetGrab);
+            console.log(assetGrab.children.length);
+            if (!assetGrab.children.length){
+                doneBtnGrab.classList.toggle('btn-deActivate'); 
+            }
+            idObj.userId = userID;
+            console.log(userAssetsOwnDivGrab);
+            
+            // getObjectIds(userAssetsOwnDivGrab);
+            console.log('*****')
+            console.log(idObj);
+            console.log(document.getElementById(updateForm)); // if updateForm moved from one line above
+            document.getElementById(updateForm).action = `/user/assignDeassign2/${JSON.stringify(idObj)}?_method=PUT&assignment=${this2.innerHTML}`;
+        }
+        
+        console.log(updateFormGrab.action);
+    }
+
+
+
+
 
     function triggerClickCheckbox(this2){
     console.log(this2);
@@ -753,6 +1231,7 @@ function requisitionHistory(){
     let approveRequisitionObj ={}
 var objClassList = {}
     function approveRequisition(this2){
+        // alert(this2.get);
         makeObject();
         //ulRequisitionGrab.classList.add('approvedRequisition');
         objClassList['ulRequisitionGrab'] = 'approvedRequisition';
@@ -802,6 +1281,24 @@ var objClassList = {}
         // }
 
 
+    }
+
+    var settingsObj = <%- JSON.stringify(uiSettings)%>
+        console.log(settingsObj);
+        console.log('Now here showAdmin');
+
+        var settingsObjKeys = (Object.keys(settingsObj));
+        var settingsObjValues = (Object.values(settingsObj));
+        settingsObjKeys.forEach(className=>{
+            [ ...document.getElementsByClassName(className)].forEach(elm=>{
+                elm.style.display = settingsObj[className];
+            })
+        })
+        console.log(Object.values(settingsObj));
+
+    function popAssetApplications(){
+        alert('Popping');
+        pendingStoreApprovals.classList.toggle('popApproval');
     }
 </script>
 

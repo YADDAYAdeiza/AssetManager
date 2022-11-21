@@ -1,5 +1,5 @@
 <div class = "profileCreatedMsgDivCont">
-    <h1>This is show2</h1>
+    <h1>This is showAdmin</h1>
    <h1>
        <p class = 'profileCreatedMsg'>Profile succesfully created!</p>
    </h1>
@@ -214,6 +214,8 @@
     let selAssetOptionGrab = document.getElementById('selAssetOption');
     let selAssetOptionBtnsGrab = document.getElementsByClassName('sel-asset-option-btns');
 
+        console.log(settingsObj);
+    alert('Settings...');
     
        
 //Auth
@@ -746,9 +748,20 @@ var objClassList = {}
         //     getRequisitionObj.open("GET", `/user/getHistory/${userID}`, true);
         //     getRequisitionObj.send();
         // }
-
+        
 
     }
+    var settingsObj = <%- JSON.stringify(uiSettings)%>
+        console.log(settingsObj);
+        console.log('Now here showAdmin');
+        var settingsObjKeys = (Object.keys(settingsObj));
+        var settingsObjValues = (Object.values(settingsObj));
+        settingsObjKeys.forEach(className=>{
+            [ ...document.getElementsByClassName(className)].forEach(elm=>{
+                elm.style.display = settingsObj[className];
+            })
+        })
+    console.log(Object.values(settingsObj));
 </script>
 
 

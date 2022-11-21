@@ -88,16 +88,10 @@
 						<li class = 'onlyAdmin'>
 							<a href="/user/other">Other Users</a>
 						</li>
-						<li>
-						<a href="/user/audit">Audit</a>
-					</li>
-					<li>
-						<a href="/user/audit2">Audit2</a>
-					</li>
 				  </ul> 	
 	          </li>
 	          <li>
-              <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle" onclick = "backgroundChange(this)">New Asset</a>
+              <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle onlyAdmin" onclick = "backgroundChange(this)">New Asset</a>
               <ul class="collapse list-unstyled" id="pageSubmenu">
                 <li>
                     <a href="/asset/index">List Asset</a>
@@ -149,7 +143,7 @@
 				</ul>
 				</li>
 				<li>
-					<a href="#overviewSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle" onclick = "backgroundChange(this)">Overview</a>
+					<a href="#overviewSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle onlyAdmin" onclick = "backgroundChange(this)">Overview</a>
 					<ul class="collapse list-unstyled" id="overviewSubmenu">
 					  <li>
 						  <a href="/overview/national">National</a>
@@ -165,11 +159,19 @@
 					  <li>
 						  <a href="/recent/index">Recent Activity</a>
 					  </li>
+					  <li>
+						<a href="/recent/index">LogOut</a>
+						<form method="POST" action="/logout?_method=DELETE">
+							<button class = 'btn btn-delete' type="submit">LogOutNow</button>
+						</form>
+					</li>
 					  
 					</ul>
-					</li>
+				</li>
 	        </ul>
-
+			<form method="POST" action="/logout?_method=DELETE">
+				<button class = 'btn btn-delete' type="submit">LogOut</button>
+			</form>
 	        <div class="footer">
 	        	<p>
 						  Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved.

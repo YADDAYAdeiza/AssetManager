@@ -96,6 +96,7 @@
 
         var settingsObj = <%- JSON.stringify(uiSettings)%>
         console.log(settingsObj);
+        console.log('Now here');
         var settingsObjKeys = (Object.keys(settingsObj));
         var settingsObjValues = (Object.values(settingsObj));
         settingsObjKeys.forEach(className=>{

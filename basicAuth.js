@@ -45,7 +45,7 @@ function authenticateRoleProfilePage(){
     }
 }
 
- function permitLists(){
+ function permitLists(){ // used with searchScope
     return async (req, res, next)=>{
         console.log('Permitting lists...')
         console.log('req.query.searchScope is ', req.query.searchScope);
@@ -74,7 +74,12 @@ function permitListsLogin(){
     return async (req, res, next)=>{
         console.log('Permitting lists for login...')
         let query = userModel.find();
+        if (req.user.role =='basic'){ //further dig
             query = query.where('_id').in(req.user.profileId)
+        }
+        if (req.user.role =='admin'){
+            //do nothing.
+        }
        
         req.queryObj = query;
         next();
@@ -128,11 +133,16 @@ function hideNavMenu(){
         if (req.user.role =='admin'){
             console.log('Admin UI')
             let uiSettings = {
-                'onlyAdmin':'block'
+                'onlyAdmin':'block',
+                'onlyStaff':'none'
             }
             req.dispSetting = uiSettings;
             console.log('--')
             console.log('This is it, ', req.dispSetting);
+
+            // if (req.user.profileId.includes(req.params.id) ==  false){
+
+            // }
         }
 
         next();

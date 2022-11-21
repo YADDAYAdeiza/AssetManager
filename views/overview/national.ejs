@@ -30,16 +30,38 @@
   z-index: 5;
 }
 
-#video-grid{
-    display: grid;
-    grid-template-columns: repeat(autofill, 300px);
-    grid-auto-rows: 300px;
+#mapVidCont{
+    position: relative;
+}
+#nationalMap{
+    position:relative;
 }
 
-video{
+#video-grid{
+    display: grid;
+    grid-template-columns: 300px 300px;
+    column-gap: 10px;
+    row-gap: 10px;
+    grid-auto-rows: 300px;
+    padding:60px;
+}
+
+video {
     width:100%;
     height:100%;
     object-fit: cover;
+    border: 5px solid lime;
+}
+
+.vidContainer{
+    position: absolute;
+    width:80%;
+    margin:auto;
+    top:0;
+    left:50%;
+    transform: translateX(-50%);
+    opacity: 0.8;
+    border: 1px solid green;
 }
     </style>
 
@@ -55,8 +77,14 @@ video{
             <button id="change-gradient">Change gradient</button>
             <button id="change-radius">Change radius</button>
             <button id="change-opacity">Change opacity</button>
-          </div>
-        <div id = 'nationalMap'>Map goes in here</div>
+        </div>
+        <div id = 'mapVidCont'>
+            <div id = 'nationalMap'>Map goes in here</div>
+            <div class = "vidContainer">
+                <div id="video-grid"></div>
+            </div>
+
+        </div>
         <div class = 'div-ctrl'>
             <!-- <p><select id = 'cat' onchange="categoryOptions(this)"> -->
             <p><select id = 'cat'>
@@ -87,7 +115,6 @@ video{
                 <button id = 'trackFleet'>Track Fleet</button>
                 <button id = 'videoLive'>Video Live</button>
             </p>
-            <div id="video-grid"></div>
         </div>
     <div>
     <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
@@ -102,6 +129,8 @@ video{
         
     socket.on('connect', ()=>{
         alert(`you connected national on...${socket.id}`);
+        const transport = socket.io.engine.transport.name;
+        alert(transport);
     });
 
     socket.emit('adminMonitoringTracking', 'Fetching tracked...');
@@ -258,7 +287,7 @@ video{
             })
             socket.emit('ready');
             socket.on('user-joined', newUserId =>{
-                console.log('User joined ', newUserId);
+                console.log('User joined national ', newUserId);
                 console.log('Twice?');
                 videoLiveGrab.style.color = 'lime';
                 connectToNewUser(newUserId, stream)
@@ -283,6 +312,7 @@ video{
                 console.log('The admin is live');
                 videoLiveGrab.style.backgroundColor = 'yellow';
             });
+
 
     function connectToNewUser(newUserId, stream){
         console.log('Calling... ', newUserId)

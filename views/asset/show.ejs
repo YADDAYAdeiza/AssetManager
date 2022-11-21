@@ -1,41 +1,94 @@
-<script
-src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDuYptvwFszij8WWugKw5jQ6PkhiYqBo2c&libraries=&v=weekly">
-</script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+       
 
-<div class = "asset-details">
-    <%console.log('Here is asset, ', asset)%> 
-    <h2><%=asset.assetCode%></h2>
-    <h4>Asset Type: <%= asset.assetType.assetTypeClass%></h4>
-    <h4>Asset Status: <%= asset.status%></h4>
-    <h4>Asset Assigned: <%= asset.assetAssignDate.toDateString()%></h4>
-    
-    
-    <%if (asset.assetDescription != null){%>
-        <h5><%=asset.assetDescription%></h5>
-        
-        <img height="150" width = "160" src="<%=asset.assetImageDetails%>">
-        <%}%>
-        <br>
-        
-        <div class="asset-details-btn-grid">
-            <a href="/asset/<%=asset.id%>/edit">Edit</a>
-            <!-- populate with the id so it can direct to the asset page -->
-            <a href="/assetType/<%=asset.assetType.id%>/edit">View Asset Type/View User</a>
-            <%-include('../partials/deleteForm', {url:`/asset/${asset.id}`})%>
-        </div>
-        <br/><br/>
-        <div class="asset-details-asset-grid">
-            <h5>List of Former Users</h5>
-        </div>
-    </div>
-    <div id="video-grid"></div>
-<button id = 'traceBut'>Trace Path</button>
-<button id = 'trackBut' <%-asset.assetType.assetTypeTrackable ? "":"disabled"%> >Track Asset</button>
-<button id = 'videoLive'>Video Live</button>
+        #mapVidCont{
+    position: relative;
+}
+ #mapAsset{
+    position:relative;
+    width: 80%;
+    height: 100%;
+}
 
-    <div id="mapAsset">
-        Map to track goes in here
-    </div>
+#video-grid{
+    display: grid;
+    grid-template-columns: 300px 300px;
+    column-gap: 10px;
+    row-gap: 10px;
+    grid-auto-rows: 300px;
+    padding:60px;
+}
+
+video {
+    width:100%;
+    height:100%;
+    object-fit: cover;
+    border: 5px solid lime;
+}
+
+.vidContainer{
+    position: absolute;
+    width:80%;
+    margin:auto;
+    top:0;
+    left:50%;
+    transform: translateX(-50%);
+    opacity: 0.8;
+    border: 1px solid green;
+}
+    </style>
+    <script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDuYptvwFszij8WWugKw5jQ6PkhiYqBo2c&libraries=&v=weekly">
+    </script>
+</head>
+<body>
+    <div class = "asset-details">
+        <%console.log('Here is asset, ', asset)%> 
+        <h2><%=asset.assetCode%></h2>
+        <h4>Asset Type: <%= asset.assetType.assetTypeClass%></h4>
+        <h4>Asset Status: <%= asset.status%></h4>
+        <h4>Asset Assigned: <%= asset.assetAssignDate.toDateString()%></h4>
+        
+        
+        <%if (asset.assetDescription != null){%>
+            <h5><%=asset.assetDescription%></h5>
+            
+            <img height="150" width = "160" src="<%=asset.assetImageDetails%>">
+            <%}%>
+            <br>
+            
+            <div class="asset-details-btn-grid">
+                <a href="/asset/<%=asset.id%>/edit">Edit</a>
+                <!-- populate with the id so it can direct to the asset page -->
+                <a href="/assetType/<%=asset.assetType.id%>/edit">View Asset Type/View User</a>
+                <%-include('../partials/deleteForm', {url:`/asset/${asset.id}`})%>
+            </div>
+            <br/><br/>
+            <div class="asset-details-asset-grid">
+                <h5>List of Former Users</h5>
+            </div>
+        </div>
+        <button id = 'traceBut'>Trace Path</button>
+        <button id = 'trackBut' <%-asset.assetType.assetTypeTrackable ? "":"disabled"%> >Track Asset</button>
+        <button id = 'videoLive'>Video Live</button>
+        
+        
+
+        <div id = 'mapVidCont'>
+            <div id = 'mapAsset'>Map goes in here</div>
+            <div class = "vidContainer">
+                <div id="video-grid"></div>
+            </div>
+
+        </div>
+        
 
     <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
@@ -60,12 +113,14 @@ src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDuYptvwFszij8WWugKw5jQ6Pk
         let trackAssetBool = false;
         let assetTrackable = '<%-asset.assetType.assetTypeTrackable%>';
             let videoLiveGrab =  document.getElementById('videoLive');
+            let videoLiveGrabBool = false;
             let videoGrid = document.getElementById('video-grid');
             let myVideo = document.createElement('video');
             myVideo.muted= true;
 
             const peers = {};
             videoLiveGrab.addEventListener('click', ()=>{
+                if (videoLiveGrabBool ==false){
                 navigator.mediaDevices.getUserMedia({
                     video:true,
                     audio:true
@@ -75,7 +130,7 @@ src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDuYptvwFszij8WWugKw5jQ6Pk
                         call.answer(stream);
                         const video = document.createElement('video');
                         call.on('stream', userVideoStream=>{
-                            alert('Receiving Stream 2...')
+                            // alert('Receiving Stream 2...');
                             videoLiveGrab.style.backgroundColor = 'lime';
                             addVideoStream(video, userVideoStream);
                         })
@@ -83,7 +138,7 @@ src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDuYptvwFszij8WWugKw5jQ6Pk
                     socket.emit('ready');
                     socket.on('user-joined', newUserId =>{
                         console.log('User joined ', newUserId);
-
+                        // alert('Called me!');
                         connectToNewUser(newUserId, stream)
                     })
             
@@ -92,7 +147,17 @@ src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDuYptvwFszij8WWugKw5jQ6Pk
             
                     })
                 });
-
+                    videoLiveGrabBool = !videoLiveGrabBool;
+                }else {
+                    // alert('Closing...');
+                    socket.disconnect();
+                    videoLiveGrab.style.backgroundColor = 'silver';
+                    // socket.emit('disconnect', userId);
+                    // socket.on('user-disconnected', (userId)=>{
+                    // if (peers[userId]) peers[userId].close();
+            
+                    // })
+                }
             })
 
             myPeer.on('open', id =>{
@@ -100,11 +165,17 @@ src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDuYptvwFszij8WWugKw5jQ6Pk
                 socket.emit('join-room', '2dabcb54-47c4-4999-88d1-b75650767c19', id); //2dabcb54-47c4-4999-88d1-b75650767c19
             })
 
-            // socket.on('readyLight', (userId)=>{
-            //     alert('The admin is live');
-            //     console.log('The admin is live');
-            //     videoLiveGrab.style.backgroundColor = 'lime';
-            // });
+            socket.on('readyLight', (userId)=>{
+                // alert('The admin is live');
+                console.log('The admin is live');
+                videoLiveGrab.style.backgroundColor = 'lime';
+            });
+
+            //enable videoLiveGrab button
+            socket.on('enableTrackBut', (msg)=>{
+                // alert(`Enabling... ${msg}`)
+                videoLiveGrab.style.disabled = false;
+            })
 
             function connectToNewUser(newUserId, stream){
                 console.log('Calling... ', newUserId)
@@ -135,7 +206,7 @@ src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDuYptvwFszij8WWugKw5jQ6Pk
 
         var socket = io('http://localhost:2001');
         socket.on('connect', ()=>{
-                 alert(`you connected on...${socket.id}`);
+                //  alert(`you connected on...${socket.id}`);
         })
         
         
@@ -373,3 +444,5 @@ src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDuYptvwFszij8WWugKw5jQ6Pk
 
 
     </script>
+    </body>
+    </html>

@@ -33,6 +33,13 @@ let userLogSchema = new mongoose.Schema({
             required:true
         }
     },
+    userApprovedAsset:{
+        id:{
+            type:[mongoose.Schema.ObjectId],
+            ref:assetModel,
+            required:true
+        }
+    },
     userRequisition:{
         type:Object
     },

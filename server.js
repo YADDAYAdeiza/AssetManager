@@ -191,7 +191,7 @@ app.use(passport.session());
   })
   
   app.post('/login', checkNotAutheticated, passport.authenticate('local',{
-    successRedirect:'/user/new',
+    // successRedirect:'/user/new',
     successRedirect:'user/showOrNew',
     failureRedirect:'/login',
     failureFlash:true
@@ -229,6 +229,7 @@ app.use(passport.session());
 
   
   app.delete('/logout', (req, res, next)=>{
+    console.log('Logging out...');
     req.logOut(function (err){
       if (err) next(err);
       res.redirect('/login');
@@ -236,7 +237,7 @@ app.use(passport.session());
   })
   
   async function checkAuthenticated(req, res, next){
-    if(req.isAuthenticated()){
+    if (req.isAuthenticated()) {
       console.log('In authenticated...')
       console.log(await req.user);
       return next()
