@@ -73,12 +73,12 @@
     </div>
     <button onclick = "userAssetAssign(this, 'user-assetsOwn-div', 'updateFormOwn')">Assign</button>
     <button onclick = "userAssetDeassign(this, 'user-assetsOwn-div', 'updateFormOwn')">DeAssign</button>
-    <button onclick = "userAssetApprove(this, 'user-assetsOwn-div', 'updateFormOwn')">Approve</button>
-    <button onclick = "userAssetDeApprove(this, 'user-assetsOwn-div', 'updateFormOwn')">DeApprove</button>
-    <button onclick = "userAssetDirectorateApprove(this, 'user-assetsOwn-div', 'updateFormOwn')">D.Approve</button>
-    <button onclick = "userAssetDirectorateDeApprove(this, 'user-assetsOwn-div', 'updateFormOwn')">D.DeApprove</button>
-    <button onclick = "userAssetStoreApprove(this, 'user-assetsOwn-div', 'updateFormOwn')">Store.Approve</button>
-    <button onclick = "userAssetStoreDeApprove(this, 'user-assetsOwn-div', 'updateFormOwn')">Store.DeApprove</button>
+    <button onclick = "userAssetApprove(this, 'user-assetsOwn-div', 'updateFormOwn')" class = "nonDirectorateApprovalClass nonStoreApprovalClass">Approve</button>
+    <button onclick = "userAssetDeApprove(this, 'user-assetsOwn-div', 'updateFormOwn')" class = "nonDirectorateApprovalClass nonStoreApprovalClass">DeApprove</button>
+    <button onclick = "userAssetDirectorateApprove(this, 'user-assetsOwn-div', 'updateFormOwn')" class="nonStateApprovalClass nonStoreApprovalClass">D.Approve</button>
+    <button onclick = "userAssetDirectorateDeApprove(this, 'user-assetsOwn-div', 'updateFormOwn')" class="nonStateApprovalClass nonStoreApprovalClass">D.DeApprove</button>
+    <button onclick = "userAssetStoreApprove(this, 'user-assetsOwn-div', 'updateFormOwn')" class="nonStateApprovalClass nonDirectorateApprovalClass">Store.Approve</button>
+    <button onclick = "userAssetStoreDeApprove(this, 'user-assetsOwn-div', 'updateFormOwn')" class="nonStateApprovalClass nonDirectorateApprovalClass">Store.DeApprove</button>
     
     <%-include('_userContent', {btnVal:`Asset Pool`})%> 
     <form id = 'updateFormOwn' method="POST" >
@@ -190,6 +190,17 @@
         </ul>
     </div>
 
+    <div>
+        Awaiting State Approval
+        <%if(usersToApprove.length){%>
+            <ul> 
+                <%usersToApprove.forEach(userToApproveId=>{%>
+                    <li><a href = '/user/<%=userToApproveId%>/<%=user.userRole.role%>/<%=user.id%>'><%=userToApproveId%></a></li>
+                <%})%>
+            </ul>
+        <%}%>
+    </div>
+
     <div class="pending-requisition-approvals">
         <ul>
             <% if (user.userDirectorateApproval.length){%>
@@ -212,10 +223,11 @@
                  <%}%>
             </ul>
             <div id="req-History">
-        </div>
+            </div>
 
 
         </div>
+
 
     </p>
         
@@ -225,6 +237,7 @@
 <script src="/socket.io/socket.io.js"></script>
 <script defer>
     let userID = '<%- user.id %>';
+    let approvingId = '<%- user.id %>';
 
     // alert('In here')
     var socket = io('http://localhost:3000');
@@ -735,6 +748,8 @@ function requisitionHistory(){
                 doneBtnGrab.classList.toggle('btn-deActivate'); 
             }
             idObj.userId = userID;
+            idObj.approvingUserId = approvingId;
+            console.log('This is approvingId', approvingId);
             console.log(userAssetsOwnDivGrab);
             
             // getObjectIds(userAssetsOwnDivGrab);
@@ -989,6 +1004,7 @@ function requisitionHistory(){
     function userAssetStoreApprove(this2, assetDiv, updateForm){
         alert('Store Approval');
         var ownAssetIDArr=[]; //should this be out of the userAssetDeassign function?
+        var ownAssetIDTypeArr = []; //user asset types
         var ownAssetNameArr = [];
 
        
@@ -1026,10 +1042,14 @@ function requisitionHistory(){
 
 
                 ownAssetIDArr.push(item.parentNode.parentNode.getAttribute('data-asset-id'));
+                ownAssetIDTypeArr.push(item.parentNode.parentNode.getAttribute('data-assettype-id'));
                 // ownAssetIDArr.push(item.parentNode.parentNode.getAttribute('data-assettype-id'));
 
             })
+
+            
             idObj['idArr'] = ownAssetIDArr;
+            idObj['idTypeArr'] = ownAssetIDTypeArr; //for decreasing quantities in server
             // idObj['idArr'].push(divItem.getAttribute('data-assetType-id'));
             // idObj['idArr'].push(divItem.getAttribute('data-assettype-id'));
             
@@ -1296,6 +1316,20 @@ var objClassList = {}
         })
         console.log(Object.values(settingsObj));
 
+
+        //approvalSettings -state, directorate and Store
+        var approvalSettingsObj = <%- JSON.stringify(approvalSettings)%>
+        console.log(approvalSettingsObj);
+        console.log('Now here showAdmin');
+
+        var approvalSettingsObjKeys = (Object.keys(approvalSettingsObj));
+        var approvalSettingsObjValues = (Object.values(approvalSettingsObj));
+        approvalSettingsObjKeys.forEach(className=>{
+            [ ...document.getElementsByClassName(className)].forEach(elm=>{
+                elm.style.display = approvalSettingsObj[className];
+            })
+        })
+        console.log(Object.values(approvalSettingsObj));
     function popAssetApplications(){
         alert('Popping');
         pendingStoreApprovals.classList.toggle('popApproval');

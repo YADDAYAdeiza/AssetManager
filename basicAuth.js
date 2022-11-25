@@ -119,6 +119,65 @@ function permitAssetLists(){
     }
 }
 
+
+
+
+function permitApproval(){
+    return async (req, res, next)=>{
+        console.log('Approval Status...', req.params.approval);
+        
+        if (req.params.approval == 'stateApproval'){
+            console.log('For the state...');
+            req.approvalSettings = {nonStateApprovalClass:'none'};
+            req.approvalId = req.params.approvalId;
+        }
+        
+        if (req.params.approval == 'directorateApproval'){
+            console.log('For the directorate...');
+            req.approvalSettings = {nonDirectorateApprovalClass:'none'};
+            req.approvalId = req.params.approvalId;
+        }
+        
+        if (req.params.approval == 'storeApproval'){
+            console.log('For the store...');
+            req.approvalSettings = {nonStoreApprovalClass:'none'};
+            req.approvalId = req.params.approvalId;
+        }
+        
+        
+        
+        // console.log('req.query.searchScope is ', req.query.searchScope);
+        // let query = userModel.find();
+        // if (req.query.searchAssetScope == undefined){ //search own profiles activated
+        //     if (req.user.role =='basic'){
+        //         query = query.where('_id').in(req.user.profileId);
+                
+        //         //extracting assets
+                
+        //         //assetUserHistory
+        //         // query = query.where('assetUserHistory').in(req.user.profileId);
+        //     } else if (req.user.role =='admin'){
+        //         console.log('??')
+        //         query = userModel.find();
+        //     }
+        // }else{ //search all for admin
+        //     if (req.user.role =='basic'){
+        //         // query = query.where('_id').in(req.user.userAsset.id);
+        //         query = query.where('_id').in(req.user.profileId);
+        //         // query = query.where('_id').in(req.user.userAsset.id);
+        //     } else if (req.user.role =='admin'){
+        //         console.log('??')
+        //         query = query.where('_id').in(req.user.profileId);
+        //         // query = query.where('_id').in(req.user.userAsset.id);
+        //     }
+        // }
+        // req.queryObj = query;
+        next();
+    }
+}
+
+
+
 function hideNavMenu(){
     return async (req, res, next)=>{
         if (req.user.role =='basic'){
@@ -168,5 +227,6 @@ module.exports = {
     permitLists,
     permitListsLogin,
     permitAssetLists,
-    hideNavMenu
+    hideNavMenu,
+    permitApproval
 }

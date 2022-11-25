@@ -74,7 +74,7 @@ const io = require('socket.io')(3000, {
 
 //authentication
 const {adminAuth} = require('../basicAuth');
-let {authenticateRole, authenticateRoleProfilePage, permitLists, permitListsLogin, hideNavMenu} = require('../basicAuth');
+let {authenticateRole, authenticateRoleProfilePage, permitLists, permitListsLogin, hideNavMenu, permitApproval} = require('../basicAuth');
 
 // const { reset } = require('nodemon');
 
@@ -117,7 +117,7 @@ route.get('/getHistory/:id', async (req,res)=>{
 //This is for determining if, straight from login success, to go to Register New User or User profile.
 route.get('/showOrNew', permitListsLogin(), hideNavMenu(), (req, res)=>{ //admin middleware may be used here to grant full authorization
     console.log('In showOrNew=====================================');
-    if (req.user.profileId.length){// show profiles, or
+    if (req.user.profileId.length){// show profiles, orole
         indexRedirect(req, res, 'My Profile(s)', 'noError');
     } else{ //create new profile
         res.redirect('/user/new');
@@ -225,12 +225,16 @@ route.get('/other', hideNavMenu(), async (req, res)=>{
 
 //Designate certain profiles as supervisors
 route.put('/other', async(req, res)=>{
+    console.log('Body');
+    console.log(req.body);
+    let domainApproved = (req.body.userRole == 'stateApproval')? JSON.parse(req.body.selState).state:req.body.selDirectorate;
     try{
         let user = await userModel.findById(req.body.selName);
-        user.userRole = req.body.userRole;
-        user.approvalStatus = req.body.selDirectorate;
-        user.approvalStatus = req.body.selDirectorate;
-        await user.save();
+        console.log(user);
+        user.userRole.role = req.body.userRole;
+        user.userRole.domain = domainApproved;
+        let user2 = await user.save();
+        console.log(user2);
         res.redirect(`/user/${req.body.selName}`);
 
     }catch (e){
@@ -286,12 +290,14 @@ route.get('/:id/edit',  hideNavMenu(), async (req,res)=>{
                             var approvedAssets = [];
                             var directorateApprovedAssets = [];
                             var storeApprovedAssets = [];
+                            var usersToApprove = [];
                             try {
                             const user =await userModel.findById(req.params.id);
                             const allAssetType = await assetTypeModel.find().select('_id assetTypeCode assetTypeClass assetTypeStatus assetTypeDescription assetTypeQty').exec();//.distinct('assetTypeClass');
                             const asset = await assetModel.find({user:user.id}).exec(); //.limit(10)
                             const allAsset = await (await assetModel.find().where('assetAllocationStatus').ne(true).select('_id assetType'));
                             const assetTypeDistinct = await assetTypeModel.find().select('_id assetTypeClass assetTypeStatus assetTypeDescription').exec();
+                            
                             user.userAsset.id.forEach(async itemArr=>{
                                         ownAssets.push(itemArr);
                                 });
@@ -306,9 +312,14 @@ route.get('/:id/edit',  hideNavMenu(), async (req,res)=>{
                                 user.storeApprovedUserAsset.id.forEach(async itemArr=>{
                                     storeApprovedAssets.push(itemArr.toString());
                                 });
+
+                                user.userRole.usersToApprove.forEach(userId=>{
+                                    usersToApprove.push(userId);
+                                })
                                 console.log('This is directorateApprovedAssets: ', directorateApprovedAssets);
                                 console.log('This is approved assets ', approvedAssets);
                                 console.log('This is store approved assets ', storeApprovedAssets);
+                                console.log('This is usersToApprove ', usersToApprove);
                                 // let msg = 'User found';
                                 console.log('This is asset:')
                                 // console.log(asset);
@@ -327,9 +338,11 @@ route.get('/:id/edit',  hideNavMenu(), async (req,res)=>{
                                 // console.log('This is allAssetType2', allAssetTypeMap2);
                                 console.log('This is allAsset now', allAsset);
                             let uiSettings = req.dispSetting;
-
+                            let approvalSettings = req.approvalSettings;
+                            let approvingId = req.params.approvalId; //used for reloading approving staff page
                             console.log('This is uiSettings', uiSettings);
                             console.log('This is chosen route: ', req.routeStr);
+                            console.log('This is approval Settings, ', approvalSettings);
                             res.render(req.routeStr, { //req.routeStr, modified by authentication middleware to hold route address in views folder
                                 user:user,
                                 allAssets:allAsset,
@@ -339,8 +352,11 @@ route.get('/:id/edit',  hideNavMenu(), async (req,res)=>{
                                 approvedAssets,
                                 directorateApprovedAssets,
                                 storeApprovedAssets,
+                                usersToApprove,
                                 assetTypeAll:allAssetType2,//assetTypeDistinct
                                 uiSettings,
+                                approvalSettings,
+                                approvingId,
                                 msg
                             });
 
@@ -350,6 +366,14 @@ route.get('/:id/edit',  hideNavMenu(), async (req,res)=>{
                             }
                         }
 route.get('/:id', authenticateRoleProfilePage(),hideNavMenu(), async (req, res)=>{
+    console.log('First...')
+    idRedirect(req, res, 'User found');
+});
+
+route.get('/:id/:approval/:approvalId', authenticateRoleProfilePage(),hideNavMenu(), permitApproval(), async (req, res)=>{
+    console.log('This is approval ', req.params.approval);
+    console.log('This is approvalId ', req.params.approvalId);
+    console.log('This is approval settings: ', req.approvalSettings);
     idRedirect(req, res, 'User found');
 });
 
@@ -584,6 +608,7 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
     let userAssetArr = JSON.parse(req.params.id);
     console.log(userAssetArr);
     console.log(userAssetArr.userId);
+    let redirectUser;// used to redirect to approver (or applicant) page
 
     try{
         user = await userModel.findById(userAssetArr.userId); //, 'firstName lastName cadre userAsset'
@@ -677,13 +702,19 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                                 user.userAsset.id.push( newAssetSaved._id);
                                 user.userAsset.idType.push( newAssetSaved.assetName);
                                 console.log('This is newAssetSaved', newAssetSaved);
-                                await user.save();
+                                // await user.save();
                                 
                             }
                         })
                         
-                        
+                  let stateApprover = await userModel.find({}).where('userRole.role').equals('stateApproval').where('userRole.domain').equals(user.state);
+              
+                stateApprover[0].userRole.usersToApprove.push(user._id); 
+                  await stateApprover[0].save();  
+    redirectUser = stateApprover[0].id;
+                  console.log('stateApprover', stateApprover[0]); 
                 }
+
                 if (userAssetArr.idArrAsset.length){ //if we have old assets to assign
                     let affectedAsset = await assetModel.find().where('_id').in(userAssetArr.idArrAsset).select('_id assetCode assetName assetUsedDuration assetDescription assetUserHistory assetLocationHistory').exec();
                     console.log('Here is affected asset (not type):')
@@ -768,7 +799,7 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
 
             //reassign updated assetId types to user
             user.userAsset.idType = assetTypeArr; //very correct
-            console.log('--');
+            console.log('6--');
             console.log('This is userAssetArr.idArr right before log: ', userAssetArr.idArr);
             userLogSave(user, userAssetArr.idArr, req.query.assignment, req);
             
@@ -827,15 +858,23 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                                                 assetToApprove.assetLocationHistory.push(user.id);
 
                                                 let approvedAsset = await assetToApprove.save();
-                                                console.log('This is approvedAsset ', approvedAsset);
+                                                // console.log('This is approvedAsset ', approvedAsset);
                                                 user.approvedUserAsset.id.push(assetToApprove.id);
                                                 user.approvedUserAsset.idType.push(assetToApprove.assetName);
                                             })
-                                            let updatedUser = await user.save();
-                                            console.log('Updated user ', updatedUser);
-                                           
-            console.log('--');
-            console.log('This is userAssetArr.idArr right before log: ', userAssetArr.idArr);
+
+                                            let directorateApprover = await userModel.find({}).where('userRole.role').equals('directorateApproval').where('userRole.domain').equals(user.directorate);
+              
+                                            directorateApprover[0].userRole.usersToApprove.push(user._id); 
+                                              await directorateApprover[0].save();  
+                                              
+                                              let updatedUser = await user.save();
+                                              // console.log('Updated user ', updatedUser);
+                                              
+                                              console.log('Pushed to directorateApproval--');
+                                              console.log('This is userAssetArr.idArr right before log: ', userAssetArr.idArr);
+                                              console.log('directorateApprover', directorateApprover[0]);
+                                        redirectUser = userAssetArr.approvingId;
             userLogSave(user, userAssetArr.idArr, req.query.assignment, req);
     
         }
@@ -873,7 +912,7 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
 
             //reassign updated assetId types to user
             user.approvedUserAsset.idType = assetTypeArr; //very correct
-            console.log('--');
+            console.log('1--');
             console.log('This is userAssetArr.idArr right before log: ', userAssetArr.idArr);
             userLogSave(user, userAssetArr.idArr, req.query.assignment, req);
             
@@ -882,6 +921,7 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
         if (req.query.assignment == 'D.Approve'){
             console.log('Directorate Approval now');
             
+            //is this first line not useless? It won't give anything.
             let affectedAssetType = await assetTypeModel.find().where('_id').in(userAssetArr.idArr).select('_id assetTypeQty assetTypeImageName assetTypeDescription assetTypeClass').exec();
             let affectedAssets = await assetModel.find().where('_id').in(userAssetArr.idArr).select('assetCode assetType assetName status assetUserHistory assetLocationHistory allocationStatus').exec();
 
@@ -938,10 +978,23 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                                                 user.directorateApprovedUserAsset.id.push(assetToApprove.id);
                                                 user.directorateApprovedUserAsset.idType.push(assetToApprove.assetName);
                                             })
+                                            let storeApprover = await userModel.find({}).where('userRole.role').equals('storeApproval');//.where('userRole.domain').equals(user.directorate);
+                                            console.log('storeApprover', storeApprover[0]);
+              
+                                            storeApprover[0].userRole.usersToApprove.push(user._id); 
+                                            await storeApprover[0].save();
+                                
+                                // redirectUser = storeApprover[0].id
+                                redirectUser = userAssetArr.approvingId;
+                            
+                                            console.log('Pushed to storeApproval--');
+                                            console.log('This is userAssetArr.idArr right before log: ', userAssetArr.idArr);
+
+
                                             let updatedUser = await user.save();
                                             console.log('Updated user ', updatedUser);
                                            
-            console.log('--');
+            console.log('2--');
             console.log('This is userAssetArr.idArr right before log: ', userAssetArr.idArr);
             userLogSave(user, userAssetArr.idArr, req.query.assignment, req);
     
@@ -980,32 +1033,44 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
 
             //reassign updated assetId types to user
             user.directorateApprovedUserAsset.idType = assetTypeArr; //very correct
-            console.log('--');
+            console.log('3--');
             console.log('This is userAssetArr.idArr right before log: ', userAssetArr.idArr);
             userLogSave(user, userAssetArr.idArr, req.query.assignment, req);
             
         }
 
         if (req.query.assignment == 'Store.Approve'){
+
+            userAssetArrIdArrObj = {}; //resetting
+            userAssetArr.idTypeArr.forEach(assetTypeId=>{
+                userAssetArrIdArrObj[assetTypeId] = 0;
+            })
+
+            userAssetArr.idTypeArr.forEach(assetId=>{
+                // assetId = assetId.slice(assetId.indexOf('"')+1, assetId.lastIndexOf('"'))
+                userAssetArrIdArrObj[assetId]++;
+            })
+
             console.log('Store Approval now');
             console.log('Decrement Store Quantities here');
             
-            let affectedAssetType = await assetTypeModel.find().where('_id').in(userAssetArr.idArr).select('_id assetTypeQty assetTypeImageName assetTypeDescription assetTypeClass').exec();
+            // let affectedAssetType = await assetTypeModel.find().where('_id').in(userAssetArr.idArr).select('_id assetTypeQty assetTypeImageName assetTypeDescription assetTypeClass').exec();
             let affectedAssets = await assetModel.find().where('_id').in(userAssetArr.idArr).select('assetCode assetType assetName status assetUserHistory assetLocationHistory allocationStatus').exec();
+            let affectedAssetsTypes = await assetTypeModel.find().where('_id').in(userAssetArr.idTypeArr).select('assetTypeCode assetTypeClass assetTypeQty').exec();
 
            
         
                                 // console.log('This is affectedType (approve), ', affectedAssetType);
                                 // affectedAssetType, appears to be to reduce AssetType quantity. It should be only in Store Approval
                                 console.log('This is affected assets (Store.Approve), ', affectedAssets);
-                                affectedAssetType.forEach(assetTypeId=>{
+                                affectedAssetsTypes.forEach(assetTypeId=>{
                                     console.log('Now DApprove', assetTypeId._id.toString());
                                     var assetTypeIdTrim = assetTypeId._id.toString();
                                     affectedAssetTypeObj[assetTypeIdTrim] = 0;
                                 });
 
                                 console.log('--------');
-                                affectedAssetType.forEach(assetTypeId=>{
+                                affectedAssetsTypes.forEach(assetTypeId=>{
                                     var assetTypeIdTrim = assetTypeId._id.toString();//.slice(assetTypeId._id.toString().indexOf('"')+1, assetTypeId._id.toString().lastIndexOf('"')+1)
                                     console.log(assetTypeIdTrim);
                                     affectedAssetTypeObj[assetTypeIdTrim] = userAssetArrIdArrObj[assetTypeIdTrim];
@@ -1014,14 +1079,14 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                             console.log('This is affectedAssetTypeObj (Store Approve), ', affectedAssetTypeObj);
                             
                             //Decrement assetTypeQty
-                                            affectedAssetType.forEach(async (assetType, i)=>{
+                                    affectedAssetsTypes.forEach(async (assetType, i)=>{
                                                 // console.log('Witin each...');
-                                                assetType.assetTypeQty -= affectedAssetTypeObj[assetType._id];
+                                                assetType.assetTypeQty -= affectedAssetTypeObj[assetType._id.toString()];
                                                 await assetType.save();
                                             });
         
                             //create assets
-                                            let affectedAssetType2 = affectedAssetType.map(asset=>{
+                                            let affectedAssetType2 = affectedAssetsTypes.map(asset=>{
                                                 return asset._id.toString();
                                             })
                                             console.log('This is mapped affectedAssetType (Store.Approve) ', affectedAssetType2);
@@ -1048,7 +1113,7 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                                             let updatedUser = await user.save();
                                             console.log('Updated user ', updatedUser);
                                            
-            console.log('--');
+            console.log('4--');
             console.log('This is userAssetArr.idArr right before log: ', userAssetArr.idArr);
             userLogSave(user, userAssetArr.idArr, req.query.assignment, req);
     
@@ -1057,6 +1122,19 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
 
         if (req.query.assignment == 'Store.DeApprove'){
             //takes only ticked items from own list and subtracts it from user asset (user.userAsset.id)
+
+            //assetTypes now
+            userAssetArrIdArrObj = {}; //resetting
+            userAssetArr.idTypeArr.forEach(assetTypeId=>{
+                userAssetArrIdArrObj[assetTypeId] = 0;
+            })
+
+            userAssetArr.idTypeArr.forEach(assetId=>{
+                // assetId = assetId.slice(assetId.indexOf('"')+1, assetId.lastIndexOf('"'))
+                userAssetArrIdArrObj[assetId]++;
+            })
+
+            console.log('This is userAssetArrIdArrObj (Store.DeApprove)', userAssetArrIdArrObj);
 
             console.log('Store DeApproval now');
            
@@ -1072,7 +1150,7 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
             user.storeApprovedUserAsset.id= newIdArr;
             let assetsNamesToAssign = await assetModel.find().where('_id').in(newIdArr).select('assetType status allocationStatus').exec();
             let affectedAssets = await assetModel.find().where('_id').in(userAssetArr.idArr).select('assetType status allocationStatus').exec();
-            let affectedAssetsTypes = await assetTypeModel.find().where('_id').in(userAssetArr.idTypeArr).select('assetTypeCode assetTypeClass').exec();
+            let affectedAssetsTypes = await assetTypeModel.find().where('_id').in(userAssetArr.idTypeArr).select('assetTypeCode assetTypeClass assetTypeQty').exec();
 
             console.log('This is assetTypeNamesTo increment quantity, ', affectedAssetsTypes);
 
@@ -1094,7 +1172,7 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
         //Increment assetTypeQty
                         affectedAssetsTypes.forEach(async (assetType, i)=>{
                             console.log('Witin each...');
-                            assetType.assetTypeQty += affectedAssetTypeObj[assetType._id];
+                            assetType.assetTypeQty += affectedAssetTypeObj[assetType._id.toString()];
                             await assetType.save();
                         });
                     console.log('Incremented...');
@@ -1135,7 +1213,7 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
 
             //reassign updated assetId types to user
             user.storeApprovedUserAsset.idType = assetTypeArr; //very correct
-            console.log('--');
+            console.log('5--');
             console.log('This is userAssetArr.idArr right before log: ', userAssetArr.idArr);
             userLogSave(user, userAssetArr.idArr, req.query.assignment, req);
             
@@ -1154,7 +1232,9 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
         };
         
         // userLogSave(user, newIdArr, req.query.assignment, req);
-        res.redirect(`/user/${userAssetArr.userId}`);
+        // res.redirect(`/user/${userAssetArr.userId}`);
+        res.redirect(`/user/${redirectUser}`);
+        
     } catch(e){
         console.log(e.message);
     }

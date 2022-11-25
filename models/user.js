@@ -136,16 +136,22 @@ let userSchema = new mongoose.Schema({
         type:Object
     },
     userRole:{
-        type:String,
-        default:'Basic'
-    },
-    approvalStatus:{
-        type:String
+        role:{
+            type:String
+        },
+        domain:{
+            type:String
+        },
+        usersToApprove:{
+            type:[String]
+        }
     },
     approvalSupId:{
         type:String
     },
-    userClassList:Object,
+    userStateApproval:{ //activated for directorate managers
+        type:[Object]
+    },
     userDirectorateApproval:{ //activated for directorate managers
         type:[Object]
     },
