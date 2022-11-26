@@ -237,7 +237,7 @@
 <script src="/socket.io/socket.io.js"></script>
 <script defer>
     let userID = '<%- user.id %>';
-    let approvingId = '<%- user.id %>';
+    let approvingId = '<%- approvingId %>';
 
     // alert('In here')
     var socket = io('http://localhost:3000');
@@ -834,6 +834,8 @@ function requisitionHistory(){
                 doneBtnGrab.classList.toggle('btn-deActivate'); 
             }
             idObj.userId = userID;
+            idObj.approvingUserId = approvingId;
+
             console.log(userAssetsOwnDivGrab);
             
             // getObjectIds(userAssetsOwnDivGrab);
@@ -902,6 +904,8 @@ function requisitionHistory(){
                 doneBtnGrab.classList.toggle('btn-deActivate'); 
             }
             idObj.userId = userID;
+            idObj.approvingUserId = approvingId;
+
             console.log(userAssetsOwnDivGrab);
             
             // getObjectIds(userAssetsOwnDivGrab);
@@ -980,6 +984,7 @@ function requisitionHistory(){
                 ownAssetIDArr.push(item.parentNode.parentNode.getAttribute('data-asset-id'));
             })
             idObj['idArr'] = ownAssetIDArr;
+            idObj.approvingUserId = approvingId;
             console.log('This is own AssetId to be deassigned: ', ownAssetIDArr);
             console.log(assetGrab);
             console.log(assetGrab.children.length);
@@ -1063,6 +1068,7 @@ function requisitionHistory(){
                 doneBtnGrab.classList.toggle('btn-deActivate'); 
             }
             idObj.userId = userID;
+            idObj.approvingUserId = approvingId;
             console.log(userAssetsOwnDivGrab);
             
             // getObjectIds(userAssetsOwnDivGrab);
@@ -1121,6 +1127,7 @@ function requisitionHistory(){
                 doneBtnGrab.classList.toggle('btn-deActivate'); 
             }
             idObj.userId = userID;
+            idObj.approvingUserId = approvingId;
             console.log(userAssetsOwnDivGrab);
             
             // getObjectIds(userAssetsOwnDivGrab);
