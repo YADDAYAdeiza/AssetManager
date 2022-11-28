@@ -143,6 +143,12 @@ function permitApproval(){
             req.approvalSettings = {nonStoreApprovalClass:'none'};
             req.approvalId = req.params.approvalId;
         }
+
+        if (req.params.approval == 'issuerApproval'){
+            console.log('For the issuer...');
+            req.approvalSettings = {nonIssueApprovalClass:'none'};
+            req.approvalId = req.params.approvalId;
+        }
         
         
         

@@ -132,6 +132,23 @@ let userSchema = new mongoose.Schema({
             }
         }
     },
+    issueApprovedUserAsset:{
+        id:{
+            type:[mongoose.Schema.Types.ObjectId],
+            ref:'AssetCol',
+            required:true
+        },
+        idType:{
+            type:[String],
+            required:true
+        },
+        assignDate:{
+            type:[Date],
+            default:()=>{
+                return Date.now()
+            }
+        }
+    },
     userRequisition:{
         type:Object
     },

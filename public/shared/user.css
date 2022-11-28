@@ -66,6 +66,12 @@ transition:  0.4s;
     margin-bottom:5px;
 }
 
+.divContLiBrown{
+    background-color: brown;
+    height:60px;
+    margin-bottom:5px;
+}
+
 .divContLi:hover a{
     color:white;
     text-decoration:dashed;
@@ -180,4 +186,9 @@ transition:  0.4s;
     background-color:silver;
     overflow-y: scroll;
     border: 2px grey solid;
+}
+
+.gridContainer{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
 }

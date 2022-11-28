@@ -42,9 +42,15 @@
                     <%console.log('Directorate Approved')%>
                     <%if (storeApprovedAssets.includes(asset._id.toString())){%>
                         <%console.log('Store Approved')%>
+                    <%if (issueApprovedAssets.includes(asset._id.toString())){%>
+                        <div class="divContLiBrown" data-asset-id="<%=asset.id%>" data-asset-assetName = "<%= asset.assetName %>" data-assettype-id = "<%= asset.assetType %>">
+                            <li><input type="checkbox" class = 'user-asset-pool-checkbox' style="display:inline; width:10%"><a href="/asset/<%=asset.id%>"><%=asset.assetCode%></a></li>    
+                        </div>
+                        <%}else{%>
                         <div class="divContLiCyan" data-asset-id="<%=asset.id%>" data-asset-assetName = "<%= asset.assetName %>" data-assettype-id = "<%= asset.assetType %>">
                             <li><input type="checkbox" class = 'user-asset-pool-checkbox' style="display:inline; width:10%"><a href="/asset/<%=asset.id%>"><%=asset.assetCode%></a></li>    
                         </div>
+                        <%}%>
                         <%}else{%>
                         <div class="divContLiPurple" data-asset-id="<%=asset.id%>" data-asset-assetName = "<%= asset.assetName %>" data-assettype-id = "<%= asset.assetType %>">
                             <li><input type="checkbox" class = 'user-asset-pool-checkbox' style="display:inline; width:10%"><a href="/asset/<%=asset.id%>"><%=asset.assetCode%></a></li>    
@@ -73,12 +79,14 @@
     </div>
     <button onclick = "userAssetAssign(this, 'user-assetsOwn-div', 'updateFormOwn')">Assign</button>
     <button onclick = "userAssetDeassign(this, 'user-assetsOwn-div', 'updateFormOwn')">DeAssign</button>
-    <button onclick = "userAssetApprove(this, 'user-assetsOwn-div', 'updateFormOwn')" class = "nonDirectorateApprovalClass nonStoreApprovalClass">Approve</button>
-    <button onclick = "userAssetDeApprove(this, 'user-assetsOwn-div', 'updateFormOwn')" class = "nonDirectorateApprovalClass nonStoreApprovalClass">DeApprove</button>
-    <button onclick = "userAssetDirectorateApprove(this, 'user-assetsOwn-div', 'updateFormOwn')" class="nonStateApprovalClass nonStoreApprovalClass">D.Approve</button>
-    <button onclick = "userAssetDirectorateDeApprove(this, 'user-assetsOwn-div', 'updateFormOwn')" class="nonStateApprovalClass nonStoreApprovalClass">D.DeApprove</button>
-    <button onclick = "userAssetStoreApprove(this, 'user-assetsOwn-div', 'updateFormOwn')" class="nonStateApprovalClass nonDirectorateApprovalClass">Store.Approve</button>
-    <button onclick = "userAssetStoreDeApprove(this, 'user-assetsOwn-div', 'updateFormOwn')" class="nonStateApprovalClass nonDirectorateApprovalClass">Store.DeApprove</button>
+    <button onclick = "userAssetApprove(this, 'user-assetsOwn-div', 'updateFormOwn')" class = "nonDirectorateApprovalClass nonStoreApprovalClass nonIssueApprovalClass">Approve</button>
+    <button onclick = "userAssetDeApprove(this, 'user-assetsOwn-div', 'updateFormOwn')" class = "nonDirectorateApprovalClass nonStoreApprovalClass nonIssueApprovalClass">DeApprove</button>
+    <button onclick = "userAssetDirectorateApprove(this, 'user-assetsOwn-div', 'updateFormOwn')" class="nonStateApprovalClass nonStoreApprovalClass nonIssueApprovalClass">D.Approve</button>
+    <button onclick = "userAssetDirectorateDeApprove(this, 'user-assetsOwn-div', 'updateFormOwn')" class="nonStateApprovalClass nonStoreApprovalClass nonIssueApprovalClass">D.DeApprove</button>
+    <button onclick = "userAssetStoreApprove(this, 'user-assetsOwn-div', 'updateFormOwn')" class="nonStateApprovalClass nonDirectorateApprovalClass nonIssueApprovalClass">Store.Approve</button>
+    <button onclick = "userAssetStoreDeApprove(this, 'user-assetsOwn-div', 'updateFormOwn')" class="nonStateApprovalClass nonDirectorateApprovalClass nonIssueApprovalClass">Store.DeApprove</button>
+    <button onclick = "userAssetIssuerApprove(this, 'user-assetsOwn-div', 'updateFormOwn')" class="nonStateApprovalClass nonDirectorateApprovalClass">Issuer.Approve</button>
+    <button onclick = "userAssetIssuerDeApprove(this, 'user-assetsOwn-div', 'updateFormOwn')" class="nonStateApprovalClass nonDirectorateApprovalClass nonStoreApprovalClass">Issuer.DeApprove</button>
     
     <%-include('_userContent', {btnVal:`Asset Pool`})%> 
     <form id = 'updateFormOwn' method="POST" >
@@ -1137,6 +1145,137 @@ function requisitionHistory(){
             document.getElementById(updateForm).action = `/user/assignDeassign2/${JSON.stringify(idObj)}?_method=PUT&assignment=${this2.innerHTML}`;
         }
         
+        console.log(updateFormGrab.action);
+    }
+
+    function userAssetDirectorateDeApprove(this2, assetDiv, updateForm){
+        alert('State Deapproval');
+        var ownAssetIDArr=[]; //should this be out of the userAssetDeassign function?
+        var ownAssetNameArr = [];
+
+        // let arrToDeassign = [];
+
+        console.log(updateForm);
+        //alert(this2.innerHTML);
+        console.log(this2);
+        console.log(assetDiv);
+        console.log('++++');
+        assetGrab = document.getElementsByClassName(assetDiv)[0];
+        var inputChecks = assetGrab.getElementsByClassName('user-asset-pool-checkbox');
+        var trueBoxes =  [...inputChecks].filter(item=>{
+            return item.checked == true;
+        })
+        //
+        
+        if (updateForm){ // if we are deassigning from the owned assets, not just from tentative assets
+            alert('From own assets')
+            trueBoxes.forEach(item=>{
+                let assetName = item.parentNode.parentNode.getAttribute('data-asset-assetName');
+                alert(assetName);
+                // document.getElementById(assetName).appendChild(item.parentNode.parentNode); 
+                console.log(document.getElementById(assetName));
+                console.log(document.getElementById(assetName).getElementsByClassName('usedAssetContainer')[0]);
+
+                //visual confirmation
+                document.getElementById(assetName).getElementsByClassName('usedAssetContainer')[0].appendChild(item.parentNode.parentNode);
+                
+                //ready for server Update
+                ownAssetIDArr.push(item.parentNode.parentNode.getAttribute('data-asset-id'));
+            })
+            idObj['idArr'] = ownAssetIDArr;
+            idObj.approvingUserId = approvingId;
+            console.log('This is own AssetId to be deassigned: ', ownAssetIDArr);
+            console.log(assetGrab);
+            console.log(assetGrab.children.length);
+            if (!assetGrab.children.length){
+                doneBtnGrab.classList.toggle('btn-deActivate'); 
+            }
+            idObj.userId = userID;
+            console.log(userAssetsOwnDivGrab);
+            
+            // getObjectIds(userAssetsOwnDivGrab);
+            console.log('*****')
+            console.log(idObj);
+            console.log(document.getElementById(updateForm)); // if updateForm moved from one line above
+            document.getElementById(updateForm).action = `/user/assignDeassign2/${JSON.stringify(idObj)}?_method=PUT&assignment=${this2.innerHTML}`;
+        }
+        
+        console.log(updateFormGrab.action);
+    }
+
+    
+
+    function userAssetIssuerApprove(this2, assetDiv, updateForm){
+        alert('Issue Approval');
+        var ownAssetIDArr=[]; //should this be out of the userAssetDeassign function?
+        var ownAssetIDTypeArr = []; //user asset types
+        var ownAssetNameArr = [];
+
+       
+        console.log(updateForm);
+        console.log(this2);
+        console.log(assetDiv);
+        console.log('++++');
+        assetGrab = document.getElementsByClassName(assetDiv)[0];
+        var inputChecks = assetGrab.getElementsByClassName('user-asset-pool-checkbox');
+        var trueBoxes =  [...inputChecks].filter(item=>{
+            return item.checked == true;
+        })
+        //
+        
+        if (updateForm){ // if we are deassigning from the owned assets, not just from tentative assets
+            alert('From own assets')
+            trueBoxes.forEach(item=>{
+                let assetName = item.parentNode.parentNode.getAttribute('data-asset-assetName');
+                alert(assetName);
+                // document.getElementById(assetName).appendChild(item.parentNode.parentNode); 
+                console.log(document.getElementById(assetName));
+                console.log(document.getElementById(assetName).getElementsByClassName('usedAssetContainer')[0]);
+
+                //Is this applicable for approval?
+                        // document.getElementById(assetName).getElementsByClassName('usedAssetContainer')[0].appendChild(item.parentNode.parentNode);
+                
+                //ready for server Update
+
+            //     if (divItem.getAttribute('data-status') == 'New'){
+            //         console.log(divItem.getAttribute('data-status'))
+            //        idObj['idArr'].push(divItem.getAttribute('data-assetType-id'));
+            //    }else {
+            //         idObj['idArrAsset'].push(divItem.getAttribute('data-asset-id'));
+            //    }
+
+
+                ownAssetIDArr.push(item.parentNode.parentNode.getAttribute('data-asset-id'));
+                ownAssetIDTypeArr.push(item.parentNode.parentNode.getAttribute('data-assettype-id'));
+                // ownAssetIDArr.push(item.parentNode.parentNode.getAttribute('data-assettype-id'));
+
+            })
+
+            
+            idObj['idArr'] = ownAssetIDArr;
+            idObj['idTypeArr'] = ownAssetIDTypeArr; //for decreasing quantities in server
+            // idObj['idArr'].push(divItem.getAttribute('data-assetType-id'));
+            // idObj['idArr'].push(divItem.getAttribute('data-assettype-id'));
+            
+
+            console.log('This is own AssetId to be approved: ', ownAssetIDArr);
+            console.log(assetGrab);
+            console.log(assetGrab.children.length);
+            
+            //Does this need more work
+            if (!assetGrab.children.length){
+                doneBtnGrab.classList.toggle('btn-deActivate'); 
+            }
+            idObj.userId = userID;
+            idObj.approvingUserId = approvingId;
+            console.log(userAssetsOwnDivGrab);
+            
+            // getObjectIds(userAssetsOwnDivGrab);
+            console.log('*****')
+            console.log(idObj);
+            console.log(document.getElementById(updateForm)); // if updateForm moved from one line above
+            document.getElementById(updateForm).action = `/user/assignDeassign2/${JSON.stringify(idObj)}?_method=PUT&assignment=${this2.innerHTML}`;
+        } 
         console.log(updateFormGrab.action);
     }
 
