@@ -43,28 +43,28 @@
                     <%if (storeApprovedAssets.includes(asset._id.toString())){%>
                         <%console.log('Store Approved')%>
                     <%if (issueApprovedAssets.includes(asset._id.toString())){%>
-                        <div class="divContLiBrown" data-asset-id="<%=asset.id%>" data-asset-assetName = "<%= asset.assetName %>" data-assettype-id = "<%= asset.assetType %>">
+                        <div class="divAsset divContLiBrown issuerApproval" data-asset-id="<%=asset.id%>" data-asset-assetName = "<%= asset.assetName %>" data-assettype-id = "<%= asset.assetType %>">
                             <li><input type="checkbox" class = 'user-asset-pool-checkbox' style="display:inline; width:10%"><a href="/asset/<%=asset.id%>"><%=asset.assetCode%></a></li>    
                         </div>
                         <%}else{%>
-                        <div class="divContLiCyan" data-asset-id="<%=asset.id%>" data-asset-assetName = "<%= asset.assetName %>" data-assettype-id = "<%= asset.assetType %>">
+                        <div class="divAsset divContLiCyan storeApproval" data-asset-id="<%=asset.id%>" data-asset-assetName = "<%= asset.assetName %>" data-assettype-id = "<%= asset.assetType %>">
                             <li><input type="checkbox" class = 'user-asset-pool-checkbox' style="display:inline; width:10%"><a href="/asset/<%=asset.id%>"><%=asset.assetCode%></a></li>    
                         </div>
                         <%}%>
                         <%}else{%>
-                        <div class="divContLiPurple" data-asset-id="<%=asset.id%>" data-asset-assetName = "<%= asset.assetName %>" data-assettype-id = "<%= asset.assetType %>">
+                        <div class="divAsset divContLiPurple directorateApproval" data-asset-id="<%=asset.id%>" data-asset-assetName = "<%= asset.assetName %>" data-assettype-id = "<%= asset.assetType %>">
                             <li><input type="checkbox" class = 'user-asset-pool-checkbox' style="display:inline; width:10%"><a href="/asset/<%=asset.id%>"><%=asset.assetCode%></a></li>    
                         </div>
                     <%}%>
                 <%} else{%>
 
-                    <div class="divContLiGreen" data-asset-id="<%=asset.id%>" data-asset-assetName = "<%= asset.assetName %>" data-assettype-id = "<%= asset.assetType %>">
+                    <div class="divAsset divContLiGreen stateApproval" data-asset-id="<%=asset.id%>" data-asset-assetName = "<%= asset.assetName %>" data-assettype-id = "<%= asset.assetType %>">
                         <li><input type="checkbox" class = 'user-asset-pool-checkbox' style="display:inline; width:10%"><a href="/asset/<%=asset.id%>"><%=asset.assetCode%></a></li>    
                     </div>
                 <%}%>
                 <%} else{%>
                     <%console.log('Not Includes Asset')%>
-                <div class="divContLi" data-asset-id="<%=asset.id%>" data-asset-assetName = "<%= asset.assetName %>" data-assettype-id = "<%= asset.assetType %>">
+                <div class="divAsset divContLi ownApproval" data-asset-id="<%=asset.id%>" data-asset-assetName = "<%= asset.assetName %>" data-assettype-id = "<%= asset.assetType %>">
                     <li><input type="checkbox" class = 'user-asset-pool-checkbox' style="display:inline; width:10%"><a href="/asset/<%=asset.id%>"><%=asset.assetCode%></a></li>    
                 </div>
             <%}%>
@@ -246,6 +246,25 @@
 <script defer>
     let userID = '<%- user.id %>';
     let approvingId = '<%- approvingId %>';
+    let approvalDiv = '<%- divApprovalSetting %>';
+    console.log('This is approval level', approvalDiv);
+// alert('This is approval level', approvalDiv);
+
+//This is for activating and deactivating the divs appropriate to an approval level
+    let divAssetGrab = document.getElementsByClassName('divAsset');
+    [...divAssetGrab].forEach(div=>{
+        console.log(div.classList);
+        if ([...div.classList].includes(approvalDiv)){
+            div.style.opacity = 1;  
+        }else{
+            div.style.opacity = 0.3;
+            console.log(div.getElementsByTagName('input')[0]);
+            div.getElementsByTagName('input')[0].disabled = true; //get the checkbox in the div
+        }
+    })
+
+
+
 
     // alert('In here')
     var socket = io('http://localhost:3000');
@@ -1148,6 +1167,8 @@ function requisitionHistory(){
         console.log(updateFormGrab.action);
     }
 
+    
+
     function userAssetDirectorateDeApprove(this2, assetDiv, updateForm){
         alert('State Deapproval');
         var ownAssetIDArr=[]; //should this be out of the userAssetDeassign function?
@@ -1276,6 +1297,67 @@ function requisitionHistory(){
             console.log(document.getElementById(updateForm)); // if updateForm moved from one line above
             document.getElementById(updateForm).action = `/user/assignDeassign2/${JSON.stringify(idObj)}?_method=PUT&assignment=${this2.innerHTML}`;
         } 
+        console.log(updateFormGrab.action);
+    }
+
+
+
+    function userAssetIssuerDeApprove(this2, assetDiv, updateForm){
+        console.log('Clicking...');
+        alert('Issue Deapproval');
+        var ownAssetIDArr = []; //should this be out of the userAssetDeassign function?
+        var ownAssetIDTypeArr = [];
+        var ownAssetNameArr = [];
+
+        // let arrToDeassign = [];
+
+        // console.log(updateForm);
+        //alert(this2.innerHTML);
+        console.log(this2);
+        console.log(assetDiv);
+        console.log('++++');
+        assetGrab = document.getElementsByClassName(assetDiv)[0];
+        var inputChecks = assetGrab.getElementsByClassName('user-asset-pool-checkbox');
+        var trueBoxes =  [...inputChecks].filter(item=>{
+            return item.checked == true;
+        })
+        //
+        
+        if (updateForm){ // if we are deassigning from the owned assets, not just from tentative assets
+            alert('From own assets')
+            trueBoxes.forEach(item=>{
+                let assetName = item.parentNode.parentNode.getAttribute('data-asset-assetName');
+                alert(assetName);
+                // document.getElementById(assetName).appendChild(item.parentNode.parentNode); 
+                // console.log(document.getElementById(assetName));
+                // console.log(document.getElementById(assetName).getElementsByClassName('usedAssetContainer')[0]);
+
+                //visual confirmation
+                document.getElementById(assetName).getElementsByClassName('usedAssetContainer')[0].appendChild(item.parentNode.parentNode);
+                
+                //ready for server Update
+                ownAssetIDArr.push(item.parentNode.parentNode.getAttribute('data-asset-id'));
+                ownAssetIDTypeArr.push(item.parentNode.parentNode.getAttribute('data-assettype-id'));
+            })
+            idObj['idArr'] = ownAssetIDArr;
+            idObj['idTypeArr'] = ownAssetIDTypeArr; //for increasing quantities in server
+            console.log('This is own AssetId to be deassigned: ', ownAssetIDArr);
+            console.log(assetGrab);
+            console.log(assetGrab.children.length);
+            if (!assetGrab.children.length){
+                doneBtnGrab.classList.toggle('btn-deActivate'); 
+            }
+            idObj.userId = userID;
+            idObj.approvingUserId = approvingId;
+            console.log(userAssetsOwnDivGrab);
+            
+            // getObjectIds(userAssetsOwnDivGrab);
+            console.log('*****')
+            console.log(idObj);
+            console.log(document.getElementById(updateForm)); // if updateForm moved from one line above
+            document.getElementById(updateForm).action = `/user/assignDeassign2/${JSON.stringify(idObj)}?_method=PUT&assignment=${this2.innerHTML}`;
+        }
+        
         console.log(updateFormGrab.action);
     }
 
@@ -1476,6 +1558,7 @@ var objClassList = {}
             })
         })
         console.log(Object.values(approvalSettingsObj));
+        
     function popAssetApplications(){
         alert('Popping');
         pendingStoreApprovals.classList.toggle('popApproval');

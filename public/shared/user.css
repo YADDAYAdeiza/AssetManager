@@ -192,3 +192,7 @@ transition:  0.4s;
     display: grid;
     grid-template-columns: 1fr 1fr;
 }
+
+.maka{
+    opacity: 0.3;
+}

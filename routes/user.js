@@ -362,7 +362,8 @@ route.get('/:id/edit',  hideNavMenu(), async (req,res)=>{
                                 uiSettings,
                                 approvalSettings,
                                 approvingId,
-                                msg
+                                msg,
+                                divApprovalSetting:req.params.approval
                             });
 
                             }catch (e){
@@ -1173,11 +1174,11 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
             console.log('This is userAssetArr.idArr right before log: ', userAssetArr.idArr);
             redirectUser = userAssetArr.approvingUserId; //redirecting back to... State Approver?
             console.log('STore: this is approving userID: ', redirectUser);
-            userLogSave(user, userAssetArr.idArr, req.query.assignment, req);
+            // userLogSave(user, userAssetArr.idArr, req.query.assignment, req);
             
             
                 
-            console.log('This is assetTypeNamesTo increment quantity, ', affectedAssetsTypes);
+            // console.log('This is assetTypeNamesTo increment quantity, ', affectedAssetsTypes);
 
             userLogSave(user, userAssetArr.idArr, req.query.assignment, req);
             
@@ -1266,6 +1267,56 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
             // await issuerApprover[0].save();
             redirectUser = userAssetArr.approvingUserId; //redirecting back to... State Approver?
             userLogSave(user, userAssetArr.idArr, req.query.assignment, req);
+        }
+
+        
+        if (req.query.assignment == 'Issuer.DeApprove'){
+             
+            //takes only ticked items from own list and subtracts it from user asset (user.userAsset.id)
+
+            console.log('Directorate DeApproval now');
+           
+            user.issueApprovedUserAsset.id.forEach(item=>{
+                if(userAssetArr.idArr.indexOf((item.toString())) == -1){
+                    newIdArr.push(item);
+                } //string to mongoose.Types.ObjectId.  How to
+            })
+
+    //userAssetArr.idArr //items to deAssign
+
+            //reassign updated assetIds to user
+            user.issueApprovedUserAsset.id= newIdArr;
+            let assetsNamesToAssign = await assetModel.find().where('_id').in(newIdArr).select('assetType status allocationStatus').exec();
+            let affectedAssets = await assetModel.find().where('_id').in(userAssetArr.idArr).select('assetType status allocationStatus').exec();
+
+            //return affected Assets to Asset pool (used)
+            //This will be in each approval stage
+            affectedAssets.forEach(async asset=>{
+                // asset.assetAllocationStatus = false;
+                // await asset.save();
+            })
+            var assetTypeArr = [];
+            assetsNamesToAssign.forEach(asset=>{
+                asset.assetAllocationStatus = false; //we have to bring false assets and store them under their asset Divs as used items
+                // assetTypeArr.push(asset.assetType); //or asset.assetName?
+                assetTypeArr.push(asset.assetName); //or asset.assetName?
+            })
+
+            //reassign updated assetId types to user
+            user.issueApprovedUserAsset.idType = assetTypeArr; //very correct
+            console.log('Issue DeApprove2-');
+            console.log('This is userAssetArr.idArr right before log: ', userAssetArr.idArr);
+            redirectUser = userAssetArr.approvingUserId; //redirecting back to... State Approver?
+            console.log('STore: this is approving userID: ', redirectUser);
+            // userLogSave(user, userAssetArr.idArr, req.query.assignment, req);
+            
+            
+                
+            // console.log('This is assetTypeNamesTo increment quantity, ', affectedAssetsTypes);
+
+            userLogSave(user, userAssetArr.idArr, req.query.assignment, req);
+            console.log('Issued now...');
+            
         }
 
        
