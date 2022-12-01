@@ -196,3 +196,10 @@ transition:  0.4s;
 .maka{
     opacity: 0.3;
 }
+
+.QRCodeBtn{
+    border: 2px solid green;
+    border-radius: 6px;
+    padding: 4px;
+    background-color: silver;
+}

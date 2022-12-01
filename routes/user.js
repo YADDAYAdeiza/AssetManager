@@ -317,8 +317,12 @@ route.get('/:id/edit',  hideNavMenu(), async (req,res)=>{
                                     issueApprovedAssets.push(itemArr.toString());
                                 });
 
-                                user.userRole.usersToApprove.forEach(userId=>{
-                                    usersToApprove.push(userId);
+                                // user.userRole.usersToApprove.forEach(userId=>{
+                                //     usersToApprove.push(userId);
+                                // })
+
+                                user.userRole.usersToApprove.forEach(userObj=>{
+                                    usersToApprove.push(userObj);
                                 })
                                 console.log('This is directorateApprovedAssets: ', directorateApprovedAssets);
                                 console.log('This is approved assets ', approvedAssets);
@@ -347,6 +351,7 @@ route.get('/:id/edit',  hideNavMenu(), async (req,res)=>{
                             console.log('This is uiSettings', uiSettings);
                             console.log('This is chosen route: ', req.routeStr);
                             console.log('This is approval Settings, ', approvalSettings);
+                            // console.log('This is approval ', req.params.approval);
                             res.render(req.routeStr, { //req.routeStr, modified by authentication middleware to hold route address in views folder
                                 user:user,
                                 allAssets:allAsset,
@@ -363,7 +368,7 @@ route.get('/:id/edit',  hideNavMenu(), async (req,res)=>{
                                 approvalSettings,
                                 approvingId,
                                 msg,
-                                divApprovalSetting:req.params.approval
+                                divApprovalSetting:req.params.approval?req.params.approval:'ownApproval'
                             });
 
                             }catch (e){
@@ -721,7 +726,8 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
               
                 stateApprover[0].userRole.usersToApprove.push(user._id); 
                   await stateApprover[0].save();  
-    redirectUser = stateApprover[0].id;
+    // redirectUser = stateApprover[0].id;
+    redirectUser = user.id;
                   console.log('stateApprover', stateApprover[0]); 
                 }
 
@@ -811,6 +817,8 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
             user.userAsset.idType = assetTypeArr; //very correct
             console.log('6--');
             console.log('This is userAssetArr.idArr right before log: ', userAssetArr.idArr);
+            redirectUser = user.id;
+
             userLogSave(user, userAssetArr.idArr, req.query.assignment, req);
             
         }
@@ -991,8 +999,12 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                                             })
                                             let storeApprover = await userModel.find({}).where('userRole.role').equals('storeApproval');//.where('userRole.domain').equals(user.directorate);
                                             console.log('storeApprover', storeApprover[0]);
-              
-                                            storeApprover[0].userRole.usersToApprove.push(user._id); 
+                                            let userObj = {
+                                                id:user._id,
+                                                approvedAssets:affectedAssets
+                                            }
+                                            // storeApprover[0].userRole.usersToApprove.push(user._id); 
+                                            storeApprover[0].userRole.usersToApprove.push(userObj); 
                                             await storeApprover[0].save();
                                 
                                 // redirectUser = storeApprover[0].id

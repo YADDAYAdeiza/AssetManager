@@ -154,13 +154,15 @@ let userSchema = new mongoose.Schema({
     },
     userRole:{
         role:{
-            type:String
+            type:String,
+            default:'ownApproval'
         },
         domain:{
             type:String
         },
         usersToApprove:{
-            type:[String]
+            // type:[String],
+            type:[Object]
         }
     },
     approvalSupId:{

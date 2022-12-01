@@ -149,8 +149,14 @@ function permitApproval(){
             req.approvalSettings = {nonIssueApprovalClass:'none'};
             req.approvalId = req.params.approvalId;
         }
-        
-        
+
+        if (req.params.approval == 'ownApproval'){
+            console.log('For the issuer...');
+            req.approvalSettings = {nonOwnApprovalClass:'none'};
+            req.approvalId = req.params.approvalId;
+        }
+
+       
         
         // console.log('req.query.searchScope is ', req.query.searchScope);
         // let query = userModel.find();

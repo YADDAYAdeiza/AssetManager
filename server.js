@@ -17,7 +17,7 @@ const { ExpressPeerServer } = require('peer');
 let ejs = require('ejs');
 let layout = require('express-ejs-layouts');
 let mongoose = require('mongoose');
-// const QRCode = require('qrcode');
+const QRCode = require('qrcode');
 let app = express();
 const http = require('http');
 const https = require('https');
@@ -185,9 +185,21 @@ app.use(passport.session());
     res.render('landingPage');//code:url,
     //, {msg:'error message goes in here'}
   });
+
+  app.get('/dana/:assetUuid', async (req, res)=>{
+    console.log('This is the user');
+    // res.send('Working too')
+    
+    
+    QRCode.toDataURL(`https://assetmanger.herokuapp.com/${req.params.assetUuid}`, {type:'terminal'}, function(err, url){
+        res.render('userform', {code:url});
+    })
+    // res.render('landingPage');//code:url,
+    //, {msg:'error message goes in here'}
+  });
   
   app.get('/login', checkNotAutheticated, (req, res)=>{
-    res.render('userform');
+    res.render('userform2');
   })
   
   app.post('/login', checkNotAutheticated, passport.authenticate('local',{

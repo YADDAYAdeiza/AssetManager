@@ -47,24 +47,24 @@
                             <li><input type="checkbox" class = 'user-asset-pool-checkbox' style="display:inline; width:10%"><a href="/asset/<%=asset.id%>"><%=asset.assetCode%></a></li>    
                         </div>
                         <%}else{%>
-                        <div class="divAsset divContLiCyan storeApproval" data-asset-id="<%=asset.id%>" data-asset-assetName = "<%= asset.assetName %>" data-assettype-id = "<%= asset.assetType %>">
+                        <div class="divAsset divContLiCyan issuerApproval" data-asset-id="<%=asset.id%>" data-asset-assetName = "<%= asset.assetName %>" data-assettype-id = "<%= asset.assetType %>">
                             <li><input type="checkbox" class = 'user-asset-pool-checkbox' style="display:inline; width:10%"><a href="/asset/<%=asset.id%>"><%=asset.assetCode%></a></li>    
                         </div>
                         <%}%>
                         <%}else{%>
-                        <div class="divAsset divContLiPurple directorateApproval" data-asset-id="<%=asset.id%>" data-asset-assetName = "<%= asset.assetName %>" data-assettype-id = "<%= asset.assetType %>">
+                        <div class="divAsset divContLiPurple directorateApproval storeApproval" data-asset-id="<%=asset.id%>" data-asset-assetName = "<%= asset.assetName %>" data-assettype-id = "<%= asset.assetType %>">
                             <li><input type="checkbox" class = 'user-asset-pool-checkbox' style="display:inline; width:10%"><a href="/asset/<%=asset.id%>"><%=asset.assetCode%></a></li>    
                         </div>
                     <%}%>
                 <%} else{%>
 
-                    <div class="divAsset divContLiGreen stateApproval" data-asset-id="<%=asset.id%>" data-asset-assetName = "<%= asset.assetName %>" data-assettype-id = "<%= asset.assetType %>">
+                    <div class="divAsset divContLiGreen stateApproval directorateApproval" data-asset-id="<%=asset.id%>" data-asset-assetName = "<%= asset.assetName %>" data-assettype-id = "<%= asset.assetType %>">
                         <li><input type="checkbox" class = 'user-asset-pool-checkbox' style="display:inline; width:10%"><a href="/asset/<%=asset.id%>"><%=asset.assetCode%></a></li>    
                     </div>
                 <%}%>
                 <%} else{%>
                     <%console.log('Not Includes Asset')%>
-                <div class="divAsset divContLi ownApproval" data-asset-id="<%=asset.id%>" data-asset-assetName = "<%= asset.assetName %>" data-assettype-id = "<%= asset.assetType %>">
+                <div class="divAsset divContLi stateApproval ownApproval" data-asset-id="<%=asset.id%>" data-asset-assetName = "<%= asset.assetName %>" data-assettype-id = "<%= asset.assetType %>">
                     <li><input type="checkbox" class = 'user-asset-pool-checkbox' style="display:inline; width:10%"><a href="/asset/<%=asset.id%>"><%=asset.assetCode%></a></li>    
                 </div>
             <%}%>
@@ -77,16 +77,16 @@
 
         
     </div>
-    <button onclick = "userAssetAssign(this, 'user-assetsOwn-div', 'updateFormOwn')">Assign</button>
-    <button onclick = "userAssetDeassign(this, 'user-assetsOwn-div', 'updateFormOwn')">DeAssign</button>
-    <button onclick = "userAssetApprove(this, 'user-assetsOwn-div', 'updateFormOwn')" class = "nonDirectorateApprovalClass nonStoreApprovalClass nonIssueApprovalClass">Approve</button>
-    <button onclick = "userAssetDeApprove(this, 'user-assetsOwn-div', 'updateFormOwn')" class = "nonDirectorateApprovalClass nonStoreApprovalClass nonIssueApprovalClass">DeApprove</button>
-    <button onclick = "userAssetDirectorateApprove(this, 'user-assetsOwn-div', 'updateFormOwn')" class="nonStateApprovalClass nonStoreApprovalClass nonIssueApprovalClass">D.Approve</button>
-    <button onclick = "userAssetDirectorateDeApprove(this, 'user-assetsOwn-div', 'updateFormOwn')" class="nonStateApprovalClass nonStoreApprovalClass nonIssueApprovalClass">D.DeApprove</button>
-    <button onclick = "userAssetStoreApprove(this, 'user-assetsOwn-div', 'updateFormOwn')" class="nonStateApprovalClass nonDirectorateApprovalClass nonIssueApprovalClass">Store.Approve</button>
-    <button onclick = "userAssetStoreDeApprove(this, 'user-assetsOwn-div', 'updateFormOwn')" class="nonStateApprovalClass nonDirectorateApprovalClass nonIssueApprovalClass">Store.DeApprove</button>
-    <button onclick = "userAssetIssuerApprove(this, 'user-assetsOwn-div', 'updateFormOwn')" class="nonStateApprovalClass nonDirectorateApprovalClass nonStoreApprovalClass">Issuer.Approve</button>
-    <button onclick = "userAssetIssuerDeApprove(this, 'user-assetsOwn-div', 'updateFormOwn')" class="nonStateApprovalClass nonDirectorateApprovalClass nonStoreApprovalClass">Issuer.DeApprove</button>
+    <button onclick = "userAssetAssign(this, 'user-assetsOwn-div', 'updateFormOwn')" class ="nonStateApprovalClass nonDirectorateApprovalClass nonStoreApprovalClass nonIssueApprovalClass">Assign</button>
+    <button onclick = "userAssetDeassign(this, 'user-assetsOwn-div', 'updateFormOwn')" class = "nonStateApprovalClass nonDirectorateApprovalClass nonStoreApprovalClass nonIssueApprovalClass">DeAssign</button>
+    <button onclick = "userAssetApprove(this, 'user-assetsOwn-div', 'updateFormOwn')" class = "nonOwnApprovalClass nonDirectorateApprovalClass nonStoreApprovalClass nonIssueApprovalClass">Approve</button>
+    <button onclick = "userAssetDeApprove(this, 'user-assetsOwn-div', 'updateFormOwn')" class = "nonOwnApprovalClass nonDirectorateApprovalClass nonStoreApprovalClass nonIssueApprovalClass">DeApprove</button>
+    <button onclick = "userAssetDirectorateApprove(this, 'user-assetsOwn-div', 'updateFormOwn')" class="nonOwnApprovalClass nonStateApprovalClass nonStoreApprovalClass nonIssueApprovalClass">D.Approve</button>
+    <button onclick = "userAssetDirectorateDeApprove(this, 'user-assetsOwn-div', 'updateFormOwn')" class="nonOwnApprovalClass nonStateApprovalClass nonStoreApprovalClass nonIssueApprovalClass">D.DeApprove</button>
+    <button onclick = "userAssetStoreApprove(this, 'user-assetsOwn-div', 'updateFormOwn')" class="nonOwnApprovalClass nonStateApprovalClass nonDirectorateApprovalClass nonIssueApprovalClass">Store.Approve</button>
+    <button onclick = "userAssetStoreDeApprove(this, 'user-assetsOwn-div', 'updateFormOwn')" class="nonOwnApprovalClass nonStateApprovalClass nonDirectorateApprovalClass nonIssueApprovalClass">Store.DeApprove</button>
+    <button onclick = "userAssetIssuerApprove(this, 'user-assetsOwn-div', 'updateFormOwn')" class="nonOwnApprovalClass nonStateApprovalClass nonDirectorateApprovalClass nonStoreApprovalClass">Issuer.Approve</button>
+    <button onclick = "userAssetIssuerDeApprove(this, 'user-assetsOwn-div', 'updateFormOwn')" class="nonOwnApprovalClass nonStateApprovalClass nonDirectorateApprovalClass nonStoreApprovalClass">Issuer.DeApprove</button>
     
     <%-include('_userContent', {btnVal:`Asset Pool`})%> 
     <form id = 'updateFormOwn' method="POST" >
@@ -202,8 +202,14 @@
         Awaiting State Approval
         <%if(usersToApprove.length){%>
             <ul> 
-                <%usersToApprove.forEach(userToApproveId=>{%>
-                    <li><a href = '/user/<%=userToApproveId%>/<%=user.userRole.role%>/<%=user.id%>'><%=userToApproveId%></a></li>
+                <%usersToApprove.forEach(userToApproveObj=>{%>
+                    <li><a href = '/user/<%=userToApproveObj.id%>/<%=user.userRole.role%>/<%=user.id%>'><%=userToApproveObj.id%></a>
+                        <ul>
+                            <%userToApproveObj.approvedAssets.forEach(approvedAsset=>{%>
+                            <li><a href = '/asset/<%=approvedAsset._id%>'><%=approvedAsset._id%> </a> | <a href = '/dana/<%=approvedAsset._id%>' class = 'QRCodeBtn'>Generate QRCode</a></li>
+                            <%})%>
+                        </ul>
+                    </li>
                 <%})%>
             </ul>
         <%}%>
