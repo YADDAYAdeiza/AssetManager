@@ -156,6 +156,12 @@ function permitApproval(){
             req.approvalId = req.params.approvalId;
         }
 
+        if (req.params.approval == undefined){
+            console.log('For the issuer...');
+            req.approvalSettings = {nonOwnApprovalClass:'none'};
+            req.approvalId = req.params.approvalId;
+        }
+
        
         
         // console.log('req.query.searchScope is ', req.query.searchScope);

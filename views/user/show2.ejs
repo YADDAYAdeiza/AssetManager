@@ -47,7 +47,7 @@
                             <li><input type="checkbox" class = 'user-asset-pool-checkbox' style="display:inline; width:10%"><a href="/asset/<%=asset.id%>"><%=asset.assetCode%></a></li>    
                         </div>
                         <%}else{%>
-                        <div class="divAsset divContLiCyan issuerApproval" data-asset-id="<%=asset.id%>" data-asset-assetName = "<%= asset.assetName %>" data-assettype-id = "<%= asset.assetType %>">
+                        <div class="divAsset divContLiCyan storeApproval issuerApproval" data-asset-id="<%=asset.id%>" data-asset-assetName = "<%= asset.assetName %>" data-assettype-id = "<%= asset.assetType %>">
                             <li><input type="checkbox" class = 'user-asset-pool-checkbox' style="display:inline; width:10%"><a href="/asset/<%=asset.id%>"><%=asset.assetCode%></a></li>    
                         </div>
                         <%}%>
@@ -148,7 +148,6 @@
         <!-- creating the select -->
         <select name="" id="selAssetOption" onchange = "openCity(event, 'sel')">
             <%console.log('This is it')%>
-           <% console.log(allAssetType)%>
             <%allAssetType.forEach(assetType=>{%>
             <option value="<%=assetType.assetTypeClass%>"><%=assetType.assetTypeClass%></option>
             <%assetObject[assetType._id.toString()] = [];%>
@@ -202,16 +201,21 @@
         Awaiting State Approval
         <%if(usersToApprove.length){%>
             <ul> 
+                <div id="externalApproveDiv">
                 <%usersToApprove.forEach(userToApproveObj=>{%>
                     <li><a href = '/user/<%=userToApproveObj.id%>/<%=user.userRole.role%>/<%=user.id%>'><%=userToApproveObj.id%></a>
                         <ul>
                             <%userToApproveObj.approvedAssets.forEach(approvedAsset=>{%>
-                            <li><a href = '/asset/<%=approvedAsset._id%>'><%=approvedAsset._id%> </a> | <a href = '/dana/<%=approvedAsset._id%>' class = 'QRCodeBtn'>Generate QRCode</a></li>
+                                    <form class='approveWithout' method="POST" >
+                                        <button type="submit">Approve</button>
+                                    </form>
+                                    <li><a href = '/asset/<%=approvedAsset._id%>'><%=approvedAsset._id%> </a> | <a href = '/dana/<%=approvedAsset._id%>' class = 'QRCodeBtn'>Generate QRCode</a></li>
+                                    <%})%>
+                                </ul>
+                            </li>
                             <%})%>
+                        </div>
                         </ul>
-                    </li>
-                <%})%>
-            </ul>
         <%}%>
     </div>
 
@@ -251,9 +255,54 @@
 <script src="/socket.io/socket.io.js"></script>
 <script defer>
     let userID = '<%- user.id %>';
-    let approvingId = '<%- approvingId %>';
+    // let approvingId = '<%- approvingId %>';
     let approvalDiv = '<%- divApprovalSetting %>';
+    let usersToApprove = <%- JSON.stringify(usersToApprove) %>;
+
+    let idObj = {};
+    let externalApproveDivGrab = document.getElementById('externalApproveDiv');
+    // console.log('This is approving Id', approvingId);
     console.log('This is approval level', approvalDiv);
+    console.log('This is user to Approve, ', usersToApprove);
+    console.log('This is the div', externalApproveDivGrab);
+    let assignDeassignType;
+    switch(approvalDiv){
+        case 'stateApproval':
+        assignDeassignType = 'Approve';
+        break;
+        case 'directorateApproval':
+            assignDeassignType = 'D.Approve';
+            break;
+        case 'storeApproval':
+            assignDeassignType = 'Store.Approve';
+            break;
+        case 'issuerApproval':
+            assignDeassignType = 'Issuer.Approve';
+            break;
+        default:
+            break;   
+            
+    }
+    usersToApprove.forEach((userObj, i)=>{
+        console.log(usersToApprove.length);
+        console.log(userObj.id);
+        idObj.userId = userObj.id;
+        idObj['idArr'] = (userObj.approvedAssets.map((asset)=>asset.assetType)); //push assetIds
+        idObj['idArrAsset'] = (userObj.approvedAssets.map((asset)=>asset._id)); //push assetIds
+            //This is external approval, so we have to provide
+            //everything needed here, as oppposed to passing 
+            //it approvingUserId in a get link, as we go into
+            //internal approval
+        idObj.approvingUserId = userID; //or restore to approvingId above and uncomment above
+        console.log('This is idObj, ', idObj);
+
+        externalApproveDivGrab.getElementsByClassName('approveWithout')[i].action = `/user/assignDeassign2/${JSON.stringify(idObj)}?_method=PUT&assignment=${assignDeassignType}`;
+        console.log('This is action: ', externalApproveDivGrab.getElementsByClassName('approveWithout')[i].action)
+    })
+    
+
+
+
 // alert('This is approval level', approvalDiv);
 
 //This is for activating and deactivating the divs appropriate to an approval level
@@ -311,7 +360,7 @@
 
     // let userID = '<%- user.id %>';
     let profileCreatedMsgGrab = document.getElementsByClassName('profileCreatedMsg')[0];
-    let idObj = {};
+    // let idObj = {};
     let updateFormGrab = document.getElementById('updateForm');
     let assetListGrab = document.getElementsByClassName('assetList')[0];
     let userShowDivGrab = document.getElementsByClassName('user-show-div')[0];

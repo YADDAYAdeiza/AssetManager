@@ -256,14 +256,18 @@ route.get('/new', adminAuth, hideNavMenu(), async (req,res)=>{ //adminAuth
 })
 
 async function renderNewPage(res, user, msg, req){
+    console.log('Got here1');
     try{
         let assetTypeModelArr = await assetTypeModel.find({});
         let uiSettings = req.dispSetting;
+        console.log('Got here2');
         res.render('user/new.ejs', {user: user, assetTypeArr:[1,2,3,4,5], msg:msg, uiSettings}); //tying the view to the moongoose model
 
     }catch (e){
         //list of users
-        res.redirect('/index');
+        console.error(e);
+        console.log('Another error message above');
+        res.redirect('user/index');
     }
 }
 
@@ -344,7 +348,6 @@ route.get('/:id/edit',  hideNavMenu(), async (req,res)=>{
                                     }
                                 })
                                 // console.log('This is allAssetType2', allAssetTypeMap2);
-                                console.log('This is allAsset now', allAsset);
                             let uiSettings = req.dispSetting;
                             let approvalSettings = req.approvalSettings;
                             let approvingId = req.params.approvalId; //used for reloading approving staff page
@@ -365,10 +368,11 @@ route.get('/:id/edit',  hideNavMenu(), async (req,res)=>{
                                 usersToApprove,
                                 assetTypeAll:allAssetType2,//assetTypeDistinct
                                 uiSettings,
-                                approvalSettings,
+                                approvalSettings:req.approvalSettings?req.approvalSettings:{nonOwnApprovalClass:'none'},
                                 approvingId,
                                 msg,
-                                divApprovalSetting:req.params.approval?req.params.approval:'ownApproval'
+                                divApprovalSetting:req.params.approval?req.params.approval:user.userRole.role
+                                // divApprovalSetting:req.params.approval?req.params.approval:'ownApproval'
                             });
 
                             }catch (e){
@@ -377,7 +381,8 @@ route.get('/:id/edit',  hideNavMenu(), async (req,res)=>{
                             }
                         }
 route.get('/:id', authenticateRoleProfilePage(),hideNavMenu(), async (req, res)=>{
-    console.log('First...')
+    console.log('First...');
+    console.log('This is approval', req.params.approval);
     idRedirect(req, res, 'User found');
 });
 
@@ -617,6 +622,7 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
     // let affectedAssets;
     let allAsset;
     let newIdArr = []; //this will contain the filtered array to be reassigned (filtered of object to be deassigned)
+    let newIdArr2 = [];
     let msg = {};
     console.log(req.method);
     console.log(req.params.id);
@@ -624,6 +630,7 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
     console.log(userAssetArr);
     console.log(userAssetArr.userId);
     let redirectUser;// used to redirect to approver (or applicant) page
+    let userObj = {};
 
     try{
         user = await userModel.findById(userAssetArr.userId); //, 'firstName lastName cadre userAsset'
@@ -696,12 +703,13 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                         return asset._id.toString();
                     })
                     console.log('This is mapped affectedAssetType ', affectedAssetType2);
-                    userAssetArr.idArr.forEach(async itemId =>{
+                    ///userAssetArr.idArr.forEach(async itemId =>{
+                        for (const itemId of userAssetArr.idArr){
                             if (affectedAssetType2.indexOf(itemId) != -1){
                                 console.log('Match', req.user.email );
                                 let assetType = affectedAssetType[affectedAssetType2.indexOf(itemId)]
                                 
-                                newAsset = new assetModel({
+                                let newAsset = new assetModel({
                                     // assetCode: uuidv4(),
                                     assetType: assetType._id,
                                     assetName: assetType.assetTypeClass,
@@ -713,18 +721,28 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                                 // newAsset.assetUserHistory.push(user.id);
                                 // newAsset.assetLocationHistory.push(user.id);
                                 let newAssetSaved = await newAsset.save();
-                                newIdArr.push(newAssetSaved._id); //for use in userLogSave()
-                                user.userAsset.id.push( newAssetSaved._id);
+                                
+                                user.userAsset.id.push(newAssetSaved._id);
                                 user.userAsset.idType.push( newAssetSaved.assetName);
                                 console.log('This is newAssetSaved', newAssetSaved);
+
                                 // await user.save();
+                                newIdArr.push(await newAssetSaved._id); //for use in userLogSave()
+                                newIdArr2.push(await newAssetSaved);
                                 
                             }
-                        })
-                        
-                  let stateApprover = await userModel.find({}).where('userRole.role').equals('stateApproval');//.where('userRole.domain').equals(user.state);
-              
-                stateApprover[0].userRole.usersToApprove.push(user._id); 
+                        }
+                       // })
+                        console.log('This is newIdArr', newIdArr);
+                        console.log('This is newIdArr2', newIdArr2);     
+
+                  let stateApprover = await userModel.find({}).where('userRole.role').equals('stateApproval').where('userRole.domain').equals(user.state);//.where('userRole.domain').equals(user.directorate)
+                        let userObj = {
+                            id:user._id,
+                            approvedAssets:newIdArr2
+                        }
+                stateApprover[0].userRole.usersToApprove.push(userObj);
+
                   await stateApprover[0].save();  
     // redirectUser = stateApprover[0].id;
     redirectUser = user.id;
@@ -882,8 +900,12 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                                             })
 
                                             let directorateApprover = await userModel.find({}).where('userRole.role').equals('directorateApproval').where('userRole.domain').equals(user.directorate);
-              
-                                            directorateApprover[0].userRole.usersToApprove.push(user._id); 
+                                                   
+                                                    let userObj = {
+                                                        id:user._id,
+                                                        approvedAssets:affectedAssets
+                                                    }
+                                            directorateApprover[0].userRole.usersToApprove.push(userObj); 
                                               await directorateApprover[0].save();  
                                               
                                               let updatedUser = await user.save();
@@ -1141,7 +1163,14 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
             console.log('This is userAssetArr.idArr right before log: ', userAssetArr.idArr);
             let issuerApprover = await userModel.find({}).where('userRole.role').equals('issuerApproval');//.where('userRole.domain').equals(user.directorate);
             console.log('issuerApprover', issuerApprover[0]);
-            issuerApprover[0].userRole.usersToApprove.push(user._id);
+
+                   
+                    let userObj = {
+                        id:user._id,
+                        approvedAssets:affectedAssets
+                    }
+
+            issuerApprover[0].userRole.usersToApprove.push(userObj);
             await issuerApprover[0].save();
             redirectUser = userAssetArr.approvingUserId; //redirecting back to... State Approver?
             userLogSave(user, userAssetArr.idArr, req.query.assignment, req);
@@ -1355,6 +1384,10 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
         console.log(e.message);
     }
 });
+
+route.post('/masa', (req, res)=>{
+    console.log('Hitting now...')
+})
 
 route.put('/requisition/:id', async (req, res)=>{
     
