@@ -70,6 +70,16 @@ let assetSchema = new mongoose.Schema({
     },
     assetTrackedPosition:{
         type:Object
+    },
+    assetApproval:{
+        type:Object,
+        default:{
+            self:'approved',
+            state:null,
+            directorate:null,
+            store:null,
+            issue:null
+        }
     }
 });
 

@@ -160,10 +160,18 @@ let userSchema = new mongoose.Schema({
         domain:{
             type:String
         },
-        usersToApprove:{
-            // type:[String],
-            type:[Object]
-        }
+       // usersToApprove:{
+        //     // type:[String],
+        //     type:[Object]
+        // },
+ 
+        usersToApprove: [{ 
+            id:{type:String},
+            approvedAssets:[
+                {type: mongoose.Schema.Types.ObjectId, ref:'assetModel'}
+            ]
+            
+    }]
     },
     approvalSupId:{
         type:String
@@ -185,6 +193,16 @@ let userSchema = new mongoose.Schema({
         lowercase:true,
         required:true
     },
+    assetApproval:{
+        type: Object,
+        default:{
+            self:'approved',
+            state: null,
+            directorate: null,
+            store: null,
+            issue: null
+        }
+    }
     
 });
 

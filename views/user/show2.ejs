@@ -206,11 +206,11 @@
                     <li><a href = '/user/<%=userToApproveObj.id%>/<%=user.userRole.role%>/<%=user.id%>'><%=userToApproveObj.id%></a>
                         <ul>
                             <%userToApproveObj.approvedAssets.forEach(approvedAsset=>{%>
-                                    <form class='approveWithout' method="POST" >
-                                        <button type="submit">Approve</button>
-                                    </form>
-                                    <li><a href = '/asset/<%=approvedAsset._id%>'><%=approvedAsset._id%> </a> | <a href = '/dana/<%=approvedAsset._id%>' class = 'QRCodeBtn'>Generate QRCode</a></li>
-                                    <%})%>
+                                <li><a href = '/asset/<%=approvedAsset._id%>' class = <%=approvedAsset.assetApproval['state'] ?'approved':'notApproved'%>><%=approvedAsset._id%> </a> | <a href = '/dana/<%=approvedAsset._id%>' class = 'QRCodeBtn'>Generate QRCode</a></li>
+                                <%})%>
+                                <form class='approveWithout' method="POST" >
+                                    <button type="submit">Approve</button>
+                                </form>
                                 </ul>
                             </li>
                             <%})%>
@@ -255,7 +255,7 @@
 <script src="/socket.io/socket.io.js"></script>
 <script defer>
     let userID = '<%- user.id %>';
-    // let approvingId = '<%- approvingId %>';
+    let approvingId = '<%- approvingId %>';
     let approvalDiv = '<%- divApprovalSetting %>';
     let usersToApprove = <%- JSON.stringify(usersToApprove) %>;
 
@@ -287,8 +287,10 @@
         console.log(usersToApprove.length);
         console.log(userObj.id);
         idObj.userId = userObj.id;
-        idObj['idArr'] = (userObj.approvedAssets.map((asset)=>asset.assetType)); //push assetIds
-        idObj['idArrAsset'] = (userObj.approvedAssets.map((asset)=>asset._id)); //push assetIds
+        idObj['idArrAsset'] = (userObj.approvedAssets.map((asset)=>asset.assetType)); //push assetIds
+        idObj['idTypeArr'] = (userObj.approvedAssets.map((asset)=>asset.assetType)); //push assetIds
+        idObj['idArr'] = (userObj.approvedAssets.map((asset)=>asset._id)); //push assetIds
+        
             //This is external approval, so we have to provide
             //everything needed here, as oppposed to passing 
             //it approvingUserId in a get link, as we go into
@@ -297,6 +299,7 @@
         console.log('This is idObj, ', idObj);
 
         externalApproveDivGrab.getElementsByClassName('approveWithout')[i].action = `/user/assignDeassign2/${JSON.stringify(idObj)}?_method=PUT&assignment=${assignDeassignType}`;
+        console.log('This is JSon String: ', JSON.stringify(idObj));
         console.log('This is action: ', externalApproveDivGrab.getElementsByClassName('approveWithout')[i].action)
     })
     
