@@ -906,41 +906,49 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                                             })
                                             console.log('This is mapped affectedAssetType (approve) ', affectedAssetType2);
 
-                                            affectedAssets.forEach(async assetToApprove=>{
-                                            if (assetToApprove.assetCode !== '0012'){ 
-                                                //don't assign uuid.  It has already.
-                                                console.log('Has UUID', assetToApprove.assetCode);
-                                            }else{
-                                                assetToApprove.assetCode = uuidv4(); //assign uuid 
+                                            for (const assetToApprove of affectedAssets){
+                                                    console.log('Into directorate assets')
+                                                if (assetToApprove.assetCode !== '0012'){ 
+                                                    //don't assign uuid.  It has already.
+                                                    console.log('Has UUID', assetToApprove.assetCode);
+                                                }else{
+                                                    assetToApprove.assetCode = uuidv4(); //assign uuid 
+                                                    console.log('Assigned uuid');
+                                                }
+                                                    assetToApprove.assetStatus = 'Assigned';
+                                                    assetToApprove.assetAllocationStatus = true;
+
+                                                    assetToApprove.assetUserHistory.push(user.id);
+                                                    assetToApprove.assetLocationHistory.push(user.id);
+                                                    assetToApprove.assetApproval = {
+                                                        self:'approved',
+                                                        state:'approved',
+                                                        directorate:null,
+                                                        store:null,
+                                                        issue:null
+                                                    };
+                                                    let approvedAsset = await assetToApprove.save();
+                                                    // console.log('This is approvedAsset ', approvedAsset);
+
+                                                    newIdArr.push(await approvedAsset._id); //for use in userLogSave()
+                                                    
+                                                    //We have to push asset ids
+                                                    user.approvedUserAsset.id.push(assetToApprove.id);
+                                                    user.approvedUserAsset.idType.push(assetToApprove.assetName);
                                             }
-                                                assetToApprove.assetStatus = 'Assigned';
-                                                assetToApprove.assetAllocationStatus = true;
+                        // for (const itemId of userAssetArr.idArr){
 
-                                                assetToApprove.assetUserHistory.push(user.id);
-                                                assetToApprove.assetLocationHistory.push(user.id);
-                                                assetToApprove.assetApproval = {
-                                                    self:'approved',
-                                                    state:'approved',
-                                                    directorate:null,
-                                                    store:null,
-                                                    issue:null
-                                                };
-                                                let approvedAsset = await assetToApprove.save();
-                                                // console.log('This is approvedAsset ', approvedAsset);
-                                                user.approvedUserAsset.id.push(assetToApprove.id);
-                                                user.approvedUserAsset.idType.push(assetToApprove.assetName);
-                                            })
-
+                                            console.log('This is newIdArr for directorate approver ', newIdArr)
                                             // let stateApprover = await userModel.find({}).where('userRole.role').equals('stateApproval').where('userRole.domain').equals(user.state);
                                             let directorateApprover = await userModel.find({}).where('userRole.role').equals('directorateApproval').where('userRole.domain').equals(user.directorate);
                                                    
                                                     let userObj = {
                                                         id:user._id,
-                                                        approvedAssets:affectedAssets
+                                                        approvedAssets:newIdArr
                                                     }
                                             // let stateApprov = await (await userModel.find({}).where([[stateApprover[0].userRole.usersToApprove].approvedAssets])).includes
                                             console.log('Directorate approver is ', directorateApprover);
-                                            directorateApprover[0].userRole.usersToApprove.push(userObj); 
+                                            directorateApprover[0].userRole.usersToApprove.push(userObj);
                                               await directorateApprover[0].save();  
                                               
                                               let updatedUser = await user.save();
@@ -1044,7 +1052,9 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                                             })
                                             console.log('This is mapped affectedAssetType (D.Approve) ', affectedAssetType2);
 
-                                            affectedAssets.forEach(async assetToApprove=>{
+                                            // affectedAssets.forEach(async assetToApprove=>{
+                                            for (const assetToApprove of affectedAssets){
+
                                             // if (assetToApprove.assetCode !== '0012'){ 
                                                 //don't assign uuid.  It has already.
                                                 console.log('Has UUID', assetToApprove.assetCode);
@@ -1065,14 +1075,17 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                                                 };
                                                 let approvedAsset = await assetToApprove.save();
                                                 console.log('This is approvedAsset ', approvedAsset);
+                                                newIdArr.push(await approvedAsset._id);
+
                                                 user.directorateApprovedUserAsset.id.push(assetToApprove.id);
                                                 user.directorateApprovedUserAsset.idType.push(assetToApprove.assetName);
-                                            })
+                                            }
                                             let storeApprover = await userModel.find({}).where('userRole.role').equals('storeApproval');//.where('userRole.domain').equals(user.directorate);
                                             console.log('storeApprover', storeApprover[0]);
+                                            console.log('This is newIdArr for storeApprover ', newIdArr);
                                             let userObj = {
                                                 id:user._id,
-                                                approvedAssets:affectedAssets
+                                                approvedAssets:newIdArr
                                             }
                                             // storeApprover[0].userRole.usersToApprove.push(user._id); 
                                             storeApprover[0].userRole.usersToApprove.push(userObj); 
@@ -1193,7 +1206,9 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                                             })
                                             console.log('This is mapped affectedAssetType (Store.Approve) ', affectedAssetType2);
 
-                                            affectedAssets.forEach(async assetToApprove=>{
+                                            // affectedAssets.forEach(async assetToApprove=>{
+                                            for (const assetToApprove of affectedAssets){
+
                                             // if (assetToApprove.assetCode !== '0012'){ 
                                                 //don't assign uuid.  It has already.
                                                 console.log('Has UUID', assetToApprove.assetCode);
@@ -1215,12 +1230,16 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                                                 };
                                                 let approvedAsset = await assetToApprove.save();
                                                 console.log('This is approvedAsset ', approvedAsset);
+
+                                                newIdArr.push(await approvedAsset._id);
                                                 user.storeApprovedUserAsset.id.push(assetToApprove.id);
                                                 user.storeApprovedUserAsset.idType.push(assetToApprove.assetName);
-                                            })
+                                            }
                                             let updatedUser = await user.save();
                                             console.log('Updated user ', updatedUser);
-             
+                                            
+                                            console.log('This is newIdArr for issuerApprover ', newIdArr);
+                                            
                                             //bring in next user;and redirect to original approving officer here                              
             console.log('This is userAssetArr.idArr right before log: ', userAssetArr.idArr);
             let issuerApprover = await userModel.find({}).where('userRole.role').equals('issuerApproval');//.where('userRole.domain').equals(user.directorate);
@@ -1229,7 +1248,7 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                    
                     let userObj = {
                         id:user._id,
-                        approvedAssets:affectedAssets
+                        approvedAssets:newIdArr
                     }
 
             issuerApprover[0].userRole.usersToApprove.push(userObj);

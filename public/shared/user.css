@@ -203,3 +203,7 @@ transition:  0.4s;
     padding: 4px;
     background-color: silver;
 }
+
+.approved{
+    color:brown;
+}

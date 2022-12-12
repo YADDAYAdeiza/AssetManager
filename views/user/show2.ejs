@@ -199,6 +199,7 @@
 
     <div>
         Awaiting State Approval
+        <button onclick="hideApproved()">Hide Approved</button>
         <%if(usersToApprove.length){%>
             <ul> 
                 <div id="externalApproveDiv">
@@ -206,7 +207,9 @@
                     <li><a href = '/user/<%=userToApproveObj.id%>/<%=user.userRole.role%>/<%=user.id%>'><%=userToApproveObj.id%></a>
                         <ul>
                             <%userToApproveObj.approvedAssets.forEach(approvedAsset=>{%>
-                                <li><a href = '/asset/<%=approvedAsset._id%>' class = <%=approvedAsset.assetApproval['state'] ?'approved':'notApproved'%>><%=approvedAsset._id%> </a> | <a href = '/dana/<%=approvedAsset._id%>' class = 'QRCodeBtn'>Generate QRCode</a></li>
+                                <div class = <%=approvedAsset.assetApproval['state'] ?'approved':'notApproved'%>>
+                                    <li><a href = '/asset/<%=approvedAsset._id%>' ><%=approvedAsset._id%> </a> | <a href = '/dana/<%=approvedAsset._id%>' class = 'QRCodeBtn'>Generate QRCode</a></li>
+                                </div>
                                 <%})%>
                                 <form class='approveWithout' method="POST" >
                                     <button type="submit">Approve</button>
@@ -261,6 +264,8 @@
 
     let idObj = {};
     let externalApproveDivGrab = document.getElementById('externalApproveDiv');
+    let revealBool = false;
+
     // console.log('This is approving Id', approvingId);
     console.log('This is approval level', approvalDiv);
     console.log('This is user to Approve, ', usersToApprove);
@@ -1587,6 +1592,31 @@ var objClassList = {}
         // }
 
 
+    }
+
+    function hideApproved(){
+        // revealBool = false;
+        console.log('This thing');
+
+
+        var approvedGrab = document.getElementsByClassName('approved');
+        if (!revealBool){
+           console.log([...approvedGrab]);
+           [...approvedGrab].forEach(approved=>{
+            approved.style.display = 'none';
+           })
+
+           revealBool = !revealBool
+        }else{
+            console.log(revealBool);
+            [...approvedGrab].forEach(approved=>{
+                approved.style.display = 'inline';
+            })
+            revealBool = !revealBool;
+        }
+
+
+           
     }
 
     var settingsObj = <%- JSON.stringify(uiSettings)%>
