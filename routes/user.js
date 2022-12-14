@@ -836,6 +836,29 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                 } //string to mongoose.Types.ObjectId.  How to
             })
 
+            let stateApprover = await userModel.find({}).where('userRole.role').equals('stateApproval').where('userRole.domain').equals(user.state);//.where('userRole.domain').equals(user.directorate)
+            // stateApprover[0].userRole.usersToApprove.forEach(objItem=>{
+            for (const objItem of stateApprover[0].userRole.usersToApprove){
+                objItem.approvedAssets.forEach((asset,i)=>{
+                // for (asset of objItem.approvedAssets(asset,i)=>{
+                    console.log('second foreach')
+                    if(userAssetArr.idArr.indexOf((asset.toString())) > -1){
+                        console.log(objItem.approvedAssets);
+                        console.log('Splicing...')
+                        objItem.approvedAssets.splice(i,1);
+                        console.log(objItem.approvedAssets);
+                    }
+                })
+                
+            }
+
+            for (var a=0;a < stateApprover[0].userRole.usersToApprove.length;a++){
+                if (stateApprover[0].userRole.usersToApprove[a].approvedAssets.length ==0){
+                    stateApprover[0].userRole.usersToApprove.splice(a,1); 
+                }
+            }
+            let savedStateApprover = stateApprover[0].save();
+
     //userAssetArr.idArr //items to deAssign
 
             //reassign updated assetIds to user
@@ -921,12 +944,13 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                                                     assetToApprove.assetUserHistory.push(user.id);
                                                     assetToApprove.assetLocationHistory.push(user.id);
                                                     assetToApprove.assetApproval = {
-                                                        self:'approved',
-                                                        state:'approved',
-                                                        directorate:null,
-                                                        store:null,
-                                                        issue:null
+                                                        ownApproval:'approved',
+                                                        stateApproval:'approved',
+                                                        directorateApproval:null,
+                                                        storeApproval:null,
+                                                        issuerApproval:null
                                                     };
+
                                                     let approvedAsset = await assetToApprove.save();
                                                     // console.log('This is approvedAsset ', approvedAsset);
 
@@ -972,6 +996,27 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                     newIdArr.push(item);
                 } //string to mongoose.Types.ObjectId.  How to
             })
+            let directorateApprover = await userModel.find({}).where('userRole.role').equals('directorateApproval').where('userRole.domain').equals(user.directorate);
+
+            for (const objItem of directorateApprover[0].userRole.usersToApprove){
+                objItem.approvedAssets.forEach((asset,i)=>{
+                // for (asset of objItem.approvedAssets(asset,i)=>{
+                    console.log('second foreach')
+                    if(userAssetArr.idArr.indexOf((asset.toString())) > -1){
+                        console.log(objItem.approvedAssets);
+                        console.log('Splicing...')
+                        objItem.approvedAssets.splice(i,1);
+                        console.log(objItem.approvedAssets);
+                    }
+                })
+                
+            }
+            //Clearing empty applications (applications without assets)
+            for (var a=0;a < directorateApprover[0].userRole.usersToApprove.length;a++){
+                if (directorateApprover[0].userRole.usersToApprove[a].approvedAssets.length ==0){
+                    directorateApprover[0].userRole.usersToApprove.splice(a,1); 
+                }
+            }
 
     //userAssetArr.idArr //items to deAssign
 
@@ -984,12 +1029,19 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
             //This will be in each approval stage
             affectedAssets.forEach(async asset=>{
                 // asset.assetAllocationStatus = false;
-                asset.assetApproval = {
-                    self:'approved',
-                    state:null,
-                    directorate:null,
-                    store:null,
-                    issue:null
+                // asset.assetApproval = {
+                //     self:'approved',
+                //     state:null,
+                //     directorate:null,
+                //     store:null,
+                //     issue:null
+                // };
+                asset.assetApproval ={
+                    ownApproval:'approved',
+                    stateApproval:null,
+                    directorateApproval:null,
+                    storeApproval:null,
+                    issuerApproval:null
                 };
                 await asset.save();
             })
@@ -1067,11 +1119,11 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                                                 // assetToApprove.assetUserHistory.push(user.id);
                                                 // assetToApprove.assetLocationHistory.push(user.id);
                                                 assetToApprove.assetApproval ={
-                                                    self:'approved',
-                                                    state:'approved',
-                                                    directorate:'approved',
-                                                    store:null,
-                                                    issue:null
+                                                    ownApproval:'approved',
+                                                    stateApproval:'approved',
+                                                    directorateApproval:'approved',
+                                                    storeApproval:null,
+                                                    issuerApproval:null
                                                 };
                                                 let approvedAsset = await assetToApprove.save();
                                                 console.log('This is approvedAsset ', approvedAsset);
@@ -1118,6 +1170,28 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                 } //string to mongoose.Types.ObjectId.  How to
             })
 
+            let storeApprover = await userModel.find({}).where('userRole.role').equals('storeApproval');//.where('userRole.domain').equals(user.directorate);
+
+            for (const objItem of storeApprover[0].userRole.usersToApprove){
+                objItem.approvedAssets.forEach((asset,i)=>{
+                // for (asset of objItem.approvedAssets(asset,i)=>{
+                    console.log('second foreach')
+                    if(userAssetArr.idArr.indexOf((asset.toString())) > -1){
+                        console.log(objItem.approvedAssets);
+                        console.log('Splicing...')
+                        objItem.approvedAssets.splice(i,1);
+                        console.log(objItem.approvedAssets);
+                    }
+                })
+                
+            }
+            //Clearing empty applications (applications without assets)
+            for (var a=0;a < storeApprover[0].userRole.usersToApprove.length;a++){
+                if (storeApprover[0].userRole.usersToApprove[a].approvedAssets.length ==0){
+                    storeApprover[0].userRole.usersToApprove.splice(a,1); 
+                }
+            }
+
     //userAssetArr.idArr //items to deAssign
 
             //reassign updated assetIds to user
@@ -1129,12 +1203,19 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
             //This will be in each approval stage
             affectedAssets.forEach(async asset=>{
                 // asset.assetAllocationStatus = false;
+                // asset.assetApproval ={
+                //     self:'approved',
+                //     state:'approved',
+                //     directorate:null,
+                //     store:null,
+                //     issue:null
+                // };
                 asset.assetApproval ={
-                    self:'approved',
-                    state:'approved',
-                    directorate:null,
-                    store:null,
-                    issue:null
+                    ownApproval:'approved',
+                    stateApproval:'approved',
+                    directorateApproval:null,
+                    storeApproval:null,
+                    issuerApproval:null
                 };
                 await asset.save();
             })
@@ -1222,11 +1303,11 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                                                 // assetToApprove.assetUserHistory.push(user.id); //sole jurisdiction of user reciept.
                                                 // assetToApprove.assetLocationHistory.push(user.id);
                                                 assetToApprove.assetApproval ={
-                                                    self:'approved',
-                                                    state:'approved',
-                                                    directorate:'approved',
-                                                    store:'approved',
-                                                    issue:null
+                                                    ownApproval:'approved',
+                                                    stateApproval:'approved',
+                                                    directorateApproval:'approved',
+                                                    storeApproval:'approved',
+                                                    issuerApproval:null
                                                 };
                                                 let approvedAsset = await assetToApprove.save();
                                                 console.log('This is approvedAsset ', approvedAsset);
@@ -1270,6 +1351,27 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                 } //string to mongoose.Types.ObjectId.  How to
             })
 
+            let issuerApprover = await userModel.find({}).where('userRole.role').equals('issuerApproval');//.where('userRole.domain').equals(user.directorate);
+            for (const objItem of issuerApprover[0].userRole.usersToApprove){
+                objItem.approvedAssets.forEach((asset,i)=>{
+                // for (asset of objItem.approvedAssets(asset,i)=>{
+                    console.log('second foreach')
+                    if(userAssetArr.idArr.indexOf((asset.toString())) > -1){
+                        console.log(objItem.approvedAssets);
+                        console.log('Splicing...')
+                        objItem.approvedAssets.splice(i,1);
+                        console.log(objItem.approvedAssets);
+                    }
+                })
+                
+            }
+            //Clearing empty applications (applications without assets)
+            for (var a=0;a < issuerApprover[0].userRole.usersToApprove.length;a++){
+                if (issuerApprover[0].userRole.usersToApprove[a].approvedAssets.length ==0){
+                    issuerApprover[0].userRole.usersToApprove.splice(a,1); 
+                }
+            }
+
     //userAssetArr.idArr //items to deAssign
 
             //reassign updated assetIds to user
@@ -1281,13 +1383,22 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
             //This will be in each approval stage
             affectedAssets.forEach(async asset=>{
                 // asset.assetAllocationStatus = false;
-                asset.assetApproval= {
-                    self:'approved',
-                    state:'approved',
-                    directorate:'approved',
-                    store:null,
-                    issue:null
-                };;
+
+                // asset.assetApproval= {
+                //     self:'approved',
+                //     state:'approved',
+                //     directorate:'approved',
+                //     store:null,
+                //     issue:null
+                // };
+
+                asset.assetApproval ={
+                    ownApproval:'approved',
+                    stateApproval:'approved',
+                    directorateApproval:'approved',
+                    storeApproval:null,
+                    issuerApproval:null
+                };
                 await asset.save();
             })
             var assetTypeArr = [];
@@ -1381,12 +1492,13 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                                                 // assetToApprove.assetLocationHistory.push(user.id);
                                                 
                                                 assetToApprove.assetApproval = {
-                                                    self:'approved',
-                                                    state:'approved',
-                                                    directorate:'approved',
-                                                    store:'approved',
-                                                    issue:'approved'
+                                                    ownApproval:'approved',
+                                                    stateApproval:'approved',
+                                                    directorateApproval:'approved',
+                                                    storeApproval:'approved',
+                                                    issuerApproval:'approved'
                                                 };
+
                                                 let approvedAsset = await assetToApprove.save();
                                                 // console.log('This is IssueApprovedAsset ', approvedAsset);
                                                 user.issueApprovedUserAsset.id.push(assetToApprove.id);
@@ -1430,13 +1542,21 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
             //This will be in each approval stage
             affectedAssets.forEach(async asset=>{
                 // asset.assetAllocationStatus = false;
-                asset.assetApproval = {
-                    self:'approved',
-                    state:'approved',
-                    directorate:'approved',
-                    store:'approved',
-                    issue:null
-                };;
+                // asset.assetApproval = {
+                //     self:'approved',
+                //     state:'approved',
+                //     directorate:'approved',
+                //     store:'approved',
+                //     issue:null
+                // };
+
+                asset.assetApproval ={
+                    ownApproval:'approved',
+                    stateApproval:'approved',
+                    directorateApproval:'approved',
+                    storeApproval:'approved',
+                    issuerApproval:null
+                };
                 await asset.save();
             })
             var assetTypeArr = [];

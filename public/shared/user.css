@@ -204,6 +204,6 @@ transition:  0.4s;
     background-color: silver;
 }
 
-.approved{
+.approved a{
     color:brown;
 }
