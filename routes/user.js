@@ -340,14 +340,14 @@ route.get('/:id/edit',  hideNavMenu(), async (req,res)=>{
                                     userObj2.id = userObj.id;
                                     console.log('Got in now', userObj);
                                     for ( const asset of userObj.approvedAssets){
-                                        console.log('This is asset, ', asset);
+                                        // console.log('This is asset, ', asset);
                                         let assets = await assetModel.find({}).where('_id').equals(asset);
-                                        console.log('This is assetArr ', assets[0]);
+                                        // console.log('This is assetArr ', assets[0]);
                                         assetArr.push(assets[0]);
                                         userObj2.approvedAssets.push(assets[0])
                                     }
                                     // userObj.approvedAssets = assetArr;
-                                    console.log('This is userObj ', userObj2);
+                                    // console.log('This is userObj ', userObj2);
                                     usersToApprove.push(userObj2);
                                 }
 
@@ -857,7 +857,7 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                     stateApprover[0].userRole.usersToApprove.splice(a,1); 
                 }
             }
-            let savedStateApprover = stateApprover[0].save();
+            let savedStateApprover = await stateApprover[0].save();
 
     //userAssetArr.idArr //items to deAssign
 
@@ -1001,7 +1001,7 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
             for (const objItem of directorateApprover[0].userRole.usersToApprove){
                 objItem.approvedAssets.forEach((asset,i)=>{
                 // for (asset of objItem.approvedAssets(asset,i)=>{
-                    console.log('second foreach')
+                    console.log('second foreach directorate')
                     if(userAssetArr.idArr.indexOf((asset.toString())) > -1){
                         console.log(objItem.approvedAssets);
                         console.log('Splicing...')
@@ -1017,6 +1017,8 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                     directorateApprover[0].userRole.usersToApprove.splice(a,1); 
                 }
             }
+           await directorateApprover[0].save();
+
 
     //userAssetArr.idArr //items to deAssign
 
@@ -1191,6 +1193,8 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                     storeApprover[0].userRole.usersToApprove.splice(a,1); 
                 }
             }
+           await storeApprover[0].save();
+
 
     //userAssetArr.idArr //items to deAssign
 
@@ -1371,6 +1375,8 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                     issuerApprover[0].userRole.usersToApprove.splice(a,1); 
                 }
             }
+           await issuerApprover[0].save();
+
 
     //userAssetArr.idArr //items to deAssign
 
