@@ -1,0 +1,133 @@
+   
+    <h4>Welcomel, <%= userName %> </h4>
+    <div class=<%=msgClass%>>
+        <p><%=msg%></p>
+    </div>
+
+    <%console.log('This is date: ',Date.now())%>
+    <%console.log('This is date: ',new Date(Date.now()))%>
+    
+   Audit
+    <div id="searchContDiv">
+        <div>
+            <form method="get" action="/audGoLive">
+                
+                <p><input type="number" name="userDays" value = <%=searchParams.userDays%>></p>
+                <p><input type="text" name="userNameSearch" value = <%=searchParams.userNameSearch%>></p>
+                <p><input type="date" name="userDateBeforeSearch" value = <%=searchParams.userDateBeforeSearch%>></p>
+                <p><input type="date" name="userDateAfterSearch" value = <%=searchParams.userDateAfterSearch%>></p>
+                <p><input type="date" name="testing" value = <%=Date.now().toString%>></p>
+                <p><select name="userApprovalRole">
+                    <option value = "All">All</option>
+                    <%if (userApprovalRoles){%>
+                        <%userApprovalRoles.forEach(userRole=>{%>
+                            <%console.log('Here are option, ', userRole);%>
+                            <option value= <%=userRole%> <%=searchParams.userApprovalRole == userRole ? "Selected":"" %>><%=userRole%></option>
+                        <%})%>
+                    <%}%>
+                </select></p>
+                <p><button value="submit">Submit</button></p>
+        </div>
+        <div>
+            <input name='searchScope' type="checkbox" <%=searchParams.searchScope?"checked": ""%> />Own Accounts
+        </div>
+    </form>
+
+    </div>
+    <h2>List of Profiles:</h2>
+    <% if (locals.users !=null){ %>
+        <%console.log('Here we go')%>
+        <%= 'There are users' %>
+        <%console.log('This is users, ', users)%>
+        <%let userIdKeyArr = Object.keys(users)%>
+        <%console.log('Object keys(which are user ids), ', userIdKeyArr)%>
+        <%userIdKeyArr.forEach(userId=>{%>
+            <%console.log('firstname is: ', users[userId].firstName)%>;
+            <div class="user-name"><%=users[userId].firstName%></div>
+            <%  users[userId].userObj.forEach(user=>{%>
+                <a href="/user/<%= user.id %>">
+                    <p><img width="120" height= "auto" src="<%= user.userProfilePic%>" alt="<%= user.userProfilePic%>"></p>
+                </a>
+        
+                <div class="user-row">
+                    
+                    <div class = "div-btn-row">
+                        <a class= "btn btn-primary" href="/user/<%= user.userId %>">View</a>
+                        <p><a href="/asset/<%= user.Id %>"><%=user.id%></a></p>
+                        
+                            <a class= "btn btn-primary" href="/user/<%= user.id %>/edit">Edit</a>
+                        <%-include('../partials/deleteForm.ejs', {url:`/user/${user.id}`}) %>
+                    </div>
+                </div>
+            <%})%>
+
+        <%})%>
+    <% } %> 
+
+    
+    <div class="assetList">Assign</div>
+</div>
+
+<div class="video-grid" id="video-grid"></div>
+<%=roomId%>
+
+
+<script>
+    const Room_ID = "<%=roomId%>";
+</script>
+<script src="/socket.io/socket.io.js"></script>
+<script defer>
+            let userID = '<%- userEmail %>';
+
+            // alert(`In here ${userID}`);
+            var socket = io('http://localhost:3000');
+
+            socket.on('connect', ()=>{
+                // alert(`you connected on ${socket.id}`);
+            })
+
+            // document.addEventListener('click', ()=>{
+            //     socket.emit('clicka', 'Adeiza');
+            //     // alert('');
+            // })
+            // socket.on('clickaBack', (msg)=>{
+            //     console.log(msg)
+            // })
+
+
+            // window.addEventListener('load', ()=>{
+                // socket.emit('clicka', 'Adeiza');
+                
+                socket.on('DirectorateApproval', (msgApproval)=>{
+                    console.log('&&&&&', msgApproval)
+                    socket.emit('join-room',  userID, 'NotificationRoom', async(msg)=>{
+                        console.log('@@@@@Joined');
+                        console.log(msg);
+                        let perm = await Notification.requestPermission();
+                        alert (perm)
+                        if (perm === 'granted'){
+                            new Notification(msg, {body:'Directorate Approval Granted Index'});
+                        }
+                    });
+            })
+            // });
+
+
+            //
+
+        var settingsObj = <%- JSON.stringify(uiSettings)%>
+        console.log(settingsObj);
+        console.log('Now here');
+        var settingsObjKeys = (Object.keys(settingsObj));
+        var settingsObjValues = (Object.values(settingsObj));
+        settingsObjKeys.forEach(className=>{
+            [ ...document.getElementsByClassName(className)].forEach(elm=>{
+                elm.style.display = settingsObj[className];
+            })
+        })
+        console.log(Object.values(settingsObj));
+    
+</script>
+<script defer src="https://unpkg.com/peerjs@1.3.2/dist/peerjs.min.js"></script>
+<script src="/socket.io/socket.io.js" defer></script>
+<script src="/script.js" defer></script>

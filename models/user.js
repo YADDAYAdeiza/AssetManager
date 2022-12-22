@@ -79,7 +79,20 @@ let userSchema = new mongoose.Schema({
             default:()=>{
                 return Date.now()
             }
-        }
+        },
+        idAudit:[{
+            id:{
+                type:mongoose.Schema.Types.ObjectId,
+                ref:'AssetCol',
+                required:true
+            },
+            auditDate:{
+                type:Date,
+                default:()=>{
+                    return Date.now()
+                }
+            }
+        }]
     },
     approvedUserAsset:{
         id:{
@@ -171,7 +184,7 @@ let userSchema = new mongoose.Schema({
                 {type: mongoose.Schema.Types.ObjectId, ref:'assetModel'}
             ]
             
-    }]
+        }]
     },
     approvalSupId:{
         type:String

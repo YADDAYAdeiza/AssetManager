@@ -80,7 +80,24 @@ let assetSchema = new mongoose.Schema({
             store:null,
             issue:null
         }
-    }
+    },
+    auditTrail:[
+        {
+            user:{
+                type:mongoose.Schema.Types.ObjectId,
+                ref:'userModel'
+            },
+            auditDate:{
+                type:[Date],
+                default:()=>{
+                    return Date.now()
+                }
+            },
+            auditedBy:{
+                type:mongoose.Schema.Types.ObjectId
+            }
+        }
+    ]
 });
 
 assetSchema.virtual('assetImageDetails').get(function(){

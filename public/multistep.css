@@ -4,6 +4,7 @@
 @import 'shared/user.css';
 @import 'shared/asset.css';
 @import 'shared/overview.css';
+@import 'shared/audit.css';
 
 #regForm {
   background-color: #ffffff;

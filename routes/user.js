@@ -110,7 +110,7 @@ route.get('/fetcher/:id', async (req,res)=>{
 })
 
 route.get('/getHistory/:id', async (req,res)=>{
-   let userHistory = await userLogModel.find().where('activity').in(['Requisition', 'Directorate Approval', 'Store Approval']).where('user').equals(mongoose.Types.ObjectId(req.params.id));
+    let userHistory = await userLogModel.find().where('activity').in(['Requisition', 'Directorate Approval', 'Store Approval']).where('user').equals(mongoose.Types.ObjectId(req.params.id));
    
     res.json(userHistory);
 })
@@ -118,6 +118,7 @@ route.get('/getHistory/:id', async (req,res)=>{
 route.get('/showOrNew', permitListsLogin(), hideNavMenu(), (req, res)=>{ //admin middleware may be used here to grant full authorization
     console.log('In showOrNew=====================================');
     if (req.user.profileId.length){// show profiles, orole
+        console.log('This is req: ', req.user);
         console.log('This is req.user.userName:', req.user.userName);
         indexRedirect(req, res, 'My Profile(s)', 'noError');
     } else{ //create new profile
@@ -211,7 +212,7 @@ route.get('/showOrNew', permitListsLogin(), hideNavMenu(), (req, res)=>{ //admin
                             }
                             //msg:"error goes in here",
                         }
-route.get('/index', permitLists(),hideNavMenu(), async (req, res)=>{
+route.get('/index', permitLists(), hideNavMenu(), async (req, res)=>{
     console.log('This is signed in user now', req.user);
     console.log(req.query);
     indexRedirect(req, res, 'Listed fine', 'noError') 
@@ -301,11 +302,15 @@ route.get('/:id/edit',  hideNavMenu(), async (req,res)=>{
                             var usersToApprove = [];
                             try {
                             const user =await userModel.findById(req.params.id);
+                            console.log('This place?', user)
                             const allAssetType = await assetTypeModel.find().select('_id assetTypeCode assetTypeClass assetTypeStatus assetTypeDescription assetTypeQty').exec();//.distinct('assetTypeClass');
                             const asset = await assetModel.find({user:user.id}).exec(); //.limit(10)
+                            console.log('This place 2?')
                             const allAsset = await (await assetModel.find().where('assetAllocationStatus').ne(true).select('_id assetType'));
                             const assetTypeDistinct = await assetTypeModel.find().select('_id assetTypeClass assetTypeStatus assetTypeDescription').exec();
                             
+                            console.log('OR. This place?')
+
                             user.userAsset.id.forEach(async itemArr=>{
                                         ownAssets.push(itemArr);
                                 });
@@ -748,6 +753,13 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                                 
                                 user.userAsset.id.push(newAssetSaved._id);
                                 user.userAsset.idType.push( newAssetSaved.assetName);
+                                user.userAsset.assignDate.push(Date.now());
+                                let idAuditObj = {
+                                    id: newAssetSaved._id,
+                                    auditDate: Date.now()
+                                }
+                                user.userAsset.idAudit.push(idAuditObj);
+                                
                                 console.log('This is newAssetSaved', newAssetSaved);
 
                                 // await user.save();
