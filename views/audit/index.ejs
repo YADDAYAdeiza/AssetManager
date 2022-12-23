@@ -40,33 +40,41 @@
         <%= 'There are users' %>
         <%console.log('This is users, ', users)%>
         <%let userIdKeyArr = Object.keys(users)%>
-        <%console.log('Object keys(which are user ids), ', userIdKeyArr)%>
         <%userIdKeyArr.forEach(userId=>{%>
+            <% if (users[userId].userObj.length){%>
             <%console.log('firstname is: ', users[userId].firstName)%>;
-            <div class="user-name"><%=users[userId].firstName%></div>
-            <%  users[userId].userObj.forEach(user=>{%>
-                <a href="/user/<%= user.id %>">
-                    <p><img width="120" height= "auto" src="<%= user.userProfilePic%>" alt="<%= user.userProfilePic%>"></p>
+            <div class="user-div">
+
+                <div class="user-name"><%=users[userId].firstName%></div>
+                <a href="/user/<%= userId%>">
+                    <p><img width="120" height= "auto" src="<%= users[userId].userProfilePic%>" alt="<%= users[userId].userProfilePic%>"></p>
                 </a>
-        
-                <div class="user-row">
+                <%  users[userId].userObj.forEach(user=>{%>
+                    <ul>
+                        <li>
+                            <a href="/asset/<%= user.id %>"><%=user.id%></a>
+                        </li>
+                    </ul>
+                    <%})%>
                     
-                    <div class = "div-btn-row">
-                        <a class= "btn btn-primary" href="/user/<%= user.userId %>">View</a>
-                        <p><a href="/asset/<%= user.Id %>"><%=user.id%></a></p>
-                        
-                            <a class= "btn btn-primary" href="/user/<%= user.id %>/edit">Edit</a>
-                        <%-include('../partials/deleteForm.ejs', {url:`/user/${user.id}`}) %>
+                    <div class="user-row">
+                        <div class = "div-btn-row">
+                            <p>
+                                <a class= "btn btn-primary" href="/user/<%= userId %>">View</a>
+                                <a class= "btn btn-primary" href="/user/<%= userId %>/edit">Edit</a>
+                                <%-include('../partials/deleteForm.ejs', {url:`/user/${userId}`}) %>
+                            </p>
+                            
+                        </div>
                     </div>
                 </div>
-            <%})%>
-
-        <%})%>
-    <% } %> 
-
-    
-    <div class="assetList">Assign</div>
-</div>
+                <%}%>
+                    <%})%>
+                    <% } %> 
+                    
+                    
+                    <div class="assetList">Assign</div>
+                </div>
 
 <div class="video-grid" id="video-grid"></div>
 <%=roomId%>

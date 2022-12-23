@@ -6,7 +6,7 @@
 .div-btn-row{
     display: flex;
     align-items: flex-start;
-    margin-bottom:80px;
+    margin-bottom:20px;
 }
 
 .div-btn-row > * {

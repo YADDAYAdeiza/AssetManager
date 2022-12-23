@@ -459,8 +459,10 @@ app.get('/audGoLive', async (req, res)=>{
                                       // user.userAsset.idAudit[a].firstName = user.firstName
                                       // user.userAsset.idAudit[a].userId = user.id
                                       // auditArr.push(user.userAsset.idAudit[a])
-                                      idAuditObj[user.id].firstName = user.firstName
-                                      idAuditObj[user.id].userObj.push(user.userAsset.idAudit[a])
+                                      
+                                      idAuditObj[user.id].userProfilePic = user.userProfilePic;
+                                      idAuditObj[user.id].firstName = user.firstName;
+                                      idAuditObj[user.id].userObj.push(user.userAsset.idAudit[a]);
                                     }
                                       // return (user.userAsset.idAudit[a].id.toString() == '63a1e335bc9dbf8077de0dc9');
                                     }

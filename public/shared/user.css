@@ -15,6 +15,7 @@
     display: flex;
     justify-content: space-between;
     margin-bottom: 1rem;
+    background-color: rgb(239, 247, 247);
 }
 
 .user-show-div{
@@ -206,4 +207,8 @@ transition:  0.4s;
 
 .approved a{
     color:brown;
+}
+
+.user-div{
+    background-color:rgb(239, 247, 247)
 }
