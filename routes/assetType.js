@@ -3,12 +3,12 @@ let route = express.Router();
 let ejs = require('ejs');
 // let layout = require('express-ejs-layouts');
 let assetTypeModel = require('../models/assetType');
+let assetTypeAuditModel = require('../models/assetType_Audit');
 let {v4:uuidv4} = require('uuid');
 
 const imageMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
 
 let cors = require('cors');
-
 
 
 //route.set('layout', 'layouts/layout');
@@ -221,12 +221,20 @@ route.post('/',  async (req,res)=>{
 
     });
 
+    
+    //
+    
     saveAssetTypeImageDetails(assetType, req.body.assetTypePic);
     console.log('Name of photo2 ', req.body.assetTypePic);
     // indexRedirect(req, res, 'Searching Asset Types', 'noError');
     res.render('./assetType/index', {assetTypes:[assetType]});
     try{
-       var newAssetType = await assetType.save();
+        var newAssetType = await assetType.save();
+        var assetTypeAudit = new assetTypeAuditModel({
+            assetType: newAssetType._id
+        });
+        await assetTypeAudit.save()
+
     } catch(e){
        console.error(e);
     }

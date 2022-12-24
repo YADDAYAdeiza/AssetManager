@@ -1,4 +1,7 @@
 let userModel = require('./models/user');
+let assetTypeModel = require('./models/assetType');
+let assetTypeAuditModel = require('./models/assetType_Audit');
+
 let {authenticateRole, authenticateRoleProfilePage, permitLists, permitListsLogin, hideNavMenu, permitApproval} = require('./basicAuth');
 
 
@@ -386,6 +389,15 @@ app.get('/audGoLive', async (req, res)=>{
   console.log(req.query.userDateBeforeSearch);
 
   let userApprovalRoles = await userModel.find({}).where('approvalStatus').ne(null).distinct('approvalStatus');
+  // let distinctAssets =  await assetTypeModel.find({}).distinct('assetTypeClass')
+                let distinctAuditAssets;
+                try{
+                  distinctAuditAssets =  await assetTypeAuditModel.find({}).populate('assetType');//.select('assetTypeClass assetTypeAuditInterval');
+
+                }catch(e){
+              console.error(e)
+                }
+  // let distinctAuditAssets =  await assetTypeAuditModel.find({}).select('assetTypeClass assetTypeAuditInterval');
                             // let userStoreApprovalRoles = await userModel.find({}).where('userStoreApproval').ne(null).distinct('approvalStatus');
                             // let query = req.queryObj; //from permitLists middleware
                             let query = userModel.find(); //from permitLists middleware
@@ -412,6 +424,7 @@ app.get('/audGoLive', async (req, res)=>{
                             let uiSettings = req.dispSetting;
                             let userName = req.user.userName;
                             console.log('This is userName, ', userName);
+                            console.log('These are assetTypes: ', distinctAuditAssets);
                               try{
                                   const users = await query.exec();
   
@@ -484,6 +497,7 @@ app.get('/audGoLive', async (req, res)=>{
                                       userEmail:req.user.email,
                                       uiSettings,
                                       userApprovalRoles,
+                                      distinctAuditAssets,
                                       dateObj
                                   });                        
                               }catch(e) {

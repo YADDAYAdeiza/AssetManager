@@ -26,13 +26,25 @@
                         <%})%>
                     <%}%>
                 </select></p>
-                <p><button value="submit">Submit</button></p>
+                <button value="submit">Submit</button>
+                <button id="openSettings">Settings</button>
         </div>
         <div>
             <input name='searchScope' type="checkbox" <%=searchParams.searchScope?"checked": ""%> />Own Accounts
         </div>
     </form>
-
+    <div class="formSettings">
+        <!-- forEach -->
+        <%if (locals.distinctAuditAssets){%>
+            <%distinctAuditAssets.forEach(assetAuditVersion=>{%>
+                <form action="">
+                    <div>
+                    <input style='width:60%; padding:0' value="<%=assetAuditVersion.assetType.assetTypeClass%>"/> <input style='width:20%; padding:0' type="number" value = "<%=assetAuditVersion.assetTypeAuditInterval%>" placeholder="Days"/><button type="submit">Submit</button>
+                    </div> 
+                </form>
+            <%})%>
+        <%}%>
+    </div>
     </div>
     <h2>List of Profiles:</h2>
     <% if (locals.users !=null){ %>
@@ -86,6 +98,13 @@
 <script src="/socket.io/socket.io.js"></script>
 <script defer>
             let userID = '<%- userEmail %>';
+            var openSettingsGrab = document.getElementById('openSettings');
+            openSettingsGrab.addEventListener('click', function(event){
+                event.preventDefault();
+                openSettings();
+            })
+
+            // onclick="function(event){event.preventDefault(); openSettings()}"
 
             // alert(`In here ${userID}`);
             var socket = io('http://localhost:3000');
@@ -134,7 +153,12 @@
             })
         })
         console.log(Object.values(settingsObj));
-    
+    function openSettings(event){
+        // e.preventDefault();
+        console.log('Calling...');
+        // alert('called');
+        // event.preventDefault()
+    }
 </script>
 <script defer src="https://unpkg.com/peerjs@1.3.2/dist/peerjs.min.js"></script>
 <script src="/socket.io/socket.io.js" defer></script>
