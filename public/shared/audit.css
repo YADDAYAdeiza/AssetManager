@@ -18,3 +18,7 @@ video{
     text-decoration: underline;
     color:blue;
 }
+
+.formSettings{
+    display: none;
+}

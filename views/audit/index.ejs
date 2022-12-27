@@ -9,7 +9,7 @@
     
    Audit
     <div id="searchContDiv">
-        <div>
+        <div id="searchContDivForm">
             <form method="get" action="/audGoLive">
                 
                 <p><input type="number" name="userDays" value = <%=searchParams.userDays%>></p>
@@ -28,19 +28,20 @@
                 </select></p>
                 <button value="submit">Submit</button>
                 <button id="openSettings">Settings</button>
+                <div>
+                    <input name='searchScope' type="checkbox" <%=searchParams.searchScope?"checked": ""%> />Own Accounts
+                </div>
+            </form>
         </div>
-        <div>
-            <input name='searchScope' type="checkbox" <%=searchParams.searchScope?"checked": ""%> />Own Accounts
-        </div>
-    </form>
     <div class="formSettings">
         <!-- forEach -->
         <%if (locals.distinctAuditAssets){%>
             <%distinctAuditAssets.forEach(assetAuditVersion=>{%>
-                <form action="">
+                <form action="/auditSettingsCorrect?_method=PUT" method="post">
                     <div>
-                    <input style='width:60%; padding:0' value="<%=assetAuditVersion.assetType.assetTypeClass%>"/> <input style='width:20%; padding:0' type="number" value = "<%=assetAuditVersion.assetTypeAuditInterval%>" placeholder="Days"/><button type="submit">Submit</button>
-                    </div> 
+                    <input name = 'assetName' style='width:60%; padding:0' value="<%=assetAuditVersion.assetType.assetTypeClass%>"/> <input name = 'assetAuditInterval' style='width:20%; padding:0' type="number" value = "<%=assetAuditVersion.assetTypeAuditInterval%>" placeholder="Days"/><button type="submit">Submit</button>
+                <input type="hidden" name="assetId" value="<%=assetAuditVersion._id%>"/>  
+                </div> 
                 </form>
             <%})%>
         <%}%>
@@ -98,13 +99,15 @@
 <script src="/socket.io/socket.io.js"></script>
 <script defer>
             let userID = '<%- userEmail %>';
+            let formSettingsGrab = document.getElementsByClassName('formSettings')[0];
+            let searchContDivGrab = document.getElementById('searchContDivForm');
+            let formSettingsGrabBool = false;
             var openSettingsGrab = document.getElementById('openSettings');
             openSettingsGrab.addEventListener('click', function(event){
                 event.preventDefault();
                 openSettings();
             })
 
-            // onclick="function(event){event.preventDefault(); openSettings()}"
 
             // alert(`In here ${userID}`);
             var socket = io('http://localhost:3000');
@@ -156,6 +159,23 @@
     function openSettings(event){
         // e.preventDefault();
         console.log('Calling...');
+        if (formSettingsGrabBool == false){
+            formSettingsGrab.style.display = 'block';
+            formSettingsGrab.style.position = 'fixed';
+            formSettingsGrab.style.top = '50%';
+            formSettingsGrab.style.left = '50%';
+            formSettingsGrab.style.transform = 'translate(-50%, -50%)';
+            // searchContDivGrab.style.background = 'rgba(255, 255, 255, 0.2)'; // Make sure this color has an opacity of less than 1
+            // searchContDivGrab.style.backdropFilter = 'blur(8px) saturate(120%) contrast(200%)';
+            searchContDivGrab.style.zIndex = '-1';
+            formSettingsGrab.style.zIndex = '1';
+            searchContDivGrab.style.filter = 'blur(2px)';
+            // formSettingsGrab.style.filter = 'blur(0)';
+            formSettingsGrabBool = true;
+        }else{
+            formSettingsGrab.style.display = 'none';
+            formSettingsGrabBool = false;
+        }
         // alert('called');
         // event.preventDefault()
     }
