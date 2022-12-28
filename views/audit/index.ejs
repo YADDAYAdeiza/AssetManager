@@ -12,11 +12,11 @@
         <div id="searchContDivForm">
             <form method="get" action="/audGoLive">
                 
-                <p><input type="number" name="userDays" value = <%=searchParams.userDays%>></p>
-                <p><input type="text" name="userNameSearch" value = <%=searchParams.userNameSearch%>></p>
-                <p><input type="date" name="userDateBeforeSearch" value = <%=searchParams.userDateBeforeSearch%>></p>
-                <p><input type="date" name="userDateAfterSearch" value = <%=searchParams.userDateAfterSearch%>></p>
-                <p><input type="date" name="testing" value = <%=Date.now().toString%>></p>
+                <p><input type="number" name = "userDays" value = <%=searchParams.userDays%>></p>
+                <p><input type="text" name = "userNameSearch" value = <%=searchParams.userNameSearch%>></p>
+                <p><input type="date" name = "userDateBeforeSearch" value = <%=searchParams.userDateBeforeSearch%>></p>
+                <p><input type="date" name = "userDateAfterSearch" value = <%=searchParams.userDateAfterSearch%>></p>
+                <p><input type="date" name = "testing" value = <%=Date.now().toString%>></p>
                 <p><select name="userApprovalRole">
                     <option value = "All">All</option>
                     <%if (userApprovalRoles){%>
@@ -28,6 +28,7 @@
                 </select></p>
                 <button value="submit">Submit</button>
                 <button id="openSettings">Settings</button>
+                <!-- <a href="/getAssetTypes">Settings</a> -->
                 <div>
                     <input name='searchScope' type="checkbox" <%=searchParams.searchScope?"checked": ""%> />Own Accounts
                 </div>
@@ -36,6 +37,7 @@
     <div class="formSettings">
         <!-- forEach -->
         <%if (locals.distinctAuditAssets){%>
+            <button id = 'cancelSettings'>X</button>
             <%distinctAuditAssets.forEach(assetAuditVersion=>{%>
                 <form action="/auditSettingsCorrect?_method=PUT" method="post">
                     <div>
@@ -103,9 +105,17 @@
             let searchContDivGrab = document.getElementById('searchContDivForm');
             let formSettingsGrabBool = false;
             var openSettingsGrab = document.getElementById('openSettings');
+            let cancelSettingsGrab = document.getElementById('cancelSettings');
+
             openSettingsGrab.addEventListener('click', function(event){
                 event.preventDefault();
                 openSettings();
+            })
+
+            cancelSettingsGrab.addEventListener('click', function(){
+                this.parentNode.classList.toggle('formSettingsDisplay');
+                searchContDivGrab.classList.toggle('searchContDivSettings');
+
             })
 
 
@@ -157,28 +167,13 @@
         })
         console.log(Object.values(settingsObj));
     function openSettings(event){
-        // e.preventDefault();
         console.log('Calling...');
-        if (formSettingsGrabBool == false){
-            formSettingsGrab.style.display = 'block';
-            formSettingsGrab.style.position = 'fixed';
-            formSettingsGrab.style.top = '50%';
-            formSettingsGrab.style.left = '50%';
-            formSettingsGrab.style.transform = 'translate(-50%, -50%)';
-            // searchContDivGrab.style.background = 'rgba(255, 255, 255, 0.2)'; // Make sure this color has an opacity of less than 1
-            // searchContDivGrab.style.backdropFilter = 'blur(8px) saturate(120%) contrast(200%)';
-            searchContDivGrab.style.zIndex = '-1';
-            formSettingsGrab.style.zIndex = '1';
-            searchContDivGrab.style.filter = 'blur(2px)';
-            // formSettingsGrab.style.filter = 'blur(0)';
+        
+            formSettingsGrab.classList.toggle('formSettingsDisplay')
+            searchContDivGrab.classList.toggle('searchContDivSettings');
             formSettingsGrabBool = true;
-        }else{
-            formSettingsGrab.style.display = 'none';
-            formSettingsGrabBool = false;
-        }
-        // alert('called');
-        // event.preventDefault()
     }
+
 </script>
 <script defer src="https://unpkg.com/peerjs@1.3.2/dist/peerjs.min.js"></script>
 <script src="/socket.io/socket.io.js" defer></script>

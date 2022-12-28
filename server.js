@@ -518,95 +518,96 @@ app.get('/audGoLive', async (req, res)=>{
 })
 
 app.put('/auditSettingsCorrect', async (req, res)=>{
+  console.log('In auditSettingsCorrect');
+  let distinctAuditAssets;
   let auditArr = [];
   console.log(req.query);
   console.log('Hitting...');
   console.log(req.query.userDateBeforeSearch);
 
   let userApprovalRoles = await userModel.find({}).where('approvalStatus').ne(null).distinct('approvalStatus');
-                let distinctAuditAssets;
-                try{
-                  distinctAuditAssets =  await assetTypeAuditModel.find({}).populate('assetType');//.select('assetTypeClass assetTypeAuditInterval');
-
-                }catch(e){
-              console.error(e)
-                }
-                            let query = userModel.find(); //from permitLists middleware
-                            console.log('Back here');
-                            // console.log(query);
-                            query = query.where('userAsset.id').ne(null); //users with Assets
-                            // query.where(userAsset.id).equals
-                            if (req.query.userNameSearch != null && req.query.userNameSearch != ""){
-                                query = query.regex('firstName', new RegExp(req.query.userNameSearch, 'i'));
-                            }
-                            if (req.query.userDateBeforeSearch != null && req.query.userDateBeforeSearch != ""){
-                                query = query.lte('dateCreated', req.query.userDateBeforeSearch);
+  let query = userModel.find(); //from permitLists middleware
+  console.log('Back here');
+  // console.log(query);
+  query = query.where('userAsset.id').ne(null); //users with Assets
+  // query.where(userAsset.id).equals
+  if (req.query.userNameSearch != null && req.query.userNameSearch != ""){
+    query = query.regex('firstName', new RegExp(req.query.userNameSearch, 'i'));
+  }
+  if (req.query.userDateBeforeSearch != null && req.query.userDateBeforeSearch != ""){
+    query = query.lte('dateCreated', req.query.userDateBeforeSearch);
                             }
                             if (req.query.userApprovalRole != null && req.query.userApprovalRole != ""){
                                 // req.query.userApprovalRole = (req.query.userApprovalRole == 'All')? null: req.query.userApprovalRole
                                 if (req.query.userApprovalRole == 'All'){
-                                    //Don't add to the query: Leave as is.
+                                  //Don't add to the query: Leave as is.
                                 }else {
-                                    query = query.where('approvalStatus').equals(req.query.userApprovalRole);
+                                  query = query.where('approvalStatus').equals(req.query.userApprovalRole);
                                 }
-
-                            }
-
-                            let uiSettings = req.dispSetting;
-                            let userName = req.user.userName;
-                            console.log('This is userName, ', userName);
-                            console.log('These are assetTypes: ', distinctAuditAssets);
-                              try{
-                                  const users = await query.exec();
-  
-                                  let dateObj;
-                                  console.log('Today ',new Date(Date.now()) - new Date('2022-12-20T16:30:45.684+00:00'))
-                                  let diffT = new Date(Date.now()) - new Date('2022-12-20T16:30:45.684+00:00')
-                                  console.log('Number of Hours', new Date(diffT).getHours());
                                 
-                                  //Now, we need to get into the for loop
-                                  console.log('This is users', users);
-                                  let idAuditObj = {};
-                                  users.forEach(user=>{
-                                    for (var a=0;a<user.userAsset.idAudit.length;a++){
-                                      idAuditObj[user.id] = {userObj:[]}
-                                    }
-                                  })
-
-                                 users.forEach(user=>{
-                                    for (var a=0;a<user.userAsset.idAudit.length;a++){
-                                      let numOfDays = (new Date(Date.now()).getTime() - user.userAsset.idAudit[a].auditDate.getTime())/(1000*60*60*24);
-                                      console.log('Asset ', user.userAsset.idAudit[a].id);
-                                      console.log('Number of Days (rounded), ', Math.round(numOfDays));
-                                      // console.log('First...')
+                              }
+                              
+                              let uiSettings = req.dispSetting;
+                              let userName = req.user.userName;
+                              console.log('This is userName, ', userName);
+                              try{
+                                const users = await query.exec();
+                                
+                                let dateObj;
+                                console.log('Today ',new Date(Date.now()) - new Date('2022-12-20T16:30:45.684+00:00'))
+                                let diffT = new Date(Date.now()) - new Date('2022-12-20T16:30:45.684+00:00')
+                                console.log('Number of Hours', new Date(diffT).getHours());
+                                
+                                //Now, we need to get into the for loop
+                                console.log('This is users', users);
+                                let idAuditObj = {};
+                                users.forEach(user=>{
+                                  for (var a=0;a<user.userAsset.idAudit.length;a++){
+                                    idAuditObj[user.id] = {userObj:[]}
+                                  }
+                                })
+                                
+                                users.forEach(user=>{
+                                  for (var a=0;a<user.userAsset.idAudit.length;a++){
+                                    let numOfDays = (new Date(Date.now()).getTime() - user.userAsset.idAudit[a].auditDate.getTime())/(1000*60*60*24);
+                                    console.log('Asset ', user.userAsset.idAudit[a].id);
+                                    console.log('Number of Days (rounded), ', Math.round(numOfDays));
+                                    // console.log('First...')
                                     if ( Math.ceil(numOfDays) > (req.query.userDays) ||Math.ceil(numOfDays) == (req.query.userDays )){
                                       
                                       idAuditObj[user.id].userProfilePic = user.userProfilePic;
                                       idAuditObj[user.id].firstName = user.firstName;
                                       idAuditObj[user.id].userObj.push(user.userAsset.idAudit[a]);
                                     }
-                                    }
-
-                                   
-                                  })
-                                  console.log('This is userToBeAudited...', auditArr);
-                                  console.log('This is userToBeAudited2...', idAuditObj);
-                                  // const users = ['Adeiza', 'Yusuf'];
-                                  //settings
-                                  // if(req.body.assetAuditInterval){ //if we are changing settings
-                                    console.log('Correcting...');
-                                    console.log(req.body);
-                                    let assetAuditObjArr = await assetTypeAuditModel.find({}).populate('assetType').where('_id').equals(req.body.assetId);
-                                        assetAuditObjArr[0].assetTypeAuditInterval = req.body.assetAuditInterval;
-                                        await assetAuditObjArr[0].save();
-                                  // }
-
-                                  res.render('audit/index.ejs', {
-                                      users:idAuditObj,
-                                      searchParams:req.query,
-                                      msg:'Auditing',
-                                      msgClass:'noError',
-                                      userName,
+                                  }
+                                  
+                                  
+                                })
+                                console.log('This is userToBeAudited...', auditArr);
+                                console.log('This is userToBeAudited2...', idAuditObj);
+                                // const users = ['Adeiza', 'Yusuf'];
+                                //settings
+                                // if(req.body.assetAuditInterval){ //if we are changing settings
+                                console.log('Correcting...');
+                                console.log(req.body);
+                                let assetAuditObjArr = await assetTypeAuditModel.find({}).populate('assetType').where('_id').equals(req.body.assetId);
+                                assetAuditObjArr[0].assetTypeAuditInterval = req.body.assetAuditInterval;
+                                await assetAuditObjArr[0].save();
+                                // }
+                                try{
+                                  distinctAuditAssets =  await assetTypeAuditModel.find({}).populate('assetType');//.select('assetTypeClass assetTypeAuditInterval');
+                                  
+                                }catch(e){
+                                  console.error(e)
+                                }
+                                console.log('These are assetTypes: ', distinctAuditAssets);
+                                
+                                res.render('audit/index.ejs', {
+                                  users:idAuditObj,
+                                  searchParams:req.query,
+                                  msg:'Auditing',
+                                  msgClass:'noError',
+                                  userName,
                                       roomId:req.params.room,
                                       userEmail:req.user.email,
                                       uiSettings,
@@ -620,6 +621,12 @@ app.put('/auditSettingsCorrect', async (req, res)=>{
                                   res.render('user/index.ejs', {msg: `An error occurred getting the list`, searchParams:req.query, msgClass:'error-message'}); //tying the view to the moongoose model
                               }
 
+})
+
+app.get('/getAssetTypes', async (req,res)=>{
+  let assetTypes = await assetTypeAuditModel.find({}).select('_id assetType.assetTypeClass');
+  
+  res.send(assetTypes)
 })
   
   app.get('/home', checkAuthenticated, async (req, res)=>{
