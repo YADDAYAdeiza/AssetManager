@@ -91,6 +91,13 @@ let userSchema = new mongoose.Schema({
                 default:()=>{
                     return Date.now()
                 }
+            },
+            assetTypeId:{
+                type:mongoose.Schema.Types.ObjectId,
+                ref:'AssetTypeCol'
+            },
+            assetTypeName:{
+                type:String
             }
         }]
     },

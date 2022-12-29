@@ -550,6 +550,21 @@ app.put('/auditSettingsCorrect', async (req, res)=>{
                               let uiSettings = req.dispSetting;
                               let userName = req.user.userName;
                               console.log('This is userName, ', userName);
+                              
+                              //updating audit settings
+                                let assetAuditObjArr = await assetTypeAuditModel.find({}).populate('assetType').where('_id').equals(req.body.assetId);
+                                  assetAuditObjArr[0].assetTypeAuditInterval = req.body.assetAuditInterval;
+                                  await assetAuditObjArr[0].save();
+                                  // }
+                                  try{
+                                    distinctAuditAssets =  await assetTypeAuditModel.find({}).populate('assetType');//.select('assetTypeClass assetTypeAuditInterval');
+                                    
+                                  }catch(e){
+                                    console.error(e)
+                                  }
+                                  console.log('These are assetTypes: ', distinctAuditAssets);
+
+
                               try{
                                 const users = await query.exec();
                                 
@@ -558,6 +573,16 @@ app.put('/auditSettingsCorrect', async (req, res)=>{
                                 let diffT = new Date(Date.now()) - new Date('2022-12-20T16:30:45.684+00:00')
                                 console.log('Number of Hours', new Date(diffT).getHours());
                                 
+                                let assetUniqueAuditObjArr = await assetTypeAuditModel.find({}).populate('assetType');//.select('_id assetType audit');
+                                let uniqueAssetObj = {};
+                                console.log('This is assetUniqueAuditObjArr, ', assetUniqueAuditObjArr);
+
+                                  assetUniqueAuditObjArr.forEach(auditAssetType=>{
+                                    uniqueAssetObj[auditAssetType.assetType._id.toString()] = auditAssetType.assetTypeAuditInterval;
+                                    uniqueAssetObj[auditAssetType.assetType.assetTypeClass] = auditAssetType.assetTypeAuditInterval;
+                                  })
+                                  console.log('This is uniqueAssetObj, ', uniqueAssetObj);
+
                                 //Now, we need to get into the for loop
                                 console.log('This is users', users);
                                 let idAuditObj = {};
@@ -572,9 +597,8 @@ app.put('/auditSettingsCorrect', async (req, res)=>{
                                     let numOfDays = (new Date(Date.now()).getTime() - user.userAsset.idAudit[a].auditDate.getTime())/(1000*60*60*24);
                                     console.log('Asset ', user.userAsset.idAudit[a].id);
                                     console.log('Number of Days (rounded), ', Math.round(numOfDays));
-                                    // console.log('First...')
-                                    if ( Math.ceil(numOfDays) > (req.query.userDays) ||Math.ceil(numOfDays) == (req.query.userDays )){
-                                      
+                                    if ( Math.ceil(numOfDays) > (uniqueAssetObj[user.userAsset.idAudit[a].assetTypeId]) || Math.ceil(numOfDays) == (uniqueAssetObj[user.userAsset.idAudit[a].assetTypeId])){
+                                      console.log('Greater')
                                       idAuditObj[user.id].userProfilePic = user.userProfilePic;
                                       idAuditObj[user.id].firstName = user.firstName;
                                       idAuditObj[user.id].userObj.push(user.userAsset.idAudit[a]);
@@ -590,17 +614,8 @@ app.put('/auditSettingsCorrect', async (req, res)=>{
                                 // if(req.body.assetAuditInterval){ //if we are changing settings
                                 console.log('Correcting...');
                                 console.log(req.body);
-                                let assetAuditObjArr = await assetTypeAuditModel.find({}).populate('assetType').where('_id').equals(req.body.assetId);
-                                assetAuditObjArr[0].assetTypeAuditInterval = req.body.assetAuditInterval;
-                                await assetAuditObjArr[0].save();
-                                // }
-                                try{
-                                  distinctAuditAssets =  await assetTypeAuditModel.find({}).populate('assetType');//.select('assetTypeClass assetTypeAuditInterval');
-                                  
-                                }catch(e){
-                                  console.error(e)
-                                }
-                                console.log('These are assetTypes: ', distinctAuditAssets);
+                                
+                                
                                 
                                 res.render('audit/index.ejs', {
                                   users:idAuditObj,

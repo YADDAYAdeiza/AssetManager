@@ -756,7 +756,9 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                                 user.userAsset.assignDate.push(Date.now());
                                 let idAuditObj = {
                                     id: newAssetSaved._id,
-                                    auditDate: Date.now()
+                                    auditDate: Date.now(),
+                                    assetTypeId:newAssetSaved.assetType
+                                    //assetTypeName:newAssetSaved.assetName
                                 }
                                 user.userAsset.idAudit.push(idAuditObj);
                                 
