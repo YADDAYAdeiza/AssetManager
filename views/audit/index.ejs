@@ -15,6 +15,31 @@
                 <p><input type="number" name = "userDays" value = <%=searchParams.userDays%>></p>
                 <p><input type="text" name = "userNameSearch" value = <%=searchParams.userNameSearch%>></p>
                 <p><input type="date" name = "userDateBeforeSearch" value = <%=searchParams.userDateBeforeSearch%>></p>
+                <p><input type="date" name = "assetDateBeforeSearch"></p>
+                <p><select name="assetList" id="assetList" value = <%=searchParams.assetList%>>
+                    <%distinctAuditAssets.forEach(auditAsset=>{%>
+                        <option value="<%= auditAsset.assetType.id%>"><%= auditAsset.assetType.assetTypeClass%></option>
+                        <%}) %>
+                    </select></p>
+                    
+                    <p><select name="assetManufacturer" id="assetManufacturer" value = <%=searchParams.assetManufacturer%>>
+                        <%distinctAssetManufacturer.forEach(manufacturer=>{%>
+                            <option value="<%=manufacturer%>"><%=manufacturer%></option>
+                        <%})%>
+                    </select></p>
+                    <p><select name="assetTypeLifeCycle" id="assetTypeLifeCycle" value = <%=searchParams.assetTypeLifeCycle%>>
+                        <%distinctAssetLifeCycle.forEach(lifeCycle=>{%>
+                            <option value="<%=lifeCycle%>"><%=lifeCycle%></option>
+                        <%})%>
+                    </select></p>
+                <p><input type="date" name = "assetDatePurchased"></p>
+                <p><select name="assetDirectorate" id="assetDirectorate" value = <%=searchParams.assetDirectorate%>>
+                </select></p>
+                <p><select name="assetState" id="assetState" value = <%=searchParams.assetState%>>
+                </select></p>
+                <p><select name="assetRank" id="assetRank" value = <%=searchParams.assetRank%>>
+                </select></p>
+                
                 <p><input type="date" name = "userDateAfterSearch" value = <%=searchParams.userDateAfterSearch%>></p>
                 <p><input type="date" name = "testing" value = <%=Date.now().toString%>></p>
                 <p><select name="userApprovalRole">

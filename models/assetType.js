@@ -35,7 +35,7 @@ let assetTypeSchema = new mongoose.Schema({
         type:Number,
         required:true
     },
-    assetLifeCycle:{
+    assetTypeLifeCycle:{
         type:Number
     },
     assetTypeStatus:{

@@ -190,7 +190,6 @@ let userSchema = new mongoose.Schema({
             approvedAssets:[
                 {type: mongoose.Schema.Types.ObjectId, ref:'assetModel'}
             ]
-            
         }]
     },
     approvalSupId:{
