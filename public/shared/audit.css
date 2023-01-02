@@ -38,3 +38,8 @@ video{
     filter:blur(2px);
 
 }
+
+#asset-audit-div{
+    background:rgb(234, 233, 233);
+    padding-left: 25%;
+}

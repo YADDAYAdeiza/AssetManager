@@ -15,33 +15,52 @@
                 <p><input type="number" name = "userDays" value = <%=searchParams.userDays%>></p>
                 <p><input type="text" name = "userNameSearch" value = <%=searchParams.userNameSearch%>></p>
                 <p><input type="date" name = "userDateBeforeSearch" value = <%=searchParams.userDateBeforeSearch%>></p>
-                <p><input type="date" name = "assetDateBeforeSearch"></p>
-                <p><select name="assetList" id="assetList" value = <%=searchParams.assetList%>>
-                    <%distinctAuditAssets.forEach(auditAsset=>{%>
-                        <option value="<%= auditAsset.assetType.id%>"><%= auditAsset.assetType.assetTypeClass%></option>
-                        <%}) %>
-                    </select></p>
-                    
-                    <p><select name="assetManufacturer" id="assetManufacturer" value = <%=searchParams.assetManufacturer%>>
-                        <%distinctAssetManufacturer.forEach(manufacturer=>{%>
-                            <option value="<%=manufacturer%>"><%=manufacturer%></option>
-                        <%})%>
-                    </select></p>
-                    <p><select name="assetTypeLifeCycle" id="assetTypeLifeCycle" value = <%=searchParams.assetTypeLifeCycle%>>
-                        <%distinctAssetLifeCycle.forEach(lifeCycle=>{%>
-                            <option value="<%=lifeCycle%>"><%=lifeCycle%></option>
-                        <%})%>
-                    </select></p>
-                <p><input type="date" name = "assetDatePurchased"></p>
-                <p><select name="assetDirectorate" id="assetDirectorate" value = <%=searchParams.assetDirectorate%>>
-                </select></p>
-                <p><select name="assetState" id="assetState" value = <%=searchParams.assetState%>>
-                </select></p>
-                <p><select name="assetRank" id="assetRank" value = <%=searchParams.assetRank%>>
-                </select></p>
-                
                 <p><input type="date" name = "userDateAfterSearch" value = <%=searchParams.userDateAfterSearch%>></p>
-                <p><input type="date" name = "testing" value = <%=Date.now().toString%>></p>
+                <p><select name="userState" id="userState" value = <%=searchParams.userState%>>
+                    <%if (distinctState){%>
+                        <%distinctState.forEach(userState=>{%>
+                            <option value= <%=userState%> <%= (searchParams.userState == userState)?'selected':''%>  ><%=userState%></option>
+                        <%})%>
+                    <%}%>
+                </select></p>
+                <p><select name="userDirectorate" id="userDirectorate" value = <%=searchParams.userDirectorate%>>
+                    <%if (distinctDirectorate){%>
+                        <%distinctDirectorate.forEach(userDirectorate=>{%>
+                            <option value= <%=userDirectorate%> <%= (searchParams.userDirectorate == userDirectorate)?'selected':''%>><%=userDirectorate%></option>
+                        <%})%>
+                    <%}%>
+                </select></p>
+                <p><select name="userRank" id="userRank" value = <%=searchParams.userRank%>>
+                    <%if (distinctRank){%>
+                        <%distinctRank.forEach(userRank=>{%>
+                            <option value= <%=userRank%> <%=(searchParams.userRank == userRank)?'selected':''%>><%=userRank%></option>
+                        <%})%>
+                    <%}%>
+                </select></p>
+                    Asset Created Before: <button id="expand-audit"> v </button>
+                <div id="asset-audit-div">
+                    <p><input type="date" name = "assetDateBeforeSearch" value = <%=searchParams.assetDateBeforeSearch%>></p>
+                    <p><select name="assetList" id="assetList" value = <%=searchParams.assetList%>>
+                        <%distinctAuditAssets.forEach(auditAsset=>{%>
+                           <%= console.log('Audit asset', auditAsset.assetType.assetTypeClass)%>
+                            <option value="<%= auditAsset.assetType.id%>" <%=(searchParams.assetList == auditAsset.assetType.id)?'selected':''%>><%= auditAsset.assetType.assetTypeClass%></option>
+                            <%}) %>
+                        </select></p>
+                        
+                        <p><select name="assetManufacturer" id="assetManufacturer" value = <%=searchParams.assetManufacturer%>>
+                            <%distinctAssetManufacturer.forEach(manufacturer=>{%>
+                                <option value="<%=manufacturer%>" <%=(searchParams.assetManufacturer == manufacturer)?'selected':''%>><%=manufacturer%></option>
+                            <%})%>
+                        </select></p>
+                        <p><select name="assetTypeLifeCycle" id="assetTypeLifeCycle" value = <%=searchParams.assetTypeLifeCycle%>>
+                            <%distinctAssetLifeCycle.forEach(lifeCycle=>{%>
+                                <option value="<%=lifeCycle%>" <%=(searchParams.assetTypeLifeCycle == lifeCycle)?'selected':''%>><%=lifeCycle%></option>
+                            <%})%>
+                        </select></p>
+                    <p><input type="date" name = "assetDatePurchased" value = <%=searchParams.assetDatePurchased%>></p>
+                    
+                    <p><input type="date" name = "testing" value = <%=Date.now().toString%>></p>
+                </div>
                 <p><select name="userApprovalRole">
                     <option value = "All">All</option>
                     <%if (userApprovalRoles){%>

@@ -396,12 +396,21 @@ app.get('/audGoLive', async (req, res)=>{
                 let distinctAssetManufacturer;
                 let distinctAssetLifeCycle;
                 let distinctStatus
+                let distinctState;
+                let distinctDirectorate;
+                let distinctRank;
+
                 try{
                   distinctAuditAssets =  await assetTypeAuditModel.find({}).populate('assetType');//.select('assetTypeClass assetTypeAuditInterval');
                   // distinctAssetManufacturer = await assetTypeAuditModel.find({}).populate('assetType').distinct('assetManufacturer');
                   distinctAssetManufacturer = await assetTypeModel.find({}).populate('assetType').distinct('assetTypeManufacturer');
                   distinctAssetLifeCycle = await assetTypeModel.find({}).populate('assetType').distinct('assetTypeLifeCycle');
                   distinctStatus = await assetTypeModel.find({}).populate('assetType').distinct('status');
+
+                  //userQueries
+                  distinctState = await userModel.find({}).distinct('state');
+                  distinctDirectorate = await userModel.find({}).distinct('directorate');
+                  distinctRank = await userModel.find({}).distinct('rank');
                 }catch(e){
               console.error(e)
                 }
@@ -420,6 +429,17 @@ app.get('/audGoLive', async (req, res)=>{
                             }
                             if (req.query.userDateBeforeSearch != null && req.query.userDateBeforeSearch != ""){
                                 query = query.lte('dateCreated', req.query.userDateBeforeSearch);
+                            }
+
+                            //userState
+                            if (req.query.userState != null && req.query.userState != ""){
+                              query = query.regex('state', req.query.userState);
+                            }
+                            if (req.query.userDirectorate != null && req.query.userDirectorate != ""){
+                              query = query.regex('directorate', req.query.userDirectorate);
+                            }
+                            if (req.query.userRank != null && req.query.userRank != ""){
+                              query = query.regex('rank', req.query.userRank);
                             }
                             if (req.query.userApprovalRole != null && req.query.userApprovalRole != ""){
                                 // req.query.userApprovalRole = (req.query.userApprovalRole == 'All')? null: req.query.userApprovalRole
@@ -548,9 +568,11 @@ app.get('/audGoLive', async (req, res)=>{
                                           console.log('Lifecycle, ', user.userAsset.idAudit[a].assetTypeId.assetTypeLifeCycle);
                                           console.log('id -', req.query.assetList);
                                           if (user.userAsset.idAudit[a].assetTypeId.assetTypeLifeCycle){
-                                          if (user.userAsset.idAudit[a].auditDate.getTime() < (new Date(req.query.assetDateBeforeSearch).getTime()) && user.userAsset.idAudit[a].assetTypeId.id.toString() == req.query.assetList && user.userAsset.idAudit[a].assetTypeId.assetTypeLifeCycle == (req.query.assetTypeLifeCycle?req.query.assetTypeLifeCycle:user.userAsset.idAudit[a].assetTypeId.assetTypeLifeCycle)  && user.userAsset.idAudit[a].assetTypeId.assetTypeManufacturer == (req.query.assetManufacturer?req.query.assetManufacturer:user.userAsset.idAudit[a].assetTypeId.assetManufacturer)){//{
+                                            if (user.userAsset.idAudit[a].assetTypeId.assetTypePurchased){
+                                              console.log('Asset Purchased: ', user.userAsset.idAudit[a].assetTypeId.assetTypePurchased.getTime());
+                                          if (user.userAsset.idAudit[a].auditDate.getTime() < (new Date(req.query.assetDateBeforeSearch).getTime()) && user.userAsset.idAudit[a].assetTypeId.id.toString() == req.query.assetList && user.userAsset.idAudit[a].assetTypeId.assetTypeLifeCycle == (req.query.assetTypeLifeCycle?req.query.assetTypeLifeCycle:user.userAsset.idAudit[a].assetTypeId.assetTypeLifeCycle)  && user.userAsset.idAudit[a].assetTypeId.assetTypeManufacturer == (req.query.assetManufacturer?req.query.assetManufacturer:user.userAsset.idAudit[a].assetTypeId.assetManufacturer) && user.userAsset.idAudit[a].assetTypeId.assetTypePurchased.getTime() < (new Date(req.query.assetDatePurchased).getTime())){//{
                                  
-                                              console.log('less than now2')
+                                              console.log('less than now2');
                                               console.log('assetTypeid ', user.userAsset.idAudit[a].assetTypeId.id.toString());
                                               idAuditObj[user.id].userProfilePic = user.userProfilePic;
                                               idAuditObj[user.id].firstName = user.firstName;
@@ -559,6 +581,7 @@ app.get('/audGoLive', async (req, res)=>{
                                               // return user;
                                               filteredUser.push(user)
                                           }
+                                        }
                                         }
                                         }
                                           
@@ -648,7 +671,10 @@ app.get('/audGoLive', async (req, res)=>{
                                       distinctAuditAssets,
                                       distinctAssetManufacturer,
                                       distinctAssetLifeCycle,
-                                      dateObj
+                                      dateObj,
+                                      distinctState,
+                                      distinctDirectorate,
+                                      distinctRank
                                   });                        
                               }catch(e) {
                                 console.error(e);
