@@ -85,7 +85,7 @@ let assetSchema = new mongoose.Schema({
         {
             user:{
                 type:mongoose.Schema.Types.ObjectId,
-                ref:'userModel'
+                ref:'UserCol'
             },
             auditDate:{
                 type:[Date],
@@ -94,7 +94,11 @@ let assetSchema = new mongoose.Schema({
                 }
             },
             auditedBy:{
-                type:mongoose.Schema.Types.ObjectId
+                type:mongoose.Schema.Types.ObjectId,
+                ref:'UserCredCol'
+            },
+            auditStatus:{
+                type:String
             }
         }
     ]

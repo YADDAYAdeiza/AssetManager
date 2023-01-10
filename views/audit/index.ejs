@@ -18,13 +18,15 @@
                 <p><input type="date" name = "userDateAfterSearch" value = <%=searchParams.userDateAfterSearch%>></p>
                 <p><select name="userState" id="userState" value = <%=searchParams.userState%>>
                     <%if (distinctState){%>
+                        <option value ="" selected>None</option>
                         <%distinctState.forEach(userState=>{%>
                             <option value= <%=userState%> <%= (searchParams.userState == userState)?'selected':''%>  ><%=userState%></option>
-                        <%})%>
-                    <%}%>
-                </select></p>
-                <p><select name="userDirectorate" id="userDirectorate" value = <%=searchParams.userDirectorate%>>
+                            <%})%>
+                            <%}%>
+                        </select></p>
+                        <p><select name="userDirectorate" id="userDirectorate" value = <%=searchParams.userDirectorate%>>
                     <%if (distinctDirectorate){%>
+                        <option value ="">None</option>
                         <%distinctDirectorate.forEach(userDirectorate=>{%>
                             <option value= <%=userDirectorate%> <%= (searchParams.userDirectorate == userDirectorate)?'selected':''%>><%=userDirectorate%></option>
                         <%})%>
@@ -32,6 +34,7 @@
                 </select></p>
                 <p><select name="userRank" id="userRank" value = <%=searchParams.userRank%>>
                     <%if (distinctRank){%>
+                        <option value ="">None</option>
                         <%distinctRank.forEach(userRank=>{%>
                             <option value= <%=userRank%> <%=(searchParams.userRank == userRank)?'selected':''%>><%=userRank%></option>
                         <%})%>
@@ -111,7 +114,20 @@
                 <%  users[userId].userObj.forEach(user=>{%>
                     <ul>
                         <li>
-                            <a href="/asset/<%= user.id %>"><%=user.id%></a>
+                            <a href="/asset/<%= user.id %>"><%=user.id%></a><button id="viewAuditBut" value="<%=user.id%>">|View Audit Trail</button>
+                            <div id="auditTrailDiv"></div>
+                            <form action="/auditStatus?_method=PUT" method="post">
+                                <select name = 'auditStatus'>
+                                    <option>functional</option>
+                                    <option>nonFunctional</option>
+                                    <option>retired</option>
+                                </select>
+                                <input name = 'assetId' type="hidden" value="<%=user.id%>">
+                                <input name = 'userId' type="hidden" value="<%=userId%>">
+                                <input name = 'auditorId' type="hidden" value="<%=reqUser._id%>">
+                                <Button type= 'submit'>Audit</Button>
+                            </form>
+
                         </li>
                     </ul>
                     <%})%>
@@ -135,9 +151,42 @@
                     <div class="assetList">Assign</div>
                 </div>
 
+                
 <div class="video-grid" id="video-grid"></div>
+
+
 <%=roomId%>
 
+<!-- Charting -->
+<div>
+    <canvas id="myChart"></canvas>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    let assetObj = <%- JSON.stringify(assetObj) %>;
+    console.log('assetObj on client', assetObj);
+    const ctx = document.getElementById('myChart');
+  
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: Object.keys(assetObj),
+        datasets: [{
+          label: '# of Votes',
+          data: Object.values(assetObj),
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  </script>
+  <!-- End of Charting -->
 
 <script>
     const Room_ID = "<%=roomId%>";
@@ -150,6 +199,119 @@
             let formSettingsGrabBool = false;
             var openSettingsGrab = document.getElementById('openSettings');
             let cancelSettingsGrab = document.getElementById('cancelSettings');
+            let viewAuditButGrab = document.querySelector('#viewAuditBut');
+            let viewAuditButGrabBool = false;
+            let userDirectorateGrab = document.getElementById('userDirectorate');
+            let userRankGrab = document.getElementById('userRank');
+            
+            //onchange
+            let userStateGrab = document.getElementById('userState');
+            userStateGrab.addEventListener('change', changeUserGrab);
+
+            async function changeUserGrab(){
+                alert(this.value+'---------');
+                let userObj = {
+                    auditField:['state'],
+                    auditValue:[this.value]
+                }
+                let auditOptionsObj = await fetch(`/auditTrail2/${JSON.stringify(userObj)}`);
+                    console.log(auditOptionsObj);
+                    let objOptions = await auditOptionsObj.json();
+                    console.log(objOptions); 
+
+                    // updating with new values
+                        while(userDirectorateGrab.options.length){
+                            userDirectorateGrab.remove(0);
+                        }
+                        while(userRankGrab.options.length){
+                            userRankGrab.remove(0);
+                        }
+                    
+                    //updating select elements
+                    objOptions.directorate.forEach((opt, i)=>{
+                        userDirectorateGrab.options[i] = new Option(opt);
+                    });
+                        userDirectorateGrab.options[userDirectorateGrab.options.length] = new Option('None');
+                        userDirectorateGrab.options[userDirectorateGrab.options.length -1].value = "";
+                    
+                    objOptions.rank.forEach((opt, i)=>{
+                        userRankGrab.options[i] = new Option(opt);
+                    });
+            }
+            console.log('This is userStateGrab:', userStateGrab);
+            // changeUserGrab();
+            // userStateGrab.onchange();
+            
+
+            
+            userDirectorateGrab.addEventListener('change', async function(){
+                alert(this.value+'Directorate');
+                let userObj = {
+                    auditField:['state','directorate'],
+                    auditValue:[userStateGrab.value, this.value]
+                }
+                let auditOptionsObj = await fetch(`/auditTrail2/${JSON.stringify(userObj)}`);
+                    console.log(auditOptionsObj);
+                    let objOptions = await auditOptionsObj.json();
+                    console.log(objOptions); 
+
+                    // updating with new values
+                        while(userRankGrab.options.length){
+                            userRankGrab.remove(0);
+                        }
+                    
+                    //updating select elements
+                    // objOptions.directorate.forEach((opt, i)=>{
+                    //     userDirectorateGrab.options[i] = new Option(opt);
+                    // });
+
+                    objOptions.rank.forEach((opt, i)=>{
+                        userRankGrab.options[i] = new Option(opt);
+                    });
+            });
+
+            userRankGrab.addEventListener('change', async function(){
+                // alert('Changing directorate...');
+                let userObj = {
+                    auditField:['state', 'directorate', 'rank'],
+                    auditValue:[userStateGrab.value, userDirectorateGrab.value, this.value]
+                }
+                let auditOptionsObj = await fetch(`/auditTrail2/${JSON.stringify(userObj)}`);
+                    console.log(auditOptionsObj);
+                    let objOptions = await auditOptionsObj.json();
+                    console.log(objOptions); 
+
+                    //updating with new values
+                    // while(userDirectorateGrab.options.length){
+                    //     userDirectorateGrab.remove(0);
+                    // }
+                    // objOptions.directorate.forEach((opt, i)=>{
+                    //     userDirectorateGrab.options[i] = new Option(opt);
+                    // });
+
+                    // objOptions.rank.forEach((opt, i)=>{
+                    //     userRankGrab.options[i] = new Option(opt);
+                    // });
+            })
+
+            viewAuditButGrab.addEventListener('click', async function (){
+                alert('Trailing...');
+                if (!viewAuditButGrabBool){
+                    let auditTrail = await fetch(`auditTrail/${this.value}`);
+                    console.log(auditTrail);
+                    let auditTrailTx = await auditTrail.json();
+                    console.log('This is it: ', auditTrailTx);
+                    auditTrailTx[0].auditTrail.forEach(auditObj=>{
+                        // auditTrailDiv.innerHTML +=  'Id: '+auditObj._id + ' Audit status'+auditObj.auditStatus;
+                        auditTrailDiv.innerHTML += '<div class= "auditItems">'+'Id: '+auditObj._id + ' Audit status: '+auditObj.auditStatus +  ' Audited By: '+auditObj.auditedBy.userName + '</div>';
+    
+                    })
+                    viewAuditButGrabBool = !viewAuditButGrabBool;
+                }else{
+                    auditTrailDiv.innerHTML = "";
+                    viewAuditButGrabBool = !viewAuditButGrabBool;
+                }
+            })
 
             openSettingsGrab.addEventListener('click', function(event){
                 event.preventDefault();

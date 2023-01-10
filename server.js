@@ -388,6 +388,7 @@ app.get('/audGoLive', async (req, res)=>{
   let auditArr = [];
   console.log(req.query);
   console.log('Hitting...');
+  console.log(req.user);
   console.log(req.query.userDateBeforeSearch);
 
   let userApprovalRoles = await userModel.find({}).where('approvalStatus').ne(null).distinct('approvalStatus');
@@ -432,14 +433,30 @@ app.get('/audGoLive', async (req, res)=>{
                             }
 
                             //userState
-                            if (req.query.userState != null && req.query.userState != ""){
-                              query = query.regex('state', req.query.userState);
+                            if (req.query.userState != null){// && req.query.userState != ""
+                              if (req.query.userState == ""){
+                                //skip from query
+                                console.log('Skipped'); //return all
+                              }else{
+                                query = query.regex('state', req.query.userState);
+                              }
                             }
-                            if (req.query.userDirectorate != null && req.query.userDirectorate != ""){
-                              query = query.regex('directorate', req.query.userDirectorate);
+                            if (req.query.userDirectorate != null){// && req.query.userDirectorate != ""
+                              if (req.query.userDirectorate == ""){
+                                //skip from query
+                                console.log('Skipped Directorate'); //return all directorates
+                              }else{
+                                query = query.regex('directorate', req.query.userDirectorate);
+                              }
                             }
-                            if (req.query.userRank != null && req.query.userRank != ""){
-                              query = query.regex('rank', req.query.userRank);
+                            if (req.query.userRank != null){// && req.query.userRank != ""
+                              if (req.query.userRank == ""){
+                                console.log('This is rank (skip) ', req.query.userRank )
+                                //skip from query
+                              }else{
+                                console.log('This is rank (skip) ', req.query.userRank )
+                                query = query.regex('rank', req.query.userRank);
+                              }
                             }
                             if (req.query.userApprovalRole != null && req.query.userApprovalRole != ""){
                                 // req.query.userApprovalRole = (req.query.userApprovalRole == 'All')? null: req.query.userApprovalRole
@@ -658,6 +675,28 @@ app.get('/audGoLive', async (req, res)=>{
                                             await assetAuditObjArr[0].save();
                                       }
 
+                                      let assets = await assetModel.find({}).where('auditTrail').ne(null).select('assetName auditTrail');
+
+                                      console.log('Audited assets', assets.length);
+
+                                      let assetArr = [];
+                                      let assetObj = {
+                                        functional:0,
+                                        nonFunctional:0,
+                                        retired:0
+                                      }
+
+                                      assets.forEach((asset,i)=>{
+                                        if (asset.auditTrail.length){
+                                          asset.auditTrail.forEach((auditObj,j)=>{
+                                            console.log('Status ',auditObj.auditStatus);
+                                            ++assetObj[auditObj.auditStatus];
+                                          })
+                                        }
+                                      });
+
+                                      console.log('This is assetObj', assetObj)
+
                                   res.render('audit/index.ejs', {
                                       users:idAuditObj,
                                       searchParams:req.query,
@@ -674,7 +713,9 @@ app.get('/audGoLive', async (req, res)=>{
                                       dateObj,
                                       distinctState,
                                       distinctDirectorate,
-                                      distinctRank
+                                      distinctRank,
+                                      reqUser:req.user,
+                                      assetObj: assetObj
                                   });                        
                               }catch(e) {
                                 console.error(e);
@@ -782,7 +823,7 @@ app.put('/auditSettingsCorrect', async (req, res)=>{
                                 console.log('Correcting...');
                                 console.log(req.body);
                                 
-                                
+      
                                 
                                 res.render('audit/index.ejs', {
                                   users:idAuditObj,
@@ -803,6 +844,80 @@ app.put('/auditSettingsCorrect', async (req, res)=>{
                                   res.render('user/index.ejs', {msg: `An error occurred getting the list`, searchParams:req.query, msgClass:'error-message'}); //tying the view to the moongoose model
                               }
 
+})
+
+app.put('/auditStatus', async (req, res)=>{
+  console.log(req.body);
+  let asset =  await assetModel.find({}).where('_id').equals(req.body.assetId).select('assetCode assetType assetName auditTrail');
+  console.log('This is asset,', asset);
+  asset[0].auditTrail.push(
+    {
+      user:req.body.userId,
+      auditedBy:req.body.auditorId,
+      auditStatus:req.body.auditStatus
+    }
+  );
+
+  let asset2 = await asset[0].save();
+ 
+  // console.log(asset2);
+})
+
+app.get('/auditTrail/:id', async (req, res)=>{
+  console.log(req.params.id);
+  let assetToAuditTrail = await assetModel.find({_id:req.params.id}).populate('auditTrail.auditedBy')
+  res.send(assetToAuditTrail);
+})
+
+app.get('/auditTrail2/:id', async (req, res)=>{
+  console.log('Landed here')
+  let directorate = [];
+  let rank = [];
+
+  let objOptions ={directorate:[], rank:[]};
+  console.log('This is id: ', req.params.id);
+  var queryObj = JSON.parse(req.params.id);
+  console.log('This is obj form: ', queryObj)
+  // console.log(queryObj.auditField);
+  // console.log(queryObj.auditValue);
+  let query =  userModel.find();
+  queryObj.auditField.forEach((audit, i)=>{
+    query = query.where(audit).equals(queryObj.auditValue[i]);
+    // query = query.regex('firstName', new RegExp(req.query.userNameSearch, 'i'));
+  })
+
+  let auditQueryOptions = await query.exec();
+
+  console.log(auditQueryOptions);
+  
+  // let auditQueryOptions = await userModel.find({}).where(queryObj.auditField).equals(queryObj.auditValue);//populate('auditTrail.auditedBy')
+  auditQueryOptions.forEach(user=>{
+    // objOptions.directorate.push(user.directorate);
+    directorate.push(user.directorate);
+    // objOptions.rank.push(user.rank);
+    rank.push(user.rank);
+  })
+
+  console.log('Directorate: ', directorate)
+  console.log('Rank: ', rank);
+
+  // making values unique
+  var a = ['a', 1, 'a', 2, '1'];
+  var directorateUnique = directorate.filter(function (value, index, self) {
+    return self.indexOf(value) === index;
+  });
+
+  var rankUnique = rank.filter(function (value, index, self) {
+    return self.indexOf(value) === index;
+  });
+console.log('directorateUnique', directorateUnique);
+console.log('rankUnique', rankUnique);
+  objOptions.directorate = directorateUnique;
+  objOptions.rank = rankUnique;
+
+  console.log('Here is objOptions:', objOptions);
+
+  res.send(objOptions);
 })
 
 app.get('/getAssetTypes', async (req,res)=>{

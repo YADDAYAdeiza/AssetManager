@@ -43,3 +43,9 @@ video{
     background:rgb(234, 233, 233);
     padding-left: 25%;
 }
+
+.auditItems + .auditItems{
+    background-color: silver;
+    margin-top:1rem;
+    margin-right:1rem;
+}
