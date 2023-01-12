@@ -194,6 +194,7 @@
 <script src="/socket.io/socket.io.js"></script>
 <script defer>
             let userID = '<%- userEmail %>';
+            let reloadCheck = '<%-reloadCheck%>';
             let formSettingsGrab = document.getElementsByClassName('formSettings')[0];
             let searchContDivGrab = document.getElementById('searchContDivForm');
             let formSettingsGrabBool = false;
@@ -209,10 +210,10 @@
             userStateGrab.addEventListener('change', changeUserGrab);
 
             async function changeUserGrab(){
-                alert(this.value+'---------');
+                alert(userStateGrab.value+'---------');
                 let userObj = {
                     auditField:['state'],
-                    auditValue:[this.value]
+                    auditValue:[userStateGrab.value]
                 }
                 let auditOptionsObj = await fetch(`/auditTrail2/${JSON.stringify(userObj)}`);
                     console.log(auditOptionsObj);
@@ -237,18 +238,26 @@
                     objOptions.rank.forEach((opt, i)=>{
                         userRankGrab.options[i] = new Option(opt);
                     });
+                    changeDirectorateGrab();
             }
             console.log('This is userStateGrab:', userStateGrab);
-            // changeUserGrab();
+            if(reloadCheck){
+                alert('Entered reload');
+                changeUserGrab();
+                changeDirectorateGrab();
+            }else {
+                alert(reloadCheck);
+            }
             // userStateGrab.onchange();
             
 
             
-            userDirectorateGrab.addEventListener('change', async function(){
-                alert(this.value+'Directorate');
+            userDirectorateGrab.addEventListener('change', changeDirectorateGrab);
+                async function changeDirectorateGrab(){
+                alert(userDirectorateGrab.value+'Directorate');
                 let userObj = {
                     auditField:['state','directorate'],
-                    auditValue:[userStateGrab.value, this.value]
+                    auditValue:[userStateGrab.value, userDirectorateGrab.value]
                 }
                 let auditOptionsObj = await fetch(`/auditTrail2/${JSON.stringify(userObj)}`);
                     console.log(auditOptionsObj);
@@ -259,16 +268,11 @@
                         while(userRankGrab.options.length){
                             userRankGrab.remove(0);
                         }
-                    
-                    //updating select elements
-                    // objOptions.directorate.forEach((opt, i)=>{
-                    //     userDirectorateGrab.options[i] = new Option(opt);
-                    // });
 
                     objOptions.rank.forEach((opt, i)=>{
                         userRankGrab.options[i] = new Option(opt);
                     });
-            });
+                }
 
             userRankGrab.addEventListener('change', async function(){
                 // alert('Changing directorate...');

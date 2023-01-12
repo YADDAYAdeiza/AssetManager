@@ -386,7 +386,7 @@ app.get('/audGoLive', async (req, res)=>{
   console.log('This is assetDateBefore, ', req.query.assetDateBeforeSearch);
 
   let auditArr = [];
-  console.log(req.query);
+  console.log('req.query here: ', req.query);
   console.log('Hitting...');
   console.log(req.user);
   console.log(req.query.userDateBeforeSearch);
@@ -715,7 +715,8 @@ app.get('/audGoLive', async (req, res)=>{
                                       distinctDirectorate,
                                       distinctRank,
                                       reqUser:req.user,
-                                      assetObj: assetObj
+                                      assetObj: assetObj,
+                                      reloadCheck:req.query.userState
                                   });                        
                               }catch(e) {
                                 console.error(e);
