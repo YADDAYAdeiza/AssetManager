@@ -555,6 +555,7 @@ app.get('/audGoLive', async (req, res)=>{
                               let filteredUser = []
                                users.forEach(user=>{
                                   for (var a=0;a<user.userAsset.idAudit.length;a++){
+                                    console.log('The name, ', user.firstName);
                                     // let diffTime = Date.now() - user.userAsset.idAudit[a].auditDate;
                                     // let diffTime = new Date(req.query.userDateBeforeSearch) - user.userAsset.idAudit[a].auditDate;
                                     
@@ -578,6 +579,7 @@ app.get('/audGoLive', async (req, res)=>{
                                     let numOfDays = (new Date(Date.now()).getTime() - user.userAsset.idAudit[a].auditDate.getTime())/(1000*60*60*24);
                                     console.log('Asset ', user.userAsset.idAudit[a].id);
                                     console.log('Number of Days (rounded), ', Math.round(numOfDays));
+                                    console.log('This is numOfDays ', numOfDays);
                                     // console.log('First...')
                                     if (req.query.assetDateBeforeSearch != ''){// assetDate //go with the auditor settings
                                         console.log('Something...', user.userAsset.idAudit[a].id);
@@ -587,6 +589,14 @@ app.get('/audGoLive', async (req, res)=>{
                                           if (user.userAsset.idAudit[a].assetTypeId.assetTypeLifeCycle){
                                             if (user.userAsset.idAudit[a].assetTypeId.assetTypePurchased){
                                               console.log('Asset Purchased: ', user.userAsset.idAudit[a].assetTypeId.assetTypePurchased.getTime());
+                                              console.log('User length: ', users.length);
+                                              console.log('user.userAsset.idAudit.length, ', user.userAsset.idAudit.length);
+                                              console.log(user.userAsset.idAudit[a].assetTypeId.id.toString());
+                                              console.log('req.query.assetList: ', req.query.assetList);
+                                              console.log(user.userAsset.idAudit[a].assetTypeId.id.toString() == req.query.assetList);
+                                              console.log(user.userAsset.idAudit[a].assetTypeId.assetTypeLifeCycle == (req.query.assetTypeLifeCycle?req.query.assetTypeLifeCycle:user.userAsset.idAudit[a].assetTypeId.assetTypeLifeCycle));
+                                              console.log(user.userAsset.idAudit[a].assetTypeId.assetTypeManufacturer == (req.query.assetManufacturer?req.query.assetManufacturer:user.userAsset.idAudit[a].assetTypeId.assetManufacturer));
+                                              console.log(user.userAsset.idAudit[a].assetTypeId.assetTypePurchased.getTime() < (new Date(req.query.assetDatePurchased).getTime()));
                                           if (user.userAsset.idAudit[a].auditDate.getTime() < (new Date(req.query.assetDateBeforeSearch).getTime()) && user.userAsset.idAudit[a].assetTypeId.id.toString() == req.query.assetList && user.userAsset.idAudit[a].assetTypeId.assetTypeLifeCycle == (req.query.assetTypeLifeCycle?req.query.assetTypeLifeCycle:user.userAsset.idAudit[a].assetTypeId.assetTypeLifeCycle)  && user.userAsset.idAudit[a].assetTypeId.assetTypeManufacturer == (req.query.assetManufacturer?req.query.assetManufacturer:user.userAsset.idAudit[a].assetTypeId.assetManufacturer) && user.userAsset.idAudit[a].assetTypeId.assetTypePurchased.getTime() < (new Date(req.query.assetDatePurchased).getTime())){//{
                                  
                                               console.log('less than now2');
@@ -604,8 +614,13 @@ app.get('/audGoLive', async (req, res)=>{
                                           
                                         }else { //just go with the auditor admin settings auditIntervals
                                           console.log('Nothing...');
-                                          if (Math.ceil(numOfDays) > (uniqueAssetObj[user.userAsset.idAudit[a].assetTypeId]) || Math.ceil(numOfDays) == (uniqueAssetObj[user.userAsset.idAudit[a].assetTypeId])){
-                                            console.log('Greater')
+                                          console.log('Number of Days, ', numOfDays);
+                                          console.log('uniqueAssetObj object', uniqueAssetObj);
+                                          console.log('Before the id ', user.userAsset.idAudit[a]);
+                                          console.log('The id: ', user.userAsset.idAudit[a].assetTypeId);
+                                          console.log('Interval ', uniqueAssetObj[user.userAsset.idAudit[a].assetTypeId._id]);
+                                          if (Math.ceil(numOfDays) > (uniqueAssetObj[user.userAsset.idAudit[a].assetTypeId._id]) || Math.ceil(numOfDays) == (uniqueAssetObj[user.userAsset.idAudit[a].assetTypeId._id])){
+                                            console.log('Greater');
                                             idAuditObj[user.id].userProfilePic = user.userProfilePic;
                                             idAuditObj[user.id].firstName = user.firstName;
                                             idAuditObj[user.id].userObj.push(user.userAsset.idAudit[a]);
@@ -871,55 +886,194 @@ app.get('/auditTrail/:id', async (req, res)=>{
 })
 
 app.get('/auditTrail2/:id', async (req, res)=>{
-  console.log('Landed here')
-  let directorate = [];
-  let rank = [];
+    console.log('Landed here')
+    let directorate = [];
+    let rank = [];
+    let assetList = [];
+    let assetListId = [];
+    let assetListNamesAudit = [];
+    let assetListIdAudit = [];
+    let assetManufacturer = [];
 
-  let objOptions ={directorate:[], rank:[]};
+    let objOptions ={directorate:[], rank:[], assetList:[], assetListId:[], assetListNamesAudit:[], assetListIdAudit:[], assetManufacturer:[]};
+    console.log('This is id: ', req.params.id);
+    var queryObj = JSON.parse(req.params.id);
+    console.log('This is obj form: ', queryObj)
+    // console.log(queryObj.auditField);
+    // console.log(queryObj.auditValue);
+    let query =  userModel.find();
+
+    //these must not include any queries regarding fields not directly on the user document -nested documents.
+    queryObj.auditField.forEach((audit, i)=>{
+      query = query.where(audit).equals(queryObj.auditValue[i]);
+      // query = query.regex('firstName', new RegExp(req.query.userNameSearch, 'i'));
+    })
+
+    // let auditQueryOptions = await query.populate('userAsset.id.assetType').exec();//userAsset.id is an asset //userAsset.id.assetType
+    // let auditQueryOptions = await query.populate({path:'userAsset.id', model:assetModel, populate:{path:'assetType', model:assetTypeModel}}).exec();//userAsset.id is an asset //userAsset.id.assetType
+    let auditQueryOptions = await query.populate({path:'userAsset.id', model:assetModel, populate:{path:'assetType', model:assetTypeModel}}).populate({path:'userAsset.idAudit.assetTypeId', model:assetTypeModel}).exec();//userAsset.id is an asset //userAsset.id.assetType
+
+    // console.log(auditQueryOptions);
+    
+    // let auditQueryOptions = await userModel.find({}).where(queryObj.auditField).equals(queryObj.auditValue);//populate('auditTrail.auditedBy')
+    auditQueryOptions.forEach(user=>{
+      // objOptions.directorate.push(user.directorate);
+      directorate.push(user.directorate);
+      // objOptions.rank.push(user.rank);
+      rank.push(user.rank);
+      assetList.push(...user.userAsset.idType);
+      assetListId.push(...user.userAsset.id);
+      
+      
+      //supposed to push idAudit
+      assetListIdAudit.push(...user.userAsset.idAudit);
+      assetListNamesAudit.push(...user.userAsset.idAudit);
+      // assetListNamesAudit
+
+      // assetManufacturer.push(...user.userAsset.id);
+      assetManufacturerMap = user.userAsset.id.map(asset=>{
+        // if (asset.assetTypeManufacturer){
+          // console.log('assetTypes -', asset.assetType);
+          return ((asset.assetType.assetTypeManufacturer)?asset.assetType.assetTypeManufacturer:'No Manufacturer');
+        // }
+      });
+      assetManufacturer.push(...assetManufacturerMap);
+    })
+
+    console.log('Directorate: ', directorate)
+    console.log('Rank: ', rank);
+    console.log('Manufacturer: ', assetManufacturer);
+    console.log('AssetListId: ', assetListId);
+    console.log('AssetListIdAudit', assetListIdAudit);
+    console.log('AssetListNamesAudit', assetListNamesAudit);
+
+    // making values unique
+    var a = ['a', 1, 'a', 2, '1'];
+    var directorateUnique = directorate.filter(function (value, index, self) {
+      return self.indexOf(value) === index;
+    });
+
+    var rankUnique = rank.filter(function (value, index, self) {
+      return self.indexOf(value) === index;
+    });
+
+    var assetListUnique = assetList.filter(function (value, index, self) {
+      return self.indexOf(value) === index;
+    });
+
+    // assetListIdAudit
+    let assetListIdAuditMap = assetListIdAudit.map(asset=>{
+      // return asset.assetType._id.toString();
+      return asset.assetTypeId._id.toString();
+    })
+    var assetListIdAuditUnique = assetListIdAuditMap.filter(function (value, index, self) {
+      return self.indexOf(value) === index;
+      // return self.indexOf(value._id) === index;
+    });
+
+    //idAudit names
+    let assetListNamesAuditMap = assetListNamesAudit.map(asset=>{
+      // return asset.assetType._id.toString();
+      return asset.assetTypeId.assetTypeClass;
+    })
+
+    var assetListNamesAuditUnique = assetListNamesAuditMap.filter(function (value, index, self) {
+      return self.indexOf(value) === index;
+      // return self.indexOf(value._id) === index;
+    });
+
+        let assetListIdMap = assetListId.map(asset=>{
+          return asset.assetType._id.toString();
+        })
+        console.log('This is assetListIdMap: ', assetListIdMap)
+    var assetListIdUnique = assetListIdMap.filter(function (value, index, self) {
+      return self.indexOf(value) === index;
+      // return self.indexOf(value._id) === index;
+    });
+    
+
+    var assetManufacturerUnique = assetManufacturer.filter(function (value, index, self) {
+      // return self.indexOf(value.assetType.toString()) === index;
+      return self.indexOf(value) === index;
+    });
+
+  console.log('directorateUnique', directorateUnique);
+  console.log('rankUnique', rankUnique);
+  console.log('assetListUnique', assetListUnique);
+  console.log('assetListIdUnique', assetListIdUnique);
+  console.log('assetListIdAuditUnique', assetListIdAuditUnique);
+  console.log('assetListNamesAuditUnique', assetListNamesAuditUnique)
+
+    objOptions.directorate = directorateUnique;
+    objOptions.rank = rankUnique;
+    objOptions.assetList = assetListUnique;
+    objOptions.assetManufacturer = assetManufacturerUnique;
+    objOptions.assetListId = assetListIdUnique;
+    objOptions.assetListIdAudit = assetListIdAuditUnique
+    objOptions.assetListNamesAudit = assetListNamesAuditUnique;
+
+    console.log('Here is objOptions:', objOptions);
+
+    res.send(objOptions);
+});
+
+
+
+app.get('/auditTrail2-Asset/:id', async (req, res)=>{
+  console.log('Landed here Asset')
+  let assetManufacturer = [];
+  let lifeCycle = [];
+
+  let objOptions ={lifeCycle:[], assetManufacturer:[]};
   console.log('This is id: ', req.params.id);
   var queryObj = JSON.parse(req.params.id);
-  console.log('This is obj form: ', queryObj)
-  // console.log(queryObj.auditField);
-  // console.log(queryObj.auditValue);
-  let query =  userModel.find();
+  console.log('This is obj form: ', queryObj);
+
+  let query =  assetTypeModel.find();
+  // let query =  userModel.find();
+
+
   queryObj.auditField.forEach((audit, i)=>{
     query = query.where(audit).equals(queryObj.auditValue[i]);
-    // query = query.regex('firstName', new RegExp(req.query.userNameSearch, 'i'));
   })
 
-  let auditQueryOptions = await query.exec();
+  // let auditQueryOptions = await query.populate('userAsset.id.assetType').exec();//userAsset.id is an asset //userAsset.id.assetType
+  let auditQueryOptions = await query.exec();//userAsset.id is an asset //userAsset.id.assetType; //{path:'userAsset.id', model:assetModel, populate:{path:'assetType', model:assetTypeModel}}
 
-  console.log(auditQueryOptions);
   
   // let auditQueryOptions = await userModel.find({}).where(queryObj.auditField).equals(queryObj.auditValue);//populate('auditTrail.auditedBy')
-  auditQueryOptions.forEach(user=>{
-    // objOptions.directorate.push(user.directorate);
-    directorate.push(user.directorate);
-    // objOptions.rank.push(user.rank);
-    rank.push(user.rank);
+  console.log('Length: ', auditQueryOptions.length);
+  auditQueryOptions.forEach(asset=>{
+    assetManufacturer.push(asset.assetTypeManufacturer);
+    // objOptions.rank.push(asset.rank);
+    lifeCycle.push(asset.assetTypeLifeCycle);
   })
 
-  console.log('Directorate: ', directorate)
-  console.log('Rank: ', rank);
+  console.log('Asset Manufacturer: ', assetManufacturer)
+  console.log('LifeCyle: ', lifeCycle);
 
   // making values unique
-  var a = ['a', 1, 'a', 2, '1'];
-  var directorateUnique = directorate.filter(function (value, index, self) {
+  var assetLifeCycleUnique = lifeCycle.filter(function (value, index, self) {
+    return self.indexOf(value) === index;
+  }); 
+
+  var assetManufacturerUnique = assetManufacturer.filter(function (value, index, self) {
     return self.indexOf(value) === index;
   });
 
-  var rankUnique = rank.filter(function (value, index, self) {
-    return self.indexOf(value) === index;
-  });
-console.log('directorateUnique', directorateUnique);
-console.log('rankUnique', rankUnique);
-  objOptions.directorate = directorateUnique;
-  objOptions.rank = rankUnique;
+console.log('assetManufacturerUnique', assetManufacturerUnique);
+console.log('assetLifeCycleUnique', assetLifeCycleUnique);
+
+  objOptions.assetLifeCycle = assetLifeCycleUnique;
+  objOptions.assetManufacturer = assetManufacturerUnique;
 
   console.log('Here is objOptions:', objOptions);
 
   res.send(objOptions);
-})
+});
+
+
+
 
 app.get('/getAssetTypes', async (req,res)=>{
   let assetTypes = await assetTypeAuditModel.find({}).select('_id assetType.assetTypeClass');

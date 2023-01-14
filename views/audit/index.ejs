@@ -15,7 +15,7 @@
                 <p><input type="number" name = "userDays" value = <%=searchParams.userDays%>></p>
                 <p><input type="text" name = "userNameSearch" value = <%=searchParams.userNameSearch%>></p>
                 <p><input type="date" name = "userDateBeforeSearch" value = <%=searchParams.userDateBeforeSearch%>></p>
-                <p><input type="date" name = "userDateAfterSearch" value = <%=searchParams.userDateAfterSearch%>></p>
+                <p><input type="date" name = "userDateAfterSearch" id = 'userDateAfterSearch' value = <%=searchParams.userDateAfterSearch%>></p>
                 <p><select name="userState" id="userState" value = <%=searchParams.userState%>>
                     <%if (distinctState){%>
                         <option value ="" selected>None</option>
@@ -42,8 +42,9 @@
                 </select></p>
                     Asset Created Before: <button id="expand-audit"> v </button>
                 <div id="asset-audit-div">
-                    <p><input type="date" name = "assetDateBeforeSearch" value = <%=searchParams.assetDateBeforeSearch%>></p>
+                    <p><input type="date" name = "assetDateBeforeSearch" id = 'assetDateBeforeSearch' value = <%=searchParams.assetDateBeforeSearch%>></p>
                     <p><select name="assetList" id="assetList" value = <%=searchParams.assetList%>>
+                        <option value ="" selected>None</option>
                         <%distinctAuditAssets.forEach(auditAsset=>{%>
                            <%= console.log('Audit asset', auditAsset.assetType.assetTypeClass)%>
                             <option value="<%= auditAsset.assetType.id%>" <%=(searchParams.assetList == auditAsset.assetType.id)?'selected':''%>><%= auditAsset.assetType.assetTypeClass%></option>
@@ -51,16 +52,18 @@
                         </select></p>
                         
                         <p><select name="assetManufacturer" id="assetManufacturer" value = <%=searchParams.assetManufacturer%>>
+                            <option value ="" selected>None</option>
                             <%distinctAssetManufacturer.forEach(manufacturer=>{%>
                                 <option value="<%=manufacturer%>" <%=(searchParams.assetManufacturer == manufacturer)?'selected':''%>><%=manufacturer%></option>
                             <%})%>
                         </select></p>
                         <p><select name="assetTypeLifeCycle" id="assetTypeLifeCycle" value = <%=searchParams.assetTypeLifeCycle%>>
+                            <option value ="" selected>None</option>
                             <%distinctAssetLifeCycle.forEach(lifeCycle=>{%>
                                 <option value="<%=lifeCycle%>" <%=(searchParams.assetTypeLifeCycle == lifeCycle)?'selected':''%>><%=lifeCycle%></option>
                             <%})%>
                         </select></p>
-                    <p><input type="date" name = "assetDatePurchased" value = <%=searchParams.assetDatePurchased%>></p>
+                    <p><input type="date" name = "assetDatePurchased" id = 'assetDatePurchased' value = <%=searchParams.assetDatePurchased%>></p>
                     
                     <p><input type="date" name = "testing" value = <%=Date.now().toString%>></p>
                 </div>
@@ -204,6 +207,30 @@
             let viewAuditButGrabBool = false;
             let userDirectorateGrab = document.getElementById('userDirectorate');
             let userRankGrab = document.getElementById('userRank');
+            let userAssetListGrab =  document.getElementById('assetList');
+            let userAssetManufacturerGrab =  document.getElementById('assetManufacturer');
+            let assetTypeLifeCycleGrab = document.getElementById('assetTypeLifeCycle');
+
+            //Dates
+            let userDateAfterSearchGrab = document.getElementById('userDateAfterSearch');
+            let assetDateBeforeSearchGrab = document.getElementById('assetDateBeforeSearch');
+            let assetDatePurchasedGrab = document.getElementById('assetDatePurchased');
+            let assetAuditDivGrab = document.getElementById('asset-audit-div')
+            let expandAuditGrab =  document.getElementById('expand-audit');
+                let expandAuditGrabBool = false;
+            expandAuditGrab.addEventListener('click', function(e){
+                e.preventDefault();
+                if (expandAuditGrabBool){
+                    assetAuditDivGrab.style.display = 'block';
+                    expandAuditGrabBool = !expandAuditGrabBool;
+                    this.innerHTML = 'V';
+                }else{
+                    assetAuditDivGrab.style.display = 'None';
+                    expandAuditGrabBool = !expandAuditGrabBool;
+                    this.innerHTML = '^';
+                    
+                }
+            })
             
             //onchange
             let userStateGrab = document.getElementById('userState');
@@ -238,13 +265,19 @@
                     objOptions.rank.forEach((opt, i)=>{
                         userRankGrab.options[i] = new Option(opt);
                     });
+                    userRankGrab.options[userRankGrab.options.length] = new Option('None');
+                    userRankGrab.options[userRankGrab.options.length -1].value = "";
                     changeDirectorateGrab();
+                    // changeUserRank();
+                    // changeAssetListGrab();
             }
             console.log('This is userStateGrab:', userStateGrab);
             if(reloadCheck){
                 alert('Entered reload');
-                changeUserGrab();
-                changeDirectorateGrab();
+                // changeUserGrab();
+                // changeDirectorateGrab();
+                // changeUserRank();
+                // changeAssetListGrab();
             }else {
                 alert(reloadCheck);
             }
@@ -272,31 +305,119 @@
                     objOptions.rank.forEach((opt, i)=>{
                         userRankGrab.options[i] = new Option(opt);
                     });
+                    userRankGrab.options[userRankGrab.options.length] = new Option('None');
+                    userRankGrab.options[userRankGrab.options.length -1].value = "";
+                    changeUserRank();
+                    // changeAssetListGrab()
                 }
 
-            userRankGrab.addEventListener('change', async function(){
-                // alert('Changing directorate...');
-                let userObj = {
-                    auditField:['state', 'directorate', 'rank'],
-                    auditValue:[userStateGrab.value, userDirectorateGrab.value, this.value]
+            userRankGrab.addEventListener('change', changeUserRank)
+                async function changeUserRank(){
+                    // alert('Changing directorate...');
+                    let userObj = {
+                        auditField:['state', 'directorate', 'rank'],
+                        auditValue:[userStateGrab.value, userDirectorateGrab.value, userRankGrab.value]
+                    }
+                    let auditOptionsObj = await fetch(`/auditTrail2/${JSON.stringify(userObj)}`);
+                        console.log(auditOptionsObj);
+                        let objOptions = await auditOptionsObj.json();
+                        console.log(objOptions); 
+
+                        // updating with new values
+                        while(userAssetListGrab.options.length){
+                            userAssetListGrab.remove(0);
+                        }
+                        
+                        objOptions.assetListIdAudit.forEach((opt, i)=>{
+                            userAssetListGrab.options[i] = new Option(objOptions.assetListNamesAudit[i]); //assetListNamesAudit
+                            // userAssetListGrab.options[i].value = objOptions.assetListId[i].assetType._id.toString();
+                            // userAssetListGrab.options[i].value = objOptions.assetListId[i];
+                            userAssetListGrab.options[i].value = objOptions.assetListIdAudit[i];
+                        });
+                        userAssetListGrab.options[userAssetListGrab.options.length] = new Option('None');
+                        userAssetListGrab.options[userAssetListGrab.options.length -1].value = "";
+
+                        changeAssetListGrab();
                 }
-                let auditOptionsObj = await fetch(`/auditTrail2/${JSON.stringify(userObj)}`);
-                    console.log(auditOptionsObj);
-                    let objOptions = await auditOptionsObj.json();
-                    console.log(objOptions); 
 
-                    //updating with new values
-                    // while(userDirectorateGrab.options.length){
-                    //     userDirectorateGrab.remove(0);
-                    // }
-                    // objOptions.directorate.forEach((opt, i)=>{
-                    //     userDirectorateGrab.options[i] = new Option(opt);
-                    // });
 
-                    // objOptions.rank.forEach((opt, i)=>{
-                    //     userRankGrab.options[i] = new Option(opt);
-                    // });
-            })
+            userAssetListGrab.addEventListener('change', changeAssetListGrab)
+                async function changeAssetListGrab(){
+                    // alert('Changing directorate...');
+                    alert('This is the value'+userAssetListGrab.value);
+                    let userObj = {
+                        auditField:['_id'],
+                        auditValue:[userAssetListGrab.value]
+                    }
+                    let auditOptionsObj = await fetch(`/auditTrail2-Asset/${JSON.stringify(userObj)}`);
+                        console.log(auditOptionsObj);
+                        let objOptions = await auditOptionsObj.json();
+                        console.log(objOptions); 
+
+                        //updating with new values
+                        while(userAssetManufacturerGrab.options.length){
+                            userAssetManufacturerGrab.remove(0);
+                        }
+
+                        objOptions.assetManufacturer.forEach((opt, i)=>{
+                            userAssetManufacturerGrab.options[i] = new Option(opt);
+                        });
+                        
+                        // update lifeCycle field too?
+                        while(assetTypeLifeCycleGrab.options.length){
+                            assetTypeLifeCycleGrab.remove(0);
+                        }
+
+                        objOptions.assetLifeCycle.forEach((opt, i)=>{
+                            assetTypeLifeCycleGrab.options[i] = new Option(opt);
+                        });
+                        assetTypeLifeCycleGrab.options[assetTypeLifeCycleGrab.options.length] = new Option('None');
+                        assetTypeLifeCycleGrab.options[assetTypeLifeCycleGrab.options.length -1].value = "";
+
+                        // changeUserAssetManufacturerGrab();
+                }
+
+                function DateSet(){
+                    alert('Setting date');
+                    var now = new Date();
+                    var day = ("0" + now.getDate()).slice(-2);
+                    var month = ("0" + (now.getMonth() + 1)).slice(-2);
+                    var today = now.getFullYear() + "-" + (month) + "-" + (day);
+                    // $('#SubmitDate').val(today);
+
+                    userDateAfterSearchGrab.value = today;
+                    assetDateBeforeSearchGrab.value = today;
+                    assetDatePurchasedGrab.value = today;
+                }
+
+                DateSet();
+
+
+                //
+
+                // userAssetManufacturerGrab.addEventListener('change', changeUserAssetManufacturerGrab);
+                // async function changeUserAssetManufacturerGrab(){
+                //     // alert('Changing directorate...');
+                //     let userObj = {
+                //         auditField:['state', 'directorate', 'rank', 'assetList'],
+                //         auditValue:[userStateGrab.value, userDirectorateGrab.value, userRankGrab.value, userAssetListGrab.value, userAssetManufacturerGrab.value]
+                //     }
+                //     let auditOptionsObj = await fetch(`/auditTrail2/${JSON.stringify(userObj)}`);
+                //         console.log(auditOptionsObj);
+                //         let objOptions = await auditOptionsObj.json();
+                //         console.log(objOptions); 
+
+                //         //updating with new values
+                //         while(userAssetManufacturerGrab.options.length){
+                //             userAssetManufacturerGrab.remove(0);
+                //         }
+
+                //         objOptions.assetManufacturer.forEach((opt, i)=>{
+                //             userAssetManufacturerGrab.options[i] = new Option(opt);
+                //         });
+                //         userAssetManufacturerGrab.options[userAssetManufacturerGrab.options.length] = new Option('None');
+                //         userAssetManufacturerGrab.options[userAssetManufacturerGrab.options.length -1].value = "";
+                // }
 
             viewAuditButGrab.addEventListener('click', async function (){
                 alert('Trailing...');

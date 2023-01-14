@@ -54,7 +54,7 @@ let userSchema = new mongoose.Schema({
     },
     assetType:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:'assetTypeModel'
+        ref:'AssetTypeCol'
     },
     dateCreated:{
         type:Date,
