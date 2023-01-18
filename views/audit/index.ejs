@@ -100,6 +100,19 @@
     </div>
     </div>
     <h2>List of Profiles:</h2>
+    <form action="">
+        <div>
+            Snapshot
+            <br/>
+            <label>Status: </label><label class="savedStatus">Not Saved</label> 
+            <input type="text" id='fName' name='fName' placeholder="filename"> <label id='dateLabel' for="fName"></label>
+            <input type="button" id = 'saveSnapShot' value = 'Save'>
+            <input type="button" id = 'viewSavedSnapShot' value = 'View Saves'>
+        </div>
+        <div id="viewSavedSnapsContainer" class="hideViewSavedSnapShot">
+
+        </div>
+    </form>
     <% if (locals.users !=null){ %>
         <%console.log('Here we go')%>
         <%= 'There are users' %>
@@ -148,7 +161,7 @@
                 </div>
                 <%}%>
                     <%})%>
-                    <% } %> 
+    <%}%> 
                     
                     
                     <div class="assetList">Assign</div>
@@ -197,6 +210,10 @@
 <script src="/socket.io/socket.io.js"></script>
 <script defer>
             let userID = '<%- userEmail %>';
+            let dateLabelGrab = document.getElementById('dateLabel');
+                dateLabelGrab.innerHTML =  new Date(Date.now());
+            let savedStatusGrab = document.getElementsByClassName('savedStatus')[0];
+            let fNameGrab = document.getElementById('fName');
             let reloadCheck = '<%-reloadCheck%>';
             let formSettingsGrab = document.getElementsByClassName('formSettings')[0];
             let searchContDivGrab = document.getElementById('searchContDivForm');
@@ -217,7 +234,14 @@
             let assetDatePurchasedGrab = document.getElementById('assetDatePurchased');
             let assetAuditDivGrab = document.getElementById('asset-audit-div')
             let expandAuditGrab =  document.getElementById('expand-audit');
-                let expandAuditGrabBool = false;
+            let expandAuditGrabBool = false;
+            let saveSnapShotGrab = document.getElementById('saveSnapShot');
+                saveSnapShotGrab.addEventListener('click', saveSnapShotFunc)
+            let viewSavedSnapShotGrab = document.getElementById('viewSavedSnapShot');
+                viewSavedSnapShotGrab.addEventListener('click', viewSavedSnapShotFunc);
+            let viewSavedSnapShotFuncBool = true;
+            let viewSavedSnapsGrab = document.getElementById('viewSavedSnapsContainer');
+
             expandAuditGrab.addEventListener('click', function(e){
                 e.preventDefault();
                 if (expandAuditGrabBool){
@@ -270,6 +294,8 @@
                     changeDirectorateGrab();
                     // changeUserRank();
                     // changeAssetListGrab();
+
+                    resetSaved();
             }
             console.log('This is userStateGrab:', userStateGrab);
             if(reloadCheck){
@@ -378,7 +404,7 @@
                 }
 
                 function DateSet(){
-                    alert('Setting date');
+                    // alert('Setting date');
                     var now = new Date();
                     var day = ("0" + now.getDate()).slice(-2);
                     var month = ("0" + (now.getMonth() + 1)).slice(-2);
@@ -503,6 +529,90 @@
             formSettingsGrab.classList.toggle('formSettingsDisplay')
             searchContDivGrab.classList.toggle('searchContDivSettings');
             formSettingsGrabBool = true;
+    }
+
+    async function saveSnapShotFunc(){
+        alert('Saving...')
+        let fNameObj = {
+            'dateLabel':dateLabelGrab.value,
+            'fName':fNameGrab.value,
+            'savedObj':{
+                'state':userStateGrab.value,
+                'directorate':userDirectorateGrab.value,
+                'rank':userRankGrab.value
+            }
+        }
+
+        let saveFileOptionsObj = await fetch(`/saveFile/${JSON.stringify(fNameObj)}`);
+        let saveFileOptions = await saveFileOptionsObj.json();
+        console.log('This is saved option ', saveFileOptions);
+
+        if (saveFileOptions.msg == 'saved'){
+            alert('Adding green...');
+            console.log(savedStatusGrab);
+            savedStatusGrab.innerHTML = 'Saved';
+            dateLabelGrab.classList.add('greenSaved');
+            savedStatusGrab.classList.add('greenSaved');
+            savedStatusGrab.classList.remove('redUnsaved');
+            dateLabelGrab.classList.remove('redUnsaved');
+        }
+
+    }
+
+    async function viewSavedSnapShotFunc(){
+        if (viewSavedSnapShotFuncBool){
+            // viewSavedSnapsGrab.style.display = 'none'
+            let viewSavedSnapshotObj = await fetch(`/viewSavedSnapshots`);
+            let viewSavedSnapshotOptions = await viewSavedSnapshotObj.json();
+            console.log(viewSavedSnapshotOptions);
+            viewSavedSnapshotOptions.forEach(savedItem=>{
+                let savedItemDiv = document.createElement('div');
+                    savedItemDiv.setAttribute('class', 'savedItemDiv')
+                    savedItemDiv.setAttribute('data-savedItemId', savedItem._id);
+                
+                let deleteSavedBtn = document.createElement('button');
+                    deleteSavedBtn.setAttribute('type', 'button');
+                    deleteSavedBtn.addEventListener('click', deleteSavedItem)
+                    deleteSavedBtn.innerHTML = 'Delete';
+
+                    // let deleteSavedBtn = document.createElement('input');
+                    // //     deleteSavedBtn.addEventListener('click', deleteSavedItem)
+                    // // deleteSavedBtn.innerHTML = 'Delete';
+                    savedItemDiv.innerHTML = `${savedItem._id}<br/> Name:${savedItem.snapShotfileName}<br/>Saved Date:${savedItem.saveDate}<br/>Desc:${JSON.stringify(savedItem.savedObj)}`;
+                    savedItemDiv.appendChild(deleteSavedBtn);
+                viewSavedSnapsGrab.appendChild(savedItemDiv);
+    
+            })
+            // viewSavedSnapsGrab.style.display = 'block'
+            viewSavedSnapsGrab.classList.toggle('hideViewSavedSnapShot')//.display = 'block'
+            viewSavedSnapShotFuncBool = !viewSavedSnapShotFuncBool
+        }else {
+            
+            viewSavedSnapsGrab.innerHTML = "";
+            viewSavedSnapsGrab.classList.toggle('hideViewSavedSnapShot')//.display = 'block'
+            viewSavedSnapShotFuncBool = !viewSavedSnapShotFuncBool;
+        }
+        // alert('Daya..')
+    }
+
+    function resetSaved(){
+        alert('resetting color...')
+        //redUnsaved
+        savedStatusGrab.classList.add('redUnsaved');// = 'Not Saved';
+        savedStatusGrab.innerHTML = 'Not Saved';
+        dateLabelGrab.classList.add('redUnsaved');
+        // savedStatusGrab.style.color = 'red';
+    }
+
+    async function deleteSavedItem(){
+        alert ('Deleting...');
+        console.log('What do');
+        console.log(this.parentNode);
+        console.log(this.parentNode.getAttribute('data-savedItemId'))
+            savedItemId = this.parentNode.getAttribute('data-savedItemId');
+        let deletedSavedSnapshotObj = await fetch(`/deleteSavedSnapshots/${JSON.stringify({savedItemId})}`, {method:'DELETE'});
+            let deleteSavedSnapshotOptions = await deletedSavedSnapshotObj.json();
+            console.log(deleteSavedSnapshotOptions);
     }
 
 </script>

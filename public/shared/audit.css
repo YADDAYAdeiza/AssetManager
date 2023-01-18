@@ -49,3 +49,30 @@ video{
     margin-top:1rem;
     margin-right:1rem;
 }
+.savedStatus{
+    color: red;
+}
+
+.greenSaved{
+    color:green;
+}
+
+.redUnsaved{
+    color:red;
+}
+
+#viewSavedSnapsContainer{
+    border:1px solid silver
+}
+
+.hideViewSavedSnapShot{
+    display:none;
+}
+.savedItemDiv{
+    margin:1rem;
+    /* border: 1 */
+}
+
+.savedItemDiv:hover{
+    background-color: silver;
+}

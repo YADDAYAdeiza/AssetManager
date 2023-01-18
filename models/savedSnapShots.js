@@ -4,30 +4,26 @@ const assetModel = require('./asset.js');
 mongoose.connect('mongodb://localhost/AssetManager');
 
 
-let userCredSchema = new mongoose.Schema({
-    userName:{
+let savedSnapShotsSchema = new mongoose.Schema({
+    snapShotfileName:{
         type:String,
+        default:'Langu',
         required:true
     },
-    email:{
-        type:String,
-        lowercase:true,
+    savedBy:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref: 'UserCredCol',
         required:true
     },
-    password:{
-        type:String,
+    saveDate:{
+        type:Date,
+        default:()=>{
+            return Date.now()
+        }
+    },
+    savedObj:{
+        type:Object,
         required:true
-    },
-    role:{
-        type:String,
-        default:'basic'
-    },
-    profileId:{
-        type:[String]
-    },
-    savedSnapShots:{
-        type:[mongoose.Schema.Types.ObjectId],
-        ref: 'savedSnapShotsCol'
     }
 });
 
@@ -57,7 +53,7 @@ let userCredSchema = new mongoose.Schema({
 // })
 
 //We may have to do for asset, assetType and contractor, but think about this
-let userCredModel = mongoose.model('UserCredCol', userCredSchema);
+let savedSnapShotsModel = mongoose.model('savedSnapShotsCol', savedSnapShotsSchema);
 
-module.exports = userCredModel;
+module.exports = savedSnapShotsModel;
 // module.exports.profileImagePath = profileImagePath;

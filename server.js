@@ -2,6 +2,8 @@ let userModel = require('./models/user');
 let assetTypeModel = require('./models/assetType');
 let assetTypeAuditModel = require('./models/assetType_Audit');
 
+let savedSnapShotsModel = require('./models/savedSnapShots');
+
 let {authenticateRole, authenticateRoleProfilePage, permitLists, permitListsLogin, hideNavMenu, permitApproval} = require('./basicAuth');
 
 
@@ -1073,6 +1075,52 @@ console.log('assetLifeCycleUnique', assetLifeCycleUnique);
 });
 
 
+app.get('/saveFile/:id', async (req, res)=>{
+  console.log('Got here..', req.params);
+  let saveObj = JSON.parse(req.params.id);
+  console.log('This is req.user, ', req.user);
+  console.log('This is req.user, ', req.user._id);
+  console.log('This is savedObj: ', saveObj.fName);
+
+  const newSave = new savedSnapShotsModel({ //we're later getting asset from the form
+    snapShotfileName:saveObj.fName,
+    savedBy:req.user._id,
+    savedObj:saveObj.savedObj
+  })
+   
+  let savedItem = await newSave.save();
+  console.log('This is saved item', savedItem);
+
+  let user = await userCredModel.find({}).where('_id').equals(req.user._id);
+      user[0].savedSnapShots.push(savedItem._id);
+      await user[0].save();
+
+  res.send({msg:'saved'});
+});
+
+
+app.get('/viewSavedSnapshots', async (req, res)=>{
+  console.log('Gotten there...');
+  let user = await userCredModel.find({}).where('_id').equals(req.user._id).populate('savedSnapShots');
+  res.send(user[0].savedSnapShots);
+})
+
+app.delete('/deleteSavedSnapshots/:id', async (req, res)=>{
+  console.log('Gotten there Delete...');
+  console.log('delete id: ', req.params.id);
+  console.log('delete id obj: ', JSON.parse(req.params.id));
+  let savedItemIdVal = (JSON.parse(req.params.id)).savedItemId;
+  let user = await userCredModel.find({}).where('_id').equals(req.user._id);//.populate('savedSnapShots');
+  console.log(user[0].savedSnapShots);
+  user[0].savedSnapShots.forEach((savedItemId, i)=>{
+    if (savedItemId == savedItemIdVal){
+      user[0].savedSnapShots.splice(i, 1);
+    }
+  })
+
+  await user[0].save();
+  res.send({'Item Deleted':req.params.id});
+})
 
 
 app.get('/getAssetTypes', async (req,res)=>{
