@@ -34,10 +34,28 @@ function authenticateRole(){ //should allow user view only the profiles they cre
 
 function authenticateRoleProfilePage(){
     return (req, res, next) =>{
+        console.log('req.params.id now: ', req.params.id);
         console.log('Authenticating profile page...');
         console.log('--');
         if (req.user.role == 'admin'){
-            req.routeStr = 'user/showAdmin'
+            // req.routeStr = 'user/showAdmin'
+            if (req.user.profileId.includes(req.params.id)){
+                //treat as own account
+                //grant access to assign, DeAssign functionality
+                console.log('It\'s own Account ')
+                let uiOwnAccount = {
+                    'ownAccount':'inline'
+                }
+                req.ownAccount = uiOwnAccount;
+            }else {
+                console.log('Not it\'s own Account')
+                //treat as admin -no Assign DeAssign access
+                let uiOwnAccount = {
+                    'ownAccount':'none'
+                }
+                req.ownAccount = uiOwnAccount;
+            }
+            req.routeStr = 'user/show2'
         }else{
             req.routeStr = 'user/show2'
         }
@@ -101,8 +119,14 @@ function permitAssetLists(){
                 // query = query.where('assetUserHistory').in(req.user.profileId);
             } else if (req.user.role =='admin'){
                 console.log('??')
-                query = userModel.find();
+                //is this line necessary?
+                // query = userModel.find();
             }
+            // No need for superadmin
+            // else if (req.user.role =='superAdmin'){
+            //     //superadmin
+            //blank
+            // }
         }else{ //search all for admin
             if (req.user.role =='basic'){
                 // query = query.where('_id').in(req.user.userAsset.id);
@@ -113,6 +137,10 @@ function permitAssetLists(){
                 query = query.where('_id').in(req.user.profileId);
                 // query = query.where('_id').in(req.user.userAsset.id);
             }
+            // else if (req.user.role =='superAdmin'){
+            //     //superadmin
+                // query = userModel.find();
+            // }
         }
         req.queryObj = query;
         next();

@@ -14,7 +14,7 @@
  #mapAsset{
     position:relative;
     width: 80%;
-    height: 100%;
+    height: 50%;
 }
 
 #video-grid{
@@ -44,9 +44,14 @@ video {
     border: 1px solid green;
 }
     </style>
+    <!-- <script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDuYptvwFszij8WWugKw5jQ6PkhiYqBo2c&libraries=&v=weekly&callback=initMap">
+    </script> -->
+    
     <script
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDuYptvwFszij8WWugKw5jQ6PkhiYqBo2c&libraries=&v=weekly">
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDuYptvwFszij8WWugKw5jQ6PkhiYqBo2c&libraries=visualization&callback=initMap" async defer>
     </script>
+      
 </head>
 <body>
     <div class = "asset-details">
@@ -81,8 +86,8 @@ video {
         
         
 
+        <div id = 'mapAsset'>Map goes in here</div>
         <div id = 'mapVidCont'>
-            <div id = 'mapAsset'>Map goes in here</div>
             <div class = "vidContainer">
                 <div id="video-grid"></div>
             </div>
@@ -100,27 +105,26 @@ video {
             port:'3001'
         })
 
-
+        let mapAssetGrab;
         let assetVar = '<%-asset.id%>';
         let assetCode = '<%-asset.assetCode%>';
         let geoCoord = '<%-asset.assetLocationHistory[0].geoCoord%>';
         let assetObj = <%- JSON.stringify(asset)%>;
-        let mapAssetGrab = new google.maps.Map(document.getElementById('mapAsset'), {zoom:6, center:{lat:9, lng:7}});
         let traceButGrab = document.getElementById('traceBut');
         let trackButGrab = document.getElementById('trackBut');
         let id;
         let watchPosOptions;
         let trackAssetBool = false;
         let assetTrackable = '<%-asset.assetType.assetTypeTrackable%>';
-            let videoLiveGrab =  document.getElementById('videoLive');
-            let videoLiveGrabBool = false;
-            let videoGrid = document.getElementById('video-grid');
-            let myVideo = document.createElement('video');
-            myVideo.muted= true;
-
-            const peers = {};
-            videoLiveGrab.addEventListener('click', ()=>{
-                if (videoLiveGrabBool ==false){
+        let videoLiveGrab =  document.getElementById('videoLive');
+        let videoLiveGrabBool = false;
+        let videoGrid = document.getElementById('video-grid');
+        let myVideo = document.createElement('video');
+        myVideo.muted= true;
+        
+        const peers = {};
+        videoLiveGrab.addEventListener('click', ()=>{
+            if (videoLiveGrabBool ==false){
                 navigator.mediaDevices.getUserMedia({
                     video:true,
                     audio:true
@@ -141,10 +145,10 @@ video {
                         // alert('Called me!');
                         connectToNewUser(newUserId, stream)
                     })
-            
+                    
                     socket.on('user-disconnected', (userId)=>{
-                    if (peers[userId]) peers[userId].close();
-            
+                        if (peers[userId]) peers[userId].close();
+                        
                     })
                 });
                     videoLiveGrabBool = !videoLiveGrabBool;
@@ -154,29 +158,57 @@ video {
                     videoLiveGrab.style.backgroundColor = 'silver';
                     // socket.emit('disconnect', userId);
                     // socket.on('user-disconnected', (userId)=>{
-                    // if (peers[userId]) peers[userId].close();
-            
-                    // })
-                }
-            })
-
-            myPeer.on('open', id =>{
+                        // if (peers[userId]) peers[userId].close();
+                        
+                        // })
+                    }
+                })
+                
+                myPeer.on('open', id =>{
                 console.log('This is userId now: ',id);
                 socket.emit('join-room', '2dabcb54-47c4-4999-88d1-b75650767c19', id); //2dabcb54-47c4-4999-88d1-b75650767c19
             })
-
+            
             socket.on('readyLight', (userId)=>{
                 // alert('The admin is live');
                 console.log('The admin is live');
                 videoLiveGrab.style.backgroundColor = 'lime';
             });
-
+            
             //enable videoLiveGrab button
             socket.on('enableTrackBut', (msg)=>{
                 // alert(`Enabling... ${msg}`)
                 videoLiveGrab.style.disabled = false;
             })
 
+            let myLatLngArr = [];
+            let LocationArr = assetObj.assetLocationHistory;
+            let userActivityObj = {}; //keeps track of ... using a combination of Acitivity values (Assign/deAssign) and userId
+            let geoCoordArr =[];
+            let assignArr = [];
+            var drawPolyBool = false;
+            let flightPath; //for drawing poly
+            let lineSymbol;
+
+            function initMap(){
+                mapAssetGrab = new google.maps.Map(document.getElementById('mapAsset'), {zoom:6, center:{lat:9, lng:7}});
+                console.log('MapAsset', document.getElementById('mapAsset'))
+                lineSymbol = {
+                    path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+                };
+                    
+
+                    traceButGrab.addEventListener('click', drawPoly);
+                    trackButGrab.addEventListener('click', trackAsset);
+
+                    LocationArr.forEach( (user,i)=>{
+                            user.geoCoord.lat = +user.geoCoord.lat;
+                            user.geoCoord.lng = +user.geoCoord.lng;
+                        geoCoordArr.push(new google.maps.LatLng(user.geoCoord.lat, user.geoCoord.lng));
+                    })
+                    fetchFromLog();
+            }
+            
             function connectToNewUser(newUserId, stream){
                 console.log('Calling... ', newUserId)
                 const call = myPeer.call(newUserId, stream); //send your video
@@ -223,29 +255,11 @@ video {
         console.log('---');
         console.log(assetObj);
 
-        let myLatLngArr = [];
-        let LocationArr = assetObj.assetLocationHistory;
-        let userActivityObj = {}; //keeps track of ... using a combination of Acitivity values (Assign/deAssign) and userId
-        let geoCoordArr =[];
-        let assignArr = [];
-        var drawPolyBool = false;
-        let flightPath; //for drawing poly
-        const lineSymbol = {
-                path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
-            };
-
-        traceButGrab.addEventListener('click', drawPoly);
-        trackButGrab.addEventListener('click', trackAsset);
-
-        LocationArr.forEach( (user,i)=>{
-                user.geoCoord.lat = +user.geoCoord.lat;
-                user.geoCoord.lng = +user.geoCoord.lng;
-            geoCoordArr.push(new google.maps.LatLng(user.geoCoord.lat, user.geoCoord.lng));
-        })
+        
 
         
         
-        fetchFromLog();
+        
         async function fetchFromLog(){
             userActivityObj =  await fetchDuration();
             console.log('&&');

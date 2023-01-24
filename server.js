@@ -237,7 +237,8 @@ app.use(passport.session());
     console.log('Auditing...');
     console.log(req.user);
     console.log(req.user.userName);
-    res.redirect(`/audit/${uuidV4()}`)
+    // res.redirect(`/audit/${uuidV4()}`)
+    res.redirect(`/audGoLive/${uuidV4()}`)
 })
 
 app.get('/audit/:room', permitLists(), async (req,res)=>{
@@ -384,7 +385,7 @@ app.get('/audit/:room', permitLists(), async (req,res)=>{
                             }
 })
 
-app.get('/audGoLive', async (req, res)=>{
+app.get('/audGoLive/:room', async (req, res)=>{
   console.log('This is assetDateBefore, ', req.query.assetDateBeforeSearch);
 
   let auditArr = [];

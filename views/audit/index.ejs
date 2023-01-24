@@ -7,7 +7,7 @@
     <%console.log('This is date: ',Date.now())%>
     <%console.log('This is date: ',new Date(Date.now()))%>
     
-   Audit
+   Audit  <a href="/audit">Audit Live</a> <a href= "/audGoLive/<%=roomId%>" target="_blank">Send Link</a>
     <div id="searchContDiv">
         <div id="searchContDivForm">
             <form method="get" action="/audGoLive">
@@ -170,8 +170,6 @@
                 
 <div class="video-grid" id="video-grid"></div>
 
-
-<%=roomId%>
 
 <!-- Charting -->
 <div>
@@ -339,7 +337,7 @@
 
             userRankGrab.addEventListener('change', changeUserRank)
                 async function changeUserRank(){
-                    // alert('Changing directorate...');
+                    alert('Changing directorate...');
                     let userObj = {
                         auditField:['state', 'directorate', 'rank'],
                         auditValue:[userStateGrab.value, userDirectorateGrab.value, userRankGrab.value]
@@ -447,6 +445,7 @@
 
             viewAuditButGrab.addEventListener('click', async function (){
                 alert('Trailing...');
+                alert(viewAuditButGrabBool);
                 if (!viewAuditButGrabBool){
                     let auditTrail = await fetch(`auditTrail/${this.value}`);
                     console.log(auditTrail);
@@ -454,8 +453,9 @@
                     console.log('This is it: ', auditTrailTx);
                     auditTrailTx[0].auditTrail.forEach(auditObj=>{
                         // auditTrailDiv.innerHTML +=  'Id: '+auditObj._id + ' Audit status'+auditObj.auditStatus;
-                        auditTrailDiv.innerHTML += '<div class= "auditItems">'+'Id: '+auditObj._id + ' Audit status: '+auditObj.auditStatus +  ' Audited By: '+auditObj.auditedBy.userName + '</div>';
-    
+                        auditTrailDiv.innerHTML += '<div class= "auditItems">'+'id: '+auditObj._id + ' Audit status: '+auditObj.auditStatus +  ' Audited By: '+auditObj.auditedBy.userName + '<br/>'+ 'Audit Date: '+auditObj.auditDate[0] + '</div>';
+                        console.log('Got here now');
+                        console.log(auditTrailDiv);
                     })
                     viewAuditButGrabBool = !viewAuditButGrabBool;
                 }else{
@@ -477,10 +477,10 @@
 
 
             // alert(`In here ${userID}`);
-            var socket = io('http://localhost:3000');
+            // var socket = io('http://localhost:3000');
 
             socket.on('connect', ()=>{
-                // alert(`you connected on ${socket.id}`);
+                alert(`you connected on ${socket.id}`);
             })
 
             // document.addEventListener('click', ()=>{
@@ -569,6 +569,15 @@
                 let savedItemDiv = document.createElement('div');
                     savedItemDiv.setAttribute('class', 'savedItemDiv')
                     savedItemDiv.setAttribute('data-savedItemId', savedItem._id);
+                    savedItemDiv.addEventListener('click', loadSnapSave)
+                        function loadSnapSave(){
+                            console.log('Loading...');
+                            alert(savedItem.savedObj.state);
+                            userStateGrab.value = savedItem.savedObj.state;
+                            userDirectorateGrab.value = savedItem.savedObj.directorate;
+                            userRankGrab.value = savedItem.savedObj.rank;
+                            changeAssetListGrab();
+                        }
                 
                 let deleteSavedBtn = document.createElement('button');
                     deleteSavedBtn.setAttribute('type', 'button');

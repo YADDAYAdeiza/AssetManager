@@ -52,8 +52,8 @@ list-style-type: none;
 }
 
 /*styling div for the asset map */
-/* #mapAsset{
+#mapAsset{
     width: 100%;
-    height:40%;
+    height:100%;
     background-color:silver;
-} */
+}

@@ -146,7 +146,7 @@ io.on('connection', socket=>{
 instrument(io, { auth: false });
 
 
-let {permitAssetLists} = require('../basicAuth.js');
+let {permitAssetLists, hideNavMenu} = require('../basicAuth.js'); //permitLists,
 
 const imageMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
 
@@ -191,12 +191,16 @@ route.get('/fromLogAssetDuration/:assetId', async (req,res)=>{
     console.log('This is it ', assetlog);
     res.send(assetlog);
 })
+
+
 //get all assets
-route.get('/index', permitAssetLists(), async (req, res)=>{
+route.get('/index', permitAssetLists(), hideNavMenu(), async (req, res)=>{ //permitLists()
     console.log('filtering...');
     let query = req.queryObj
+    //query.where('_id').in(req.user.profileId)
     
-    let userModelVar = await query.exec();
+    let userModelVar = await query.select('firstName userAsset').exec();
+    console.log('This is userModelVar: ', userModelVar);
     let assetIds = [];
     userModelVar.forEach(user=>{
         user.userAsset.id.forEach(assetId=>{
@@ -218,8 +222,9 @@ route.get('/index', permitAssetLists(), async (req, res)=>{
     if (req.query.assetDateAfterSearch != null && req.query.assetDateAfterSearch != ""){
         assetQuery = assetQuery.gte('assetAssignDate', req.query.assetDateAfterSearch);
     }
+    //is this necessary?
+    // assetQuery =  assetQuery.where('_id').in(assetIds);
     
-    assetQuery =  assetQuery.where('_id').in(assetIds);
     assetModelVar = await assetQuery.exec();
 // console.log('This is userModelVar', userModelVar)
 console.log('This is assetModelVar', assetModelVar)
@@ -229,9 +234,11 @@ console.log('This is assetModelVar', assetModelVar)
 //     }
 // }
 
-let uiSettings = {
-    'onlyAdmin':'none'
-}
+// let uiSettings = {
+//     'onlyAdmin':'none'
+// }
+console.log('This is req.dispSetting', req.dispSetting);
+let uiSettings = req.dispSetting;
     // res.render('./asset/index.ejs', {asset: assetModelVar, searchParams: req.body.searchAssetScope});
     res.render('./asset/index.ejs', {asset: assetModelVar, searchParams: req.query, uiSettings});
     // res.render('./asset/index.ejs');

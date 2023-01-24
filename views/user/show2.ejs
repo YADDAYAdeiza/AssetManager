@@ -587,7 +587,7 @@ function requisitionHistory(){
                     assetQty = document.getElementsByClassName('tabcontent assignDeassignTrack')[0].getAttribute('data-asset-qty');
                         if (assetDiv == 'user-assets-div'){
                             if (assetQty > 0){
-                                --assetQty;
+                               // --assetQty;
                                 //tying assetQty to displayed asset Div, for use within (Qty)
                                 document.getElementsByClassName('tabcontent assignDeassignTrack')[0].setAttribute('data-asset-qty', assetQty);
                                 console.log(document.getElementsByClassName('assetQtyClass')[0]);
@@ -691,9 +691,11 @@ function requisitionHistory(){
            console.log(assetDivGrab);
            [...assetDivGrab].forEach(divItem=>{
                if (divItem.getAttribute('data-status') == 'New'){
+                alert('New item')
                     console.log(divItem.getAttribute('data-status'))
                    idObj['idArr'].push(divItem.getAttribute('data-assetType-id'));
                }else {
+                alert('Used Item');
                     idObj['idArrAsset'].push(divItem.getAttribute('data-asset-id'));
                }
            })
@@ -1622,8 +1624,8 @@ var objClassList = {}
     }
 
     var settingsObj = <%- JSON.stringify(uiSettings)%>
-        console.log(settingsObj);
-        console.log('Now here showAdmin');
+        console.log('settings: ', settingsObj);
+        console.log('Now here show');
 
         var settingsObjKeys = (Object.keys(settingsObj));
         var settingsObjValues = (Object.values(settingsObj));
@@ -1634,9 +1636,23 @@ var objClassList = {}
         })
         console.log(Object.values(settingsObj));
 
+    //ownAccounts -hiding Assign, DeAssign
+    var ownAccountObj = <%- JSON.stringify(ownAccount)%>
+        console.log('ownAcount Setting: ', ownAccountObj);
 
-        //approvalSettings -state, directorate and Store
-        var approvalSettingsObj = <%- JSON.stringify(approvalSettings)%>
+        var ownAccountObjKeys = (Object.keys(ownAccountObj));
+        var ownAccountObjValues = (Object.values(ownAccountObj));
+        ownAccountObjKeys.forEach(className=>{
+            [ ...document.getElementsByClassName(className)].forEach(elm=>{
+                console.log('ownAccoutn Element: ', elm);
+                elm.style.display = ownAccountObj[className];
+            })
+        })
+        console.log(Object.values(ownAccountObj));
+
+
+     //approvalSettings -state, directorate and Store
+    var approvalSettingsObj = <%- JSON.stringify(approvalSettings)%>
         console.log(approvalSettingsObj);
         console.log('Now here showAdmin');
 
