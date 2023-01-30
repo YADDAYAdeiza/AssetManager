@@ -114,6 +114,7 @@ video {
             <p>
                 <button id = 'trackFleet'>Track Fleet</button>
                 <button id = 'videoLive'>Video Live</button>
+                <button id = 'startLiveBut'>Start Meeting</button>
             </p>
         </div>
     <div>
@@ -261,6 +262,7 @@ video {
     let toggleHeatMapGrab;
     let trackFleetGrab;
     let videoLiveGrab =  document.getElementById('videoLive');
+    let startLiveButGrab =  document.getElementById('startLiveBut');
     
     // alert(roomId);
     // socket.emit('join-room', roomId, 10 ); //2dabcb54-47c4-4999-88d1-b75650767c19
@@ -283,14 +285,22 @@ video {
                 call.on('stream', userVideoStream=>{
                     alert('Receiving Stream...')
                     addVideoStream(video, userVideoStream);
+                    alert('SEcond connect...?')
                 })
             })
             socket.emit('ready');
-            socket.on('user-joined', newUserId =>{
+            socket.on('user-joined', (newUserId, roomId) =>{
                 console.log('User joined national ', newUserId);
                 console.log('Twice?');
-                videoLiveGrab.style.color = 'lime';
-                connectToNewUser(newUserId, stream)
+                console.log('RoomId joined: ', roomId)
+                alert('Clients Joining soon');
+                // videoLiveGrab.innerHTML = 'Joining...'
+                // videoLiveGrab.style.color = 'yellow';
+                console.log(videoLiveGrab);
+                alert('Clients Joining');
+                // startLiveButGrab.addEventListener('click', function(){
+                    connectToNewUser(newUserId, stream)
+                // });
             })
     
             socket.on('user-disconnected', (userId)=>{
@@ -304,13 +314,19 @@ video {
 
     myPeer.on('open', id =>{
             console.log('This is userId now: ',id);
+            //this userid is an object, having user property.
             socket.emit('join-room', '2dabcb54-47c4-4999-88d1-b75650767c19', {user:'admin', id}); //2dabcb54-47c4-4999-88d1-b75650767c19
     })
 
-    socket.on('readyLight', (userId)=>{
-                alert('The admin is live');
-                console.log('The admin is live');
+    socket.on('readyLight', (userId, roomId, numOfClients)=>{
+                // alert('The admin is live');
+                console.log('The admin is live in ', roomId);
+                console.log('Number of clients in the room ')//io.sockets.adapter.rooms[roomId].length
+                videoLiveGrab.style.backgroundColor = 'lime';
+                videoLiveGrab.style.color = 'black';
                 videoLiveGrab.style.backgroundColor = 'yellow';
+                videoLiveGrab.innerHTML = `Joining...(${numOfClients})`
+                // videoLiveGrab.innerHTML = `Video Live(${numOfClients})`;
             });
 
 
@@ -319,8 +335,13 @@ video {
         const call = myPeer.call(newUserId, stream); //send your video
         const video = document.createElement('video');
         call.on('stream', userVideoStream=>{ //receive their video
+            startLiveButGrab.disabled = false;
+            
+
             console.log('Receiving from...', newUserId);
-            addVideoStream(video, userVideoStream)
+            startLiveButGrab.addEventListener('click', function(){
+                addVideoStream(video, userVideoStream);
+            });
         })
         call.on('close', ()=>{
             video.remove();
@@ -470,7 +491,7 @@ video {
                 
                 trackFleetArr2.length?(trackFleetArr = trackFleetArr2):(trackFleetArr = trackFleetArr);
                 console.log('--')
-                console.log(trackFleetArr, trackFleetArr[0].getTitle());
+                // console.log(trackFleetArr, trackFleetArr[0].getTitle());
                     trackFleetArr.forEach(trackMarker=>{
                         // if (trackMarker.stopDuty != true){
                             alert('This is markerBool ', trackMarker.markerBool);

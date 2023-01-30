@@ -123,24 +123,33 @@ video {
         myVideo.muted= true;
         
         const peers = {};
+        // socket.emit('ready');
+        window.onload = function(){
+            alert ('Window!');
+            // videoLiveGrab.click();
+        }
         videoLiveGrab.addEventListener('click', ()=>{
             if (videoLiveGrabBool ==false){
                 navigator.mediaDevices.getUserMedia({
                     video:true,
                     audio:true
                 }).then(stream =>{
-                    addVideoStream(myVideo, stream);
+                    addVideoStream(myVideo, stream, 'lime');
                     myPeer.on('call', call=>{
                         call.answer(stream);
                         const video = document.createElement('video');
                         call.on('stream', userVideoStream=>{
-                            // alert('Receiving Stream 2...');
+                            alert('Receiving Stream 2...');
                             videoLiveGrab.style.backgroundColor = 'lime';
-                            addVideoStream(video, userVideoStream);
+                            addVideoStream(video, userVideoStream, 'brown');
                         })
                     })
-                    socket.emit('ready');
+                    // socket.emit('ready');
+                    socket.emit('ready', color=>{
+                        videoLiveGrab.style.backgroundColor = color;
+                    });
                     socket.on('user-joined', newUserId =>{
+                        videoLiveGrab.style.backgroundColor = 'yellow';
                         console.log('User joined ', newUserId);
                         // alert('Called me!');
                         connectToNewUser(newUserId, stream)
@@ -166,18 +175,21 @@ video {
                 
                 myPeer.on('open', id =>{
                 console.log('This is userId now: ',id);
+                
+                //this userid is just an id. on the server side, it will not register as admin
                 socket.emit('join-room', '2dabcb54-47c4-4999-88d1-b75650767c19', id); //2dabcb54-47c4-4999-88d1-b75650767c19
             })
             
             socket.on('readyLight', (userId)=>{
                 // alert('The admin is live');
                 console.log('The admin is live');
-                videoLiveGrab.style.backgroundColor = 'lime';
+                videoLiveGrab.style.backgroundColor = 'red';
             });
             
             //enable videoLiveGrab button
             socket.on('enableTrackBut', (msg)=>{
                 // alert(`Enabling... ${msg}`)
+                trackButGrab.style.backgroundColor = 'yellow';
                 videoLiveGrab.style.disabled = false;
             })
 
@@ -215,7 +227,7 @@ video {
                 const video = document.createElement('video');
                 call.on('stream', userVideoStream=>{ //receive their video
                     console.log('Receiving from...', newUserId);
-                    addVideoStream(video, userVideoStream)
+                    addVideoStream(video, userVideoStream, 'blue')
                 })
                 call.on('close', ()=>{
                     video.remove();
@@ -225,7 +237,8 @@ video {
 
             }
 
-            function addVideoStream(video, stream){
+            function addVideoStream(video, stream, col){
+                video.style.borderColor = col;
                 video.srcObject = stream;
                 video.addEventListener('loadedmetadata', ()=>{
                     video.play();

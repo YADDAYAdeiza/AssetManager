@@ -59,7 +59,7 @@ io.on('connection', socket=>{
     //for video use
     socket.on('join-room', (roomId, userId)=>{
         socket.join(roomId);
-        if(userId.user !== 'admin'){
+        if(userId.user !== 'admin'){ //joining from trackable asset
             console.log('Enabling Track Button...')
             if (adminAvailableLightUp){
                 console.log('Enable Track Button...')
@@ -76,7 +76,7 @@ io.on('connection', socket=>{
             }
             socket.to(roomId).emit('enableTrackBut', 'Enabled' )
 
-        } else{
+        } else{ //joining from overview national
             console.log('Admin');
             adminAvailableLightUp = true;
         }
@@ -103,24 +103,28 @@ io.on('connection', socket=>{
         //     }
         // }
 
-        socket.on('ready', ()=>{
+        socket.on('ready', (cb)=>{
             console.log('Called ready with socket ', socket.id);
             console.log(`${socket.id} is in ${socket.rooms} room`)
             if(userId.user == 'admin'){
                 adminAvailable = true
                 console.log(`From admin ${userId}`);
-                socket.broadcast.to(roomId).emit('user-joined', userId)
+                console.log('This is roomId in ready ', roomId);
+                socket.broadcast.to(roomId).emit('user-joined', userId, roomId)
                 // socket.to(roomId).emit('readyLight', userId);
                 adminSocketVar = socket;
 
             }else{
-                console.log(`From Driver... ${userId}`);
+                console.log(`From Driver now... ${userId}`);
+                cb('brown');
                 socket.broadcast.to(roomId).emit('user-joined', userId)
                 if (adminAvailable){
 
-                adminSocketVar.broadcast.to(roomId).emit('user-joined', userId)
+                adminSocketVar.broadcast.to(roomId).emit('user-joined', userId, roomId)
                     console.log('Admin is ', adminAvailable);
-                    socket.to(roomId).emit('readyLight', userId);
+                    console.log('Number of clients joined: ', io.sockets.adapter.rooms.size);
+                    let numOfClients = io.sockets.adapter.rooms.size;
+                    socket.to(roomId).emit('readyLight', userId, roomId, io.sockets.adapter.rooms.size);
                     console.log(`Admin to ${socket.id}`);
                     adminSocketVar.to(socket.id).emit('readyLight', userId);
                     console.log(`Admin2 to ${socket.id}`);
@@ -129,6 +133,8 @@ io.on('connection', socket=>{
 
             }
         });
+
+        // socket. //join room Number
         
         socket.on('disconnect', ()=>{
             socket.broadcast.to(roomId).emit('user-disconnected', userId)
