@@ -33,21 +33,43 @@
             <a class= "btn btn-primary" href="/asset/<%=asset.id%>">View </a><a class= "btn btn-primary" href = "/asset/<%=asset.id%>/edit">Edit</a>
             
             <%- include('../partials/deleteForm.ejs', {url:`/asset/${asset.id}`}) %>
+            <%let len = asset.assetUserHistory.length%>
+            <% console.log('Length :', len)%>
+            <%console.log('userid is: ', asset.assetUserHistory[len-1].toString())%>
+            <button class="btn btn-primary" id="deAssignBut" onClick="deAssignAsset('<%=asset.id%>', '<%=asset.assetUserHistory[len-1].toString()%>')">DeAssignAsset</button>
         </div>
     <%})%>
 <% } %>
 
-<script>
-    // var regAssetTypeGrab = document.getElementById('regAssetType');
-    // console.log(regAssetTypeGrab);
-    // regAssetTypeGrab.style.display = 'none';
+<script defer>
+   
 
-    // uiSettings = {
-    // sideNav:{
-    //     'regAssetType':'none'
-    // }
-    
-// }
+// var deAssignButGrab = document.getElementById('deAssignBut');
+// console.log('This is deAssignButGrab: ', deAssignButGrab);
+//     deAssignButGrab.addEventListener('click', function(){
+//         alert('Nah');
+//     });
+
+async function deAssignAsset(assetId, userId){
+    console.log('This is userId ', userId);
+
+    // let userId = asset.assetUserHistory[asset.assetUserHistory.length-1].id;
+    // let assetId = asset.id;
+    alert('DeAssigning.... Administratively '+ assetId);
+    let obj = {
+        assetId:assetId,
+        userId:userId
+    }
+    console.log('Obj is: ', obj);
+let objString = JSON.stringify(obj);
+console.log('Obj String is: ', objString);
+    let deletedSavedSnapshotObj = await fetch(`/asset/deAssign/${objString}`, {
+        method: 'PUT',
+            // body: JSON.stringify({ title: 'Fetch PUT Request Example' })
+    });
+   
+    // let deleteSavedSnapshotOptions = await deletedSavedSnapshotObj.json();
+}
 
 
     let settingsObj = <%- JSON.stringify(uiSettings)%>;

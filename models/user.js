@@ -247,9 +247,13 @@ userSchema.virtual('userProfilePic').get(function(){
 
 userSchema.pre('remove', function(next){
     console.log('Gotten in preRemove..');
-
+    console.log('This is approving role: ', this.userRole.role);
     //taking care of assets
-    if (this.userAsset.id.length){
+    // if (err){
+    //     console.log('This is err: ', err);
+    //     next(err)
+    if (this.userAsset.id.length ||this.userRole.role != 'ownApproval'){// if staff has no assets, or staff is not in an approving role beyond 'ownApproval'
+        console.log('This is length: ', this.userAsset.id.length);
         next(new Error('This user has assets still'))
     }else{
         next();

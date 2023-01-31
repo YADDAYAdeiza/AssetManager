@@ -16,6 +16,7 @@ let userLogModel = require('../models/userLog');
 let userCredModel = require('../models/userCred');
 
 const nodemailer = require("nodemailer");
+const conn = require("../models/connection");
 
 
 const io = require('socket.io')(3000, {
@@ -363,6 +364,7 @@ route.get('/:id/edit',  hideNavMenu(), async (req,res)=>{
                                 console.log('This is usersToApprove ', usersToApprove);
                                 // let msg = 'User found';
                                 console.log('This is asset:')
+                                console.log('This is msg ', msg);
                                 // console.log(asset);
                                 const records = await assetModel.find().where('_id').in(ownAssets).select('assetCode assetName assetType assetStatus').exec();
                             // console.log('This is allAssetType ', allAssetType);
@@ -1847,7 +1849,7 @@ main().catch(console.error);
 });
 
 
-route.delete('/:id', async(req,res)=>{
+route.delete('/:id', authenticateRoleProfilePage(), async(req,res)=>{
     // console.log('Deleting...');
     let user;
     try {
@@ -1872,6 +1874,7 @@ route.delete('/:id', async(req,res)=>{
         console.log('Passed Here')
         res.redirect("/user/index");
     } catch(e){
+        console.log('This is error: ');
         console.log(e.message);
         if (user == null){
             console.log('Entered here');

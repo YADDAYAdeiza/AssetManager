@@ -101,7 +101,8 @@ let assetSchema = new mongoose.Schema({
                 type:String
             }
         }
-    ]
+    ],
+    userTrail:[mongoose.Schema.Types.ObjectId]
 });
 
 assetSchema.virtual('assetImageDetails').get(function(){

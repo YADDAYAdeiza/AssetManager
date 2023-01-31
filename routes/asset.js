@@ -447,5 +447,83 @@ function saveAssetImageDetails(user, encodedProfile){
     }
 }
 
+route.put('/deAssign/:id', async (req, res)=>{
+    console.log('DeAssigning...', req.params.id);
+    let obj = JSON.parse(req.params.id);
+    console.log(obj);
+    let userId = obj.userId;
+
+    let user = await userModel.findById(userId).select('firstName');
+    console.log(user);
+    
+    //DeAssigning code
+                        
+
+            console.log('DeAssign now by Admin');
+           
+            //next
+            user.userAsset.id.forEach(item=>{
+                if(userAssetArr.idArr.indexOf((item.toString())) == -1){
+                    newIdArr.push(item);
+                } //string to mongoose.Types.ObjectId.  How to
+            })
+
+            let stateApprover = await userModel.find({}).where('userRole.role').equals('stateApproval').where('userRole.domain').equals(user.state);//.where('userRole.domain').equals(user.directorate)
+            // stateApprover[0].userRole.usersToApprove.forEach(objItem=>{
+            for (const objItem of stateApprover[0].userRole.usersToApprove){
+                objItem.approvedAssets.forEach((asset,i)=>{
+                // for (asset of objItem.approvedAssets(asset,i)=>{
+                    console.log('second foreach')
+                    if(userAssetArr.idArr.indexOf((asset.toString())) > -1){
+                        console.log(objItem.approvedAssets);
+                        console.log('Splicing...')
+                        objItem.approvedAssets.splice(i,1);
+                        console.log(objItem.approvedAssets);
+                    }
+                })
+                
+            }
+            //remove if holding nothing
+            for (var a=0;a < stateApprover[0].userRole.usersToApprove.length;a++){
+                if (stateApprover[0].userRole.usersToApprove[a].approvedAssets.length ==0){
+                    stateApprover[0].userRole.usersToApprove.splice(a,1); 
+                }
+            }
+            let savedStateApprover = await stateApprover[0].save();
+
+    //userAssetArr.idArr //items to deAssign
+
+            //reassign updated assetIds to user
+            user.userAsset.id = newIdArr;
+            let assetsNamesToAssign = await assetModel.find().where('_id').in(newIdArr).select('assetType status allocationStatus assetApproval').exec();
+            let affectedAssets = await assetModel.find().where('_id').in(userAssetArr.idArr).select('assetType status allocationStatus assetApproval').exec();
+
+            //return affected Assets to Asset pool (used)
+            //This will be in each approval stage
+            affectedAssets.forEach(async asset=>{
+                console.log('Did it get here?');
+                asset.assetAllocationStatus = false;
+                asset.assetApproval.self = null;
+                let savedAsset = await asset.save();
+                console.log(savedAsset);
+            })
+            var assetTypeArr = [];
+            assetsNamesToAssign.forEach(asset=>{
+                console.log('Is this right?');
+                asset.assetAllocationStatus = false; //we have to bring false assets and store them under their asset Divs as used items
+                assetTypeArr.push(asset.assetType); //or asset.assetName?
+            })
+
+            //reassign updated assetId types to user
+            user.userAsset.idType = assetTypeArr; //very correct
+            console.log('6--');
+            console.log('This is userAssetArr.idArr right before log: ', userAssetArr.idArr);
+            redirectUser = user.id;
+
+            userLogSave(user, userAssetArr.idArr, req.query.assignment, req);
+            
+        
+
+})
 
 module.exports = route;

@@ -60,6 +60,7 @@ video {
         <h4>Asset Type: <%= asset.assetType.assetTypeClass%></h4>
         <h4>Asset Status: <%= asset.status%></h4>
         <h4>Asset Assigned: <%= asset.assetAssignDate.toDateString()%></h4>
+        <h4>Asset Assigned To: <%= asset.assetUserHistory[asset.assetUserHistory.length-1].id.toString()%></h4>
         
         
         <%if (asset.assetDescription != null){%>
@@ -83,6 +84,7 @@ video {
         <button id = 'traceBut'>Trace Path</button>
         <button id = 'trackBut' <%-asset.assetType.assetTypeTrackable ? "":"disabled"%> >Track Asset</button>
         <button id = 'videoLive'>Video Live</button>
+        <button id = 'deAssignBut'>DeAssign</button>
         
         
 
