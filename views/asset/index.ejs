@@ -26,6 +26,7 @@
     <%= 'There are assets' %>
     <%  asset.forEach(asset=>{%>
         <p><%=asset.assetCode%></p>
+        <div  class = <%=asset.assetAllocationStatus?"allocated": "notAllocated"%>>
         <a href="/asset/<%=asset.id%>">
             <p><img height= "100" width="120" src="<%= asset.assetImageDetails%>"></p>
         </a>
@@ -37,6 +38,7 @@
             <% console.log('Length :', len)%>
             <%console.log('userid is: ', asset.assetUserHistory[len-1].toString())%>
             <button class="btn btn-primary" id="deAssignBut" onClick="deAssignAsset('<%=asset.id%>', '<%=asset.assetUserHistory[len-1].toString()%>')">DeAssignAsset</button>
+        </div>
         </div>
     <%})%>
 <% } %>
@@ -50,23 +52,29 @@
 //         alert('Nah');
 //     });
 
+let obj = {
+    assetId:[],
+    userId:[]
+}
 async function deAssignAsset(assetId, userId){
     console.log('This is userId ', userId);
 
     // let userId = asset.assetUserHistory[asset.assetUserHistory.length-1].id;
     // let assetId = asset.id;
     alert('DeAssigning.... Administratively '+ assetId);
-    let obj = {
-        assetId:assetId,
-        userId:userId
-    }
+    obj.assetId.push(assetId);
+    obj.userId.push(userId);
+    obj.assignment = 'adminDeAssign';
+
     console.log('Obj is: ', obj);
-let objString = JSON.stringify(obj);
-console.log('Obj String is: ', objString);
-    let deletedSavedSnapshotObj = await fetch(`/asset/deAssign/${objString}`, {
+    let objString = JSON.stringify(obj);
+    console.log('Obj String is: ', objString);
+    let deAssignedMsg = await fetch(`/asset/deAssign/${objString}`, {
         method: 'PUT',
             // body: JSON.stringify({ title: 'Fetch PUT Request Example' })
     });
+
+    console.log('Done?', deAssignedMsg);
    
     // let deleteSavedSnapshotOptions = await deletedSavedSnapshotObj.json();
 }

@@ -28,7 +28,8 @@ let userCredSchema = new mongoose.Schema({
     savedSnapShots:{
         type:[mongoose.Schema.Types.ObjectId],
         ref: 'savedSnapShotsCol'
-    }
+    },
+    adminApprovals:[Object]
 });
 
 // userSchema.virtual('userProfilePic').get(function(){

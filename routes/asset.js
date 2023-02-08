@@ -153,6 +153,7 @@ instrument(io, { auth: false });
 
 
 let {permitAssetLists, hideNavMenu} = require('../basicAuth.js'); //permitLists,
+const { Router, query } = require('express');
 
 const imageMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
 
@@ -451,62 +452,81 @@ route.put('/deAssign/:id', async (req, res)=>{
     console.log('DeAssigning...', req.params.id);
     let obj = JSON.parse(req.params.id);
     console.log(obj);
+    let newIdArr = [];
     let userId = obj.userId;
+    let assetIdArr = obj.assetId;
 
-    let user = await userModel.findById(userId).select('firstName');
+    let user = await userModel.findById(userId);
     console.log(user);
     
     //DeAssigning code
                         
-
             console.log('DeAssign now by Admin');
            
             //next
             user.userAsset.id.forEach(item=>{
-                if(userAssetArr.idArr.indexOf((item.toString())) == -1){
+                if(assetIdArr.indexOf((item.toString())) == -1){
                     newIdArr.push(item);
                 } //string to mongoose.Types.ObjectId.  How to
             })
 
-            let stateApprover = await userModel.find({}).where('userRole.role').equals('stateApproval').where('userRole.domain').equals(user.state);//.where('userRole.domain').equals(user.directorate)
-            // stateApprover[0].userRole.usersToApprove.forEach(objItem=>{
-            for (const objItem of stateApprover[0].userRole.usersToApprove){
-                objItem.approvedAssets.forEach((asset,i)=>{
-                // for (asset of objItem.approvedAssets(asset,i)=>{
-                    console.log('second foreach')
-                    if(userAssetArr.idArr.indexOf((asset.toString())) > -1){
-                        console.log(objItem.approvedAssets);
-                        console.log('Splicing...')
-                        objItem.approvedAssets.splice(i,1);
-                        console.log(objItem.approvedAssets);
-                    }
-                })
-                
-            }
-            //remove if holding nothing
-            for (var a=0;a < stateApprover[0].userRole.usersToApprove.length;a++){
-                if (stateApprover[0].userRole.usersToApprove[a].approvedAssets.length ==0){
-                    stateApprover[0].userRole.usersToApprove.splice(a,1); 
+            let adminApprover = await userModel.find({}).where('userRole.role').equals('adminApproval');//.where('userRole.domain').equals(user.state);//.where('userRole.domain').equals(user.directorate)
+            
+            // for (const asset of obj.assetId){
+            for (var a=0; a<obj.assetId.length; a++){
+                let approvedObj = {
+                    userId:obj.userId[a],
+                    assetId:obj.assetId[a],
+                    approvalDate:new Date(Date.now()),
+                    adminSpprovalBy:req.user.userName   
                 }
+                console.log('This is req.user: ', req.user);
+                req.user.adminApprovals.push(approvedObj);  
+                await req.user.save();
             }
-            let savedStateApprover = await stateApprover[0].save();
+
+            // stateApprover[0].userRole.usersToApprove.forEach(objItem=>{
+                        
+                        for (const objItem of adminApprover[0].userRole.usersToApprove){
+                            objItem.approvedAssets.forEach((asset,i)=>{
+                            // for (asset of objItem.approvedAssets(asset,i)=>{
+                                console.log('second foreach')
+                                if(assetIdArr.indexOf((asset.toString())) > -1){
+                                    console.log(objItem.approvedAssets);
+                                    console.log('Splicing...')
+                                    objItem.approvedAssets.splice(i,1);
+                                    console.log(objItem.approvedAssets);
+                                }
+                            })
+                            
+                        }
+
+                    // //remove if holding nothing
+                    // for (var a=0;a < stateApprover[0].userRole.usersToApprove.length;a++){
+                    //     if (stateApprover[0].userRole.usersToApprove[a].approvedAssets.length ==0){
+                    //         stateApprover[0].userRole.usersToApprove.splice(a,1); 
+                    //     }
+                    // }
+                    // let savedStateApprover = await stateApprover[0].save();
 
     //userAssetArr.idArr //items to deAssign
 
             //reassign updated assetIds to user
             user.userAsset.id = newIdArr;
             let assetsNamesToAssign = await assetModel.find().where('_id').in(newIdArr).select('assetType status allocationStatus assetApproval').exec();
-            let affectedAssets = await assetModel.find().where('_id').in(userAssetArr.idArr).select('assetType status allocationStatus assetApproval').exec();
+            let affectedAssets = await assetModel.find().where('_id').in(assetIdArr).select('assetType status allocationStatus assetApproval').exec();
 
+            console.log('This is affectedAssets (admin DeAssign)', affectedAssets);
             //return affected Assets to Asset pool (used)
             //This will be in each approval stage
-            affectedAssets.forEach(async asset=>{
+            // affectedAssets.forEach(async asset=>{
+            for (const asset of affectedAssets){
                 console.log('Did it get here?');
                 asset.assetAllocationStatus = false;
                 asset.assetApproval.self = null;
                 let savedAsset = await asset.save();
                 console.log(savedAsset);
-            })
+            }
             var assetTypeArr = [];
             assetsNamesToAssign.forEach(asset=>{
                 console.log('Is this right?');
@@ -517,13 +537,94 @@ route.put('/deAssign/:id', async (req, res)=>{
             //reassign updated assetId types to user
             user.userAsset.idType = assetTypeArr; //very correct
             console.log('6--');
-            console.log('This is userAssetArr.idArr right before log: ', userAssetArr.idArr);
+            console.log('This is userAssetArr.idArr right before log: ', assetIdArr);
             redirectUser = user.id;
 
-            userLogSave(user, userAssetArr.idArr, req.query.assignment, req);
-            
+            userLogSave(user, assetIdArr, req.query.assignment, req);
+            res.send('DeAssigned');
         
+})
 
+async function userLogSave(user, list, assignment, req){
+    const userLog = new userLogModel({ //we're later getting asset from the form
+        user:user.id,
+        activity:assignment,
+        assignedBy:req.user.id
+    });
+
+    switch(assignment){
+        case 'Requisition':
+            console.log('Requisition!')
+            userLog.userRequisition = list;
+            break;
+        case 'Assign':
+            console.log('Assign')
+            userLog.userAsset.id = list;
+            userLog.userRequisition = list;
+            break;
+        case 'DeAssign':
+            console.log('DeAssign')
+            userLog.userAsset.id = list;
+            userLog.userRequisition = list;
+            break;
+        case 'Approve':
+            console.log('Approve')
+            userLog.userApprovedAsset.id = list;
+            userLog.userRequisition = list;
+            break;
+        case 'Directorate Approval':
+            // userLog.userAsset.id = list;
+            userLog.userRequisition = list;
+            break;
+        case 'Store Approval':
+            // userLog.userAsset.id = list;
+            userLog.userRequisition = list;
+            break;
+        default:
+            console.log('Does not fit');
+    }
+    console.log('Saving now+++++++++++++++');
+    await userLog.save();
+}
+
+route.get('/bringUser/:id', async (req, res)=>{
+    console.log('Will bring names...', req.params.id);
+    let queryObj = JSON.parse(req.params.id);
+    console.log(queryObj);
+
+    let query = userModel.find();
+                if (queryObj.userName != null && req.query.userName != ""){
+                    query = query.regex('firstName', new RegExp(queryObj.userName, 'i'));
+                }
+                // if (queryObj.userName != null && queryObj.userName != ""){
+                //     query = query.lte('firstName', queryObj.userName);
+                // }
+                if (queryObj.userState != null && queryObj.userState != ""){
+                     query = query.where('state').equals(queryObj.userState);
+                    
+                }
+                if (queryObj.userDir != null && queryObj.userDir != ""){
+                     query = query.where('directorate').equals(queryObj.userDir);
+                    
+                }
+                if (queryObj.userRank != null && queryObj.userRank != ""){
+                     query = query.where('rank').equals(queryObj.userRank);
+                    
+                }
+
+                let users = await query.exec();
+
+                let userObjs = users.map(user=>{
+                    return {name:user.firstName, id:user.id, state:user.state, geoCoord:user.geoCoord}
+                })
+
+                console.log('The users: ', users); 
+                res.send(userObjs)
+
+});
+
+route.put('/assignToUser/:id', (req, res)=>{
+    console.log('Assigning... to user ', req.params.id);
 })
 
 module.exports = route;

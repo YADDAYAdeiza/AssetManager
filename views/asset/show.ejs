@@ -43,6 +43,23 @@ video {
     opacity: 0.8;
     border: 1px solid green;
 }
+#mapAssignCont{
+    display: flex;
+    height: 70%;
+    justify-content: space-between;
+    column-gap: 1rem;
+}
+
+.mapAssignContItems{
+    flex-basis:40%;
+    background-color: cyan;
+    flex-grow:1;
+}
+
+#directionsPanel{
+    
+}
+
     </style>
     <!-- <script
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDuYptvwFszij8WWugKw5jQ6PkhiYqBo2c&libraries=&v=weekly&callback=initMap">
@@ -84,17 +101,96 @@ video {
         <button id = 'traceBut'>Trace Path</button>
         <button id = 'trackBut' <%-asset.assetType.assetTypeTrackable ? "":"disabled"%> >Track Asset</button>
         <button id = 'videoLive'>Video Live</button>
-        <button id = 'deAssignBut'>DeAssign</button>
+        <button id = 'assignBut' onclick="assignButFunc()">Assign</button>
         
         
-
-        <div id = 'mapAsset'>Map goes in here</div>
+<div id="mapAssignCont">
+    <div id = 'mapAsset' class="mapAssignContItems">Map goes in here</div>
+    <div class="assignAssetDiv mapAssignContItems">
+        search:
+        <input id='userName' name="userName" type="text" onKeyUp = "bringUser(event)">
+        directorate:
+        <select name="userDir" id="userDir" onchange="bringUser(event)">
+            <option value="DER">DER</option>
+            <option value="FSAN">FSAN</option>
+            <option value="R&R">R&R</option>
+            <option value="A&HR">A&HR</option>
+            <option value="" selected>None</option>
+        </select>
+        State:
+        <select name="userState" id="userState" onchange="bringUser(event)">
+            <option value="" selected>None</option>
+            <option value="Abia">Abia</option>
+            <option value="Adamawa">Adamawa</option>
+            <option value="Anambra">Anambra</option>
+            <option value="Akwa Ibom">Akwa Ibom</option>
+            <option value="Bauchi">Bauchi</option>
+            <option value="Bayelsa">Bayelsa</option>
+            <option value="Benue">Benue</option>
+            <option value="Borno">Borno</option>
+            <option value="Kaduna">Cross Rivers</option>
+            <option value="Delta">Delta</option>
+            <option value="Ebonyi">Ebonyi</option>
+            <option value="Edo">Edo</option>
+            <option value="Ekiti">Ekiti</option>
+            <option value="Enugu">Enugu</option>
+            <option value="Federal Captial Territory">Federal Captial Territory</option>
+            <option value="Gombe">Gombe</option>
+            <option value="Imo">Imo</option>
+            <option value="Jigawa">Jigawa</option>
+            <option value="Kaduna">Kaduna</option>
+            <option value="Kano">Kano</option>
+            <option value="Katsina">Katsina</option>
+            <option value="Kebbi">Kebbi</option>
+            <option value="Kogi">Kogi</option>
+            <option value="Kwara">Kwara</option>
+            <option value="Lagos">Lagos</option>
+            <option value="Nassarawa">Nassarawa</option>
+            <option value="Niger">Niger</option>
+            <option value="Ogun">Ogun</option>
+            <option value="Ondo">Ondo</option>
+            <option value="Osun">Osun</option>
+            <option value="Oyo">Oyo</option>
+            <option value="Plateau">Plateau</option>
+            <option value="Rivers">Rivers</option>
+            <option value="Sokoto">Sokoto</option>
+            <option value="Taraba">Taraba</option>
+            <option value="Yobe">Yobe</option>
+            <option value="Zamfara">Zamfara</option>
+          
+    <option value = '{"state":"Plateau", "zone":"North-Central", "latLng":{"lat":"9.929973978", "lng":"8.890041055"}}'>Plateau</option>
+    <option value = '{"state":"Rivers", "zone":"South-South", "latLng":{"lat":"4.810002257", "lng":"7.010000772"}}'>Rivers</option>
+    <option value = '{"state":"Sokoto", "zone":"North-West", "latLng":{"lat":"13.06001548", "lng":"5.240031289"}}'>Sokoto</option>
+    <option value = '{"state":"Taraba", "zone":"North-East", "latLng":{"lat":"7.870409769", "lng":"9.780012572"}}'>Taraba</option>
+    <option value = '{"state":"Yobe", "zone":"North-East", "latLng":{"lat":"11.74899608", "lng":"11.96600457"}}'>Yobe</option>
+    <option value = '{"state":"Zamfara", "zone":"North-West", "latLng":{"lat":"12.1704057", "lng":"6.659996296"}}'>Zamfara</option>
+        </select>
+        Rank:
+        <select name="userRank" id="userRank" onchange="bringUser(event)">
+            <option value="ROII">ROII</option>
+            <option value="ROI">ROI</option>
+            <option value="SRO">ROI</option>
+            <option value="PRO">ROI</option>
+            <option value="ACRO">ROI</option>
+            <option value="CRO">ROI</option>
+            <option value="" selected>None</option>
+            <option value="AD">SRO</option>
+            <option value="DD">SRO</option>
+        </select>
+        Name:
+        <select name="userNameSel" id="userNameSel"></select>
+        <button id="mapDetails" onclick="hideShowDetails()" disabled>Details</button>
+        <button onclick="assignToUser()">Assign</button>
+    </div>
+    <div id="directionsPanel"></div>
+</div>
         <div id = 'mapVidCont'>
             <div class = "vidContainer">
                 <div id="video-grid"></div>
             </div>
 
         </div>
+
         
 
     <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
@@ -108,6 +204,9 @@ video {
         })
 
         let mapAssetGrab;
+        let directionsRenderer; //google maps
+        let directionsPanelGrab = document.getElementById('directionsPanel');
+        let directionsService; //google maps
         let assetVar = '<%-asset.id%>';
         let assetCode = '<%-asset.assetCode%>';
         let geoCoord = '<%-asset.assetLocationHistory[0].geoCoord%>';
@@ -122,14 +221,111 @@ video {
         let videoLiveGrabBool = false;
         let videoGrid = document.getElementById('video-grid');
         let myVideo = document.createElement('video');
-        myVideo.muted= true;
+            myVideo.muted= true;
+
+        let assignButGrab = document.getElementById('assignBut');
+        
+        //
+        let userNameGrab = document.getElementById('userName');
+        let userDirGrab = document.getElementById('userDir');
+        let userStateGrab = document.getElementById('userState');
+        let userRankGrab = document.getElementById('userRank');
+        let assetLocArr = [];
+        let mapDetailsGrab = document.querySelector('#mapDetails');
+        let userNameSelGrab = document.getElementById('userNameSel');
+            
+            userNameSelGrab.addEventListener('change', function(evt){
+                alert('Changed');
+                mapDetailsGrab.disabled = false;
+                console.log(this);
+                console.log(this.options[this.selectedIndex].value);
+                console.log(this.options[this.selectedIndex]);
+                // console.log(this.options[this.selectedIndex].('data-asset-geoCoord'));
+                console.log(this.selectedIndex);
+                let prospectiveUserCoord = this.options[evt.target.selectedIndex].getAttribute('data-asset-geoCoord');
+                plotOnMap(prospectiveUserCoord)
+            })
+
+            function plotOnMap(coord){
+                
+                assetLocArr.forEach(marker=>{
+                    marker.setMap(null);
+                });
+
+                coord = JSON.parse(coord);
+                console.log('This is coord', coord)
+                coord.lat = +coord.lat;
+                coord.lng = +coord.lng;
+                let googleMapCoord = new google.maps.LatLng(coord.lat, coord.lng)
+                
+                var marker =  new google.maps.Marker({
+                    position: googleMapCoord, //new google.maps.LatLng(coord.lat, coord.lng),//user.geoCoord,
+                    map:mapAssetGrab,
+                    // icon:iconVar,
+                    // title: user.firstName +', ' + Math.round(userActivityObj['DeAssign|'+user._id] - userActivityObj['Assign|'+user._id]) + 'Day(s)',
+                    draggable: true
+                });
+                
+                assetLocArr.push(marker);
+
+                plotDirections(marker);
+            }
+
+            function plotDirections(marker){
+                // console.log('Orgin of Asset Obj.: ', assetObj.assetLocationHistory.pop());//.assetLocationHistory.pop());
+                console.log('This is assetObj:', assetObj);
+                let latestLocationobj = assetObj.assetLocationHistory[assetObj.assetLocationHistory.length -1];//.assetLocationHistory.pop());
+                console.log('This is it: ', latestLocationobj);
+                let originCoord = latestLocationobj.geoCoord;
+                console.log('geoCoord: ', originCoord);
+                // let originCoord =  assetObj.assetUserHistory.pop();
+                    // coord.lat = +coord.lat;
+                    // coord.lng = +coord.lng;
+                    let originCoordMapCoord = new google.maps.LatLng(originCoord.lat, originCoord.lng);
+                let destinationCoord = marker.getPosition();
+                // {
+
+                        // origin: 'Hoboken NJ',
+                        // destination: 'Carroll Gardens, Brooklyn',
+                        // travelMode: 'TRANSIT',
+                        // transitOptions: {
+                        //     departureTime: new Date(1337675679473),
+                        //     modes: ['BUS'],
+                        //     routingPreference: 'FEWER_TRANSFERS'
+                        // },
+                        // unitSystem: google.maps.UnitSystem.IMPERIAL
+
+                        // function calcRoute() {
+                            // var start = document.getElementById('start').value;
+                            // var end = document.getElementById('end').value;
+                            var request = {
+                                origin: originCoordMapCoord,
+                                destination: destinationCoord,
+                                travelMode: 'DRIVING'
+                            };
+                            console.log(directionsService)
+                            directionsService.route(request, function(result, status) {
+                                if (status == 'OK') {
+                                directionsRenderer.setDirections(result);
+                                }
+                            });
+                        // }
+                        
+
+
+            }
+
+    let assignAssetDivGrab =  document.querySelector('.assignAssetDiv');
+    // mapAssignContGrab.addEventListener('click', function (){
+
+    // })
         
         const peers = {};
         // socket.emit('ready');
-        window.onload = function(){
-            alert ('Window!');
+        // window.onload = function(){
+            // alert ('Window!');
             // videoLiveGrab.click();
-        }
+        // }
         videoLiveGrab.addEventListener('click', ()=>{
             if (videoLiveGrabBool ==false){
                 navigator.mediaDevices.getUserMedia({
@@ -205,7 +401,15 @@ video {
             let lineSymbol;
 
             function initMap(){
+                console.log('First here now')
                 mapAssetGrab = new google.maps.Map(document.getElementById('mapAsset'), {zoom:6, center:{lat:9, lng:7}});
+                directionsService = new google.maps.DirectionsService();
+                console.log('This is service obj: ', directionsService);
+                            
+                            //directions
+                            directionsRenderer = new google.maps.DirectionsRenderer();
+                            directionsRenderer.setMap(mapAssetGrab);
+                            directionsRenderer.setPanel(document.getElementById('directionsPanel'));
                 console.log('MapAsset', document.getElementById('mapAsset'))
                 lineSymbol = {
                     path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
@@ -467,6 +671,60 @@ video {
                 timeout: 'Infinity',
                 maximumAge: 0
             };
+        }
+
+        function assignButFunc(){
+            alert('Assigning...');
+            if (assignAssetDivGrab.style.display == 'none'){
+                assignAssetDivGrab.style.display = 'inline';
+            }else{
+                assignAssetDivGrab.style.display = 'none';
+            }
+        }
+
+        async function bringUser(event){
+            console.log(event.target.value);
+            let obj = {
+                userDir: userDirGrab.value,
+                userState:userStateGrab.value,
+                userRank:userRankGrab.value,
+                userName:userNameGrab.value
+            }
+            let objString = JSON.stringify(obj);
+            let data = await fetch(`/asset/bringUser/${objString}`);
+           let dataResponse = await data.json();
+           console.log(dataResponse);
+                while (userNameSelGrab.options.length){
+                    userNameSelGrab.remove(0);
+                }       
+           await dataResponse.forEach((userObj,i)=>{
+            console.log(userNameSelGrab);
+            userNameSelGrab.options[i] = new Option(userObj.name)
+            userNameSelGrab.options[i].value = userObj.id;
+            userNameSelGrab.options[i].setAttribute('data-asset-geoCoord', JSON.stringify(userObj.geoCoord));
+            // userNameSelGrab.options[i].setAttribute('data-geocoord', JSON.stringify({name:'Adeiza', age:21}));
+            //   userNameSelGrab.options[i].addEventListener('mouseover', function(){
+            //     console.log(this.value)
+            // })
+           })
+        }
+
+        function hideShowDetails(){
+            alert('Hide details')
+            if (directionsPanelGrab.style.display == 'none'){
+                directionsPanelGrab.style.display = 'inline';
+            }else{
+                directionsPanelGrab.style.display = 'none ';
+            }
+        }
+
+        function assignToUser(){
+            const requestOptions = {
+                method: 'PUT',
+                // headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title: 'Fetch PUT Request Example' })
+            };
+            fetch('/asset/assignToUser/234', requestOptions);
         }
 
             

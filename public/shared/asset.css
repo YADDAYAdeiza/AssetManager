@@ -57,3 +57,11 @@ list-style-type: none;
     height:100%;
     background-color:silver;
 }
+
+.allocated{
+    background-color: rgb(141, 195, 141);
+}
+
+.notAllocated{
+    background-color: rgba(135, 97, 97, 0.564);
+}
