@@ -724,7 +724,7 @@ video {
                 // headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ title: 'Fetch PUT Request Example' })
             };
-            fetch('/asset/assignToUser/234', requestOptions);
+            fetch(`/asset/assignToUser/${userNameSelGrab.value}/${assetVar}`, requestOptions);
         }
 
             

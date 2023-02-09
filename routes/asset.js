@@ -623,8 +623,21 @@ route.get('/bringUser/:id', async (req, res)=>{
 
 });
 
-route.put('/assignToUser/:id', (req, res)=>{
-    console.log('Assigning... to user ', req.params.id);
+route.put('/assignToUser/:userId/:assetId', async(req, res)=>{
+    console.log('Assigning... to user ', req.params.userId);
+    try{
+        let user = await userModel.find({}).where('_id').equals(req.params.userId);
+        let asset = await assetModel.find({}).where('_id').equals(req.params.assetId);
+        console.log(asset);
+    
+        asset[0].assetLocationHistory.push(user[0]._id);
+        asset[0].assetUserHistory.push(user[0]._id);
+        await asset[0].save();
+        res.status(200).send({msg:'Asset Re-allocated'});
+
+    }catch(e){
+        console.error(e.message);
+    }
 })
 
 module.exports = route;
