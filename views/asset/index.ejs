@@ -1,4 +1,4 @@
-<h2>List of Assets here</h2>
+<h2>List of Assets here now</h2>
 
 <div id="searchContDiv">
     <div>
@@ -23,29 +23,48 @@
 </div>
 
 <% if (locals.asset !=null){ %>
+    <%=console.log('This is assetAccess', assetDeleteAccess)%>
     <%= 'There are assets' %>
+    <div>
+        <div class = "radioDivCont">
+            <div class="radioDiv">
+                <div>By Age: <input type="radio" id="ageInpt" name= 'sortRad' onclick="ageFilter()" onblur="ageInptUnchecked()"></div>
+                <Label>Age:</Label> 
+                <input type="Number" id = 'ageFilterNumber' oninput="ageStatusFilter()">
+            </div >
+            <div class="radioDiv">
+                <div>By Assignment:</div>
+                <Label>Assigned:</Label> <input type="radio" id="assignedInpt" name= 'sortRad' onclick = 'allocationStatusFilter(".notAllocated", "none")'>
+                <Label>Free:</Label> <input type="radio" id="freeInpt" name= 'sortRad' onclick = 'allocationStatusFilter(".allocated", "none")'>
+                <Label>All:</Label> <input type="radio" id="allInpt" name= 'sortRad' onclick = 'allocationStatusFilter("", "block")'>
+            </div>
+        </div>
     <%  asset.forEach(asset=>{%>
-        <p><%=asset.assetCode%></p>
         <div  class = <%=asset.assetAllocationStatus?"allocated": "notAllocated"%>>
-        <a href="/asset/<%=asset.id%>">
-            <p><img height= "100" width="120" src="<%= asset.assetImageDetails%>"></p>
-        </a>
-        <div class = "div-btn-row">
-            <a class= "btn btn-primary" href="/asset/<%=asset.id%>">View </a><a class= "btn btn-primary" href = "/asset/<%=asset.id%>/edit">Edit</a>
-            
-            <%- include('../partials/deleteForm.ejs', {url:`/asset/${asset.id}`}) %>
-            <%let len = asset.assetUserHistory.length%>
-            <% console.log('Length :', len)%>
-            <%console.log('userid is: ', asset.assetUserHistory[len-1].toString())%>
-            <button class="btn btn-primary" id="deAssignBut" onClick="deAssignAsset('<%=asset.id%>', '<%=asset.assetUserHistory[len-1].toString()%>')">DeAssignAsset</button>
+            <p><%=asset.assetCode%></p>
+                <a href="/asset/<%=asset.id%>">
+                    <p><img height= "100" width="120" src="<%= asset.assetImageDetails%>"></p>
+                </a>
+                <div class = "div-btn-row">
+                    <a class= "btn btn-primary" href="/asset/<%=asset.id%>">View </a><a class= "btn btn-primary" href = "/asset/<%=asset.id%>/edit">Edit</a>
+                    
+                    <%- include('../partials/deleteFormAsset.ejs', {url:`/asset/${asset.id}`, assetAllocationStatus:asset.assetAllocationStatus, assetDeleteAccess}) %>
+                    <%let len = asset.assetUserHistory.length%>
+                    <% console.log('Length :', len)%>
+                    <%console.log('userid is: ', asset.assetUserHistory[len-1].toString())%>
+                    <button class="btn btn-primary" id="deAssignBut" onClick="deAssignAsset('<%=asset.id%>', '<%=asset.assetUserHistory[len-1].toString()%>')" <%=assetDeleteAccess? 'style=display:inline':'style=display:none'%>>DeAssignAsset</button> <span id ='ageSpan' ><%= (new Date(Date.now()).getTime() - asset.assetAssignDate)/86400000%></span><span>Day(s) Old</span>
+                </div>
+            </div>
+            <%})%>
         </div>
-        </div>
-    <%})%>
 <% } %>
 
 <script defer>
-   
-
+   alert('Now here')
+   let assetDate = '<%- asset[0].assetAssignDate%>';
+   let assetName = '<%- asset[0].assetName%>';
+   console.log('This is assetDate: ', assetDate.toString());
+   let ageFilterNumberGrab = document.getElementById('ageFilterNumber');
 // var deAssignButGrab = document.getElementById('deAssignBut');
 // console.log('This is deAssignButGrab: ', deAssignButGrab);
 //     deAssignButGrab.addEventListener('click', function(){
@@ -80,8 +99,8 @@ async function deAssignAsset(assetId, userId){
 }
 
 
-    let settingsObj = <%- JSON.stringify(uiSettings)%>;
-    console.log(settingsObj);
+    let settingsObj = <%- JSON.stringify(uiSettings)%>
+    console.log('This is settingsObj', settingsObj);
     var settingsObjKeys = (Object.keys(settingsObj));
     var settingsObjValues = (Object.values(settingsObj));
     settingsObjKeys.forEach(className=>{
@@ -89,7 +108,42 @@ async function deAssignAsset(assetId, userId){
             elm.style.display = settingsObj[className];
         })
     })
-    
 
+    function allocationStatusFilter(className, displayVal){
+        alert('Filtering...');
+        let assetDivs = document.querySelectorAll('.allocated, .notAllocated'); 
+            [...assetDivs].forEach(div=>{
+                div.style.display = 'block';
+            })
+
+        let divAll = document.querySelectorAll(className);
+            console.log(divAll);
+            [...divAll].forEach(div=>{
+                div.style.display = displayVal;
+            })
+    }
+    
+function ageFilter(){
+    console.log(event.target);
+    document.getElementById('ageFilterNumber').style.display = 'inline'  
+}
+
+function ageInptUnchecked(){
+    // alert('No focus');
+    document.getElementById('ageFilterNumber').style.display = 'none'  
+}
+
+function ageStatusFilter(){
+    
+    alert('By age');
+    let ageSpanCollection = document.querySelectorAll('#ageSpan');
+    console.log(ageSpanCollection);
+    [...ageSpanCollection].forEach(span=>{
+        if (+span.innerHTML < ){
+            console.log('Less than ', +span.innerHTML);
+            span.parentNode.parentNode.style.display = 'None';
+        }
+    })
+}
     
 </script>

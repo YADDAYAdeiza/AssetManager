@@ -203,6 +203,7 @@ route.get('/fromLogAssetDuration/:assetId', async (req,res)=>{
 //get all assets
 route.get('/index', permitAssetLists(), hideNavMenu(), async (req, res)=>{ //permitLists()
     console.log('filtering...');
+    console.log('Asset delete approval: ', req.assetDeleteAccess);
     let query = req.queryObj
     //query.where('_id').in(req.user.profileId)
     
@@ -247,7 +248,7 @@ console.log('This is assetModelVar', assetModelVar)
 console.log('This is req.dispSetting', req.dispSetting);
 let uiSettings = req.dispSetting;
     // res.render('./asset/index.ejs', {asset: assetModelVar, searchParams: req.body.searchAssetScope});
-    res.render('./asset/index.ejs', {asset: assetModelVar, searchParams: req.query, uiSettings});
+    res.render('./asset/index.ejs', {asset: assetModelVar, searchParams: req.query, uiSettings, assetDeleteAccess:req.assetDeleteAccess});
     // res.render('./asset/index.ejs');
 })
 
@@ -493,7 +494,7 @@ route.put('/deAssign/:id', async (req, res)=>{
                                 console.log('second foreach')
                                 if(assetIdArr.indexOf((asset.toString())) > -1){
                                     console.log(objItem.approvedAssets);
-                                    console.log('Splicing...')
+                                    console.log('Splicing...');
                                     objItem.approvedAssets.splice(i,1);
                                     console.log(objItem.approvedAssets);
                                 }

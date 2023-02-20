@@ -10,7 +10,7 @@
    Audit  <a href="/audit">Audit Live</a> <a href= "/audGoLive/<%=roomId%>" target="_blank">Send Link</a>
     <div id="searchContDiv">
         <div id="searchContDivForm">
-            <form method="get" action="/audGoLive">
+            <form method="get" action="/audGoLive/<%=roomId%>">
                 
                 <p><input type="number" name = "userDays" value = <%=searchParams.userDays%>></p>
                 <p><input type="text" name = "userNameSearch" value = <%=searchParams.userNameSearch%>></p>

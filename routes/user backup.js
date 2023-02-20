@@ -1383,11 +1383,6 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                                                 user.storeApprovedUserAsset.id.push(assetToApprove.id);
                                                 user.storeApprovedUserAsset.idType.push(assetToApprove.assetName);
                                             }
-                                            let userAssetOwned = JSON.parse(JSON.stringify(user.userAsset));
-
-                                            //final owned assets
-                                            user.userOwnedAsset = userAssetOwned;
-
                                             let updatedUser = await user.save();
                                             console.log('Updated user ', updatedUser);
                                             

@@ -169,43 +169,6 @@ let userSchema = new mongoose.Schema({
             }
         }
     },
-    userOwnedAsset:{
-        id:{
-            type:[mongoose.Schema.Types.ObjectId],
-            ref:'AssetCol',
-            required:true
-        },
-        idType:{
-            type:[String],
-            required:true
-        },
-        assignDate:{
-            type:[Date],
-            default:()=>{
-                return Date.now()
-            }
-        },
-        idAudit:[{
-            id:{
-                type:mongoose.Schema.Types.ObjectId,
-                ref:'AssetCol',
-                required:true
-            },
-            auditDate:{
-                type:Date,
-                default:()=>{
-                    return Date.now()
-                }
-            },
-            assetTypeId:{
-                type:mongoose.Schema.Types.ObjectId,
-                ref:'AssetTypeCol'
-            },
-            assetTypeName:{
-                type:String
-            }
-        }]
-    },
     userRequisition:{
         type:Object
     },

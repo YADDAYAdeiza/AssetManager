@@ -42,7 +42,8 @@ function authenticateRoleProfilePage(){
             if (req.user.profileId.includes(req.params.id)){
                 //treat as own account
                 //grant access to assign, DeAssign functionality
-                console.log('It\'s own Account ')
+                console.log('It\'s own Account ', req.params.id);
+                console.log(req.user.profileId);
                 let uiOwnAccount = {
                     'ownAccount':'inline'
                 }
@@ -121,6 +122,8 @@ function permitAssetLists(){
                 console.log('??')
                 //is this line necessary?
                 // query = userModel.find();
+            }else if(req.user.role =='superAdmin'){
+                req.assetDeleteAccess = true;
             }
             // No need for superadmin
             // else if (req.user.role =='superAdmin'){
@@ -136,6 +139,9 @@ function permitAssetLists(){
                 console.log('??')
                 query = query.where('_id').in(req.user.profileId);
                 // query = query.where('_id').in(req.user.userAsset.id);
+            }else if (req.user.role =='superAdmin'){
+                query = query.where('_id').in(req.user.profileId);
+                req.assetDeleteAccess = true;
             }
             // else if (req.user.role =='superAdmin'){
             //     //superadmin
