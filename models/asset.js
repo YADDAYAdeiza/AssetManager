@@ -1,6 +1,6 @@
 var mongoose = require('mongoose');
-// mongoose.connect('mongodb://localhost/AssetManager');
-mongoose.connect(process.env.DATABASE_URL, {useNewUrlParser:true, useUnifiedTopology:true }); //play around with this
+mongoose.connect('mongodb://localhost/AssetManager');
+// mongoose.connect(process.env.DATABASE_URL, {useNewUrlParser:true, useUnifiedTopology:true }); //play around with this
 
 const assetTypeModel = require('./assetType.js');
 
