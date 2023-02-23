@@ -1,7 +1,8 @@
 var mongoose = require('mongoose');
 const assetTypeModel = require('./assetType.js');
 const assetModel = require('./asset.js');
-mongoose.connect('mongodb://localhost/AssetManager');
+mongoose.connect('mongodb+srv://user:JH9LtCTwlBU23p9A@cluster0.whvqq.mongodb.net/?retryWrites=true&w=majority');
+// mongoose.connect('mongodb://localhost/AssetManager');
 // const path = require('path');
 
 // const profileImagePath = 'uploads/profilePics';
