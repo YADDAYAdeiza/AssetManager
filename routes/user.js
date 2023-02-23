@@ -1343,10 +1343,10 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                             
                             //Decrement assetTypeQty
                                     affectedAssetsTypes.forEach(async (assetType, i)=>{
-                                                // console.log('Witin each...');
-                                                assetType.assetTypeQty -= affectedAssetTypeObj[assetType._id.toString()];
-                                                await assetType.save();
-                                            });
+                                        // console.log('Witin each...');
+                                        assetType.assetTypeQty -= affectedAssetTypeObj[assetType._id.toString()];
+                                        await assetType.save();
+                                    });
         
                             //create assets
                                             let affectedAssetType2 = affectedAssetsTypes.map(asset=>{

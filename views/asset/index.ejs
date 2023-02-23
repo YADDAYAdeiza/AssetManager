@@ -28,9 +28,9 @@
     <div>
         <div class = "radioDivCont">
             <div class="radioDiv">
-                <div>By Age: <input type="radio" id="ageInpt" name= 'sortRad' onclick="ageFilter()" onblur="ageInptUnchecked()"></div>
+                <div>By Age: <input type="radio" id="ageInpt" name= 'sortRad' onclick="ageFilter()" ></div>
                 <Label>Age:</Label> 
-                <input type="Number" id = 'ageFilterNumber' oninput="ageStatusFilter()">
+                <input type="Number" id = 'ageFilterNumber' class = 'hideFilterNumber' oninput="ageStatusFilter()" placeholder = '< than...'>
             </div >
             <div class="radioDiv">
                 <div>By Assignment:</div>
@@ -125,12 +125,15 @@ async function deAssignAsset(assetId, userId){
     
 function ageFilter(){
     console.log(event.target);
-    document.getElementById('ageFilterNumber').style.display = 'inline'  
+    // document.getElementById('ageFilterNumber').style.display = 'inline'  
+    document.getElementById('ageFilterNumber').classList.toggle('showFilterNumber');// = 'inline'  
 }
 
 function ageInptUnchecked(){
     // alert('No focus');
-    document.getElementById('ageFilterNumber').style.display = 'none'  
+    // document.getElementById('ageFilterNumber').style.display = 'none'  
+    alert('toggling...')
+    document.getElementById('ageFilterNumber').classList.toggle('showFilterNumber');  
 }
 
 function ageStatusFilter(){
@@ -138,9 +141,16 @@ function ageStatusFilter(){
     alert('By age');
     let ageSpanCollection = document.querySelectorAll('#ageSpan');
     console.log(ageSpanCollection);
+        //Normalising
+        [...ageSpanCollection].forEach(span=>{
+                span.parentNode.parentNode.style.display = 'block';
+        });
+
+       
     [...ageSpanCollection].forEach(span=>{
-        if (+span.innerHTML < ){
+        if (+span.innerHTML < ageFilterNumberGrab.value ){
             console.log('Less than ', +span.innerHTML);
+            console.log('Value ', ageFilterNumberGrab.value);
             span.parentNode.parentNode.style.display = 'None';
         }
     })

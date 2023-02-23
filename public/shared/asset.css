@@ -72,11 +72,39 @@ list-style-type: none;
     width:100%;
 }
 .radioDiv input{
-    width:10%;
+    width:40%;
 }
 
-.radioDiv input[type=number]{
-    background-color: cyan;
+/* .radioDiv input[type=number]{
+    background-color: yellow;
     width:25%;
     padding:0 0 0 1rem;
+    transition: background-color 2s ease-in;
+} */
+
+/* .radioDiv input[type=number]{
+    background-color: yellow;
+    width:25%;
+    padding:0 0 0 1rem;
+    transition: background-color 2s ease-in;
+} */
+
+.hideFilterNumber{
+    /* display: none; */
+    /* visibility: hidden; */
+    opacity: 0;
+    /* width:5rem; */
+    height: 0;
+    padding:0 0 0 1rem;
+    transition: opacity 0.2s ease-in, height 0.2s ease-in;
+}
+
+.showFilterNumber{
+    /* display: inline; */
+    opacity: 1;
+    height: 2rem;
+    /* visibility: visible; */
+    /* transition: visibility 2s ease-in; */
+    /* background-color: silver; */
+    /* transition: s ease-in; */
 }
