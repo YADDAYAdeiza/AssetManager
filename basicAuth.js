@@ -91,12 +91,13 @@ function authenticateRoleProfilePage(){
 
 function permitListsLogin(){
     return async (req, res, next)=>{
-        console.log('Permitting lists for login...')
+        console.log('Permitting lists for login now...')
         let query = userModel.find();
         if (req.user.role =='basic'){ //further dig
             query = query.where('_id').in(req.user.profileId)
         }
         if (req.user.role =='admin'){
+            console.log('Admin thing');
             query = query.where('_id').ne(null); //basically, all
             // query = userModel.find();
             //do nothing.
