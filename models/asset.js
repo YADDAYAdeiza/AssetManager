@@ -1,10 +1,10 @@
 var mongoose = require('mongoose');
-// mongoose.connect('mongodb://localhost/AssetManager');
-if (process.env.NODE_ENV !=='production'){
-    var dotEnv =  require('dotenv');
-    dotEnv.config();
-  }
-mongoose.connect(process.env.DATABASE_URL, {useNewUrlParser:true, useUnifiedTopology:true }); //play around with this
+mongoose.connect('mongodb://localhost/AssetManager');
+// if (process.env.NODE_ENV !=='production'){
+//     var dotEnv =  require('dotenv');
+//     dotEnv.config();
+// }
+// mongoose.connect(process.env.DATABASE_URL, {useNewUrlParser:true, useUnifiedTopology:true }); //play around with this
 
 const assetTypeModel = require('./assetType.js');
 
