@@ -2,8 +2,14 @@ var mongoose = require('mongoose');
 const assetTypeModel = require('./assetType.js');
 const assetModel = require('./asset.js');
 const userModel = require('./user.js');
-mongoose.connect('mongodb://localhost/AssetManager');
+// mongoose.connect('mongodb://localhost/AssetManager');
 // const path = require('path');
+
+if (process.env.NODE_ENV !=='production'){
+    var dotEnv =  require('dotenv');
+    dotEnv.config();
+}
+mongoose.connect(process.env.DATABASE_URL, {useNewUrlParser:true, useUnifiedTopology:true }); //play around with this
 
 // const profileImagePath = 'uploads/profilePics';
 

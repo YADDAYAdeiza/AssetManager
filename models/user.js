@@ -1,10 +1,15 @@
 var mongoose = require('mongoose');
 const assetTypeModel = require('./assetType.js');
 const assetModel = require('./asset.js');
-// mongoose.connect('mongodb+srv://user:JH9LtCTwlBU23p9A@cluster0.whvqq.mongodb.net/?retryWrites=true&w=majority');
-// mongoose.connect(process.env.DATABASE_URL, {useNewUrlParser:true, useUnifiedTopology:true }); //play around with this
 
-mongoose.connect('mongodb://localhost/AssetManager');
+if (process.env.NODE_ENV !=='production'){
+    var dotEnv =  require('dotenv');
+    dotEnv.config();
+  }
+// mongoose.connect('mongodb+srv://user:JH9LtCTwlBU23p9A@cluster0.whvqq.mongodb.net/?retryWrites=true&w=majority');
+mongoose.connect(process.env.DATABASE_URL, {useNewUrlParser:true, useUnifiedTopology:true }); //play around with this
+
+// mongoose.connect('mongodb://localhost/AssetManager');
 // const path = require('path');
 
 // const profileImagePath = 'uploads/profilePics';
