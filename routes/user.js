@@ -122,6 +122,7 @@ route.get('/showOrNew', permitListsLogin(), hideNavMenu(), (req, res)=>{ //admin
     if (req.user.profileId.length){// show profiles, orole
         console.log('This is req: ', req.user);
         console.log('This is req.user.userName:', req.user.userName);
+        console.log('This is req.queryObj: ', req.queryObj);
         indexRedirect(req, res, 'My Profile(s)', 'noError');
     } else{ //create new profile
         res.redirect('/user/new');
