@@ -180,8 +180,10 @@ route.get('/showOrNew', permitListsLogin(), hideNavMenu(), (req, res)=>{ //admin
                             // next();
                             console.log('userApprovalRoles: ', userApprovalRoles)
                             try{
-                                const users = await query.exec()
-                                // console.log('This users', users);
+                                console.log('Going well1');
+                                const users = await query.exec();
+                                console.log(users)
+                                console.log('Going well2');
                                 res.render('user/index.ejs', {
                                     users:users,
                                     searchParams:req.query,
