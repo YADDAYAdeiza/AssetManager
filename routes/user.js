@@ -181,6 +181,7 @@ route.get('/showOrNew', permitListsLogin(), hideNavMenu(), (req, res)=>{ //admin
                             console.log('userApprovalRoles: ', userApprovalRoles)
                             try{
                                 console.log('Going well1');
+                                console.log(query)
                                 const users = await query.exec();
                                 console.log(users)
                                 console.log('Going well2');

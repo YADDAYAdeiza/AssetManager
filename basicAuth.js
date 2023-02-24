@@ -74,7 +74,7 @@ function authenticateRoleProfilePage(){
                 query = query.where('_id').in(req.user.profileId)
             } else if (req.user.role =='admin'){
                 console.log('??')
-                query = userModel.find();
+                // query = userModel.find();
             }
         }else{ //search all for admin
             if (req.user.role =='basic'){
@@ -120,8 +120,6 @@ function permitAssetLists(){
                 // query = query.where('assetUserHistory').in(req.user.profileId);
             } else if (req.user.role =='admin'){
                 console.log('??')
-                query = query.where('_id').in(req.user.profileId);
-                
                 //is this line necessary?
                 // query = userModel.find();
             }else if(req.user.role =='superAdmin'){
@@ -140,7 +138,6 @@ function permitAssetLists(){
             } else if (req.user.role =='admin'){
                 console.log('??')
                 query = query.where('_id').in(req.user.profileId);
-                
                 // query = query.where('_id').in(req.user.userAsset.id);
             }else if (req.user.role =='superAdmin'){
                 query = query.where('_id').in(req.user.profileId);
