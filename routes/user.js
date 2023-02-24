@@ -122,7 +122,6 @@ route.get('/showOrNew', permitListsLogin(), hideNavMenu(), (req, res)=>{ //admin
     if (req.user.profileId.length){// show profiles, orole
         console.log('This is req: ', req.user);
         console.log('This is req.user.userName:', req.user.userName);
-        console.log('This is req.queryObj: ', req.queryObj);
         indexRedirect(req, res, 'My Profile(s)', 'noError');
     } else{ //create new profile
         res.redirect('/user/new');
@@ -137,16 +136,20 @@ route.get('/showOrNew', permitListsLogin(), hideNavMenu(), (req, res)=>{ //admin
                             console.log('Back here');
                             // console.log(query);
                             if (req.query.userNameSearch != null && req.query.userNameSearch != ""){
+                                console.log('Ent')
                                 query = query.regex('firstName', new RegExp(req.query.userNameSearch, 'i'));
                             }
                             if (req.query.userDateBeforeSearch != null && req.query.userDateBeforeSearch != ""){
+                                console.log('Ent')
                                 query = query.lte('dateCreated', req.query.userDateBeforeSearch);
                             }
                             if (req.query.userApprovalRole != null && req.query.userApprovalRole != ""){
+                                console.log('Ent')
                                 // req.query.userApprovalRole = (req.query.userApprovalRole == 'All')? null: req.query.userApprovalRole
                                 if (req.query.userApprovalRole == 'All'){
                                     //Don't add to the query: Leave as is.
                                 }else {
+                                    console.log('Ent')
                                     query = query.where('approvalStatus').equals(req.query.userApprovalRole);
                                 }
 

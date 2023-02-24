@@ -98,6 +98,7 @@ function permitListsLogin(){
         }
         if (req.user.role =='admin'){
             //do nothing.
+            query = userModel.find();
         }
        
         req.queryObj = query;
