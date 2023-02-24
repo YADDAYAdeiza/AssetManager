@@ -1,13 +1,13 @@
 var mongoose = require('mongoose');
 const assetTypeModel = require('./assetType.js');
 const assetModel = require('./asset.js');
-mongoose.connect('mongodb://localhost/AssetManager');
+// mongoose.connect('mongodb://localhost/AssetManager');
 
-// if (process.env.NODE_ENV !=='production'){
-//     var dotEnv =  require('dotenv');
-//     dotEnv.config();
-// }
-// mongoose.connect(process.env.DATABASE_URL, {useNewUrlParser:true, useUnifiedTopology:true }); //play around with this
+if (process.env.NODE_ENV !=='production'){
+    var dotEnv =  require('dotenv');
+    dotEnv.config();
+}
+mongoose.connect(process.env.DATABASE_URL, {useNewUrlParser:true, useUnifiedTopology:true }); //play around with this
 
 
 let savedSnapShotsSchema = new mongoose.Schema({
