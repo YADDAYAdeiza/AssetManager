@@ -181,7 +181,7 @@ route.get('/showOrNew', permitListsLogin(), hideNavMenu(), (req, res)=>{ //admin
                             console.log('userApprovalRoles: ', userApprovalRoles)
                             try{
                                 console.log('Going well1');
-                                console.log(query)
+                                // console.log(query)
                                 const users = await query.exec();
                                 console.log(users)
                                 console.log('Going well2');
@@ -220,6 +220,7 @@ route.get('/showOrNew', permitListsLogin(), hideNavMenu(), (req, res)=>{ //admin
 route.get('/index', permitLists(), hideNavMenu(), async (req, res)=>{
     console.log('This is signed in user now', req.user);
     console.log(req.query);
+    console.log(req.queryObj); //from permitLists
     indexRedirect(req, res, 'Listed fine', 'noError') 
 })
 
