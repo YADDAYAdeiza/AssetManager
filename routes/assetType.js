@@ -78,16 +78,16 @@ route.get('/new', async (req,res)=>{
     // res.send('Asset form');
    // res.render('./asset/new.ejs', {asset:assetModel});
    try {
-       const assetTypes = await assetTypeModel.find({});
-       const assetTypesArr = await assetTypeModel.find().distinct('assetTypeClass');
-
+        const assetTypes = await assetTypeModel.find({});
+        const assetTypesArr = await assetTypeModel.find().distinct('assetTypeClass');
+        console.log('Going fine');
+        console.log('These are the distinct arrays: ', assetTypesArr);
+        console.log('This is serialNo.:', uuidv4());
+        res.render('assetType/new.ejs', {assetType:assetTypes, assetTypesArr:assetTypesArr, serialNo:uuidv4()}); //tying the view to the moongoose model
    }catch(e){
         console.log('An assetType error occured:')
         console.log(e.message);
         //res.render('AssetType/new.ejs', {assetType: new assetTypeModel()}); //tying the view to the moongoose model
-        console.log('These are the distinct arrays: ', assetTypesArr);
-        console.log('This is serialNo.:', uuidv4());
-        res.render('AssetType/new.ejs', {assetType:assetTypes, assetTypesArr:assetTypesArr, serialNo:uuidv4()}); //tying the view to the moongoose model
    }
 //    assetTypesArr.sort((a,b)=>{
 //         if (a.assetTypeClass > b.assetTypeClass){
