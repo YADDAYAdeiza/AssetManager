@@ -209,6 +209,7 @@ route.delete('/:id', async (req, res)=>{
 
 //create new book
 route.post('/',  async (req,res)=>{
+    console.log('Entered here');
 
     var assetTypes = await assetTypeModel.find({});
     
@@ -233,13 +234,14 @@ route.post('/',  async (req,res)=>{
     saveAssetTypeImageDetails(assetType, req.body.assetTypePic);
     console.log('Name of photo2 ', req.body.assetTypePic);
     // indexRedirect(req, res, 'Searching Asset Types', 'noError');
-    res.render('./assetType/index', {assetTypes:[assetType]});
     try{
+        console.log('Saving...')
         var newAssetType = await assetType.save();
         var assetTypeAudit = new assetTypeAuditModel({
             assetType: newAssetType._id
         });
         await assetTypeAudit.save()
+        res.render('./assetType/index', {assetTypes:[assetType]});
 
     } catch(e){
        console.error(e);
