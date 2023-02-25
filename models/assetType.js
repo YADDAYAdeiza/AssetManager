@@ -54,8 +54,8 @@ let assetTypeSchema = new mongoose.Schema({
         default:false
     },
     assetTypeImageName:{
-        type:String,
-        required:true
+        type:String
+        // required:true
     },
     assetTypeImageType:{
         type:String,
