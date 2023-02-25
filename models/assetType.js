@@ -54,8 +54,8 @@ let assetTypeSchema = new mongoose.Schema({
         default:false
     },
     assetTypeImageName:{
-        type:String
-        // required:true
+        type:String,
+        required:true
     },
     assetTypeImageType:{
         type:String,
@@ -77,7 +77,9 @@ assetTypeSchema.pre('remove', function(next){
 assetTypeSchema.virtual('assetTypeImageDetails').get(function(){
     if (this.assetTypeImageName != null && this.assetTypeImageType != null){
         // return `data:${this.assetTypeImageType};charset=utf-8;base64,${this.assetTypeImageName.toString('base64')}`
-        return `https://ams-users.s3.us-west-1.amazonaws.com/assetType/${this.assetTypeImageName}`
+        // return `https://ams-users.s3.us-west-1.amazonaws.com/assetType/${this.assetTypeImageName}`
+        return `https://ams-users.s3.us-west-1.amazonaws.com/assetType/${this.assetImageName}`
+
 
     }
 })
