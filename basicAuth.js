@@ -98,9 +98,20 @@ function permitListsLogin(){
             query = query.where('_id').in(req.user.profileId)
         }
         if (req.user.role =='admin'){
-            query = userModel.find( { _id: { nin: req.user.profileId } });
+            query = userModel.find();
             console.log('Admin thing');
-            // query = query.where('_id').in(req.user.profileId)
+            query = query.where('_id').in(req.user.profileId)
+
+            
+            // query = query.where('_id').ne(null); //basically, all
+            // query = userModel.find();
+            //do nothing.
+            // query = userModel.find();
+        }
+        if (req.user.role =='superAdmin'){
+            query = userModel.find();
+            console.log('superAdmin thing');
+            query = query.where('_id').in(req.user.profileId)
 
             
             // query = query.where('_id').ne(null); //basically, all
@@ -251,6 +262,20 @@ function hideNavMenu(){
         }
 
         if (req.user.role =='admin'){
+            console.log('Admin UI')
+            let uiSettings = {
+                'onlyAdmin':'block',
+                'onlyStaff':'none'
+            }
+            req.dispSetting = uiSettings;
+            console.log('--')
+            console.log('This is it, ', req.dispSetting);
+
+            // if (req.user.profileId.includes(req.params.id) ==  false){
+
+            // }
+        }
+        if (req.user.role =='superAdmin'){
             console.log('Admin UI')
             let uiSettings = {
                 'onlyAdmin':'block',
