@@ -221,7 +221,7 @@ route.get('/showOrNew', permitListsLogin(), hideNavMenu(), (req, res)=>{ //admin
                             }
                             //msg:"error goes in here",
                         }
-route.get('/index', permitLists(), hideNavMenu(), async (req, res)=>{
+route.get('/index', permitListsLogin(), hideNavMenu(), async (req, res)=>{
     console.log('This is signed in user now', req.user);
     console.log(req.query);
     console.log(req.queryObj); //from permitLists
