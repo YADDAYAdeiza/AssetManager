@@ -103,7 +103,13 @@ route.use(express.static('public'));
 
 let userVar = 'trial';
 //get all users of assets
+route.get('/confirmArrival/:id/:uuid', (req, res)=>{
+    console.log('This is confirmArrival...');
+     console.log(`Confirming receipt... on ${req.params.id} and ${req.params.uuid}`);
+     res.render('./user/confirmPage.ejs', {id:req.params.id, uuid:req.params.uuid})
+ })
 
+ 
 route.get('/fetcher/:id', async (req,res)=>{
     console.log('Fetching...');
     console.log('This is button requesting fetch: ', req.params.id)
@@ -1996,11 +2002,6 @@ function saveProfilePic(user, encodedProfile){
 
 }
 
-route.get('/confirmArrival/:id/:uuid', (req, res)=>{
-   console.log('This is confirmArrival...');
-    // console.log(`Confirming receipt... on ${req.params.id} and ${req.params.uuid}`);
-    // res.render('./user/confirmPage.ejs', {id:req.params.id, uuid:req.params.uuid})
-})
 
 
 
