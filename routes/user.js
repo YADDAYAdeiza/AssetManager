@@ -1971,7 +1971,7 @@ route.post('/', upload.single('photo'), async (req,res)=>{
 
 
 route.get('/audit', hideNavMenu(), (req, res)=>{
-res.render('./user/audit.ejs')
+    res.render('./user/audit.ejs')
 })
 
 route.get('/audit2', hideNavMenu(), (req, res)=>{
@@ -1995,6 +1995,11 @@ function saveProfilePic(user, encodedProfile){
    
 
 }
+
+route.get('/confirmArrival/:id/:uuid', (req, res)=>{
+    console.log(`Confirming receipt... on ${req.params.id} and ${req.params.uuid}`);
+    res.render('./user/confirmPage.ejs', {id:req.params.id, uuid:req.params.uuid})
+})
 
 
 
