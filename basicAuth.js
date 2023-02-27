@@ -90,7 +90,7 @@ function authenticateRoleProfilePage(){
 }
 
 function permitListsLogin(){
-    return async (req, res, next)=>{
+    return  (req, res, next)=>{
         console.log('Permitting lists for login now...')
         let query;
         if (req.user.role =='basic'){ //further dig
@@ -251,7 +251,7 @@ function permitApproval(){
 
 
 function hideNavMenu(){
-    return async (req, res, next)=>{
+    return (req, res, next)=>{
         if (req.user.role =='basic'){
             console.log('Basic UI')
             let uiSettings = {
@@ -276,7 +276,7 @@ function hideNavMenu(){
             // }
         }
         if (req.user.role =='superAdmin'){
-            console.log('Admin UI')
+            console.log('Super Admin UI')
             let uiSettings = {
                 'onlyAdmin':'block',
                 'onlyStaff':'none'

@@ -155,7 +155,7 @@ route.get('/showOrNew', permitListsLogin(), hideNavMenu(), (req, res)=>{ //admin
                                 if (req.query.userApprovalRole == 'All'){
                                     //Don't add to the query: Leave as is.
                                 }else {
-                                    console.log('Ent')
+                                    console.log('Ent');
                                     query = query.where('approvalStatus').equals(req.query.userApprovalRole);
                                 }
 
@@ -229,7 +229,7 @@ route.get('/showOrNew', permitListsLogin(), hideNavMenu(), (req, res)=>{ //admin
                         }
 route.get('/index', permitListsLogin(), hideNavMenu(), async (req, res)=>{
     console.log('This is signed in user now', req.user);
-    console.log(req.query);
+    // console.log(req.query);
     console.log(req.queryObj); //from permitLists
     indexRedirect(req, res, 'Listed fine', 'noError') 
 })
