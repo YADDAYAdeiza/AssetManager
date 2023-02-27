@@ -106,7 +106,7 @@ function permitListsLogin(){
             // query = query.where('_id').ne(null); //basically, all
             // query = userModel.find();
             //do nothing.
-            query = userModel.find();
+            // query = userModel.find();
         }
         if (req.user.role =='superAdmin'){
             query = userModel.find();
