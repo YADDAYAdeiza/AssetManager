@@ -98,12 +98,12 @@ function permitListsLogin(){
             query = query.where('_id').in(req.user.profileId)
         }
         if (req.user.role =='admin'){
-            query = userModel.find();
+            query = userModel.find({});
             console.log('Admin thing');
             // query = query.where('_id').in(req.user.profileId)
 
             
-            query = query.where('_id').equals('63f865bb8535004ecb958f29'); //basically, all
+            // query = query.where('_id').equals('63f865bb8535004ecb958f29'); //basically, all
             // query = userModel.find();
             //do nothing.
             // query = userModel.find();
