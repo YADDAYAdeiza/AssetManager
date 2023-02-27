@@ -187,13 +187,15 @@ app.use(passport.session());
   });
 
   app.get('/dana/:assetId/:assetUuid', async (req, res)=>{
-    console.log('This is the user');
     // res.send('Working too')
     
     
     QRCode.toDataURL(`https://assetmanger.herokuapp.com/user/confirmArrival/${req.params.assetId}/${req.params.assetUuid}`, {type:'terminal'}, function(err, url){
-        // res.render('userform', {code:url});
+      console.log('This is the user2');
+        res.render('userform', {code:url});
     })
+
+    console.log('At the end...')
     // res.render('landingPage');//code:url,
     //, {msg:'error message goes in here'}
   });
