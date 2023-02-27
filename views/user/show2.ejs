@@ -211,7 +211,7 @@
                         <ul>
                             <%userToApproveObj.approvedAssets.forEach(approvedAsset=>{%>
                                 <div class = <%=approvedAsset.assetApproval[user.userRole.role] ?'approved':'notApproved'%>>
-                                    <li><a href = '/asset/<%=approvedAsset._id%>' ><%=approvedAsset._id%> </a> | <a href = '/dana/<%=approvedAsset._id%>' class = 'QRCodeBtn'>Generate QRCode</a></li>
+                                    <li><a href = '/asset/<%=approvedAsset._id%>' ><%=approvedAsset._id%> </a> | <a href = '/dana/<%=approvedAsset._id%>/<%=approvedAsset.assetCode%>' class = 'QRCodeBtn'>Generate QRCode</a></li>
                                 </div>
                                 <%})%>
                                 <form class='approveWithout' method="POST" >
@@ -249,7 +249,6 @@
             </ul>
             <div id="req-History">
             </div>
-
 
         </div>
 
