@@ -43,8 +43,8 @@ let assetSchema = new mongoose.Schema({
         default:Date.now()
     },
     assetImageName:{
-        type:Buffer,
-        required: true
+        type:Buffer
+        // required: true
     }, 
     assetImageType:{
         type:String,
