@@ -103,7 +103,7 @@ function permitListsLogin(){
             // query = query.where('_id').in(req.user.profileId)
 
             
-            // query = query.where('_id').ne(null); //basically, all
+            query = query.where('_id').ne(null); //basically, all
             // query = userModel.find();
             //do nothing.
             // query = userModel.find();
