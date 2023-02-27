@@ -1997,8 +1997,9 @@ function saveProfilePic(user, encodedProfile){
 }
 
 route.get('/confirmArrival/:id/:uuid', (req, res)=>{
-    console.log(`Confirming receipt... on ${req.params.id} and ${req.params.uuid}`);
-    res.render('./user/confirmPage.ejs', {id:req.params.id, uuid:req.params.uuid})
+   console.log('This is confirmArrival...');
+    // console.log(`Confirming receipt... on ${req.params.id} and ${req.params.uuid}`);
+    // res.render('./user/confirmPage.ejs', {id:req.params.id, uuid:req.params.uuid})
 })
 
 
