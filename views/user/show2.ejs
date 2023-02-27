@@ -202,7 +202,8 @@
         Awaiting State Approval
         <button onclick="hideApproved()">Hide Approved</button>
         <%if(usersToApprove.length){%>
-            <ul> 
+            <%console.log(usersToApprove)%>
+            <ul>
                 <div id="externalApproveDiv">
                 <%usersToApprove.forEach(userToApproveObj=>{%>
                     <!-- if (userToApproveObj.approvedAssets.length){ -->
