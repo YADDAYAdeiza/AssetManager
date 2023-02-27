@@ -191,8 +191,8 @@ app.use(passport.session());
     // res.send('Working too')
     
     
-    QRCode.toDataURL(`https://assetmanger.herokuapp.com/users/confirmArrival/${req.params.assetId}/${req.params.assetUuid}`, {type:'terminal'}, function(err, url){
-        res.render('userform', {code:url});
+    QRCode.toDataURL(`https://assetmanger.herokuapp.com/user/confirmArrival/${req.params.assetId}/${req.params.assetUuid}`, {type:'terminal'}, function(err, url){
+        // res.render('userform', {code:url});
     })
     // res.render('landingPage');//code:url,
     //, {msg:'error message goes in here'}
