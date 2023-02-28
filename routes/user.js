@@ -221,8 +221,9 @@ route.get('/showOrNew', permitListsLogin(), hideNavMenu(), (req, res)=>{ //admin
                                                                 // })
                                                             // }
                                 
-                            }catch {
+                            }catch(e) {
                                 console.log('An error occured');
+                                console.log(e.message);
                                 // res.render('user/index.ejs', {msg: `An error occurred getting the list`, searchParams:req.query, msgClass:'error-message'}); //tying the view to the moongoose model
                                 res.render('register.ejs'); //tying the view to the moongoose model
                             }
