@@ -112,15 +112,17 @@ route.get('/confirmArrival/:id/:uuid', async (req, res)=>{
      try {
         for (let userId of req.user.profileId){
             let user = await userModel.find({}).where('_id').equals(userId);
-            userArr.push(user)
-            console.log(user);
+            userArr.push(await user)
+            // console.log(user);
     
             // for (let assetId of user.userOwnedAsset.id){
-                if (user.userOwnedAsset){
-                    for (assetId of user.userOwnedAsset.id){
+                if (await user.userOwnedAsset){
+                    for (assetId of await user.userOwnedAsset.id){
+                        console.log('Entering now...')
                         let asset = await assetModel.find({}).where('_id').equals(assetId);
-                        if (asset.assetCode == req.params.uuid){
-                         userAssets.push(asset);
+                        if (await asset.assetCode == req.params.uuid){
+                            console.log('Entered')
+                         userAssets.push(await asset);
                         }
                     }
                 }
