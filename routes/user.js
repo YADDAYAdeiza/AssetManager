@@ -116,10 +116,11 @@ route.get('/confirmArrival/:id/:uuid', async (req, res)=>{
             // console.log(user);
     
             // for (let assetId of user.userOwnedAsset.id){
-                if (await user.userOwnedAsset){
+                if (await user[0].userOwnedAsset){
                     for (assetId of await user.userOwnedAsset.id){
                         console.log('Entering now...')
                         let asset = await assetModel.find({}).where('_id').equals(assetId);
+                        console.log('This is asset ', asset);
                         if (await asset.assetCode == req.params.uuid){
                             console.log('Entered')
                          userAssets.push(await asset);
