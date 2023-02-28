@@ -90,20 +90,20 @@ function authenticateRoleProfilePage(){
 }
 
 function permitListsLogin(){
-    return  (req, res, next)=>{
+    return async (req, res, next)=>{
         console.log('Permitting lists for login now...')
         let query;
         if (req.user.role =='basic'){ //further dig
             query = userModel.find();
+            query = query.where('_id').in(req.user.profileId)
         }
         if (req.user.role =='admin'){
-            query = userModel.find({});
-            query = query.where('_id').in(req.user.profileId)
+            query = userModel.find();
             console.log('Admin thing');
             // query = query.where('_id').in(req.user.profileId)
 
             
-            // query = query.where('_id').equals('63f865bb8535004ecb958f29'); //basically, all
+            // query = query.where('_id').ne(null); //basically, all
             // query = userModel.find();
             //do nothing.
             // query = userModel.find();
@@ -111,7 +111,7 @@ function permitListsLogin(){
         if (req.user.role =='superAdmin'){
             query = userModel.find();
             console.log('superAdmin thing');
-            query = query.where('_id').in(req.user.profileId)
+            // query = query.where('_id').in(req.user.profileId)
 
             
             // query = query.where('_id').ne(null); //basically, all
@@ -251,7 +251,7 @@ function permitApproval(){
 
 
 function hideNavMenu(){
-    return (req, res, next)=>{
+    return async (req, res, next)=>{
         if (req.user.role =='basic'){
             console.log('Basic UI')
             let uiSettings = {
@@ -276,7 +276,7 @@ function hideNavMenu(){
             // }
         }
         if (req.user.role =='superAdmin'){
-            console.log('Super Admin UI')
+            console.log('Admin UI')
             let uiSettings = {
                 'onlyAdmin':'block',
                 'onlyStaff':'none'
