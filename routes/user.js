@@ -123,7 +123,7 @@ route.get('/getHistory/:id', async (req,res)=>{
     res.json(userHistory);
 })
 //This is for determining if, straight from login success, to go to Register New User or User profile.
-route.get('/showOrNew', permitListsLogin(), (req, res)=>{ //admin middleware may be used here to grant full authorization
+route.get('/showOrNew', permitListsLogin(), hideNavMenu(), (req, res)=>{ //admin middleware may be used here to grant full authorization
     console.log('In showOrNew=====================================');
     if (req.user.profileId.length){// show profiles, orole
         console.log('This is req: ', req.user);
