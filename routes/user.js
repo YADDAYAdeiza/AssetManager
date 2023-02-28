@@ -117,13 +117,15 @@ route.get('/confirmArrival/:id/:uuid', async (req, res)=>{
     
             // for (let assetId of user.userOwnedAsset.id){
                 if (await user[0].userOwnedAsset){
-                    for (assetId of await user.userOwnedAsset.id){
+                    for (assetId of await user[0].userOwnedAsset.id){
                         console.log('Entering now...')
                         let asset = await assetModel.find({}).where('_id').equals(assetId);
                         console.log('This is asset ', asset);
-                        if (await asset.assetCode == req.params.uuid){
-                            console.log('Entered')
-                         userAssets.push(await asset);
+                        for (assetItem of asset){
+                            if (await assetItem.assetCode == req.params.uuid){
+                                console.log('Entered')
+                             userAssets.push(await assetItem);
+                            }
                         }
                     }
                 }
