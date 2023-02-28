@@ -102,7 +102,7 @@ function permitListsLogin(){
             let query;
             query = userModel.find();
             console.log('Admin thing');
-            // query = query.where('_id').in(req.user.profileId)
+            query = query.where('_id').in(req.user.profileId)
             // query = query.where('_id').ne('204');
             
             
@@ -116,7 +116,7 @@ function permitListsLogin(){
             let query;
             query = userModel.find();
             console.log('superAdmin thing');
-            // query = query.where('_id').in(req.user.profileId)
+            query = query.where('_id').in(req.user.profileId)
 
             
             // query = query.where('_id').ne(null); //basically, all
