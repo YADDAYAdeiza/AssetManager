@@ -109,28 +109,33 @@ route.get('/confirmArrival/:id/:uuid', async (req, res)=>{
     let userAssets = [];
     console.log('This is confirmArrival...');
      console.log(`Confirming receipt... on ${req.params.id} and ${req.params.uuid}`);
-     for (let userId of req.user.profileId){
-        let user = await userModel.find({}).where('_id').equals(userId);
-        userArr.push(user)
-        console.log(user);
-
-        // for (let assetId of user.userOwnedAsset.id){
-            if (user.userOwnedAsset){
-                for (assetId of user.userOwnedAsset.id){
-                    let asset = await assetModel.find({}).where('_id').equals(assetId);
-                    if (asset.assetCode == req.params.uuid){
-                     userAssets.push(asset);
+     try {
+        for (let userId of req.user.profileId){
+            let user = await userModel.find({}).where('_id').equals(userId);
+            userArr.push(user)
+            console.log(user);
+    
+            // for (let assetId of user.userOwnedAsset.id){
+                if (user.userOwnedAsset){
+                    for (assetId of user.userOwnedAsset.id){
+                        let asset = await assetModel.find({}).where('_id').equals(assetId);
+                        if (asset.assetCode == req.params.uuid){
+                         userAssets.push(asset);
+                        }
                     }
                 }
             }
-        }
-
-        if (userAssets.length){
-            console.log('This is length ', userAssets.length);
-            res.render('./user/confirmPage.ejs', {id:req.params.id, uuid:req.params.uuid})
-        }else{
-            console.log('Not found');
-        }
+    
+            if (await userAssets.length){
+                console.log('This is length ', await userAssets.length);
+                res.render('./user/confirmPage.ejs', {id:req.params.id, uuid:req.params.uuid})
+            }else{
+                console.log('Not found');
+            }
+     }catch (e){
+        console.log(e.message)
+     }
+     
 })
 
  
