@@ -115,18 +115,22 @@ route.get('/confirmArrival/:id/:uuid', async (req, res)=>{
         console.log(user);
 
         // for (let assetId of user.userOwnedAsset.id){
-       for (assetId of user.userOwnedAsset.id){
-           let asset = await assetModel.find({}).where('_id').equals(assetId);
-           if (asset.assetCode == req.params.uuid){
-            userAssets.push(asset);
-           }
-       }
-    if (userAssets.length){
-        res.render('./user/confirmPage.ejs', {id:req.params.id, uuid:req.params.uuid})
-    }else{
-        console.log('Not found');
-    }
- }
+            if (user.userOwnedAsset){
+                for (assetId of user.userOwnedAsset.id){
+                    let asset = await assetModel.find({}).where('_id').equals(assetId);
+                    if (asset.assetCode == req.params.uuid){
+                     userAssets.push(asset);
+                    }
+                }
+            }
+        }
+
+        if (userAssets.length){
+            console.log('This is length ', userAssets.length);
+            res.render('./user/confirmPage.ejs', {id:req.params.id, uuid:req.params.uuid})
+        }else{
+            console.log('Not found');
+        }
 })
 
  
