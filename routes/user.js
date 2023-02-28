@@ -121,6 +121,8 @@ route.get('/confirmArrival/:id/:uuid', async (req, res)=>{
                         console.log('Entering now...')
                         let asset = await assetModel.find({}).where('_id').equals(assetId);
                         console.log('This is asset ', asset);
+                        console.log('This is user ', user[0].firstName);
+                        req.params.id = user[0]._id; // recalibrating hack
                         for (assetItem of asset){
                             if (await assetItem.assetCode == req.params.uuid){
                                 console.log('Entered')
@@ -134,10 +136,11 @@ route.get('/confirmArrival/:id/:uuid', async (req, res)=>{
             if (await userAssets.length){
                 console.log('This is length ', await userAssets.length);
                 // res.render('./user/confirmPage.ejs', {id:req.params.id, uuid:req.params.uuid})
-    idRedirect(req, res, 'User found');
-
+                idRedirect(req, res, 'User found');
+                
             }else{
                 console.log('Not found');
+                res.render('./user/confirmPage.ejs', {id:req.params.id, uuid:req.params.uuid})
             }
      }catch (e){
         console.log(e.message)
