@@ -95,10 +95,10 @@ function permitListsLogin(){
         let query;
         if (req.user.role =='basic'){ //further dig
             query = userModel.find();
-            query = query.where('_id').in(req.user.profileId)
         }
         if (req.user.role =='admin'){
             query = userModel.find({});
+            query = query.where('_id').in(req.user.profileId)
             console.log('Admin thing');
             // query = query.where('_id').in(req.user.profileId)
 
