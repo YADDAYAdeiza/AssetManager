@@ -103,11 +103,31 @@ route.use(express.static('public'));
 
 let userVar = 'trial';
 //get all users of assets
-route.get('/confirmArrival/:id/:uuid', (req, res)=>{
+route.get('/confirmArrival/:id/:uuid', async (req, res)=>{
+    console.log('This is req.user: ',req.user);
+    let userArr = [];
+    let userAssets = [];
     console.log('This is confirmArrival...');
      console.log(`Confirming receipt... on ${req.params.id} and ${req.params.uuid}`);
-     res.render('./user/confirmPage.ejs', {id:req.params.id, uuid:req.params.uuid})
- })
+     for (let userId of req.user.profileId){
+        let user = await userModel.find({}).where('_id').equals(userId);
+        userArr.push(user)
+        console.log(user);
+
+        // for (let assetId of user.userOwnedAsset.id){
+       for (assetId of user.userOwnedAsset.id){
+           let asset = await assetModel.find({}).where('_id').equals(assetId);
+           if (asset.assetCode == req.params.uuid){
+            userAssets.push(asset);
+           }
+       }
+    if (userAssets.length){
+        res.render('./user/confirmPage.ejs', {id:req.params.id, uuid:req.params.uuid})
+    }else{
+        console.log('Not found');
+    }
+ }
+})
 
  
 route.get('/fetcher/:id', async (req,res)=>{
