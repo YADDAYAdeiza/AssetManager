@@ -123,6 +123,7 @@ route.get('/confirmArrival/:id/:uuid', async (req, res)=>{
                         console.log('This is asset ', asset);
                         console.log('This is user ', user[0].firstName);
                         req.params.id = user[0]._id; // recalibrating hack
+                        req.routeStr = 'user/show2';
                         for (assetItem of asset){
                             if (await assetItem.assetCode == req.params.uuid){
                                 console.log('Entered')
