@@ -133,7 +133,9 @@ route.get('/confirmArrival/:id/:uuid', async (req, res)=>{
     
             if (await userAssets.length){
                 console.log('This is length ', await userAssets.length);
-                res.render('./user/confirmPage.ejs', {id:req.params.id, uuid:req.params.uuid})
+                // res.render('./user/confirmPage.ejs', {id:req.params.id, uuid:req.params.uuid})
+    idRedirect(req, res, 'User found');
+
             }else{
                 console.log('Not found');
             }
