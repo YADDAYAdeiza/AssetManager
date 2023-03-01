@@ -132,7 +132,7 @@ route.get('/confirmArrival/:id/:uuid', async (req, res)=>{
                             // asset
                                 
                                 
-                                asset.assetApproval.received = 'approved';
+                            assetItem.assetApproval.received = 'approved';
                             // asset.assetApproval ={
                                 //     ownApproval:'approved',
                                 //     stateApproval:null,
