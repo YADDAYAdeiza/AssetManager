@@ -133,7 +133,7 @@ route.get('/confirmArrival/:id/:uuid', async (req, res)=>{
                                 
                                 
                                 asset.assetApproval.received = 'approved';
-                                // asset.assetApproval ={
+                            // asset.assetApproval ={
                                 //     ownApproval:'approved',
                                 //     stateApproval:null,
                                 //     directorateApproval:null,
@@ -1703,6 +1703,7 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                                                 // console.log('This is IssueApprovedAsset ', approvedAsset);
                                                 user.issueApprovedUserAsset.id.push(assetToApprove.id);
                                                 user.issueApprovedUserAsset.idType.push(assetToApprove.assetName);
+                                                console.log('Pushed to issueApprovedUserAsset');
                                             })
                                             let updatedUser = await user.save();
                                             console.log('Updated user with issued ', updatedUser);
