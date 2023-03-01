@@ -1677,7 +1677,9 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                                             })
                                             console.log('This is mapped affectedAssetType (Store.Approve) ', affectedAssetType2);
 
-                                            affectedAssets.forEach(async assetToApprove=>{
+                                            for (const assetToApprove of affectedAssets){
+
+                                            // affectedAssets.forEach(async assetToApprove=>{
                                             // if (assetToApprove.assetCode !== '0012'){ 
                                                 //don't assign uuid.  It has already.
                                                 console.log('Has UUID', assetToApprove.assetCode);
@@ -1704,7 +1706,7 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                                                 user.issueApprovedUserAsset.id.push(assetToApprove.id);
                                                 user.issueApprovedUserAsset.idType.push(assetToApprove.assetName);
                                                 console.log('Pushed to issueApprovedUserAsset');
-                                            })
+                                            }
                                             let updatedUser = await user.save();
                                             console.log('Updated user with issued ', updatedUser);
              
