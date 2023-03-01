@@ -141,6 +141,7 @@ route.get('/confirmArrival/:id/:uuid', async (req, res)=>{
                                 //     issuerApproval:null
                                 // };
                                 user[0].receivedUserAsset.id.push(assetItem._id);
+                                await user[0].save();
 
                             }
                         }
