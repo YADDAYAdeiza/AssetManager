@@ -128,6 +128,20 @@ route.get('/confirmArrival/:id/:uuid', async (req, res)=>{
                             if (await assetItem.assetCode == req.params.uuid){
                                 console.log('Entered')
                              userAssets.push(await assetItem);
+                            // let affectedAssets = await assetModel.find().where('_id').in(userAssetArr.idArr).select('assetCode assetType assetName status assetUserHistory assetLocationHistory allocationStatus').exec();
+                            // asset
+                                
+                                
+                                asset.assetApproval.received = 'approved';
+                                // asset.assetApproval ={
+                                //     ownApproval:'approved',
+                                //     stateApproval:null,
+                                //     directorateApproval:null,
+                                //     storeApproval:null,
+                                //     issuerApproval:null
+                                // };
+                                user[0].receivedUserAsset.id.push(assetItem._id);
+
                             }
                         }
                     }
@@ -359,6 +373,7 @@ route.get('/:id/edit',  hideNavMenu(), async (req,res)=>{
                             var directorateApprovedAssets = [];
                             var storeApprovedAssets = [];
                             var issueApprovedAssets = [];
+                            var receivedUserAsset = [];
                             var usersToApprove = [];
                             try {
                             const user =await userModel.findById(req.params.id);
@@ -387,6 +402,9 @@ route.get('/:id/edit',  hideNavMenu(), async (req,res)=>{
                                 });
                                 user.issueApprovedUserAsset.id.forEach(async itemArr=>{
                                     issueApprovedAssets.push(itemArr.toString());
+                                });
+                                user.receivedUserAsset.id.forEach(async itemArr=>{
+                                    receivedUserAsset.push(itemArr.toString());
                                 });
 
                                 // user.userRole.usersToApprove.forEach(userId=>{
@@ -456,6 +474,7 @@ route.get('/:id/edit',  hideNavMenu(), async (req,res)=>{
                                 directorateApprovedAssets,
                                 storeApprovedAssets,
                                 issueApprovedAssets,
+                                receivedUserAsset,
                                 usersToApprove,
                                 assetTypeAll:allAssetType2,//assetTypeDistinct
                                 uiSettings,

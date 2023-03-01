@@ -43,16 +43,24 @@
                     <%console.log('Directorate Approved')%>
                     <%if (storeApprovedAssets.includes(asset._id.toString())){%>
                         <%console.log('Store Approved')%>
-                    <%if (issueApprovedAssets.includes(asset._id.toString())){%>
-                        <div class="divAsset divContLiBrown issuerApproval" data-asset-id="<%=asset.id%>" data-asset-assetName = "<%= asset.assetName %>" data-assettype-id = "<%= asset.assetType %>">
-                            <li><input type="checkbox" class = 'user-asset-pool-checkbox' style="display:inline; width:10%"><a href="/asset/<%=asset.id%>"><%=asset.assetCode%></a></li>    
-                        </div>
+                        <%if (issueApprovedAssets.includes(asset._id.toString())){%>
+                            <%console.log('Issue Approved')%>
+                            <%if (receivedUserAsset.includes(asset._id.toString())){%>
+                                <%console.log('received Approved')%>
+                                <div class="divAsset divContLiOrange receivedApproval" data-asset-id="<%=asset.id%>" data-asset-assetName = "<%= asset.assetName %>" data-assettype-id = "<%= asset.assetType %>">
+                                    <li><input type="checkbox" class = 'user-asset-pool-checkbox' style="display:inline; width:10%"><a href="/asset/<%=asset.id%>"><%=asset.assetCode%></a></li>    
+                                </div>
+                            <%}else{%>
+                                    <div class="divAsset divContLiBrown issuerApproval" data-asset-id="<%=asset.id%>" data-asset-assetName = "<%= asset.assetName %>" data-assettype-id = "<%= asset.assetType %>">
+                                        <li><input type="checkbox" class = 'user-asset-pool-checkbox' style="display:inline; width:10%"><a href="/asset/<%=asset.id%>"><%=asset.assetCode%></a></li>    
+                                    </div>
+                            <%}%>
                         <%}else{%>
                         <div class="divAsset divContLiCyan storeApproval issuerApproval" data-asset-id="<%=asset.id%>" data-asset-assetName = "<%= asset.assetName %>" data-assettype-id = "<%= asset.assetType %>">
                             <li><input type="checkbox" class = 'user-asset-pool-checkbox' style="display:inline; width:10%"><a href="/asset/<%=asset.id%>"><%=asset.assetCode%></a></li>    
                         </div>
                         <%}%>
-                        <%}else{%>
+                        <%}else{%> //store can move it forward, directorate can move it backwards
                         <div class="divAsset divContLiPurple directorateApproval storeApproval" data-asset-id="<%=asset.id%>" data-asset-assetName = "<%= asset.assetName %>" data-assettype-id = "<%= asset.assetType %>">
                             <li><input type="checkbox" class = 'user-asset-pool-checkbox' style="display:inline; width:10%"><a href="/asset/<%=asset.id%>"><%=asset.assetCode%></a></li>    
                         </div>
@@ -286,6 +294,9 @@
             break;
         case 'issuerApproval':
             assignDeassignType = 'Issuer.Approve';
+            break;
+        case 'receivedApproval': //not yet in use.
+            assignDeassignType = 'received.Approve';
             break;
         default:
             break;   

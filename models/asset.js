@@ -84,7 +84,8 @@ let assetSchema = new mongoose.Schema({
             state:null,
             directorate:null,
             store:null,
-            issue:null
+            issue:null,
+            received:null
         }
     },
     auditTrail:[

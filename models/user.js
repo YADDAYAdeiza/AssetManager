@@ -177,6 +177,23 @@ let userSchema = new mongoose.Schema({
             }
         }
     },
+    receivedUserAsset:{
+        id:{
+            type:[mongoose.Schema.Types.ObjectId],
+            ref:'AssetCol',
+            required:true
+        },
+        idType:{
+            type:[String],
+            required:true
+        },
+        assignDate:{
+            type:[Date],
+            default:()=>{
+                return Date.now()
+            }
+        }
+    },
     userOwnedAsset:{
         id:{
             type:[mongoose.Schema.Types.ObjectId],
