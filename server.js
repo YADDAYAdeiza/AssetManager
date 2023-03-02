@@ -885,9 +885,14 @@ app.put('/auditStatus', async (req, res)=>{
 })
 
 app.get('/auditTrail/:id', async (req, res)=>{
+  console.log('Auditing records...')
   console.log(req.params.id);
-  let assetToAuditTrail = await assetModel.find({_id:req.params.id}).populate('auditTrail.auditedBy')
-  res.send(assetToAuditTrail);
+  try{
+    let assetToAuditTrail = await assetModel.find({_id:req.params.id}).populate('auditTrail.auditedBy')
+    res.send(assetToAuditTrail);
+  }catch(e){
+    console.log(e)
+  }
 })
 
 app.get('/auditTrail2/:id', async (req, res)=>{

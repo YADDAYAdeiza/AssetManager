@@ -447,7 +447,7 @@
                 alert('Trailing...');
                 alert(viewAuditButGrabBool);
                 if (!viewAuditButGrabBool){
-                    let auditTrail = await fetch(`auditTrail/${this.value}`);
+                    let auditTrail = await fetch(`/auditTrail/${this.value}`);
                     console.log(auditTrail);
                     let auditTrailTx = await auditTrail.json();
                     console.log('This is it: ', auditTrailTx);
