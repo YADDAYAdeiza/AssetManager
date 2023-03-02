@@ -219,11 +219,42 @@ transition:  0.4s;
     background-color:rgb(239, 247, 247);
 }
 
+#qr-code-container{
+    background-color: pink;
+  }
 
 /* Media Queries */
-@media (max-width:800px){
+/* @media (max-width:800px){
     #content{
-        background-color: yellow;
         width:100%;
     }
-}
+    #qr-code-container{
+        background-color: yellow;
+      }
+    } */
+    
+    @media print {
+        #qr-code-container{
+            /* background-color: blue;
+            border:1px solid green;
+            margin: auto;
+            padding:10px; */
+
+
+            margin: 0;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            -ms-transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%);
+        }
+        
+        #qr-code-container img{
+            /* margin-left:50px; */
+            /* width:100px; */
+            display: block;
+            border: 2px solid grey;
+            margin: auto;
+        }
+
+    }
