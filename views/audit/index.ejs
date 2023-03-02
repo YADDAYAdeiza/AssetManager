@@ -178,6 +178,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     let assetObj = '<%- JSON.stringify(assetObj) %>';
+    assetObj = JSON.parse(assetObj);
     console.log('assetObj on client', assetObj);
     const ctx = document.getElementById('myChart');
   
