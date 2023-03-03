@@ -158,8 +158,8 @@ route.get('/confirmArrival/:id/:uuid', async (req, res)=>{
             }else if (await userAssets.length && req.user.subRole == 'auditor'){
                 res.render('./user/receiveOrAudit.ejs', {id:req.params.id, uuid:req.params.uuid})
             }else if (req.user.subRole == 'auditor'){
-                console.log('auditing ...');
-                res.redirect('/user/assetDetail/:assetItemId');
+                console.log('auditing ...', assetItemId);
+                res.redirect('/user/assetDetail/assetItemId');
                 res.send('Asset Page');
             }else {
                 console.log('Not found');
@@ -175,6 +175,7 @@ route.get('/assetDetail/:assetItemId', async (req, res)=>{
     console.log(`Getting details of ${req.params.assetItemId}`);
     try{
         let asset = await assetModel.find({}).where('_id').equals(req.params.assetItemId).populate('assetUserHistory');
+        console.log('Asset is: ', asset[0]);
         res.render('./user/assetDetails.ejs', {asset:asset[0]})
     }catch(e){
         console.log(e.message)
