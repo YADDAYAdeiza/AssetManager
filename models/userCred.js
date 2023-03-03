@@ -29,6 +29,10 @@ let userCredSchema = new mongoose.Schema({
         type:String,
         default:'basic'
     },
+    subRole:{
+        type:String,
+        default:'staff'
+    }
     profileId:{
         type:[String]
     },

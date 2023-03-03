@@ -219,6 +219,38 @@ transition:  0.4s;
     background-color:rgb(239, 247, 247);
 }
 
+#receiveOrAuditDivCont{
+    text-align: center;
+    background-color: cyan;
+    /* display: inline-block; */
+    width: 80%;
+    margin: 0;
+    padding:2rem;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+
+}
+
+#receiveOrAuditDivCont > a {
+    border: 1px solid grey;
+    border-radius: 10px;
+}
+
+#noConfirmation{
+    background-color: rgb(240, 157, 171);
+    margin: 0;
+    padding:2rem;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    
+}
+
 #qr-code-container{
     background-color: pink;
   }
