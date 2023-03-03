@@ -127,7 +127,7 @@ route.get('/confirmArrival/:id/:uuid', async (req, res)=>{
                         req.routeStr = 'user/show2';
                         for (assetItem of asset){
                             if (await assetItem.assetCode == req.params.uuid){
-                                console.log('Entered')
+                                console.log('Entered, ', assetItemId)
                              userAssets.push(await assetItem);
                              assetItemId = assetItem._id;
                             // let affectedAssets = await assetModel.find().where('_id').in(userAssetArr.idArr).select('assetCode assetType assetName status assetUserHistory assetLocationHistory allocationStatus').exec();
@@ -156,8 +156,9 @@ route.get('/confirmArrival/:id/:uuid', async (req, res)=>{
                 idRedirect(req, res, 'User found');
                 
             }else if (await userAssets.length && req.user.subRole == 'auditor'){
+                console.log('The option page');
                 res.render('./user/receiveOrAudit.ejs', {id:req.params.id, uuid:req.params.uuid})
-            }else if (req.user.subRole == 'auditor'){
+            }else if (await userAssets.length == 0 && req.user.subRole == 'auditor'){
                 console.log('auditing ...', assetItemId);
                 res.redirect('/user/assetDetail/assetItemId');
                 res.send('Asset Page');
