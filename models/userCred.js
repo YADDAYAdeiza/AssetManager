@@ -32,7 +32,7 @@ let userCredSchema = new mongoose.Schema({
     subRole:{
         type:String,
         default:'staff'
-    }
+    },
     profileId:{
         type:[String]
     },
