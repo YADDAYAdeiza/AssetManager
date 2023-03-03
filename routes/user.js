@@ -154,12 +154,13 @@ route.get('/confirmArrival/:id/:uuid', async (req, res)=>{
                 // res.render('./user/confirmPage.ejs', {id:req.params.id, uuid:req.params.uuid})
                 idRedirect(req, res, 'User found');
                 
-            }else if (await userAssets.length && req.user.subRole == 'Auditor'){
+            }else if (await userAssets.length && req.user.subRole == 'auditor'){
                 res.render('./user/receiveOrAudit.ejs', {id:req.params.id, uuid:req.params.uuid})
-            }else if (req.user.subRole == 'Auditor'){
-                console.log('Not found');
+            }else if (req.user.subRole == 'auditor'){
+                console.log('auditing ...');
                 res.send('Asset Page');
             }else {
+                console.log('Not found');
                 res.render('./user/confirmPage.ejs', {id:req.params.id, uuid:req.params.uuid})
             }
      }catch (e){
