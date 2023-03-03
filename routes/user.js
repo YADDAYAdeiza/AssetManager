@@ -107,7 +107,7 @@ route.get('/confirmArrival/:id/:uuid', async (req, res)=>{
     console.log('This is req.user: ',req.user);
     let userArr = [];
     let userAssets = [];
-    let assetItemId;
+    // let assetItemId;
     console.log('This is confirmArrival...');
      console.log(`Confirming receipt... on ${req.params.id} and ${req.params.uuid}`);
      try {
@@ -127,9 +127,9 @@ route.get('/confirmArrival/:id/:uuid', async (req, res)=>{
                         req.routeStr = 'user/show2';
                         for (assetItem of asset){
                             if (await assetItem.assetCode == req.params.uuid){
-                                console.log('Entered, ', assetItemId)
+                                console.log('Entered, ')
                              userAssets.push(await assetItem);
-                             assetItemId = assetItem._id;
+                            //  assetItemId = assetItem._id;
                             // let affectedAssets = await assetModel.find().where('_id').in(userAssetArr.idArr).select('assetCode assetType assetName status assetUserHistory assetLocationHistory allocationStatus').exec();
                             // asset
                                     
@@ -159,8 +159,8 @@ route.get('/confirmArrival/:id/:uuid', async (req, res)=>{
                 console.log('The option page');
                 res.render('./user/receiveOrAudit.ejs', {id:req.params.id, uuid:req.params.uuid})
             }else if (await userAssets.length == 0 && req.user.subRole == 'auditor'){
-                console.log('auditing ...', assetItemId);
-                res.redirect('/user/assetDetail/assetItemId');
+                console.log('auditing ...', req.params.uuid);
+                res.redirect(`/user/assetDetail/${req.params.uuid}`);
                 res.send('Asset Page');
             }else {
                 console.log('Not found');
@@ -175,7 +175,7 @@ route.get('/confirmArrival/:id/:uuid', async (req, res)=>{
 route.get('/assetDetail/:assetItemId', async (req, res)=>{
     console.log(`Getting details of ${req.params.assetItemId}`);
     try{
-        let asset = await assetModel.find({}).where('_id').equals(req.params.assetItemId).populate('assetUserHistory');
+        let asset = await assetModel.find({}).where('assetCode').equals(req.params.assetItemId).populate('assetUserHistory');
         console.log('Asset is: ', asset[0]);
         res.render('./user/assetDetails.ejs', {asset:asset[0]})
     }catch(e){
