@@ -159,7 +159,7 @@ route.get('/confirmArrival/:id/:uuid', async (req, res)=>{
                 res.render('./user/receiveOrAudit.ejs', {id:req.params.id, uuid:req.params.uuid})
             }else if (req.user.subRole == 'auditor'){
                 console.log('auditing ...');
-                res.redirect('./assetDetail/:assetItemId');
+                res.redirect('/assetDetail/:assetItemId');
                 res.send('Asset Page');
             }else {
                 console.log('Not found');
