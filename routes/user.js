@@ -187,7 +187,9 @@ route.get('/directReceive/:id/:assetItemId', async (req, res)=>{
     console.log(`directly receiving of ${req.params.assetItemId}`);
     try{
         let user = await userModel.find({}).where('_id').equals(req.params.id);
-        let asset = await assetModel.find({}).where('assetCode').equals(req.params.assetItemId).populate('assetUserHistory'); 
+        let asset = await assetModel.find({}).where('assetCode').equals(req.params.assetItemId).populate('assetUserHistory');
+            req.params.id = user[0]._id; // recalibrating hack
+            req.routeStr = 'user/show2';
         asset[0].assetApproval.received = 'approved';
         user[0].receivedUserAsset.id.push(assetItem._id);
         await user[0].save();
