@@ -11,7 +11,9 @@
         <h1>Detail Page</h1>
         <h2>Asset Name: <%=asset.assetName%></h2>
         <h2>Presently assigned to: <%=asset.assetUserHistory[0].firstName%></h2>
-        <h2>Traceability: <%=asset.assetCode%></h2>
+        <h2>State: <%=asset.assetUserHistory[asset.assetUserHistory.length - 1].state%></h2>
+        <h2>State: <%=asset.assetUserHistory.at(-1).state%></h2>
+        <h2>Traceability: <a href="/asset/<%=asset.id%>"><%=asset.assetCode%></a></h2>
     </div>
 </body>
 </html>

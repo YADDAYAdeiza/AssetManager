@@ -634,11 +634,11 @@ route.put('/assignToUser/:userId/:assetId', async(req, res)=>{
         asset[0].assetLocationHistory.push(user[0]._id);
         asset[0].assetUserHistory.push(user[0]._id);
         asset[0].assetApproval ={
-            ownApproval:'approved',
-            stateApproval:null,
-            directorateApproval:null,
-            storeApproval:null,
-            issuerApproval:null
+            ownApproval:'admin',//approved
+            stateApproval:'admin',
+            directorateApproval:'admin',
+            storeApproval:'admin',
+            issuerApproval:'admin'
         };
         await asset[0].save();
         res.status(200).send({msg:'Asset Re-allocated'});

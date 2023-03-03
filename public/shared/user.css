@@ -250,6 +250,10 @@ transition:  0.4s;
     transform: translate(-50%, -50%);
     
 }
+#noConfirmation h1{
+    text-align: center;
+    background-color: rgb(164, 164, 95);
+}
 
 #qr-code-container{
     background-color: pink;
