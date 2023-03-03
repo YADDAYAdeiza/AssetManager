@@ -107,6 +107,7 @@ route.get('/confirmArrival/:id/:uuid', async (req, res)=>{
     console.log('This is req.user: ',req.user);
     let userArr = [];
     let userAssets = [];
+    let assetItemId;
     console.log('This is confirmArrival...');
      console.log(`Confirming receipt... on ${req.params.id} and ${req.params.uuid}`);
      try {
@@ -128,10 +129,10 @@ route.get('/confirmArrival/:id/:uuid', async (req, res)=>{
                             if (await assetItem.assetCode == req.params.uuid){
                                 console.log('Entered')
                              userAssets.push(await assetItem);
+                             assetItemId = assetItem._id;
                             // let affectedAssets = await assetModel.find().where('_id').in(userAssetArr.idArr).select('assetCode assetType assetName status assetUserHistory assetLocationHistory allocationStatus').exec();
                             // asset
-                                
-                                
+                                    
                             assetItem.assetApproval.received = 'approved';
                             // asset.assetApproval ={
                                 //     ownApproval:'approved',
@@ -158,6 +159,7 @@ route.get('/confirmArrival/:id/:uuid', async (req, res)=>{
                 res.render('./user/receiveOrAudit.ejs', {id:req.params.id, uuid:req.params.uuid})
             }else if (req.user.subRole == 'auditor'){
                 console.log('auditing ...');
+                res.redirect('./assetDetail/:assetItemId');
                 res.send('Asset Page');
             }else {
                 console.log('Not found');
@@ -168,6 +170,17 @@ route.get('/confirmArrival/:id/:uuid', async (req, res)=>{
      }
      
 })
+
+route.get('/assetDetail/:assetItemId', async (req, res)=>{
+    console.log(`Getting details of ${req.params.assetItemId}`);
+    try{
+        let asset = await assetModel.find({}).where('_id').equals(req.params.assetItemId).populate('assetUserHistory');
+        res.render('./user/assetDetails.ejs', {asset:asset[0]})
+    }catch(e){
+        console.log(e.message)
+    }
+
+});
 
  
 route.get('/fetcher/:id', async (req,res)=>{
