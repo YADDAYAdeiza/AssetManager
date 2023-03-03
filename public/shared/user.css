@@ -241,6 +241,7 @@ transition:  0.4s;
 
 #noConfirmation{
     background-color: rgb(240, 157, 171);
+    width:60%;
     margin: 0;
     padding:2rem;
     position: absolute;
