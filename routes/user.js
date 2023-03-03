@@ -181,7 +181,22 @@ route.get('/assetDetail/:assetItemId', async (req, res)=>{
     }catch(e){
         console.log(e.message)
     }
+});
 
+route.get('/directReceive/:id/:assetItemId', async (req, res)=>{ 
+    console.log(`directly receiving of ${req.params.assetItemId}`);
+    try{
+        let user = await userModel.find({}).where('_id').equals(req.params.id);
+        let asset = await assetModel.find({}).where('assetCode').equals(req.params.assetItemId).populate('assetUserHistory'); 
+        asset[0].assetApproval.received = 'approved';
+        user[0].receivedUserAsset.id.push(assetItem._id);
+        await user[0].save();
+        // console.log('Asset is: ', asset[0]);
+        idRedirect(req, res, 'User found');
+        // res.render('./user/assetDetails.ejs', {asset:asset[0]})
+    }catch(e){
+        console.log(e.message)
+    }
 });
 
  
