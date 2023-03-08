@@ -38,10 +38,21 @@
                 <Label>Free:</Label> <input type="radio" id="freeInpt" name= 'sortRad' onclick = 'allocationStatusFilter(".allocated", "none")'>
                 <Label>All:</Label> <input type="radio" id="allInpt" name= 'sortRad' onclick = 'allocationStatusFilter("", "block")'>
             </div>
+            <button id = "createAsset" onclick = "createAsset()">Create Asset</button>
+            <!-- <input id = "createAsset" onclick = "createAsset()" value= 'Create Asset' type ='button'> -->
+            <div class="createAsset">
+                <select name="uniqueAssetList" id="uniqueAssetList">
+                    <%uniqueAssets.forEach(asset=>{%>
+                        <option value = <%=asset._id%>><%=asset.assetTypeClass%></option>
+                    <%})%>
+                </select>
+                <input name = "numOfAsset" id= "numOfAsset" type="Number">
+            </div>
         </div>
     <%  asset.forEach(asset=>{%>
         <div  class = <%=asset.assetAllocationStatus?"allocated": "notAllocated"%>>
             <p><%=asset.assetCode%></p>
+            <p><%=asset.assetStatus%></p>
                 <a href="/asset/<%=asset.id%>">
                     <p><img height= "100" width="120" src="<%= asset.assetImageDetails%>"></p>
                 </a>
@@ -51,8 +62,12 @@
                     <%- include('../partials/deleteFormAsset.ejs', {url:`/asset/${asset.id}`, assetAllocationStatus:asset.assetAllocationStatus, assetDeleteAccess}) %>
                     <%let len = asset.assetUserHistory.length%>
                     <% console.log('Length :', len)%>
-                    <%console.log('userid is: ', asset.assetUserHistory[len-1].toString())%>
-                    <button class="btn btn-primary" id="deAssignBut" onClick="deAssignAsset('<%=asset.id%>', '<%=asset.assetUserHistory[len-1].toString()%>')" <%=assetDeleteAccess? 'style=display:inline':'style=display:none'%>>DeAssignAsset</button> <span id ='ageSpan' ><%= (new Date(Date.now()).getTime() - asset.assetAssignDate)/86400000%></span><span>Day(s) Old</span>
+                    <%console.log('userid is: ', asset.assetUserHistory[len-1])%>
+                    <button class="btn btn-primary" id="deAssignBut" onClick="deAssignAsset('<%=asset.id%>', '<%=asset.assetUserHistory[len-1]%>')" <%=assetDeleteAccess? 'style=display:inline':'style=display:none'%>  <%=asset.assetAllocationStatus != true?'Disabled':"" %>>DeAssignAsset</button> <span id ='ageSpan' ><%= (new Date(Date.now()).getTime() - asset.assetAssignDate)/86400000%></span><span>Day(s) Old</span>
+                    <% asset.assetAllocationStatus ? "<a href = `dana/asset._id/asset.assetCode` class = 'QRCodeBtn'>Generate QRCode</a>":"" %>
+                    <%if (asset.assetAllocationStatus){%>
+                        <a href = '/dana/<%=asset._id%>/<%=asset.assetCode%>' class = 'QRCodeBtn'>Generate QRCode</a>
+                    <%}%>
                 </div>
             </div>
             <%})%>
@@ -63,6 +78,8 @@
    alert('Now here')
    let assetDate = '<%- asset[0].assetAssignDate%>';
    let assetName = '<%- asset[0].assetName%>';
+   let uniqueAssetListGrab = document.getElementById('uniqueAssetList');
+   let numOfAssetGrab = document.getElementById('numOfAsset');
    console.log('This is assetDate: ', assetDate.toString());
    let ageFilterNumberGrab = document.getElementById('ageFilterNumber');
 // var deAssignButGrab = document.getElementById('deAssignBut');
@@ -154,6 +171,14 @@ function ageStatusFilter(){
             span.parentNode.parentNode.style.display = 'None';
         }
     })
+}
+
+async function createAsset() {
+    console.log('Yeah2');
+            var data = await fetch(`/asset/adminCreateAsset/${uniqueAssetListGrab.value}/${numOfAssetGrab.value}`);
+            let dataResponse = await data.json();
+            console.log(dataResponse);
+
 }
     
 </script>

@@ -75,9 +75,11 @@ video {
         <%console.log('Here is asset, ', asset)%> 
         <h2><%=asset.assetCode%></h2>
         <h4>Asset Type: <%= asset.assetType.assetTypeClass%></h4>
-        <h4>Asset Status: <%= asset.status%></h4>
-        <h4>Asset Assigned: <%= asset.assetAssignDate.toDateString()%></h4>
-        <h4>Asset Assigned To: <%= asset.assetUserHistory[asset.assetUserHistory.length-1].id.toString()%></h4>
+        <h4>Asset Creation Date: <%= asset.assetCreationDate%></h4>
+        <h4>Asset Status: Applied/Pending Audit (or, Audit values)</h4> 
+        <h4>Asset Allocation Status: <%= asset.assetAllocationStatus%></h4>
+        <h4>Asset Assigned (Last): Date of last Assignment</h4>
+        <h4>Asset Assigned To (Last): <a href="/user/<%=asset.assetUserHistory[asset.assetUserHistory.length-1].id.toString()%>"><%= asset.assetUserHistory[asset.assetUserHistory.length-1] ? asset.assetUserHistory[asset.assetUserHistory.length-1].id.toString() : 'Free Asset'%></a></h4>
         
         
         <%if (asset.assetDescription != null){%>
@@ -209,7 +211,8 @@ video {
         let directionsService; //google maps
         let assetVar = '<%-asset.id%>';
         let assetCode = '<%-asset.assetCode%>';
-        let geoCoord = '<%-asset.assetLocationHistory[0].geoCoord%>';
+        let geoCoord = '<%- asset.assetLocationHistory[0]? asset.assetLocationHistory[0].geoCoord: {lat:"9.083333149", lng:"7.533328002"}%>'; //Default to FCT -store
+
         let assetObj = <%- JSON.stringify(asset)%>;
         let traceButGrab = document.getElementById('traceBut');
         let trackButGrab = document.getElementById('trackBut');
@@ -393,6 +396,7 @@ video {
 
             let myLatLngArr = [];
             let LocationArr = assetObj.assetLocationHistory;
+            // let LocationArr = assetObj.assetLocationHistory.length? assetObj.assetLocationHistory:[{geoCoord:{lat:"9.083333149", lng:"7.533328002"}}];
             let userActivityObj = {}; //keeps track of ... using a combination of Acitivity values (Assign/deAssign) and userId
             let geoCoordArr =[];
             let assignArr = [];
@@ -420,8 +424,10 @@ video {
                     trackButGrab.addEventListener('click', trackAsset);
 
                     LocationArr.forEach( (user,i)=>{
-                            user.geoCoord.lat = +user.geoCoord.lat;
-                            user.geoCoord.lng = +user.geoCoord.lng;
+                        user.geoCoord.lat = +user.geoCoord.lat;
+                        user.geoCoord.lng = +user.geoCoord.lng;
+                        console.log('Here is lat', +user.geoCoord.lat)
+                        console.log('Here is lng', +user.geoCoord.lng)
                         geoCoordArr.push(new google.maps.LatLng(user.geoCoord.lat, user.geoCoord.lng));
                     })
                     fetchFromLog();
@@ -483,7 +489,7 @@ video {
             userActivityObj =  await fetchDuration();
             console.log('&&');
             console.log(userActivityObj);
-
+if (userActivityObj){
             if (userActivityObj['Assign'] != userActivityObj['DeAssign']) { //odd number; no deAssign
                 console.log('??',userActivityObj['Assign'], userActivityObj['DeAssign'] );
                 console.log(userActivityObj);
@@ -498,6 +504,7 @@ video {
                 }
             
             }
+        }
 
             LocationArr.forEach(async (user,i)=>{
                 
@@ -524,7 +531,7 @@ video {
                     position: user.geoCoord,
                     map:mapAssetGrab,
                     icon:iconVar,
-                    title: user.firstName +', ' + Math.round(userActivityObj['DeAssign|'+user._id] - userActivityObj['Assign|'+user._id]) + 'Day(s)',
+                    title: user.firstName +', ' + (userActivityObj? Math.round(userActivityObj['DeAssign|'+user._id] - userActivityObj['Assign|'+user._id]) + 'Day(s)':""),
                     draggable: true
                 });
     
@@ -539,10 +546,11 @@ video {
            let data = await fetch(`/asset/fromLogAssetDuration/${assetObj._id}`);
            let dataResponse = await data.json();
            console.log('This is data response', dataResponse);
-
-           formUserActivityObject(dataResponse);
-           console.log('This is object ', userActivityObj);     
-            return userActivityObj;
+                    if (dataResponse.length){
+                            formUserActivityObject(dataResponse);
+                            console.log('This is object ', userActivityObj);     
+                                return userActivityObj;
+                    }
         }
 
 
@@ -718,13 +726,15 @@ video {
             }
         }
 
-        function assignToUser(){
+        async function assignToUser(){
             const requestOptions = {
                 method: 'PUT',
                 // headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ title: 'Fetch PUT Request Example' })
             };
-            fetch(`/asset/assignToUser/${userNameSelGrab.value}/${assetVar}`, requestOptions);
+            var data = await fetch(`/asset/assignToUser/${userNameSelGrab.value}/${assetVar}`, requestOptions);
+            let dataResponse = await data.json();
+            console.log(dataResponse);
         }
 
             

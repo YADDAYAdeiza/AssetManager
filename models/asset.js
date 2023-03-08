@@ -37,7 +37,7 @@ let assetSchema = new mongoose.Schema({
         type:String,
         default:'Na so'
     },
-    assetAssignDate: {
+    assetCreationDate: {
         type:Date,
         required:true,
         default:Date.now()
