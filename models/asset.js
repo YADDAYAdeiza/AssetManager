@@ -63,6 +63,12 @@ let assetSchema = new mongoose.Schema({
         type:[mongoose.Schema.Types.ObjectId],
         ref:'UserCol'
     },
+    assetAssignDateHistory:{
+        type:[Date],
+        default:()=>{
+            return Date.now()
+        }
+    },
     assetDescription:{
         type:String,
         default:"Description, like date of purchase, history, blah blah, goes in here"

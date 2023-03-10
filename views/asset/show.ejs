@@ -76,10 +76,10 @@ video {
         <h2><%=asset.assetCode%></h2>
         <h4>Asset Type: <%= asset.assetType.assetTypeClass%></h4>
         <h4>Asset Creation Date: <%= asset.assetCreationDate%></h4>
-        <h4>Asset Status: Applied/Pending Audit (or, Audit values)</h4> 
+        <h4>Asset Status: <%= asset.assetStatus ? asset.assetStatus:"Applied/Pending Audit (or, Audit values)"%></h4> 
         <h4>Asset Allocation Status: <%= asset.assetAllocationStatus%></h4>
-        <h4>Asset Assigned (Last): Date of last Assignment</h4>
-        <h4>Asset Assigned To (Last): <a href="/user/<%=asset.assetUserHistory[asset.assetUserHistory.length-1].id.toString()%>"><%= asset.assetUserHistory[asset.assetUserHistory.length-1] ? asset.assetUserHistory[asset.assetUserHistory.length-1].id.toString() : 'Free Asset'%></a></h4>
+        <h4>Asset Assigned (Last): <%= asset.assetAssignDateHistory[asset.assetAssignDateHistory.length - 1]%></h4>
+        <h4>Asset Assigned To (Last): <a href="/user/<%=asset.assetUserHistory[asset.assetUserHistory.length-1]?  asset.assetUserHistory[asset.assetUserHistory.length-1].id.toString() : ""%>"><%= asset.assetUserHistory[asset.assetUserHistory.length-1] ? asset.assetUserHistory[asset.assetUserHistory.length-1].id.toString() : 'Free Asset'%></a></h4>
         
         
         <%if (asset.assetDescription != null){%>
@@ -169,15 +169,15 @@ video {
         </select>
         Rank:
         <select name="userRank" id="userRank" onchange="bringUser(event)">
+            <option value="" selected>None</option>
             <option value="ROII">ROII</option>
             <option value="ROI">ROI</option>
-            <option value="SRO">ROI</option>
-            <option value="PRO">ROI</option>
-            <option value="ACRO">ROI</option>
-            <option value="CRO">ROI</option>
-            <option value="" selected>None</option>
-            <option value="AD">SRO</option>
-            <option value="DD">SRO</option>
+            <option value="SRO">SRO</option>
+            <option value="PRO">PRO</option>
+            <option value="ACRO">ACRO</option>
+            <option value="CRO">CRO</option>
+            <option value="AD">AD</option>
+            <option value="DD">DD</option>
         </select>
         Name:
         <select name="userNameSel" id="userNameSel"></select>
@@ -531,7 +531,7 @@ if (userActivityObj){
                     position: user.geoCoord,
                     map:mapAssetGrab,
                     icon:iconVar,
-                    title: user.firstName +', ' + (userActivityObj? Math.round(userActivityObj['DeAssign|'+user._id] - userActivityObj['Assign|'+user._id]) + 'Day(s)':""),
+                    title: user.firstName +', ' + (userActivityObj? Math.round(userActivityObj['DeAssign|'+user._id] - userActivityObj['Assign|'+user._id]) + 'Day(s)':"No DeAssign/Assign cycle yet"),
                     draggable: true
                 });
     

@@ -143,7 +143,7 @@ route.get('/confirmArrival/:id/:uuid', async (req, res)=>{
                                 // };
                                 user[0].receivedUserAsset.id.push(assetItem._id);
                                 await user[0].save();
-
+                                userLogSave(user[0], newIdArr, 'Received Asset', req);
                             }
                         }
                     }
@@ -155,10 +155,10 @@ route.get('/confirmArrival/:id/:uuid', async (req, res)=>{
                 // res.render('./user/confirmPage.ejs', {id:req.params.id, uuid:req.params.uuid})
                 idRedirect(req, res, 'User found');
                 
-            }else if (await userAssets.length && req.user.subRole == 'auditor'){
+            } else if (await userAssets.length && req.user.subRole == 'auditor'){
                 console.log('The option page');
                 res.render('./user/receiveOrAudit.ejs', {id:req.params.id, uuid:req.params.uuid})
-            }else if (await userAssets.length == 0 && req.user.subRole == 'auditor'){
+            } else if (await userAssets.length == 0 && req.user.subRole == 'auditor'){
                 console.log('auditing ...', req.params.uuid);
                 res.redirect(`/user/assetDetail/${req.params.uuid}`);
                 res.send('Asset Page');
