@@ -1,3 +1,5 @@
+let {userLogSave, userLogSave2} = require('../utilFile');
+
 const {instrument} = require('@socket.io/admin-ui');
 
 let express = require('express');
@@ -11,6 +13,7 @@ let assetTypeModel = require('../models/assetType.js');
 // const { rawListeners } = require('../models/asset.js');
 const userModel = require('../models/user.js');
 const userLogModel = require('../models/userLog.js');
+const userLogModel2 = require('../models/userLog2.js');
 let {v4:uuidv4} = require('uuid');
 //route.set('layout', 'layouts/layout');
 
@@ -657,113 +660,115 @@ route.put('/deAssign/:id', async (req, res)=>{
                 await req.user.save();
             }
             userLogSave(user, assetIdArr, 'DeAssign', req);
+            userLogSave2(user, assetIdArr, 'DeAssign', req); //modern log
+
             res.send('DeAssigned');
         
 })
 
-async function userLogSave(user, list, assignment, req){
-    const userLog = new userLogModel({ //we're later getting asset from the form
-        user:user.id,
-        activity:assignment,
-        assignedBy:req.user.id
-    });
+// async function userLogSave(user, list, assignment, req){
+//     const userLog = new userLogModel({ //we're later getting asset from the form
+//         user:user.id,
+//         activity:assignment,
+//         assignedBy:req.user.id
+//     });
 
-    switch(assignment){
-        case 'Requisition':
-            console.log('Requisition!')
-            userLog.userAsset.id = list;
-            userLog.assetList = list;//userAsset
-            break;
-        case 'Assign':
-            console.log('Assign')
-            userLog.userAsset.id = list;
-            userLog.assetList = list;
-            break;
-        case 'DeAssign':
-            console.log('DeAssign')
-            userLog.userAsset.id = list;
-            userLog.assetList = list;
-            break;
-        case 'Approve':
-            console.log('Approve')
-            userLog.userAsset.id = list;
-            // userLog.userApprovedAsset.id = list;
-            userLog.assetList = list;
-            break;
-        case 'DeApprove':
-            console.log('DeApprove')
-            userLog.userAsset.id = list;
-            // userLog.userApprovedAsset.id = list;
-            userLog.assetList = list;
-            break;
-        case 'D.Approve':
-            console.log('D.Approve');
-            userLog.userAsset.id = list;
-            // userLog.userApprovedAsset.id = list;
-            userLog.assetList = list;
-            break;
-        case 'D.DeApprove':
-            console.log('D.DeApprove');
-            userLog.userAsset.id = list;
-            // userLog.userApprovedAsset.id = list;
-            userLog.assetList = list;
-            break;
-        case 'Store.Approve':
-            console.log('Store Approve');
-            userLog.userAsset.id = list;
-            // userLog.userApprovedAsset.id = list;
-            userLog.assetList = list;
-            break;
-        case 'Store.DeApprove':
-            console.log('Store DeApprove');
-            userLog.userAsset.id = list;
-            // userLog.userApprovedAsset.id = list;
-            userLog.assetList = list;
-            break;
-        case 'Issuer.Approve':
-            console.log('Issuer Approve');
-            userLog.userAsset.id = list;
-            // userLog.userApprovedAsset.id = list;
-            userLog.assetList = list;
-            break;
-        case 'Issuer DeApprove':
-            console.log('Issuer.DeApprove');
-            userLog.userAsset.id = list;
-            // userLog.userApprovedAsset.id = list;
-            userLog.assetList = list;
-            break;
-        case 'Issuer.DeApprove':
-            console.log('Issuer.DeApprove');
-            userLog.userAsset.id = list;
-            // userLog.userApprovedAsset.id = list;
-            userLog.assetList = list;
-            break;
-        case 'Directorate Approval':
-            // userLog.userAsset.id = list;
-            userLog.userAsset.id = list;
-            userLog.assetList = list;
-            break;
-        case 'Store Approval':
-            // userLog.userAsset.id = list;
-            userLog.userAsset.id = list;
-            userLog.assetList = list;
-            break;
-        case 'Issue Approval':
-            // userLog.userAsset.id = list;
-            userLog.userAsset.id = list;
-            userLog.assetList = list;
-            break;
-        case 'Received Asset':
-            // userLog.userAsset.id = list;
-            userLog.userAsset.id = list;
-            userLog.assetList = list;
-            break;
-        default:
-            console.log('Does not fit');
-    }
-    console.log('Saving now+++++++++++++++');
-    await userLog.save();
-}
+//     switch(assignment){
+//         case 'Requisition':
+//             console.log('Requisition!')
+//             userLog.userAsset.id = list;
+//             userLog.assetList = list;//userAsset
+//             break;
+//         case 'Assign':
+//             console.log('Assign')
+//             userLog.userAsset.id = list;
+//             userLog.assetList = list;
+//             break;
+//         case 'DeAssign':
+//             console.log('DeAssign')
+//             userLog.userAsset.id = list;
+//             userLog.assetList = list;
+//             break;
+//         case 'Approve':
+//             console.log('Approve')
+//             userLog.userAsset.id = list;
+//             // userLog.userApprovedAsset.id = list;
+//             userLog.assetList = list;
+//             break;
+//         case 'DeApprove':
+//             console.log('DeApprove')
+//             userLog.userAsset.id = list;
+//             // userLog.userApprovedAsset.id = list;
+//             userLog.assetList = list;
+//             break;
+//         case 'D.Approve':
+//             console.log('D.Approve');
+//             userLog.userAsset.id = list;
+//             // userLog.userApprovedAsset.id = list;
+//             userLog.assetList = list;
+//             break;
+//         case 'D.DeApprove':
+//             console.log('D.DeApprove');
+//             userLog.userAsset.id = list;
+//             // userLog.userApprovedAsset.id = list;
+//             userLog.assetList = list;
+//             break;
+//         case 'Store.Approve':
+//             console.log('Store Approve');
+//             userLog.userAsset.id = list;
+//             // userLog.userApprovedAsset.id = list;
+//             userLog.assetList = list;
+//             break;
+//         case 'Store.DeApprove':
+//             console.log('Store DeApprove');
+//             userLog.userAsset.id = list;
+//             // userLog.userApprovedAsset.id = list;
+//             userLog.assetList = list;
+//             break;
+//         case 'Issuer.Approve':
+//             console.log('Issuer Approve');
+//             userLog.userAsset.id = list;
+//             // userLog.userApprovedAsset.id = list;
+//             userLog.assetList = list;
+//             break;
+//         case 'Issuer DeApprove':
+//             console.log('Issuer.DeApprove');
+//             userLog.userAsset.id = list;
+//             // userLog.userApprovedAsset.id = list;
+//             userLog.assetList = list;
+//             break;
+//         case 'Issuer.DeApprove':
+//             console.log('Issuer.DeApprove');
+//             userLog.userAsset.id = list;
+//             // userLog.userApprovedAsset.id = list;
+//             userLog.assetList = list;
+//             break;
+//         case 'Directorate Approval':
+//             // userLog.userAsset.id = list;
+//             userLog.userAsset.id = list;
+//             userLog.assetList = list;
+//             break;
+//         case 'Store Approval':
+//             // userLog.userAsset.id = list;
+//             userLog.userAsset.id = list;
+//             userLog.assetList = list;
+//             break;
+//         case 'Issue Approval':
+//             // userLog.userAsset.id = list;
+//             userLog.userAsset.id = list;
+//             userLog.assetList = list;
+//             break;
+//         case 'Received Asset':
+//             // userLog.userAsset.id = list;
+//             userLog.userAsset.id = list;
+//             userLog.assetList = list;
+//             break;
+//         default:
+//             console.log('Does not fit');
+//     }
+//     console.log('Saving now+++++++++++++++');
+//     await userLog.save();
+// }
 
 route.get('/bringUser/:id', async (req, res)=>{
     console.log('Will bring names...', req.params.id);
@@ -870,6 +875,7 @@ route.put('/assignToUser/:userId/:assetId', async(req, res)=>{
 
                                 await user[0].save();
             userLogSave(user[0], asset, 'Assign', req);
+            userLogSave2(user[0], asset, 'Assign', req);//modern log
 
         res.status(200).send({msg:'Asset Re-allocated'});
         // res.send('Assigned')
@@ -881,21 +887,30 @@ route.put('/assignToUser/:userId/:assetId', async(req, res)=>{
 
 route.get('/adminCreateAsset/:id/:numberOfAsset', async (req, res)=>{
     console.log('Working2..');
-    let assetType = await assetTypeModel.find({}).where('_id').in(req.params.id);
-    let newAssetSaved;
-for (assetTypeItem of assetType){
-    let newAsset = new assetModel({
-        // assetCode: uuidv4(),
-        assetType: assetTypeItem._id,
-        assetName: assetTypeItem.assetTypeClass,
-        assetStatus:'Created Asset',
-        assetImageName: assetTypeItem.assetTypeImageName,
-        assetDescription:assetTypeItem.assetTypeDescription,
-        assetAllocationStatus:false
-    })
-    newAssetSaved = await newAsset.save();
-}
-    res.json(await{newAssetSaved});
+    try {
+        let assetType = await assetTypeModel.find({}).where('_id').in(req.params.id);
+        let newAssetSaved;
+        for (assetTypeItem of assetType){
+            let newAsset = new assetModel({
+                // assetCode: uuidv4(),
+                assetType: assetTypeItem._id,
+                assetName: assetTypeItem.assetTypeClass,
+                assetStatus:'Created Asset',
+                assetImageName: assetTypeItem.assetTypeImageName,
+                assetDescription:assetTypeItem.assetTypeDescription,
+                assetAllocationStatus:false
+            })
+            newAssetSaved = await newAsset.save();
+            userLogSave(req.user, [newAssetSaved], 'Asset Create', req); //id 0000 means, no user yet
+            // userLogSave2 -no need; we are tracking history of other 'regular' users.
+
+
+        }
+        res.json(await{newAssetSaved});
+
+    }catch(e){
+        console.log(e.message)
+    }
 
 })
 
