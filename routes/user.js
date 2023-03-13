@@ -76,6 +76,8 @@ const io = require('socket.io')(3000, {
 //authentication
 const {adminAuth} = require('../basicAuth');
 let {authenticateRole, authenticateRoleProfilePage, permitLists, permitListsLogin, hideNavMenu, permitApproval} = require('../basicAuth');
+let {userLogSave, userLogSave2} = require('../utilFile');
+
 
 // const { reset } = require('nodemon');
 
@@ -143,7 +145,23 @@ route.get('/confirmArrival/:id/:uuid', async (req, res)=>{
                                 // };
                                 user[0].receivedUserAsset.id.push(assetItem._id);
                                 await user[0].save();
+                                //Log
+                                let objActivity = {
+                                    activity:req.query.assignment,
+                                    user:user.id,
+                                    activityBy:req.user.id,
+                                    activityDate:new Date (Date.now())
+                                };
+
+                                affectedAssets[0].assetActivityHistory.push(objActivity);
+                                await affectedAssets[0].save();
+                            
+                                // userLogSave(user, newIdArr, req.query.assignment, req);
+                                // userLogSave(user, userAssetArr.idArr, req.query.assignment, req);
+                                // userLogSave(user, userAssetArr.idArr, req.query.assignment, req);
                                 userLogSave(user[0], newIdArr, 'Received Asset', req);
+                                userLogSave2(user[0], newIdArr, 'Received Asset', req); //modern log
+                        //End of Log
                             }
                         }
                     }
@@ -544,51 +562,6 @@ route.get('/:id/:approval/:approvalId', authenticateRoleProfilePage(),hideNavMen
 
 
 
-
-
-async function userLogSave(user, list, assignment, req){
-    const userLog = new userLogModel({ //we're later getting asset from the form
-        user:user.id,
-        activity:assignment,
-        assignedBy:req.user.id
-    });
-
-    switch(assignment){
-        case 'Requisition':
-            console.log('Requisition!')
-            userLog.userRequisition = list;
-            break;
-        case 'Assign':
-            console.log('Assign')
-            userLog.userAsset.id = list;
-            userLog.userRequisition = list;
-            break;
-        case 'DeAssign':
-            console.log('DeAssign')
-            userLog.userAsset.id = list;
-            userLog.userRequisition = list;
-            break;
-        case 'Approve':
-            console.log('Approve')
-            userLog.userApprovedAsset.id = list;
-            userLog.userRequisition = list;
-            break;
-        case 'Directorate Approval':
-            // userLog.userAsset.id = list;
-            userLog.userRequisition = list;
-            break;
-        case 'Store Approval':
-            // userLog.userAsset.id = list;
-            userLog.userRequisition = list;
-            break;
-        default:
-            console.log('Does not fit');
-    }
-    console.log('Saving now+++++++++++++++');
-    await userLog.save();
-}
-
-
 // lastName:user.lastName,
 // firstName:user.firstName,
 // email:user.email,
@@ -762,6 +735,7 @@ route.put('/:id', async(req,res)=>{
 
 route.put('/assignDeassign2/:id', async (req,res)=>{
     let userAssetArrIdArrObj = {};
+    let affectedAsset;
     let affectedAssetTypeObj = {};
     console.log('Inside assignDeassign2');
     console.log(req.query.assignment);
@@ -998,7 +972,22 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
             //     assetArr.allocationStatus = true;
             //     await assetArr.save();
             // })
-            userLogSave(user, newIdArr, req.query.assignment, req);
+
+            //Log
+                let objActivity = {
+                    activity:req.query.assignment,
+                    user:user.id,
+                    activityBy:req.user.id,
+                    activityDate:new Date (Date.now())
+                };
+
+                affectedAssets[0].assetActivityHistory.push(objActivity);
+                await affectedAssets[0].save();
+            
+                userLogSave(user, newIdArr, req.query.assignment, req);
+                userLogSave2(user, newIdArr, req.query.assignment, req); //modern log
+            //End of Log
+
             // notifyUser(user)
         }
         
@@ -1064,8 +1053,22 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
             console.log('6--');
             console.log('This is userAssetArr.idArr right before log: ', userAssetArr.idArr);
             redirectUser = user.id;
+            //Log
+                let objActivity = {
+                    activity:req.query.assignment,
+                    user:user.id,
+                    activityBy:req.user.id,
+                    activityDate:new Date (Date.now())
+                };
 
-            userLogSave(user, userAssetArr.idArr, req.query.assignment, req);
+                affectedAssets[0].assetActivityHistory.push(objActivity);
+                await affectedAssets[0].save();
+            
+                // userLogSave(user, newIdArr, req.query.assignment, req);
+                userLogSave(user, userAssetArr.idArr, req.query.assignment, req);
+                userLogSave2(user, userAssetArr.idArr, req.query.assignment, req); //modern log
+         //End of Log
+
             
         }
 
@@ -1161,7 +1164,22 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                                               console.log('This is userAssetArr.idArr right before log: ', userAssetArr.idArr);
                                               console.log('directorateApprover', directorateApprover[0]);
                                         redirectUser = userAssetArr.approvingUserId;
-            userLogSave(user, userAssetArr.idArr, req.query.assignment, req);
+                                         //Log
+                                                let objActivity = {
+                                                    activity:req.query.assignment,
+                                                    user:user.id,
+                                                    activityBy:req.user.id,
+                                                    activityDate:new Date (Date.now())
+                                                };
+
+                                                affectedAssets[0].assetActivityHistory.push(objActivity);
+                                                await affectedAssets[0].save();
+                                            
+                                                // userLogSave(user, newIdArr, req.query.assignment, req);
+                                                // userLogSave(user, userAssetArr.idArr, req.query.assignment, req);
+                                                userLogSave(user, userAssetArr.idArr, req.query.assignment, req);
+                                                userLogSave2(user, userAssetArr.idArr, req.query.assignment, req); //modern log
+                                        //End of Log
     
         }
 
@@ -1239,7 +1257,23 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
             console.log('1--');
             console.log('This is userAssetArr.idArr right before log: ', userAssetArr.idArr);
             redirectUser = userAssetArr.approvingUserId; //redirecting back to... State Approver?
-            userLogSave(user, userAssetArr.idArr, req.query.assignment, req);
+            //Log
+                    let objActivity = {
+                        activity:req.query.assignment,
+                        user:user.id,
+                        activityBy:req.user.id,
+                        activityDate:new Date (Date.now())
+                    };
+
+                    affectedAssets[0].assetActivityHistory.push(objActivity);
+                    await affectedAssets[0].save();
+                
+                    // userLogSave(user, newIdArr, req.query.assignment, req);
+                    // userLogSave(user, userAssetArr.idArr, req.query.assignment, req);
+                    // userLogSave(user, userAssetArr.idArr, req.query.assignment, req);
+                    userLogSave(user, userAssetArr.idArr, req.query.assignment, req);
+                    userLogSave2(user, userAssetArr.idArr, req.query.assignment, req); //modern log
+            //End of Log
             
         }
 
@@ -1336,7 +1370,22 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                                            
             console.log('2--');
             console.log('This is userAssetArr.idArr right before log: ', userAssetArr.idArr);
+            //Log
+            let objActivity = {
+                activity:req.query.assignment,
+                user:user.id,
+                activityBy:req.user.id,
+                activityDate:new Date (Date.now())
+            };
+
+            affectedAssets[0].assetActivityHistory.push(objActivity);
+            await affectedAssets[0].save();
+        
+            // userLogSave(user, newIdArr, req.query.assignment, req);
+            // userLogSave(user, userAssetArr.idArr, req.query.assignment, req);
             userLogSave(user, userAssetArr.idArr, req.query.assignment, req);
+            userLogSave2(user, userAssetArr.idArr, req.query.assignment, req); //modern log
+    //End of Log
     
         }
 
@@ -1415,7 +1464,23 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
             console.log('3--');
             console.log('This is userAssetArr.idArr right before log: ', userAssetArr.idArr);
             redirectUser = userAssetArr.approvingUserId; //redirecting back to... State Approver?
+            //Log
+            let objActivity = {
+                activity:req.query.assignment,
+                user:user.id,
+                activityBy:req.user.id,
+                activityDate:new Date (Date.now())
+            };
+
+            affectedAssets[0].assetActivityHistory.push(objActivity);
+            await affectedAssets[0].save();
+        
+            // userLogSave(user, newIdArr, req.query.assignment, req);
+            // userLogSave(user, userAssetArr.idArr, req.query.assignment, req);
+            // userLogSave(user, userAssetArr.idArr, req.query.assignment, req);
             userLogSave(user, userAssetArr.idArr, req.query.assignment, req);
+            userLogSave2(user, userAssetArr.idArr, req.query.assignment, req); //modern log
+    //End of Log
         }
 
         if (req.query.assignment == 'Store.Approve'){
@@ -1523,7 +1588,22 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
             issuerApprover[0].userRole.usersToApprove.push(userObj);
             await issuerApprover[0].save();
             redirectUser = userAssetArr.approvingUserId; //redirecting back to... State Approver?
+            //Log
+            let objActivity = {
+                activity:req.query.assignment,
+                user:user.id,
+                activityBy:req.user.id,
+                activityDate:new Date (Date.now())
+            };
+
+            affectedAssets[0].assetActivityHistory.push(objActivity);
+            await affectedAssets[0].save();
+        
+            // userLogSave(user, newIdArr, req.query.assignment, req);
+            // userLogSave(user, userAssetArr.idArr, req.query.assignment, req);
             userLogSave(user, userAssetArr.idArr, req.query.assignment, req);
+            userLogSave2(user, userAssetArr.idArr, req.query.assignment, req); //modern log
+    //End of Log
         }
 
 
@@ -1658,8 +1738,23 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
             
                 
             // console.log('This is assetTypeNamesTo increment quantity, ', affectedAssetsTypes);
+            //Log
+            let objActivity = {
+                activity:req.query.assignment,
+                user:user.id,
+                activityBy:req.user.id,
+                activityDate:new Date (Date.now())
+            };
 
+            affectedAssets[0].assetActivityHistory.push(objActivity);
+            await affectedAssets[0].save();
+        
+            // userLogSave(user, newIdArr, req.query.assignment, req);
+            // userLogSave(user, userAssetArr.idArr, req.query.assignment, req);
             userLogSave(user, userAssetArr.idArr, req.query.assignment, req);
+            userLogSave2(user, userAssetArr.idArr, req.query.assignment, req); //modern log
+    //End of Log
+
             
         }
 
@@ -1756,7 +1851,22 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
             // issuerApprover[0].userRole.usersToApprove.push(user._id);
             // await issuerApprover[0].save();
             redirectUser = userAssetArr.approvingUserId; //redirecting back to... State Approver?
+            //Log
+            let objActivity = {
+                activity:req.query.assignment,
+                user:user.id,
+                activityBy:req.user.id,
+                activityDate:new Date (Date.now())
+            };
+
+            affectedAssets[0].assetActivityHistory.push(objActivity);
+            await affectedAssets[0].save();
+        
+            // userLogSave(user, newIdArr, req.query.assignment, req);
+            // userLogSave(user, userAssetArr.idArr, req.query.assignment, req);
             userLogSave(user, userAssetArr.idArr, req.query.assignment, req);
+            userLogSave2(user, userAssetArr.idArr, req.query.assignment, req); //modern log
+    //End of Log
         }
 
         
@@ -1819,7 +1929,22 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                 
             // console.log('This is assetTypeNamesTo increment quantity, ', affectedAssetsTypes);
 
+            //Log
+            let objActivity = {
+                activity:req.query.assignment,
+                user:user.id,
+                activityBy:req.user.id,
+                activityDate:new Date (Date.now())
+            };
+
+            affectedAssets[0].assetActivityHistory.push(objActivity);
+            await affectedAssets[0].save();
+        
+            // userLogSave(user, newIdArr, req.query.assignment, req);
+            // userLogSave(user, userAssetArr.idArr, req.query.assignment, req);
             userLogSave(user, userAssetArr.idArr, req.query.assignment, req);
+            userLogSave2(user, userAssetArr.idArr, req.query.assignment, req); //modern log
+    //End of Log
             console.log('Issued now...');
             
         }

@@ -6,7 +6,7 @@ async function userLogSave(user, list, assignment, req){
     const userLog = new userLogModel({ //we're later getting asset from the form
         user:user.id,
         activity:assignment,
-        assignedBy:req.user.id
+        activityBy:req.user.id
     });
 
     switch(assignment){
@@ -113,7 +113,7 @@ async function userLogSave2(user, list, assignment, req){
         let objActivity = {
             activity:assignment,
             assetList:list,
-            assignedBy:req.user.id,
+            activityBy:req.user.id,
             activityDate:new Date (Date.now())
         }
         if (userConcerned.length){ //if user found, update user activity
@@ -135,7 +135,7 @@ async function userLogSave2(user, list, assignment, req){
     // const userLog = new userLogModel2({ //we're later getting asset from the form
     //     user:user.id,
     //     activity:assignment,
-    //     assignedBy:req.user.id
+    //     activityBy:req.user.id
     // });
 
     // switch(assignment){

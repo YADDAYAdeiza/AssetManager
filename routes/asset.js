@@ -17,12 +17,14 @@ const userLogModel2 = require('../models/userLog2.js');
 let {v4:uuidv4} = require('uuid');
 //route.set('layout', 'layouts/layout');
 
+
 const io = require('socket.io')(2001, {
     cors:
     {
-        origin:['http://localhost:2000']
+       origin:['http://localhost:2000']
     }
 });
+
 let adminSocket;
 let adminAvailable;
 let driverAvailable;
@@ -416,14 +418,17 @@ route.put('/:id', async(req,res)=>{
 
 //Delete Asset Page
 route.delete('/:id', async (req, res)=>{
+    console.log('Deleting asset...')
     let asset;
     
     try {
         asset = await assetModel.findById(req.params.id);
         await asset.remove();
-        
+        userLogSave(req.user, asset, 'Asset Delete', req);
+        userLogSave2(req.user, asset, 'Asset Delete', req); //modern log
         res.redirect("/asset/index");
     } catch(e){
+        console.log(e.message);
         if (asset != null){
             res.render('/asset/show', {asset:asset, errorMessage:'Could not remove asset'});
         }else{
@@ -595,7 +600,7 @@ route.put('/deAssign/:id', async (req, res)=>{
                                 
                                 
                                 let assetsNamesToAssign = await assetModel.find().where('_id').in(newIdArr).select('assetType status allocationStatus assetApproval').exec();
-                                let affectedAssets = await assetModel.find().where('_id').in(assetIdArr).select('assetType status allocationStatus assetApproval').exec();
+                                let affectedAssets = await assetModel.find().where('_id').in(assetIdArr).select('assetType status allocationStatus assetActivityHistory assetApproval');
                                 
                                 console.log('This is affectedAssets (admin DeAssign)', affectedAssets);
             // affectedAssets.forEach(async asset=>{
@@ -659,8 +664,21 @@ route.put('/deAssign/:id', async (req, res)=>{
                 req.user.adminApprovals.push(approvedObj);  
                 await req.user.save();
             }
-            userLogSave(user, assetIdArr, 'DeAssign', req);
-            userLogSave2(user, assetIdArr, 'DeAssign', req); //modern log
+            
+
+            //Logs
+                let objActivity = {
+                    activity:'DeAssign',
+                    user:user.id,
+                    activityBy:req.user.id,
+                    activityDate:new Date (Date.now())
+                };
+
+                affectedAssets[0].assetActivityHistory.push(objActivity);
+                await affectedAssets[0].save();
+                userLogSave(user, affectedAssets, 'DeAssign', req);
+                userLogSave2(user, affectedAssets, 'DeAssign', req); //modern log
+            //End of Logs
 
             res.send('DeAssigned');
         
@@ -874,8 +892,20 @@ route.put('/assignToUser/:userId/:assetId', async(req, res)=>{
                                 user[0].userOwnedAsset = userAssetOwned;
 
                                 await user[0].save();
-            userLogSave(user[0], asset, 'Assign', req);
-            userLogSave2(user[0], asset, 'Assign', req);//modern log
+            
+            
+            //Logs
+                let objActivity = {
+                    activity:'Assign',
+                    user:user[0].id,
+                    activityBy:req.user.id,
+                    activityDate:new Date (Date.now())
+                }
+                newAssetSaved.assetActivityHistory.push(objActivity);
+                await newAssetSaved.save();
+                userLogSave(user[0], asset, 'Assign', req);
+                userLogSave2(user[0], asset, 'Assign', req);//modern log
+            //End of Logs
 
         res.status(200).send({msg:'Asset Re-allocated'});
         // res.send('Assigned')
@@ -900,10 +930,19 @@ route.get('/adminCreateAsset/:id/:numberOfAsset', async (req, res)=>{
                 assetDescription:assetTypeItem.assetTypeDescription,
                 assetAllocationStatus:false
             })
-            newAssetSaved = await newAsset.save();
-            userLogSave(req.user, [newAssetSaved], 'Asset Create', req); //id 0000 means, no user yet
-            // userLogSave2 -no need; we are tracking history of other 'regular' users.
+            // newAssetSaved = await newAsset.save();
 
+            //Log
+            let objActivity = {
+                activity:'Asset Create',
+                user:req.user.id,
+                activityBy:req.user.id,
+                activityDate:new Date (Date.now())
+            }
+            newAsset.assetActivityHistory.push(objActivity);
+            await newAsset.save();
+            userLogSave(req.user, [newAsset], 'Asset Create', req); //id 0000 means, no user yet
+            userLogSave2(req.user, [newAsset], 'Asset Create', req); //modern log
 
         }
         res.json(await{newAssetSaved});

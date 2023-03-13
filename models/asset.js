@@ -69,6 +69,10 @@ let assetSchema = new mongoose.Schema({
             return Date.now()
         }
     },
+    assetActivityHistory:{
+        type:[Object],
+        required:true
+    },
     assetDescription:{
         type:String,
         default:"Description, like date of purchase, history, blah blah, goes in here"
@@ -130,18 +134,11 @@ assetSchema.pre('remove', function(next){
     console.log('Gotten in preRemove..');
     //input any constraints here.
 
-
-    // assetTypeModel.find({user: this.id}, (err, assets)=>{
-    //     if (err){
-    //         next(err)
-    //     } else if (assets.length > 0){ //if assets attached to user
-    //         next(new Error('This user has assets still'))
-    //     } else { //if no errors, and if no assets attached to user
-    //         next()
-    //     }
-    // });
-
-    next();
+    if (this.assetAllocationStatus =='true'){// if staff has no assets, or staff is not in an approving role beyond 'ownApproval'
+        next(new Error('This asset is allocated; deallocate first before delete'))
+    }else{
+        next();
+    }
 })
 
 let assetModel = mongoose.model('AssetCol', assetSchema);
