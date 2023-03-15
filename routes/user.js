@@ -133,7 +133,7 @@ route.get('/confirmArrival/:id/:uuid', async (req, res)=>{
                                 console.log('Entered, ')
                              userAssets.push(await assetItem);
                             //  assetItemId = assetItem._id;
-                            // let affectedAssets = await assetModel.find().where('_id').in(userAssetArr.idArr).select('assetCode assetType assetName status assetUserHistory assetLocationHistory allocationStatus').exec();
+                            let affectedAssets = await assetModel.find().where('_id').in(userAssetArr.idArr).select('assetCode assetType assetName status assetUserHistory assetLocationHistory allocationStatus').exec();
                             // asset
                                     
                             assetItem.assetApproval.received = 'approved';
