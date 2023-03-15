@@ -154,14 +154,14 @@ route.get('/confirmArrival/:id/:uuid', async (req, res)=>{
                                     activityDate:new Date (Date.now())
                                 };
 
-                                assetItem.assetActivityHistory.push(objActivity);
+                                await assetItem.assetActivityHistory.push(objActivity);
                                 await assetItem.save();
                             
                                 // userLogSave(user, newIdArr, req.query.assignment, req);
                                 // userLogSave(user, userAssetArr.idArr, req.query.assignment, req);
                                 // userLogSave(user, userAssetArr.idArr, req.query.assignment, req);
-                                userLogSave(user[0], newIdArr, 'Received Asset', req);
-                                userLogSave2(user[0], newIdArr, 'Received Asset', req); //modern log
+                                userLogSave(user[0], [await assetItem], 'Received Asset', req);
+                                userLogSave2(user[0], [await assetItem], 'Received Asset', req); //modern log
                         //End of Log
                             }
                         }
