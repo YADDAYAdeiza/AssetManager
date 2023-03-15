@@ -133,7 +133,7 @@ route.get('/confirmArrival/:id/:uuid', async (req, res)=>{
                                 console.log('Entered, ')
                              userAssets.push(await assetItem);
                             //  assetItemId = assetItem._id;
-                            let affectedAssets = await assetModel.find().where('_id').in(userAssetArr.idArr).select('assetCode assetType assetName status assetUserHistory assetLocationHistory allocationStatus').exec();
+                            // let affectedAssets = await assetModel.find().where('_id').in(userAssetArr.idArr).select('assetCode assetType assetName status assetUserHistory assetLocationHistory allocationStatus').exec();
                             // asset
                                     
                             assetItem.assetApproval.received = 'approved';
@@ -154,8 +154,8 @@ route.get('/confirmArrival/:id/:uuid', async (req, res)=>{
                                     activityDate:new Date (Date.now())
                                 };
 
-                                affectedAssets[0].assetActivityHistory.push(objActivity);
-                                await affectedAssets[0].save();
+                                assetItem.assetActivityHistory.push(objActivity);
+                                await assetItem.save();
                             
                                 // userLogSave(user, newIdArr, req.query.assignment, req);
                                 // userLogSave(user, userAssetArr.idArr, req.query.assignment, req);
