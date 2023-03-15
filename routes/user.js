@@ -13,6 +13,7 @@ const { rawListeners } = require('../models/assetType.js');
 const { response } = require('express');
 const imageMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
 let userLogModel = require('../models/userLog');
+let userLogModel2 = require('../models/userLog2');
 let userCredModel = require('../models/userCred');
 
 const nodemailer = require("nodemailer");
@@ -742,7 +743,7 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
     console.log('This is req.query');
     console.log(req.query);
     let user;
-    // let affectedAssets;
+    let affectedAssets;
     let allAsset;
     let newIdArr = []; //this will contain the filtered array to be reassigned (filtered of object to be deassigned)
     let newIdArr2 = [];
@@ -789,7 +790,12 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
             //takes all assetTypesIds from tentative asset div(upper) and appends them to present assets
             let newAsset;
             if (userAssetArr.idArr.length){ //assigning new assets
-
+                let objActivity = {
+                    activity:req.query.assignment,
+                    user:user.id,
+                    activityBy:req.user.id,
+                    activityDate:new Date (Date.now())
+                };
                     let affectedAssetType = await assetTypeModel.find().where('_id').in(userAssetArr.idArr).select('_id assetTypeQty assetTypeImageName assetTypeDescription assetTypeClass').exec();
                     
                 
@@ -843,7 +849,9 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                                 })
                                                     newAsset.assetUserHistory.push(user.id);
                                                     newAsset.assetLocationHistory.push(user.id);
-
+                            //Log -asset
+                                newAsset.assetActivityHistory.push(objActivity)
+                            //End of Log -asset
                                 let newAssetSaved = await newAsset.save();
                                 
                                 //likely
@@ -877,6 +885,7 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                             id:user._id,
                             approvedAssets:newIdArr
                         }
+                        console.log('This is userObj now ', userObj);
                                 stateApprover[0].userRole.usersToApprove.push(userObj);
 
                                 await stateApprover[0].save();  
@@ -884,8 +893,15 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                     redirectUser = user.id;
                                 console.log('stateApprover now', stateApprover[0]); 
                 }
-
                 if (userAssetArr.idArrAsset.length){ //if we have old assets to assign
+                    // for use with Asset Log
+                        let objActivity = {
+                            activity:req.query.assignment,
+                            user:user.id,
+                            activityBy:req.user.id,
+                            activityDate:new Date (Date.now())
+                        };
+                    //End 
                     let affectedAsset = await assetModel.find().where('_id').in(userAssetArr.idArrAsset).select('_id assetCode assetName assetUsedDuration assetDescription assetUserHistory assetLocationHistory').exec();
                     console.log('Here is affected asset (not type):')
                     console.log(affectedAsset);
@@ -895,6 +911,9 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                         asset.assetAllocationStatus = true;
                         asset.assetUserHistory.push(user.id);
                         asset.assetLocationHistory.push(user.id);
+                        //Log -asset
+                            asset.assetActivityHistory.push(objActivity)
+                        //End of Log -asset
                         await asset.save();
                         newIdArr.push(asset._id); //newIdArr for use in userLogSave
                         
@@ -932,6 +951,7 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                             id:user._id,
                             approvedAssets:newIdArr
                         }
+                        console.log('This is is userObj ', userObj);
                         stateApprover[0].userRole.usersToApprove.push(userObj);
 
                         await stateApprover[0].save();  
@@ -973,17 +993,7 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
             //     await assetArr.save();
             // })
 
-            //Log
-                let objActivity = {
-                    activity:req.query.assignment,
-                    user:user.id,
-                    activityBy:req.user.id,
-                    activityDate:new Date (Date.now())
-                };
-
-                affectedAssets[0].assetActivityHistory.push(objActivity);
-                await affectedAssets[0].save();
-            
+            //Log -user            
                 userLogSave(user, newIdArr, req.query.assignment, req);
                 userLogSave2(user, newIdArr, req.query.assignment, req); //modern log
             //End of Log
@@ -1076,7 +1086,7 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
             console.log('Approve now');
             
             let affectedAssetType = await assetTypeModel.find().where('_id').in(userAssetArr.idArr).select('_id assetTypeQty assetTypeImageName assetTypeDescription assetTypeClass').exec();
-            let affectedAssets = await assetModel.find().where('_id').in(userAssetArr.idArr).select('assetCode assetType assetName status assetUserHistory assetLocationHistory allocationStatus').exec();
+            let affectedAssets = await assetModel.find().where('_id').in(userAssetArr.idArr).select('assetCode assetType assetName status assetUserHistory assetLocationHistory assetActivityHistory allocationStatus').exec();
 
            
         
@@ -1222,7 +1232,7 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
             //reassign updated assetIds to user
             user.approvedUserAsset.id= newIdArr;
             let assetsNamesToAssign = await assetModel.find().where('_id').in(newIdArr).select('assetType status allocationStatus').exec();
-            let affectedAssets = await assetModel.find().where('_id').in(userAssetArr.idArr).select('assetType status allocationStatus').exec();
+            let affectedAssets = await assetModel.find().where('_id').in(userAssetArr.idArr).select('assetType status allocationStatus assetActivityHistory').exec();
 
             //return affected Assets to Asset pool (used)
             //This will be in each approval stage
@@ -1282,7 +1292,7 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
             
             //is this first line not useless? It won't give anything.
             let affectedAssetType = await assetTypeModel.find().where('_id').in(userAssetArr.idArr).select('_id assetTypeQty assetTypeImageName assetTypeDescription assetTypeClass').exec();
-            let affectedAssets = await assetModel.find().where('_id').in(userAssetArr.idArr).select('assetCode assetType assetName status assetUserHistory assetLocationHistory allocationStatus').exec();
+            let affectedAssets = await assetModel.find().where('_id').in(userAssetArr.idArr).select('assetCode assetType assetName status assetUserHistory assetLocationHistory allocationStatus assetActivityHistory').exec();
 
            
         
@@ -1429,7 +1439,7 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
             //reassign updated assetIds to user
             user.directorateApprovedUserAsset.id= newIdArr;
             let assetsNamesToAssign = await assetModel.find().where('_id').in(newIdArr).select('assetType status allocationStatus').exec();
-            let affectedAssets = await assetModel.find().where('_id').in(userAssetArr.idArr).select('assetType status allocationStatus').exec();
+            let affectedAssets = await assetModel.find().where('_id').in(userAssetArr.idArr).select('assetType status allocationStatus assetActivityHistory').exec();
 
             //return affected Assets to Asset pool (used)
             //This will be in each approval stage
@@ -1499,7 +1509,7 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
             console.log('Decrement Store Quantities here');
             
             // let affectedAssetType = await assetTypeModel.find().where('_id').in(userAssetArr.idArr).select('_id assetTypeQty assetTypeImageName assetTypeDescription assetTypeClass').exec();
-            let affectedAssets = await assetModel.find().where('_id').in(userAssetArr.idArr).select('assetCode assetType assetName status assetUserHistory assetLocationHistory allocationStatus').exec();
+            let affectedAssets = await assetModel.find().where('_id').in(userAssetArr.idArr).select('assetCode assetType assetName status assetUserHistory assetLocationHistory allocationStatus assetActivityHistory').exec();
             let affectedAssetsTypes = await assetTypeModel.find().where('_id').in(userAssetArr.idTypeArr).select('assetTypeCode assetTypeClass assetTypeQty').exec();
 
            
@@ -1647,7 +1657,7 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
             //reassign updated assetIds to user
             user.storeApprovedUserAsset.id= newIdArr;
             let assetsNamesToAssign = await assetModel.find().where('_id').in(newIdArr).select('assetType status allocationStatus').exec();
-            let affectedAssets = await assetModel.find().where('_id').in(userAssetArr.idArr).select('assetType status allocationStatus').exec();
+            let affectedAssets = await assetModel.find().where('_id').in(userAssetArr.idArr).select('assetType status allocationStatus assetActivityHistory assetActivityHistory').exec();
 
                 //using assetType now, not asset
                 userAssetArr.idTypeArr.forEach(assetId=>{
@@ -1774,7 +1784,7 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
             console.log('Decrement Store Quantities here');
             
             // let affectedAssetType = await assetTypeModel.find().where('_id').in(userAssetArr.idArr).select('_id assetTypeQty assetTypeImageName assetTypeDescription assetTypeClass').exec();
-            let affectedAssets = await assetModel.find().where('_id').in(userAssetArr.idArr).select('assetCode assetType assetName status assetUserHistory assetLocationHistory allocationStatus').exec();
+            let affectedAssets = await assetModel.find().where('_id').in(userAssetArr.idArr).select('assetCode assetType assetName status assetUserHistory assetLocationHistory allocationStatus assetActivityHistory').exec();
             let affectedAssetsTypes = await assetTypeModel.find().where('_id').in(userAssetArr.idTypeArr).select('assetTypeCode assetTypeClass assetTypeQty').exec();
 
            
@@ -1887,7 +1897,7 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
             //reassign updated assetIds to user
             user.issueApprovedUserAsset.id= newIdArr;
             let assetsNamesToAssign = await assetModel.find().where('_id').in(newIdArr).select('assetType status allocationStatus').exec();
-            let affectedAssets = await assetModel.find().where('_id').in(userAssetArr.idArr).select('assetType status allocationStatus').exec();
+            let affectedAssets = await assetModel.find().where('_id').in(userAssetArr.idArr).select('assetType status allocationStatus assetActivityHistory').exec();
 
             //return affected Assets to Asset pool (used)
             //This will be in each approval stage
@@ -2232,8 +2242,16 @@ function saveProfilePic(user, encodedProfile){
 
 }
 
-
-
+route.get('/callHistory/:userId', async (req, res)=>{
+    try {
+        console.log(req.params.userId);
+        let userHistory = await userLogModel2.find({}).where('userId').equals(req.params.userId);
+        // res.status(200).json({msg:userHistory});
+        res.send({msg:userHistory});
+    }catch(e){
+        console.log(e.message);
+    }
+})
 
 
 module.exports = route;

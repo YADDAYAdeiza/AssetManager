@@ -333,7 +333,7 @@ async function renderFormPage(res, asset, assetTypeModelVar, form, hasError = fa
 route.get('/:id', async (req, res)=>{
     console.log('Entered here now');
     try {
-        const asset = await assetModel.findById(req.params.id).populate('assetType assetUserHistory assetLocationHistory').exec();
+        const asset = await assetModel.findById(req.params.id).populate('assetType assetUserHistory assetLocationHistory');//.exec();
         console.log('Successful...');
         res.render('asset/show', {
             asset:asset
@@ -951,6 +951,16 @@ route.get('/adminCreateAsset/:id/:numberOfAsset', async (req, res)=>{
         console.log(e.message)
     }
 
+})
+
+route.get('/assetHistory/:assetId', async (req, res)=>{
+    console.log(req.params.assetId);
+    try{
+        let asset = await assetModel.find({}).where('_id').equals(req.params.assetId);
+        res.status(200).json({msg:asset})
+    }catch(e){
+
+    }
 })
 
 module.exports = route;

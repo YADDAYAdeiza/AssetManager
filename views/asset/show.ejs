@@ -104,6 +104,8 @@ video {
         <button id = 'trackBut' <%-asset.assetType.assetTypeTrackable ? "":"disabled"%> >Track Asset</button>
         <button id = 'videoLive'>Video Live</button>
         <button id = 'assignBut' onclick="assignButFunc()">Assign</button>
+        <button id= 'assetHistory' onClick = 'assetHistory()'>Asset History</button>
+
         
         
 <div id="mapAssignCont">
@@ -193,7 +195,16 @@ video {
 
         </div>
 
-        
+        <div class="assetHistory">
+            <%if (asset.assetActivityHistory){%>
+                <div class="butCancelDiv">
+                    <button class="butCancel" onClick = 'hideAssetHistory()'>x</button>
+                </div>
+                    <%asset.assetActivityHistory.forEach(activityObj =>{%>
+                        <div>`Type: <%=activityObj.activity%>  | user:<%=activityObj.user%> By: <%=activityObj.activityBy%>  | Date:<%=activityObj.activityDate%>`</div>
+                    <%})%>
+            <%}%>
+        </div> 
 
     <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
@@ -204,7 +215,7 @@ video {
             host:'/',
             port:'3001'
         })
-
+        let assetHistoryGrab = document.getElementsByClassName('assetHistory')[0];
         let mapAssetGrab;
         let directionsRenderer; //google maps
         let directionsPanelGrab = document.getElementById('directionsPanel');
@@ -236,6 +247,7 @@ video {
         let assetLocArr = [];
         let mapDetailsGrab = document.querySelector('#mapDetails');
         let userNameSelGrab = document.getElementById('userNameSel');
+        let butCancelGrab =  document.getElementsByClassName('butCancel')[0]
             
             userNameSelGrab.addEventListener('change', function(evt){
                 alert('Changed');
@@ -737,8 +749,24 @@ if (userActivityObj){
             console.log(dataResponse);
         }
 
-            
+        function assetHistory(){
+            // let butCancel = document.createElement('button');
+            //     butCancel.setAttribute('class', 'butCancel')
+            //     butCancel.innerHTML = 'x'
+            // assetHistoryGrab.append(butCancel)
+            assetHistoryGrab.classList.remove('hide');
+            assetHistoryGrab.classList.toggle('unHide');
+        }
 
+        function hideAssetHistory(){
+                console.log(butCancelGrab);
+            console.log(butCancelGrab.parentNode.parentNode);
+            butCancelGrab.parentNode.parentNode.classList.toggle('hide')
+            butCancelGrab.parentNode.parentNode.classList.toggle('unHide')
+            // assetHistoryGrab.classList.toggle('hide');
+            // assetHistoryGrab.classList.remove('unHide');
+    
+        }
 
     </script>
     </body>

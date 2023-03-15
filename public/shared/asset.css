@@ -91,7 +91,7 @@ list-style-type: none;
 
 .hideFilterNumber{
     /* display: none; */
-    /* visibility: hidden; */
+    /* visibility: hidden;*/
     opacity: 0;
     /* width:5rem; */
     height: 0;
@@ -107,4 +107,37 @@ list-style-type: none;
     /* transition: visibility 2s ease-in; */
     /* background-color: silver; */
     /* transition: s ease-in; */
+}
+#divCont{
+    position:relative;
+}
+
+.assetHistory{
+    background-color: black;
+    display:none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    /* padding:1rem; */
+}
+.assetHistory div+div{
+    padding: 1rem;
+}
+.unHide{
+    display:block;
+}
+
+.hide{
+    display: none;
+}
+
+#assetHistoryBut{
+    border:none;
+}
+
+.butCancelDiv{
+    background-color: grey;
+    text-align: right;
 }

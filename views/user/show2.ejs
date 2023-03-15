@@ -218,7 +218,7 @@
                     <li><a href = '/user/<%=userToApproveObj.id%>/<%=user.userRole.role%>/<%=user.id%>'><%=userToApproveObj.id%></a>
                         <ul>
                             <%userToApproveObj.approvedAssets.forEach(approvedAsset=>{%>
-                                <div class = <%=approvedAsset.assetApproval[user.userRole.role] ?'approved':'notApproved'%>>
+                                <div class = <%=approvedAsset? (approvedAsset.assetApproval[user.userRole.role] ?'approved':'notApproved'):""%>>
                                     <li><a href = '/asset/<%=approvedAsset._id%>' ><%=approvedAsset._id%> </a> | <a href = '/dana/<%=approvedAsset._id%>/<%=approvedAsset.assetCode%>' class = 'QRCodeBtn'>Generate QRCode</a></li>
                                 </div>
                                 <%})%>

@@ -44,6 +44,8 @@
                     <a class= "btn btn-primary" href="/user/<%= user.id %>">View</a>
                         <a class= "btn btn-primary" href="/user/<%= user.id %>/edit">Edit</a>
                     <%-include('../partials/deleteForm.ejs', {url:`/user/${user.id}`}) %>
+                    <button id="userHistoryBut" onClick = 'callUserHistory("<%= user.id %>")'>User History...</button>
+                    <!-- <a href="/user/callHistory/<%=user.id%>">User History...</a> -->
                 </div>
             </div>
         <%})%>
@@ -51,11 +53,13 @@
 
     
     <div class="assetList">Assign</div>
+    <div class = "userHistory"></div>
 </div>
 
 <script src="/socket.io/socket.io.js"></script>
 <script defer>
             let userID = '<%- userEmail %>';
+            let userHistoryGrab = document.getElementsByClassName('userHistory')[0];
 
             // alert(`In here ${userID}`);
             var socket = io('http://localhost:3000');
@@ -104,5 +108,32 @@
             })
         })
         console.log(Object.values(settingsObj));
+
+        async function callUserHistory(userId){
+            alert(userId);
+            let obj = await fetch(`/user/callHistory/${userId}`);
+            let objTex = await obj.json();
+            console.log(objTex);
+            console.log(userHistoryGrab);
+            let butCancel = document.createElement('button');
+                butCancel.innerHTML = 'x';
+            butCancel.addEventListener('click', function(){
+                userHistoryGrab.classList.toggle('hide');
+                userHistoryGrab.classList.remove('unHide');
+            })
+            let butCancelDiv = document.createElement('div');
+                butCancelDiv.setAttribute('class', 'butCancelDiv')
+
+            butCancelDiv.append(butCancel);
+            userHistoryGrab.innerText = "";
+            userHistoryGrab.append(butCancelDiv);
+            objTex.msg[0].activity.forEach(activity =>{
+                let userHistoryInnerDivs = document.createElement('div');
+                userHistoryInnerDivs.innerText = `Type: ${activity.activity} \t Asset: ${activity.assetList[0]} \t Date: ${activity.activityDate} By: ${activity.activityBy}`
+                userHistoryGrab.append(userHistoryInnerDivs)
+            })
+            userHistoryGrab.classList.remove('hide');
+            userHistoryGrab.classList.toggle('unHide');
+        }
     
 </script>

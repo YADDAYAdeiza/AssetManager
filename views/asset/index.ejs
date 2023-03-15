@@ -1,3 +1,4 @@
+<div id="divCont">
 <h2>List of Assets here now</h2>
 
 <div id="searchContDiv">
@@ -67,12 +68,16 @@
                     <% asset.assetAllocationStatus ? "<a href = `dana/asset._id/asset.assetCode` class = 'QRCodeBtn'>Generate QRCode</a>":"" %>
                     <%if (asset.assetAllocationStatus){%>
                         <a href = '/dana/<%=asset._id%>/<%=asset.assetCode%>' class = 'QRCodeBtn'>Generate QRCode</a>
+                        <button id = "assetHistoryBut" class= 'assetHistoryBut' onClick = 'assetHistory("<%=asset._id%>")'>Asset History</button>
                     <%}%>
                 </div>
             </div>
             <%})%>
         </div>
 <% } %>
+<div class ="assetHistory"></div>
+</div>
+
 
 <script defer>
    alert('Now here')
@@ -82,12 +87,13 @@
    let numOfAssetGrab = document.getElementById('numOfAsset');
    console.log('This is assetDate: ', assetDate.toString());
    let ageFilterNumberGrab = document.getElementById('ageFilterNumber');
-// var deAssignButGrab = document.getElementById('deAssignBut');
-// console.log('This is deAssignButGrab: ', deAssignButGrab);
-//     deAssignButGrab.addEventListener('click', function(){
-//         alert('Nah');
-//     });
-
+   // var deAssignButGrab = document.getElementById('deAssignBut');
+   // console.log('This is deAssignButGrab: ', deAssignButGrab);
+   //     deAssignButGrab.addEventListener('click', function(){
+       //         alert('Nah');
+       //     });
+       let assetHistoryGrab =  document.getElementsByClassName('assetHistory')[0];
+       
 let obj = {
     assetId:[],
     userId:[]
@@ -178,7 +184,35 @@ async function createAsset() {
             var data = await fetch(`/asset/adminCreateAsset/${uniqueAssetListGrab.value}/${numOfAssetGrab.value}`);
             let dataResponse = await data.json();
             console.log(dataResponse);
-
+            
+        }
+        
+async function assetHistory(assetId){
+    var data = await fetch(`/asset/assetHistory/${assetId}`);
+    let dataResponse = await data.json();
+    console.log(dataResponse);
+    let butCancelDiv = document.createElement('div');
+        butCancelDiv.setAttribute('class', 'butCancelDiv')
+    let butCancel = document.createElement('button');
+        butCancel.innerHTML = 'x';
+    butCancel.addEventListener('click', function(){
+        console.log(this);
+        console.log(this.parentNode.parentNode);
+        console.log(this.parentNode.parentNode.classList);
+        assetHistoryGrab.classList.toggle('hide');
+        assetHistoryGrab.classList.remove('unHide');
+    })
+    butCancelDiv.append(butCancel);
+        assetHistoryGrab.innerText = "";
+    assetHistoryGrab.append(butCancelDiv);
+    dataResponse.msg[0].assetActivityHistory.forEach(activityObj=>{
+        let assetHistoryInnerDiv = document.createElement('div');
+        assetHistoryInnerDiv.innerText = `Type: ${activityObj.activity}  | \t User:${activityObj.user}  |  By: ${activityObj.activityBy}  | \tDate:${activityObj.activityDate}`
+        assetHistoryGrab.append(assetHistoryInnerDiv);
+    })
+    assetHistoryGrab.classList.remove('hide');
+    assetHistoryGrab.classList.toggle('unHide');
+    console.log(assetHistoryGrab.classList);
 }
     
 </script>
