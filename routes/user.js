@@ -149,7 +149,7 @@ route.get('/confirmArrival/:id/:uuid', async (req, res)=>{
                                 await user[0].save();
                                 //Log
                                 let objActivity = {
-                                    activity:req.query.assignment,
+                                    activity:'Received',
                                     user:user.id,
                                     activityBy:req.user.id,
                                     activityDate:new Date (Date.now())
