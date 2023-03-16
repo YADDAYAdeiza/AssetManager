@@ -21,7 +21,8 @@ let {v4:uuidv4} = require('uuid');
 const io = require('socket.io')(2001, {
     cors:
     {
-       origin:['http://localhost:2000']
+    //    origin:['http://localhost:2000']
+       origin:['*']
     }
 });
 
