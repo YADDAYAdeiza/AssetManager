@@ -203,6 +203,7 @@ video {
                     mapMarkerArr.forEach(marker=>{
                         marker.setMap(null);
                     })
+                    console.log('heatmap null...');
                     heatMap.setMap(null);
                     
                 })
@@ -369,8 +370,10 @@ video {
         //toggling the heatmap
         toggleHeatMapGrab.addEventListener('click', function(){
             if (heatMap.getMap() !== null){
-                    heatMap.setMap(null)
-                }else{
+                console.log('Toggling...');
+                heatMap.setMap(null)
+            }else{
+                    console.log('Toggling2...');
                     heatMap.setMap(mapSet)
                 }
             })
@@ -409,6 +412,7 @@ video {
                         })
 
                 if (heatMap){
+                    console.log('passing through');
                     heatMap.setMap(null);
                 }
                 alert('Here')
@@ -507,6 +511,7 @@ video {
                     mapMarkerArr.forEach(marker=>{
                         marker.setMap(null);
                     })
+                    console.log('This too?')
                     heatMap.setMap(null);
                 
             }
@@ -536,6 +541,7 @@ video {
                     mapMarkerArr.forEach(marker=>{
                         marker.setMap(null);
                     })
+                    console.log('This too2')
                     heatMap.setMap(null);
                 
             }
@@ -596,6 +602,7 @@ video {
                     heatMap.setData(heatMapArr2);
 
                     heatMap.setMap(mapSet);
+                    console.log('Yah')
                 }
                     
                 }
