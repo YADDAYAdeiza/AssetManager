@@ -150,7 +150,7 @@ route.get('/confirmArrival/:id/:uuid', async (req, res)=>{
                                 //Log
                                 let objActivity = {
                                     activity:'Received',
-                                    user:user.id,
+                                    user:user[0].id,
                                     activityBy:req.user.id,
                                     activityDate:new Date (Date.now())
                                 };
