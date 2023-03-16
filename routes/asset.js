@@ -3,6 +3,7 @@ let {userLogSave, userLogSave2} = require('../utilFile');
 const {instrument} = require('@socket.io/admin-ui');
 
 let express = require('express');
+let app = express();
 let route = express.Router();
 
 let ejs = require('ejs');
@@ -16,7 +17,7 @@ const userLogModel = require('../models/userLog.js');
 const userLogModel2 = require('../models/userLog2.js');
 let {v4:uuidv4} = require('uuid');
 //route.set('layout', 'layouts/layout');
-const httpServer = require("http").createServer();
+const httpServer = require("http").createServer(app);
 const io = require("socket.io")(httpServer, {
     cors:
     {
