@@ -16,15 +16,22 @@ const userLogModel = require('../models/userLog.js');
 const userLogModel2 = require('../models/userLog2.js');
 let {v4:uuidv4} = require('uuid');
 //route.set('layout', 'layouts/layout');
-
-
-const io = require('socket.io')(2001, {
+const httpServer = require("http").createServer();
+const io = require("socket.io")(httpServer, {
     cors:
     {
     //    origin:['http://localhost:2000']
        origin:'*'
     }
 });
+
+// const io = require('socket.io')(2001, {
+//     cors:
+//     {
+//     //    origin:['http://localhost:2000']
+//        origin:'*'
+//     }
+// });
 
 let adminSocket;
 let adminAvailable;
