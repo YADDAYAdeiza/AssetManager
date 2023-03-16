@@ -210,7 +210,7 @@ video {
     <script src="/socket.io/socket.io.js"></script>
 
     <script defer>
-        var socket = io('http://localhost:2001');
+        var socket = io('https://assetmanger.herokuapp.com/');
         const myPeer = new Peer(undefined, {
             host:'/',
             port:'3001'
@@ -473,7 +473,8 @@ video {
 
         alert('Trackable ' + assetTrackable)
 
-        var socket = io('http://localhost:2001');
+        // var socket = io('http://localhost:2001');
+        var socket = io('https://assetmanger.herokuapp.com/');
         socket.on('connect', ()=>{
                 //  alert(`you connected on...${socket.id}`);
         })
