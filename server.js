@@ -67,16 +67,19 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use(cors({
+  origin:"*",
+  method:["GET", "POST", "PUT"],
+  allowedHeaders: "*",
+  exposedHeaders:"content-disposition"
+}));
+
 // app.use(cors({
 //   origin:"https:127.0.0.1:2000",
 //   method:["GET", "POST", "PUT"],
 //   allowedHeaders: "*",
 //   exposedHeaders:"content-disposition"
 // }));
-
-app.use(cors({
-  origin:"*"
-}));
 
 //authentication
 let {role} = require('./role.js');
