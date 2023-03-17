@@ -35,13 +35,15 @@ const httpServer = require("http").createServer(app);
 // const io = require("socket.io")(httpServer);
 // httpServer.listen(process.env.PORT || 3000);
 
-const io = require('socket.io')(httpServer, {
-    cors:
-    {
-       origin:['https://assetmanger.herokuapp.com/']
-    //    origin:'*'
-    }
-});
+const io = require('socket.io')(httpServer);
+
+// const io = require('socket.io')(2001, {
+//     cors:
+//     {
+//        origin:['http://localhost:2000']
+//     //    origin:'*'
+//     }
+// });
 
 //new
 // const io = socketIO(server);
