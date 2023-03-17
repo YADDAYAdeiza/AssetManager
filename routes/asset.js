@@ -42,15 +42,15 @@ let {v4:uuidv4} = require('uuid');
 // });
 
 //new
-const io = socketIO(server);
-// const io = require("socket.io")(app, {
-//     //     cors:
-//     //     {
-//     //     //    origin:['http://localhost:2000']
-//     //     //    origin:'https://assetmanger.herokuapp.com/'
-//     //     origin:"*"
-//     //     }
-//     });
+// const io = socketIO(server);
+const io = require("socket.io")(app, {
+        cors:
+        {
+        //    origin:['http://localhost:2000']
+        //    origin:'https://assetmanger.herokuapp.com/'
+        origin:"*"
+        }
+    });
 //end of new
 
 let adminSocket;
