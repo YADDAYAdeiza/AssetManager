@@ -23,14 +23,16 @@ const userLogModel2 = require('../models/userLog2.js');
 let {v4:uuidv4} = require('uuid');
 //route.set('layout', 'layouts/layout');
 const httpServer = require("http").createServer();
-const io = require("socket.io")(httpServer, {
-    cors:
-    {
-    //    origin:['http://localhost:2000']
-    //    origin:'https://assetmanger.herokuapp.com/'
-    origin:"*"
-    }
-});
+// const io = require("socket.io")(httpServer, {
+//     cors:
+//     {
+//     //    origin:['http://localhost:2000']
+//     //    origin:'https://assetmanger.herokuapp.com/'
+//     origin:"*"
+//     }
+// });
+
+const io = require("socket.io")(httpServer);
 httpServer.listen(process.env.PORT || 3000);
 
 // const io = require('socket.io')(2001, {
