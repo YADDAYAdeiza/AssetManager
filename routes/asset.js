@@ -22,7 +22,8 @@ const io = require("socket.io")(httpServer, {
     cors:
     {
     //    origin:['http://localhost:2000']
-       origin:'https://assetmanger.herokuapp.com/'
+    //    origin:'https://assetmanger.herokuapp.com/'
+    origin:"*"
     }
 });
 

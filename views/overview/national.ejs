@@ -124,10 +124,10 @@ video {
 
     // var socket = io('http://localhost:2001');
     var socket = io('https://assetmanger.herokuapp.com/');
-        const myPeer = new Peer(undefined, {
-            host:'/',
-            port:'3001'
-        })
+        // const myPeer = new Peer(undefined, {
+        //     host:'/',
+        //     port:'3001'
+        // })
         
     socket.on('connect', ()=>{
         alert(`you connected national on...${socket.id}`);
@@ -281,15 +281,15 @@ video {
             audio:true
         }).then(stream =>{
             addVideoStream(myVideo, stream);
-            myPeer.on('call', call=>{
-                call.answer(stream);
-                const video = document.createElement('video');
-                call.on('stream', userVideoStream=>{
-                    alert('Receiving Stream...')
-                    addVideoStream(video, userVideoStream);
-                    alert('SEcond connect...?')
-                })
-            })
+            // myPeer.on('call', call=>{
+            //     call.answer(stream);
+            //     const video = document.createElement('video');
+            //     call.on('stream', userVideoStream=>{
+            //         alert('Receiving Stream...')
+            //         addVideoStream(video, userVideoStream);
+            //         alert('SEcond connect...?')
+            //     })
+            // })
             socket.emit('ready');
             socket.on('user-joined', (newUserId, roomId) =>{
                 console.log('User joined national ', newUserId);
@@ -314,11 +314,11 @@ video {
     })
     
 
-    myPeer.on('open', id =>{
-            console.log('This is userId now: ',id);
-            //this userid is an object, having user property.
-            socket.emit('join-room', '2dabcb54-47c4-4999-88d1-b75650767c19', {user:'admin', id}); //2dabcb54-47c4-4999-88d1-b75650767c19
-    })
+    // myPeer.on('open', id =>{
+    //         console.log('This is userId now: ',id);
+    //         //this userid is an object, having user property.
+    //         socket.emit('join-room', '2dabcb54-47c4-4999-88d1-b75650767c19', {user:'admin', id}); //2dabcb54-47c4-4999-88d1-b75650767c19
+    // })
 
     socket.on('readyLight', (userId, roomId, numOfClients)=>{
                 // alert('The admin is live');
@@ -334,7 +334,7 @@ video {
 
     function connectToNewUser(newUserId, stream){
         console.log('Calling... ', newUserId)
-        const call = myPeer.call(newUserId, stream); //send your video
+        // const call = myPeer.call(newUserId, stream); //send your video
         const video = document.createElement('video');
         call.on('stream', userVideoStream=>{ //receive their video
             startLiveButGrab.disabled = false;

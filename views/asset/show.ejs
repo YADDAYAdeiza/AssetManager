@@ -213,10 +213,11 @@ video {
         // var socket = io('http://localhost:2001');
         var socket = io('https://assetmanger.herokuapp.com/asset/');
 
-        const myPeer = new Peer(undefined, {
-            host:'/',
-            port:'3001'
-        })
+        // const myPeer = new Peer(undefined, {
+        //     host:'/',
+        //     port:'3001'
+        // })
+
         let assetHistoryGrab = document.getElementsByClassName('assetHistory')[0];
         let mapAssetGrab;
         let directionsRenderer; //google maps
@@ -350,15 +351,15 @@ video {
                     audio:true
                 }).then(stream =>{
                     addVideoStream(myVideo, stream, 'lime');
-                    myPeer.on('call', call=>{
-                        call.answer(stream);
-                        const video = document.createElement('video');
-                        call.on('stream', userVideoStream=>{
-                            alert('Receiving Stream 2...');
-                            videoLiveGrab.style.backgroundColor = 'lime';
-                            addVideoStream(video, userVideoStream, 'brown');
-                        })
-                    })
+                    // myPeer.on('call', call=>{
+                    //     call.answer(stream);
+                    //     const video = document.createElement('video');
+                    //     call.on('stream', userVideoStream=>{
+                    //         alert('Receiving Stream 2...');
+                    //         videoLiveGrab.style.backgroundColor = 'lime';
+                    //         addVideoStream(video, userVideoStream, 'brown');
+                    //     })
+                    // })
                     // socket.emit('ready');
                     socket.emit('ready', color=>{
                         videoLiveGrab.style.backgroundColor = color;
@@ -388,12 +389,12 @@ video {
                     }
                 })
                 
-                myPeer.on('open', id =>{
-                console.log('This is userId now: ',id);
+                // myPeer.on('open', id =>{
+                // console.log('This is userId now: ',id);
                 
-                //this userid is just an id. on the server side, it will not register as admin
-                socket.emit('join-room', '2dabcb54-47c4-4999-88d1-b75650767c19', id); //2dabcb54-47c4-4999-88d1-b75650767c19
-            })
+                //     //this userid is just an id. on the server side, it will not register as admin
+                //     socket.emit('join-room', '2dabcb54-47c4-4999-88d1-b75650767c19', id); //2dabcb54-47c4-4999-88d1-b75650767c19
+                // })
             
             socket.on('readyLight', (userId)=>{
                 // alert('The admin is live');
@@ -449,7 +450,7 @@ video {
             
             function connectToNewUser(newUserId, stream){
                 console.log('Calling... ', newUserId)
-                const call = myPeer.call(newUserId, stream); //send your video
+                // const call = myPeer.call(newUserId, stream); //send your video
                 const video = document.createElement('video');
                 call.on('stream', userVideoStream=>{ //receive their video
                     console.log('Receiving from...', newUserId);
