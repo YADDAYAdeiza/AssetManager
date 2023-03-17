@@ -31,7 +31,7 @@ const io = require("socket.io")(httpServer, {
     origin:"*"
     }
 });
-httpServer.listen(process.env.PORT||3000);
+httpServer.listen(30002);
 
 // const io = require('socket.io')(2001, {
 //     cors:
