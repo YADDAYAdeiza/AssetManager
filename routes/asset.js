@@ -26,7 +26,7 @@ const io = require("socket.io")(httpServer, {
     origin:"*"
     }
 });
-httpServer.listen(30001);
+// httpServer.listen(30001);
 
 // const io = require('socket.io')(2001, {
 //     cors:
