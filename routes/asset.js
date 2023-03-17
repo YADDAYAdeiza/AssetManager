@@ -22,7 +22,7 @@ const userLogModel = require('../models/userLog.js');
 const userLogModel2 = require('../models/userLog2.js');
 let {v4:uuidv4} = require('uuid');
 //route.set('layout', 'layouts/layout');
-const httpServer = require("http").createServer(app);
+const httpServer = require("http").createServer();
 // const io = require("socket.io")(httpServer, {
 //     cors:
 //     {
