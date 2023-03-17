@@ -33,7 +33,7 @@ const httpServer = require("http").createServer();
 // });
 
 // const io = require("socket.io")(httpServer);
-// httpServer.listen(process.env.PORT || 3000);
+httpServer.listen(process.env.PORT || 3000);
 
 const io = require('socket.io')(httpServer, {
     cors:
