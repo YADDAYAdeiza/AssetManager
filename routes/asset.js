@@ -6,7 +6,7 @@ const {instrument} = require('@socket.io/admin-ui');
 let express = require('express');
 let app = express();
 //new
-const PORT = process.env.PORT || 3000;
+// const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Listening on ${PORT}`));
 //end of new
 let route = express.Router();
@@ -22,16 +22,16 @@ const userLogModel = require('../models/userLog.js');
 const userLogModel2 = require('../models/userLog2.js');
 let {v4:uuidv4} = require('uuid');
 //route.set('layout', 'layouts/layout');
-// const httpServer = require("http").createServer(app);
-// const io = require("socket.io")(httpServer, {
-//     cors:
-//     {
-//     //    origin:['http://localhost:2000']
-//     //    origin:'https://assetmanger.herokuapp.com/'
-//     origin:"*"
-//     }
-// });
-// httpServer.listen(30001);
+const httpServer = require("http").createServer(app);
+const io = require("socket.io")(httpServer, {
+    cors:
+    {
+    //    origin:['http://localhost:2000']
+    //    origin:'https://assetmanger.herokuapp.com/'
+    origin:"*"
+    }
+});
+httpServer.listen(process.env.PORT||3000);
 
 // const io = require('socket.io')(2001, {
 //     cors:
@@ -43,14 +43,14 @@ let {v4:uuidv4} = require('uuid');
 
 //new
 // const io = socketIO(server);
-const io = require("socket.io")(app, {
-        cors:
-        {
-        //    origin:['http://localhost:2000']
-        //    origin:'https://assetmanger.herokuapp.com/'
-        origin:"*"
-        }
-    });
+// const io = require("socket.io")(app, {
+//         cors:
+//         {
+//         //    origin:['http://localhost:2000']
+//         //    origin:'https://assetmanger.herokuapp.com/'
+//         origin:"*"
+//         }
+//     });
 //end of new
 
 let adminSocket;
