@@ -174,10 +174,10 @@ video {
                                        // var notification = new Notification(`${msgObj.assetCode}...is on the move`, {body:'Tap to follow'});
                                         
                                         //notification.addEventListener('click', e=>{
-                            mapSet.setZoom(24);
+                            // mapSet.setZoom(24);
                             mapSet.setCenter(mapMarker.getPosition());
-                            mapSet.setHeading(320);
-                            mapSet.setTilt(90)
+                            // mapSet.setHeading(320);
+                            // mapSet.setTilt(90)
                             // mapSet.setMapId('f899731c7a1d19be';)
                             
                             trackFleetArr.forEach(marker=>{
@@ -379,8 +379,9 @@ video {
                     heatMap.setMap(mapSet)
                 }
             })
-            mapSet = new google.maps.Map(document.getElementById('nationalMap'), {zoom:6, center:{lat:9, lng:7}, mapId:'f899731c7a1d19be'});
+            mapSet = new google.maps.Map(document.getElementById('nationalMap'), {zoom:12, center:{lat:9, lng:7},tilt:90, heading:320, mapId:'f899731c7a1d19be'});
             console.log(mapSet);
+           
             
             let getVar = new XMLHttpRequest();
             getSubVar = new XMLHttpRequest();
