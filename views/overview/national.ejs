@@ -128,7 +128,7 @@ video {
         //     host:'/',
         //     port:'3001'
         // })
-        
+      console.log('This is socket: ', socket);  
     socket.on('connect', ()=>{
         alert(`you connected national on...${socket.id}`);
         const transport = socket.io.engine.transport.name;
