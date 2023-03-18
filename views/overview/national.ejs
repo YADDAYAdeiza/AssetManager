@@ -163,18 +163,17 @@ video {
                     position: {lat:+posCoords['lat'], lng:+posCoords['lng']},
                     title: posCoords['assetCode'],
                     draggable:true,
-                    animation: google.maps.Animation.BOUNCE,    
-                    
+                    animation: google.maps.Animation.BOUNCE,   
                 });
                 
                                 trackFleetArr.push(mapMarker);
                                 
                                 
-                                Notification.requestPermission().then(perm=>{
-                                    if (perm === 'granted'){
-                                        var notification = new Notification(`${msgObj.assetCode}...is on the move`, {body:'Tap to follow'});
+                                //Notification.requestPermission().then(perm=>{
+                                   // if (perm === 'granted'){
+                                       // var notification = new Notification(`${msgObj.assetCode}...is on the move`, {body:'Tap to follow'});
                                         
-                                        notification.addEventListener('click', e=>{
+                                        //notification.addEventListener('click', e=>{
                             mapSet.setZoom(12);
                             mapSet.setCenter(mapMarker.getPosition());
                             mapSet.setHeading(320);
@@ -209,9 +208,9 @@ video {
                             console.log('heatmap null...');
                             heatMap.setMap(null);
                             
-                        })
-                    }
-                })
+                       // })
+                 //   }
+               // })
         
     })
     
