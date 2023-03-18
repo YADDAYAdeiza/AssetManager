@@ -135,7 +135,7 @@ video {
         alert(transport);
     });
 
-    // socket.emit('adminMonitoringTracking', 'Fetching tracked...');
+    socket.emit('adminMonitoringTracking', 'Fetching tracked...');
     socket.on('trackPlots', (msg)=>{
         console.log(msg);
     })
