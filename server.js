@@ -95,27 +95,130 @@ console.log(role);
 
 
 io.on('connection', socket=>{
+    // socket.on('join-room', (roomId, userId)=>{
+    //   socket.join(roomId)
+    //   socket.to(roomId).emit('user-connected', userId)
+    //   // socket.broadcast.to(roomId).emit("hello", "world");
+    //   //socket.to(roomId).broadcast.emit('user-connected', userId)
 
-  socket.on('adminMonitoringTracking', (msg)=>{
-    //join other sockets to this room
-    console.log(msg)
-    //assign variable to admin socket
-    adminSocket = socket.id;
-    console.log(adminSocket);
+    //   socket.on('disconnect', ()=>{
+    //     socket.to(roomId).emit('user-disconnected', userId)
+    //     // socket.to(roomId).broadcast.emit('user-disconnected', userId)
+    //   })
+    // })
 
-    io.emit('trackPlots', `Tracking2... ${socket.id}`);
-})
-    socket.on('join-room', (roomId, userId)=>{
-      socket.join(roomId)
-      socket.to(roomId).emit('user-connected', userId)
-      // socket.broadcast.to(roomId).emit("hello", "world");
-      //socket.to(roomId).broadcast.emit('user-connected', userId)
+    socket.on('adminMonitoringTracking', (msg)=>{
+      //join other sockets to this room
+      console.log(msg)
+      //assign variable to admin socket
+      adminSocket = socket.id;
+      console.log(adminSocket);
 
+      io.emit('trackPlots', `Tracking... ${socket.id}`);
+  })
+
+  console.log('Connected now in 2001 on ', socket.id);
+  // (function (adminSocket){
+  socket.on('sendPos', (posMsg, room)=>{
+      console.log(`here is message ${posMsg}`);
+      console.log(`This is adminSocket ${adminSocket}`);
+      if (adminSocket){
+          console.log('...to admin now...')
+          socket.to(adminSocket).emit('dutyOn', posMsg );
+      }
+  });
+  socket.on('stopSendPos', (assetCodeMsg)=>{
+      console.log('Stop ', assetCodeMsg);
+      socket.to(adminSocket).emit('stopDutyOn', assetCodeMsg.assetCode );
+
+  })
+
+  //for video use
+  socket.on('join-room', (roomId, userId)=>{
+      socket.join(roomId);
+      if(userId.user !== 'admin'){ //joining from trackable asset
+          console.log('Enabling Track Button...')
+          if (adminAvailableLightUp){
+              console.log('Enable Track Button...')
+              console.log(socket.id);
+              console.log(socket.rooms);
+              // io.to(roomId).emit('enableTrackBut');
+              try{
+                  // socket.emit('enableTrackBut', 'Enabled' )
+                  socket.emit('enableTrackBut', 'Enabled' )
+                  console.log('Has it called?');
+              }catch(msg){
+                  console.log(msg);
+              }
+          }
+          socket.to(roomId).emit('enableTrackBut', 'Enabled' )
+
+      } else{ //joining from overview national
+          console.log('Admin');
+          adminAvailableLightUp = true;
+      }
+      console.log('Socket id ', socket.id, 'Joined', roomId, ' on ', userId);
+      // socket.broadcast.to(roomId).emit('user-joined', userId)
+      
+      // if(userId.user == 'admin'){
+      //     console.log('Admin joined')
+      //     adminAvailable = true
+      //     if (driverAvailable){
+      //         console.log('Driver is available');
+      //         socket.broadcast.to(roomId).emit('readyLight', userId);
+      //     }
+      //     console.log('Broadcasting socket: ', socket.id);
+      // }else{
+      //     console.log('Driver joined...')
+      //     console.log('Broadcasting socket: ', socket.id);
+      //     driverAvailable = true;
+      //     if (adminAvailable){
+      //         console.log('Broadcasting socket (with admin): ', socket.id);
+      //         socket.broadcast.to(roomId).emit('readyLight', userId);
+      //         // socket.emit('readyLight', userId);
+      //         io.to(socket.id).emit('readyLight', userId);
+      //     }
+      // }
+
+      socket.on('ready', (cb)=>{
+          console.log('Called ready with socket ', socket.id);
+          console.log(`${socket.id} is in ${socket.rooms} room`)
+          if(userId.user == 'admin'){
+              adminAvailable = true
+              console.log(`From admin ${userId}`);
+              console.log('This is roomId in ready ', roomId);
+              socket.broadcast.to(roomId).emit('user-joined', userId, roomId)
+              // socket.to(roomId).emit('readyLight', userId);
+              adminSocketVar = socket;
+
+          }else{
+              console.log(`From Driver now... ${userId}`);
+              cb('brown');
+              socket.broadcast.to(roomId).emit('user-joined', userId)
+              if (adminAvailable){
+
+              adminSocketVar.broadcast.to(roomId).emit('user-joined', userId, roomId)
+                  console.log('Admin is ', adminAvailable);
+                  console.log('Number of clients joined: ', io.sockets.adapter.rooms.size);
+                  let numOfClients = io.sockets.adapter.rooms.size;
+                  socket.to(roomId).emit('readyLight', userId, roomId, io.sockets.adapter.rooms.size);
+                  console.log(`Admin to ${socket.id}`);
+                  adminSocketVar.to(socket.id).emit('readyLight', userId);
+                  console.log(`Admin2 to ${socket.id}`);
+                  // socket.to(roomId).emit('user-joined', userId)
+              }
+
+          }
+      });
+
+      // socket. //join room Number
+      
       socket.on('disconnect', ()=>{
-        socket.to(roomId).emit('user-disconnected', userId)
-        // socket.to(roomId).broadcast.emit('user-disconnected', userId)
+          socket.broadcast.to(roomId).emit('user-disconnected', userId)
       })
-    })
+
+  })
+  // })(adminSocket)
   })
 
 
