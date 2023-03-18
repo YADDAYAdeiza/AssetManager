@@ -626,8 +626,8 @@ if (userActivityObj){
                         this.style.color = 'white';
 
                 id = navigator.geolocation.watchPosition(success, error, watchPosOptions);
-                alert(trackAssetBool);
-                alert(id)
+                console.log(trackAssetBool);
+                console.log('Watch id: '+id);
             } else{
                         this.innerHTML = 'Track Asset';
                         this.style.backgroundColor = 'Ghostwhite';
@@ -639,7 +639,7 @@ if (userActivityObj){
 
             }
              function success(pos){
-                alert('Changing..');
+                console.log ('Success..');
                 console.log(`Polling... ${id}`);
                 console.log('This is assetCode ', assetCode);
                 var posObj = {
@@ -672,7 +672,7 @@ if (userActivityObj){
     
     
                 // mapAssetGrab.s
-                alert(crd.latitude);
+                // alert(crd.latitude);
                 console.log('??')
                 console.log(crd);
                 var marker =  new google.maps.Marker({
@@ -682,8 +682,9 @@ if (userActivityObj){
                         draggable: true,
                         animation:'bounce'
                     });
-    
-                navigator.geolocation.clearWatch(id);
+                
+                    //Do you want to comment this out?
+                // navigator.geolocation.clearWatch(id);
             }
     
             function error(err) {

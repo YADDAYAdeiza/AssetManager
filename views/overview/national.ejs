@@ -152,66 +152,66 @@ video {
             // alert("Do you really want to close?");
             // };
             socket.on('dutyOn', (msg)=>{//
-                msgObj = JSON.parse(msg)
-                
-                alert('dutyOn');
-                console.log('??');
-                console.log(msg);
-        posCoords = JSON.parse(msg);
+                        msgObj = JSON.parse(msg)
+                        
+                        // alert('dutyOn');
+                        console.log('??');
+                        console.log(msg);
+                posCoords = JSON.parse(msg);
 
-        mapMarker = new google.maps.Marker({
-            position: {lat:+posCoords['lat'], lng:+posCoords['lng']},
-            title: posCoords['assetCode'],
-            draggable:true,
-            animation: google.maps.Animation.BOUNCE,    
-            
-        });
-        
-                        trackFleetArr.push(mapMarker);
-                        
-                        
-                        Notification.requestPermission().then(perm=>{
-                            if (perm === 'granted'){
-                                var notification = new Notification(`${msgObj.assetCode}...is on the move`, {body:'Tap to follow'});
-                                
-                                notification.addEventListener('click', e=>{
-                    mapSet.setZoom(12);
-                    mapSet.setCenter(mapMarker.getPosition());
-                    mapSet.setHeading(320);
-                    mapSet.setTilt(90)
-                    // mapSet.setMapId('f899731c7a1d19be';)
+                mapMarker = new google.maps.Marker({
+                    position: {lat:+posCoords['lat'], lng:+posCoords['lng']},
+                    title: posCoords['assetCode'],
+                    draggable:true,
+                    animation: google.maps.Animation.BOUNCE,    
                     
-                    trackFleetArr.forEach(marker=>{
-                        alert('Clearing marker'+ marker.getTitle())
-                        marker.setMap(null)
-                    })
-                    mapMarker.setMap(mapSet);
-                    mapMarker.setAnimation(google.maps.Animation.BOUNCE);//google.maps.Animation.BOUNCE,
-                    
-                    //if something has been filtered, let's use the new filtered array, or else use the trackFleetArray
-                    
-                    // trackFleetArr2.length?(trackFleetArr = trackFleetArr2):(trackFleetArr = trackFleetArr);
-                    // console.log('--')
-                    // console.log(trackFleetArr, trackFleetArr[0].getTitle());
-                    //     trackFleetArr.forEach(trackMarker=>{
-                        //         // if (trackMarker.stopDuty != true){
-                            //             alert('This is markerBool ', trackMarker.markerBool);
-                            //         if (trackMarker.markerBool != true){
-                //             trackMarker.setMap(mapSet);
-                //             trackMarker.setAnimation(google.maps.Animation.BOUNCE);//google.maps.Animation.BOUNCE,
-                //         }
-                //     })
+                });
                 
-                //blanking markers
-                    mapMarkerArr.forEach(marker=>{
-                        marker.setMap(null);
-                    })
-                    console.log('heatmap null...');
-                    heatMap.setMap(null);
-                    
+                                trackFleetArr.push(mapMarker);
+                                
+                                
+                                Notification.requestPermission().then(perm=>{
+                                    if (perm === 'granted'){
+                                        var notification = new Notification(`${msgObj.assetCode}...is on the move`, {body:'Tap to follow'});
+                                        
+                                        notification.addEventListener('click', e=>{
+                            mapSet.setZoom(12);
+                            mapSet.setCenter(mapMarker.getPosition());
+                            mapSet.setHeading(320);
+                            mapSet.setTilt(90)
+                            // mapSet.setMapId('f899731c7a1d19be';)
+                            
+                            trackFleetArr.forEach(marker=>{
+                                alert('Clearing marker'+ marker.getTitle())
+                                marker.setMap(null)
+                            })
+                            mapMarker.setMap(mapSet);
+                            mapMarker.setAnimation(google.maps.Animation.BOUNCE);//google.maps.Animation.BOUNCE,
+                            
+                            //if something has been filtered, let's use the new filtered array, or else use the trackFleetArray
+                            
+                            // trackFleetArr2.length?(trackFleetArr = trackFleetArr2):(trackFleetArr = trackFleetArr);
+                            // console.log('--')
+                            // console.log(trackFleetArr, trackFleetArr[0].getTitle());
+                            //     trackFleetArr.forEach(trackMarker=>{
+                                //         // if (trackMarker.stopDuty != true){
+                                    //             alert('This is markerBool ', trackMarker.markerBool);
+                                    //         if (trackMarker.markerBool != true){
+                        //             trackMarker.setMap(mapSet);
+                        //             trackMarker.setAnimation(google.maps.Animation.BOUNCE);//google.maps.Animation.BOUNCE,
+                        //         }
+                        //     })
+                        
+                        //blanking markers
+                            mapMarkerArr.forEach(marker=>{
+                                marker.setMap(null);
+                            })
+                            console.log('heatmap null...');
+                            heatMap.setMap(null);
+                            
+                        })
+                    }
                 })
-            }
-        })
         
     })
     
