@@ -632,8 +632,8 @@ if (userActivityObj){
                         this.innerHTML = 'Track Asset';
                         this.style.backgroundColor = 'Ghostwhite';
                         this.style.color = 'black';
-                alert('Clearing...');
-                alert(id)
+                console.log('Clearing...');
+                console.log(id);
                 navigator.geolocation.clearWatch(id);
                 socket.emit('stopSendPos', {assetCode:assetCode});
 
@@ -654,7 +654,7 @@ if (userActivityObj){
                 // alert('Successful!');
                 // alert(pos.coords);
                 let posObjStringified = JSON.stringify(posObj);
-                alert(posObjStringified);
+                // alert(posObjStringified);
                 socket.emit('sendPos', posObjStringified);
 
                 //from here, socket it posObjStringified
@@ -680,7 +680,7 @@ if (userActivityObj){
                         map:mapAssetGrab,
                         title: 'Moving car',
                         draggable: true,
-                        animation:'bounce'
+                        animation:google.maps.Animation.BOUNCE
                     });
                 
                     //Do you want to comment this out?
