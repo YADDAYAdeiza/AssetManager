@@ -133,7 +133,7 @@ video {
             console.log('check 2', socket.connected);
         });
     socket.on('connect', ()=>{
-        alert(`you connected national on...${socket.id}`);
+        // alert(`you connected national on...${socket.id}`);
         const transport = socket.io.engine.transport.name;
         alert(transport);
     });
@@ -181,7 +181,7 @@ video {
                             // mapSet.setMapId('f899731c7a1d19be';)
                             
                             trackFleetArr.forEach(marker=>{
-                                alert('Clearing marker'+ marker.getTitle())
+                                // alert('Clearing marker'+ marker.getTitle())
                                 marker.setMap(null)
                             })
                             mapMarker.setMap(mapSet);
