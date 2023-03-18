@@ -69,6 +69,7 @@ let driverAvailable;
 let adminSocketVar;
 let adminAvailableLightUp;
 
+console.log('Into asset');
 
 io.on('connection', socket=>{
     console.log('Connected...')
