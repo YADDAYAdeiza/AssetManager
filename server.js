@@ -95,6 +95,16 @@ console.log(role);
 
 
 io.on('connection', socket=>{
+
+  socket.on('adminMonitoringTracking', (msg)=>{
+    //join other sockets to this room
+    console.log(msg)
+    //assign variable to admin socket
+    adminSocket = socket.id;
+    console.log(adminSocket);
+
+    io.emit('trackPlots', `Tracking2... ${socket.id}`);
+})
     socket.on('join-room', (roomId, userId)=>{
       socket.join(roomId)
       socket.to(roomId).emit('user-connected', userId)
