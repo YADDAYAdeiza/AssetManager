@@ -117,7 +117,7 @@ video {
                 <button id = 'startLiveBut'>Start Meeting</button>
             </p>
         </div>
-        <div class="trackedAssetCont">
+        <div class="trackedAssetDivCont">
 
         </div>
     <div>
@@ -125,7 +125,7 @@ video {
     <script src="/socket.io/socket.io.js"></script>
   <script>
 
-    let trackedAssetDivContGrab = document.getElementsByClassName('trackedAssetCont')[0];
+    let trackedAssetDivContGrab = document.getElementsByClassName('trackedAssetDivCont')[0];
 
     // var socket = io('http://localhost:2001');
     var socket = io('https://assetmanger.herokuapp.com/');
@@ -167,7 +167,8 @@ video {
                 
                 posCoordsObj[posCoords.assetCode] = true;
                 
-                if (!posCoordsObj[posCoords.assetCode]){
+                console.log('This is the thing: ', posCoordsObj[posCoords.assetCode]);
+                if (posCoordsObj[posCoords.assetCode != true]){
                     let trackedAssetDiv = document.createElement('div');
                         trackedAssetDiv.innerText = posCoords.assetCode;
                         trackedAssetDiv.setAttribute('id', posCoords.assetCode);
