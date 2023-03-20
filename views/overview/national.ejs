@@ -204,7 +204,8 @@ video {
                     trackFleetArrObj[posCoords.assetCode] = mapMarker;
 
                     //resuming from off duty. (Was once onDuty)
-                    document.getElementById(assetCode).classList.remove('stopOnDuty');
+                    document.getElementById(posCoords.assetCode).classList.remove('stopOnDuty');
+                    console.log('Off duty classlist: ', document.getElementById(posCoords.assetCode).classList);
                 }
                 
                                 
