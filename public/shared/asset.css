@@ -141,3 +141,15 @@ list-style-type: none;
     background-color: grey;
     text-align: right;
 }
+
+.trackedAssetDivCont{
+    padding:1rem;
+}
+
+.trackedAssetDivCont div{
+    background-color: green;
+}
+
+.trackedAssetDivCont div :hover{
+    background-color: greenyellow;
+}

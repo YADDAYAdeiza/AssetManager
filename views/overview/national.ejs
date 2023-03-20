@@ -157,14 +157,25 @@ video {
             // alert("Do you really want to close?");
             // };
             var posCoordsObj = {};
+            var trackFleetArrObj = {};
+            let trackFleetArrObjPosition = {};
             socket.on('dutyOn', (msg)=>{//
+
+                //clearing asset markers, readying for update
+                // trackFleetArr.forEach(marker=>{
+                //     // alert('Clearing marker'+ marker.getTitle())
+                //     marker.setMap(null)
+                // })
+
+                
                 msgObj = JSON.parse(msg)
                 
                 // alert('dutyOn');
                 console.log('??');
                 console.log(msg);
                 posCoords = JSON.parse(msg);
-                
+
+            
                 
                 console.log('This is the thing: ', posCoordsObj[posCoords.assetCode]);
                 if (posCoordsObj[posCoords.assetCode] != true){
@@ -174,16 +185,25 @@ video {
                     trackedAssetDiv.setAttribute('id', posCoords.assetCode);
                     trackedAssetDiv.setAttribute('class', 'trackedAssetDiv');
                     trackedAssetDivContGrab.append(trackedAssetDiv);
+                   
+                    posCoordsObj[posCoords.assetCode] = true;
+
+                    //create new marker
+                    mapMarker = new google.maps.Marker({
+                        map:mapSet,
+                        position: {lat:+posCoords['lat'], lng:+posCoords['lng']},
+                        title: posCoords['assetCode'],
+                        draggable:true,
+                        animation: google.maps.Animation.BOUNCE,   
+                    });
+                    trackFleetArrObj[posCoords.assetCode] = mapMarker;
+                    trackFleetArrObjPosition[posCoords.assetCode] = posCoords;
+                    trackFleetArr.push(mapMarker);
+                }else {
+                     //clearing the concerned, individual msg marker, readying for updating it's position
+                    trackFleetArrObj[posCoords.assetCode] = mapMarker;
                 }
-                posCoordsObj[posCoords.assetCode] = true;
-                mapMarker = new google.maps.Marker({
-                    position: {lat:+posCoords['lat'], lng:+posCoords['lng']},
-                    title: posCoords['assetCode'],
-                    draggable:true,
-                    animation: google.maps.Animation.BOUNCE,   
-                });
                 
-                                trackFleetArr.push(mapMarker);
                                 
                                 
                                 //Notification.requestPermission().then(perm=>{
@@ -192,17 +212,21 @@ video {
                                         
                                         //notification.addEventListener('click', e=>{
                             // mapSet.setZoom(24);
-                            mapSet.setCenter(mapMarker.getPosition());
+
+                            // 
+                            // mapSet.setCenter(mapMarker.getPosition());
+                            //
+
+                            //changing position of asset markers
+                            Object.keys(trackFleetArrObj).forEach(key=>{
+                                trackFleetArrObj[key].setPosition(trackFleetArrObjPosition[key]);
+                            })
                             // mapSet.setHeading(320);
                             // mapSet.setTilt(90)
                             // mapSet.setMapId('f899731c7a1d19be';)
                             
-                            trackFleetArr.forEach(marker=>{
-                                // alert('Clearing marker'+ marker.getTitle())
-                                marker.setMap(null)
-                            })
-                            mapMarker.setMap(mapSet);
-                            mapMarker.setAnimation(google.maps.Animation.BOUNCE);//google.maps.Animation.BOUNCE,
+                            // mapMarker.setMap(mapSet);
+                            // mapMarker.setAnimation(google.maps.Animation.BOUNCE);//google.maps.Animation.BOUNCE,
                             
                             //if something has been filtered, let's use the new filtered array, or else use the trackFleetArray
                             
