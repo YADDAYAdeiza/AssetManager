@@ -165,16 +165,16 @@ video {
                 console.log(msg);
                 posCoords = JSON.parse(msg);
                 
-                posCoordsObj[posCoords.assetCode] = true;
                 
                 console.log('This is the thing: ', posCoordsObj[posCoords.assetCode]);
                 if (posCoordsObj[posCoords.assetCode != true]){
                     let trackedAssetDiv = document.createElement('div');
-                        trackedAssetDiv.innerText = posCoords.assetCode;
-                        trackedAssetDiv.setAttribute('id', posCoords.assetCode);
-                        trackedAssetDiv.setAttribute('class', 'trackedAssetDiv');
-                        trackedAssetDivContGrab.append(trackedAssetDiv);
+                    trackedAssetDiv.innerText = posCoords.assetCode;
+                    trackedAssetDiv.setAttribute('id', posCoords.assetCode);
+                    trackedAssetDiv.setAttribute('class', 'trackedAssetDiv');
+                    trackedAssetDivContGrab.append(trackedAssetDiv);
                 }
+                posCoordsObj[posCoords.assetCode] = true;
                 mapMarker = new google.maps.Marker({
                     position: {lat:+posCoords['lat'], lng:+posCoords['lng']},
                     title: posCoords['assetCode'],
