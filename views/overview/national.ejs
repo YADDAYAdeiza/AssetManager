@@ -262,8 +262,11 @@ video {
             // });
             // trackedAssetDivContGrab.removeChild(document.getElementById(assetCode));
             // posCoordsObj[posCoordsObj]
-            
+            console.log('This is classlist: ', document.getElementById(assetCode).classList);
+            //trackedAssetDiv
             document.getElementById(assetCode).classList.add('stopOnDuty');
+            console.log('This is classlist2: ', document.getElementById(assetCode).classList);
+            document.getElementsByClassName('trackedAssetDiv')[0].classList;
             alert('Stopping in admin!');
             // trackFleetArr2 = trackFleetArr.filter((marker, i)=>{
                 //    return marker.getTitle() != assetCode
