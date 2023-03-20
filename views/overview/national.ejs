@@ -167,7 +167,8 @@ video {
                 
                 
                 console.log('This is the thing: ', posCoordsObj[posCoords.assetCode]);
-                if (posCoordsObj[posCoords.assetCode != true]){
+                if (posCoordsObj[posCoords.assetCode] != true){
+                    console.log('Creating innerdiv');
                     let trackedAssetDiv = document.createElement('div');
                     trackedAssetDiv.innerText = posCoords.assetCode;
                     trackedAssetDiv.setAttribute('id', posCoords.assetCode);
