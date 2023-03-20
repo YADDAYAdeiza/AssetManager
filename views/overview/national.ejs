@@ -307,6 +307,7 @@ video {
         })
     })
     let roomId = "<%-roomId%>";
+    let trackableAsset = "<%-trackableAsset%>";
     let getSubVar;
     let subCatGrab;
     let markerArr;
@@ -326,6 +327,7 @@ video {
     // alert(roomId);
     // socket.emit('join-room', roomId, 10 ); //2dabcb54-47c4-4999-88d1-b75650767c19
 
+    console.log('trackableAsset: ', trackableAsset);
     let videoGrid = document.getElementById('video-grid');
     let myVideo = document.createElement('video');
     myVideo.muted= true;
