@@ -117,10 +117,15 @@ video {
                 <button id = 'startLiveBut'>Start Meeting</button>
             </p>
         </div>
+        <div class="trackedAssetCont">
+
+        </div>
     <div>
     <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
   <script>
+
+    let trackedAssetDivContGrab = document.getElementsByIdByClassName('trackedAssetCont')[0];
 
     // var socket = io('http://localhost:2001');
     var socket = io('https://assetmanger.herokuapp.com/');
@@ -151,14 +156,24 @@ video {
         // window.onbeforeunload = function () {
             // alert("Do you really want to close?");
             // };
+            var posCoordsObj = {};
             socket.on('dutyOn', (msg)=>{//
-                        msgObj = JSON.parse(msg)
-                        
-                        // alert('dutyOn');
-                        console.log('??');
-                        console.log(msg);
+                msgObj = JSON.parse(msg)
+                
+                // alert('dutyOn');
+                console.log('??');
+                console.log(msg);
                 posCoords = JSON.parse(msg);
-
+                
+                posCoordsObj[posCoords.assetCode] = true;
+                
+                if (!posCoordsObj[posCoords.assetCode]){
+                    let trackedAssetDiv = document.createElement('div');
+                        trackedAssetDiv.innerText = posCoords.assetCode;
+                        trackedAssetDiv.setAttribute('id', posCoords.assetCode);
+                        trackedAssetDiv.setAttribute('class', 'trackedAssetDiv');
+                        trackedAssetDivContGrab.append(trackedAssetDiv);
+                }
                 mapMarker = new google.maps.Marker({
                     position: {lat:+posCoords['lat'], lng:+posCoords['lng']},
                     title: posCoords['assetCode'],
@@ -219,6 +234,8 @@ video {
         // trackFleetArr.forEach((marker, i)=>{
             //    marker.setMap(null)
             // });
+            trackedAssetDivContGrab.removeChild(trackedAssetDivContGrab.getElementById(assetCode));
+            // posCoordsObj[posCoordsObj]
             
             alert('Stopping in admin!');
             // trackFleetArr2 = trackFleetArr.filter((marker, i)=>{
