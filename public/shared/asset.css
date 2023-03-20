@@ -146,13 +146,22 @@ list-style-type: none;
     padding:1rem;
 }
 
-.trackedAssetDivCont div{
+/* .trackedAssetDivCont div{
+    background-color: green;
+    margin-top:0.5rem;
+} */
+
+.trackedAssetDiv{
     background-color: green;
     margin-top:0.5rem;
 }
 
 .trackedAssetDivCont div:hover{
     background-color: greenyellow; 
+}
+
+.trackedAssetDiv :hover{
+    background-color: greenyellow;
 }
 
 .stopOnDuty{
