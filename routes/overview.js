@@ -95,8 +95,13 @@ route.get('/mapping/:mapItem/:subItem', async (req, res)=>{
     }
 })
 
-route.get('/national', (req, res)=>{
-res.render('overview/national.ejs', {roomId:uuidv4()})
+route.get('/national', async (req, res)=>{
+    try{
+        let trackableAsset = await assetModel.find({}).where('assetTypeTrackable').equals('false');
+        res.render('overview/national.ejs', {roomId:uuidv4(), trackableAsset});
+    }catch (e){
+        console.log(e.message);
+    }
 })
 
 

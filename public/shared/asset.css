@@ -152,7 +152,7 @@ list-style-type: none;
 } */
 
 .trackedAssetDiv{
-    background-color: green;
+    /* background-color: green; */
     margin-top:0.5rem;
 }
 
@@ -166,4 +166,8 @@ list-style-type: none;
 
 .stopOnDuty{
     background-color: red;
+}
+
+.dutyOn{
+    background-color: green;
 }

@@ -118,7 +118,9 @@ video {
             </p>
         </div>
         <div class="trackedAssetDivCont">
-
+            <%trackableAsset.forEach(asset=>{%>
+                <div class = 'trackedAssetDiv'><%=asset.assetTypeCode%></div>
+            <%})%>
         </div>
     <div>
     <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
@@ -184,6 +186,7 @@ video {
                     trackedAssetDiv.innerText = posCoords.assetCode;
                     trackedAssetDiv.setAttribute('id', posCoords.assetCode);
                     trackedAssetDiv.setAttribute('class', 'trackedAssetDiv');
+                    trackedAssetDiv.setAttribute('class', 'dutyOn');
                     trackedAssetDivContGrab.append(trackedAssetDiv);
                    
                     posCoordsObj[posCoords.assetCode] = true;
@@ -205,6 +208,7 @@ video {
 
                     //resuming from off duty. (Was once onDuty)
                     document.getElementById(posCoords.assetCode).classList.remove('stopOnDuty');
+                    document.getElementById(posCoords.assetCode).classList.add('dutyOn');
                     console.log('Off duty classlist: ', document.getElementById(posCoords.assetCode).classList);
                 }
                 
