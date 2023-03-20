@@ -260,9 +260,10 @@ video {
         // trackFleetArr.forEach((marker, i)=>{
             //    marker.setMap(null)
             // });
-            trackedAssetDivContGrab.removeChild(document.getElementById(assetCode));
+            // trackedAssetDivContGrab.removeChild(document.getElementById(assetCode));
             // posCoordsObj[posCoordsObj]
             
+            document.getElementById(assetCode).classList.add('stopOnDuty');
             alert('Stopping in admin!');
             // trackFleetArr2 = trackFleetArr.filter((marker, i)=>{
                 //    return marker.getTitle() != assetCode

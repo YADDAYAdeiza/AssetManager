@@ -148,8 +148,13 @@ list-style-type: none;
 
 .trackedAssetDivCont div{
     background-color: green;
+    margin-top:0.5rem;
 }
 
-.trackedAssetDivCont div :hover{
-    background-color: greenyellow;
+.trackedAssetDivCont div:hover{
+    background-color: greenyellow; 
+}
+
+.stopOnDuty{
+    background-color: red;
 }
