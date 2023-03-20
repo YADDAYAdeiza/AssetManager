@@ -202,6 +202,9 @@ video {
                 }else {
                      //clearing the concerned, individual msg marker, readying for updating it's position
                     trackFleetArrObj[posCoords.assetCode] = mapMarker;
+
+                    //resuming from off duty. (Was once onDuty)
+                    document.getElementById(assetCode).classList.remove('stopOnDuty');
                 }
                 
                                 
