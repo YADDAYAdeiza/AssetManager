@@ -157,7 +157,8 @@ list-style-type: none;
 }
 
 .trackedAssetDivCont div:hover{
-    background-color: greenyellow; 
+    background-color: greenyellow;
+    border: 1px solid grey;
 }
 
 .trackedAssetDiv :hover{
