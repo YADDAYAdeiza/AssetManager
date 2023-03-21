@@ -119,7 +119,7 @@ video {
         </div>
         <div class="trackedAssetDivCont">
             <%trackableAsset.forEach(asset=>{%>
-                <div class = 'trackedAssetDiv'><%=asset.assetCode%></div>
+                <div id = '<%=asset.assetCode%>' class = 'trackedAssetDiv'><%=asset.assetCode%></div>
             <%})%>
         </div>
     <div>
@@ -182,12 +182,15 @@ video {
                 console.log('This is the thing: ', posCoordsObj[posCoords.assetCode]);
                 if (posCoordsObj[posCoords.assetCode] != true){
                     console.log('Creating innerdiv');
-                    let trackedAssetDiv = document.createElement('div');
-                    trackedAssetDiv.innerText = posCoords.assetCode;
-                    trackedAssetDiv.setAttribute('id', posCoords.assetCode);
-                    trackedAssetDiv.setAttribute('class', 'trackedAssetDiv');
-                    trackedAssetDiv.setAttribute('class', 'dutyOn');
-                    trackedAssetDivContGrab.append(trackedAssetDiv);
+                    // let trackedAssetDiv = document.createElement('div');
+                    // trackedAssetDiv.innerText = posCoords.assetCode;
+                    // trackedAssetDiv.setAttribute('id', posCoords.assetCode);
+                    // trackedAssetDiv.setAttribute('class', 'trackedAssetDiv');
+                    // trackedAssetDiv.setAttribute('class', 'dutyOn');
+                    // trackedAssetDivContGrab.append(trackedAssetDiv);
+
+                    document.getElementById(posCoords.assetCode).classList.add('dutyOn')
+                    // trackedAssetDivContGrab.getElement
                    
                     posCoordsObj[posCoords.assetCode] = true;
 
