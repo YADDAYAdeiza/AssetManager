@@ -118,6 +118,7 @@ video {
             </p>
         </div>
         <div class="trackedAssetDivCont">
+            <div class="trackedAssetDivReveal">View Assets   v</div>
             <%trackableAsset.forEach(asset=>{%>
                 <div id = '<%=asset.assetCode%>' class = 'trackedAssetDiv'><%=asset.assetCode%></div>
             <%})%>
@@ -128,6 +129,21 @@ video {
   <script>
 
     let trackedAssetDivContGrab = document.getElementsByClassName('trackedAssetDivCont')[0];
+    let trackedAssetDivRevealGrab = document.getElementsByClassName('trackedAssetDivReveal')[0];// createElement('div');
+    let trackedAssetDivRevealGrabBool = false;
+    console.log('This is it:', trackedAssetDivRevealGrab);
+    trackedAssetDivRevealGrab.addEventListener('click', function(){
+        console.log(this.parentNode);
+        if (trackedAssetDivRevealGrabBool){
+            this.innerText = 'View Assets    ^';
+            trackedAssetDivRevealGrabBool = !trackedAssetDivRevealGrabBool;
+            trackedAssetDivContGrab.classList.toggle('reveal');
+        }else {
+            this.innerText = 'View Assets    v';
+            trackedAssetDivRevealGrabBool = !trackedAssetDivRevealGrabBool;
+            trackedAssetDivContGrab.classList.toggle('reveal');
+        }
+    })
 
     // var socket = io('http://localhost:2001');
     var socket = io('https://assetmanger.herokuapp.com/');
@@ -180,14 +196,11 @@ video {
             
                 
                 console.log('This is the thing: ', posCoordsObj[posCoords.assetCode]);
+                    
                 if (posCoordsObj[posCoords.assetCode] != true){
                     console.log('Creating innerdiv');
-                    // let trackedAssetDiv = document.createElement('div');
-                    // trackedAssetDiv.innerText = posCoords.assetCode;
                     // trackedAssetDiv.setAttribute('id', posCoords.assetCode);
-                    // trackedAssetDiv.setAttribute('class', 'trackedAssetDiv');
                     // trackedAssetDiv.setAttribute('class', 'dutyOn');
-                    // trackedAssetDivContGrab.append(trackedAssetDiv);
 
                     document.getElementById(posCoords.assetCode).classList.add('dutyOn')
                     // trackedAssetDivContGrab.getElement
@@ -309,6 +322,8 @@ video {
             }
         })
     })
+    
+                
     let roomId = "<%-roomId%>";
     let getSubVar;
     let subCatGrab;

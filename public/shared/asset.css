@@ -145,7 +145,27 @@ list-style-type: none;
 .trackedAssetDivCont{
     padding:1rem;
     border: 1px solid grey;
+    height:2%;
+    overflow:auto;
+    transition: height 0.4s ease-in-out
 }
+
+.trackedAssetDivReveal{
+    background-color: silver;
+    border: 2px solid gray;
+    color:white;
+    text-align: right;
+    padding-right:1rem;
+}
+
+/* transition */
+    .reveal{
+        height: 20%;
+    }
+
+    .unReveal{
+        height: 4%;
+    }
 
 /* .trackedAssetDivCont div{
     background-color: green;
@@ -155,9 +175,10 @@ list-style-type: none;
 .trackedAssetDiv{
     /* background-color: green; */
     margin-top:0.5rem;
+    padding:0 0.5rem;
 }
 
-.trackedAssetDivCont div:hover{
+.trackedAssetDivCont div+div:hover{
     background-color: greenyellow;
 }
 
