@@ -119,14 +119,61 @@ video {
         </div>
         <div class="trackedAssetDivCont">
             <div class="trackedAssetDivReveal">View Assets   v</div>
-            <%trackableAsset.forEach(asset=>{%>
-                <div id = '<%=asset.assetCode%>' class = 'trackedAssetDiv'><%=asset.assetCode%></div>
-            <%})%>
+            <div class="tabDriver">
+                <button class="tablinks" onclick="openCity(event, 'move')">On Move</button>
+                <button class="tablinks" onclick="openCity(event, 'pause')">Paused</button>
+                <button class="tablinks" onclick="openCity(event, 'noMove')">No Move</button>
+              </div>
+              <div id="move" class="tabcontent">
+                <h3>On the Move</h3>
+                <p>London is the capital city of England.</p>
+              </div>
+              
+              <div id="pause" class="tabcontent">
+                <h3>On Pause</h3>
+                <p>Paris is the capital of France.</p>
+              </div>
+              
+              <div id="noMove" class="tabcontent">
+                <h3>No Move</h3>
+                <p>Tokyo is the capital of Japan.</p>
+                <%trackableAsset.forEach(asset=>{%>
+                    <div id = '<%=asset.assetCode%>' class = 'trackedAssetDiv'><%=asset.assetCode%></div>
+                <%})%>
+              </div>
         </div>
     <div>
+        <div>
+            <canvas id="myChart"></canvas>
+        </div>
     <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <script>
+
+    //tabDriver
+        function openCity(evt, cityName) {
+            // Declare all variables
+            var i, tabcontent, tablinks;
+
+            // Get all elements with class="tabcontent" and hide them
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+            }
+
+            // Get all elements with class="tablinks" and remove the class "active"
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+
+            // Show the current tab, and add an "active" class to the button that opened the tab
+            document.getElementById(cityName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+//end of the tabDriver
 
     let trackedAssetDivContGrab = document.getElementsByClassName('trackedAssetDivCont')[0];
     let trackedAssetDivRevealGrab = document.getElementsByClassName('trackedAssetDivReveal')[0];// createElement('div');
@@ -202,7 +249,9 @@ video {
                     // trackedAssetDiv.setAttribute('id', posCoords.assetCode);
                     // trackedAssetDiv.setAttribute('class', 'dutyOn');
 
-                    document.getElementById(posCoords.assetCode).classList.add('dutyOn')
+                    let moveDiv = document.getElementById(posCoords.assetCode);
+                    moveDiv.classList.add('dutyOn')
+                    document.getElementById('move').append(moveDiv);
                     // trackedAssetDivContGrab.getElement
                    
                     posCoordsObj[posCoords.assetCode] = true;
@@ -218,13 +267,14 @@ video {
                     trackFleetArrObj[posCoords.assetCode] = mapMarker;
                     trackFleetArrObjPosition[posCoords.assetCode] = posCoords;
                     trackFleetArr.push(mapMarker);
+                    reDrawChart();
                 }else {
                      //clearing the concerned, individual msg marker, readying for updating it's position
                     trackFleetArrObj[posCoords.assetCode] = mapMarker;
 
                     //resuming from off duty. (Was once onDuty)
-                    document.getElementById(posCoords.assetCode).classList.remove('stopOnDuty');
-                    document.getElementById(posCoords.assetCode).classList.add('dutyOn');
+                    // document.getElementById(posCoords.assetCode).classList.remove('stopOnDuty');
+                    // document.getElementById(posCoords.assetCode).classList.add('dutyOn');
                     console.log('Off duty classlist: ', document.getElementById(posCoords.assetCode).classList);
                 }
                 
@@ -288,9 +338,22 @@ video {
             // posCoordsObj[posCoordsObj]
             console.log('This is classlist: ', document.getElementById(assetCode).classList);
             //trackedAssetDiv
-            document.getElementById(assetCode).classList.add('stopOnDuty');
+
+            let pauseDiv = document.getElementById('pause');
+            pauseDiv.classList.remove('dutyOn')
+            pauseDiv.classList.add('stopOnDuty')
+            pauseDiv.append(document.getElementById(assetCode));
+            reDrawChart();
+
+            delete posCoordsObj[assetCode]; 
+                    // document.getElementById('move').append(moveDiv);
+
+
+
+            // document.getElementById(assetCode).classList.remove('dutyOn');
+            // document.getElementById(assetCode).classList.add('stopOnDuty');
             console.log('This is classlist2: ', document.getElementById(assetCode).classList);
-            document.getElementsByClassName('trackedAssetDiv')[0].classList;
+            // document.getElementsByClassName('trackedAssetDiv')[0].classList;
             alert('Stopping in admin!');
             // trackFleetArr2 = trackFleetArr.filter((marker, i)=>{
                 //    return marker.getTitle() != assetCode
@@ -686,6 +749,42 @@ video {
                 getSubVar.open("GET", subCatGrab.value, true);
                 getSubVar.send()
             }
+
+    
+    const ctx = document.getElementById('myChart');
+    let chart;
+    
+    function reDrawChart(){
+        alert('Drawing...');
+          let chartObj = {
+              move:document.getElementById('move').children.length,
+              pause:document.getElementById('pause').children.length,
+              noMove:document.getElementById('noMove').children.length
+          }
+        
+        if (chart){
+            chart.destroy();
+        }
+    chart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: Object.keys(chartObj),
+        datasets: [{
+          label: 'Nos.',
+          data: Object.values(chartObj),
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+}
+reDrawChart();
   </script>
 </body>
 </html>

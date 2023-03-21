@@ -238,13 +238,13 @@ route.put('/updateLocation/:assetId/:assetPosCoord', async (req,res)=>{
 route.get('/fromLogAssetDuration/:assetId', async (req,res)=>{
     console.log('Getting...', req.params.assetId);
     // let assetlog = await userLogModel.find({}).where('user').equals(req.params.userId).where('userAsset.id').in(req.params.assetId)
-    // try{
+    try{
         let assetlog = await userLogModel.find({}).where('userAsset.id').equals(req.params.assetId); //the result will be Assign/DeAssign, as an asset is tracked across many users, and it could not have gone across many users without being severally Assingned and DeAssigned
         console.log('This is it ', assetlog);
         res.send(assetlog);
-    // }catch(e){
+    }catch(e){
         console.log(e.message);
-    // }
+    }
 })
 
 

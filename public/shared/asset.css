@@ -146,7 +146,7 @@ list-style-type: none;
     padding:1rem;
     border: 1px solid grey;
     height:2%;
-    overflow:auto;
+    /* overflow:auto; */
     transition: height 0.4s ease-in-out
 }
 
@@ -164,7 +164,7 @@ list-style-type: none;
     }
 
     .unReveal{
-        height: 4%;
+        height: 10%;
     }
 
 /* .trackedAssetDivCont div{
@@ -193,3 +193,37 @@ list-style-type: none;
 .dutyOn{
     background-color: green;
 }
+
+/* tabs */
+.tabDriver {
+    overflow: hidden;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+  }
+
+  .tabDriver button {
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    transition: 0.3s;
+  }
+
+  .tabDriver button:hover {
+    background-color: #ddd;
+  }
+
+  .tabDriver button.active {
+    background-color: #ccc;
+  }
+
+  .tabcontent {
+    display: none;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-top: none;
+  }
+
+  /* End of Tabs */
