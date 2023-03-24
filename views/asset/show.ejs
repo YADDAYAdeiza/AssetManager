@@ -360,6 +360,7 @@ video {
         // }
         videoLiveGrab.addEventListener('click', ()=>{
             if (videoLiveGrabBool ==false){
+                console.log(navigator.mediaDevices);
                 navigator.mediaDevices.getUserMedia({
                     video:true,
                     audio:true
@@ -377,7 +378,7 @@ video {
                             addVideoStream(video, userVideoStream, 'brown');
                         })
                     })
-                    socket.emit('ready');
+                    // socket.emit('ready');
                     socket.emit('ready', color=>{
                         videoLiveGrab.style.backgroundColor = color;
                     });

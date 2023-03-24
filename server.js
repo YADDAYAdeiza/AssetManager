@@ -195,7 +195,6 @@ io.on('connection', socket=>{
               socket.broadcast.to(roomId).emit('user-joined', userId, roomId)
               // socket.to(roomId).emit('readyLight', userId);
               adminSocketVar = socket;
-
           }else{
               console.log(`From Driver now... ${userId}`);
               cb('brown');
