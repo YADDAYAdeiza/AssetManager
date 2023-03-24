@@ -238,7 +238,7 @@ route.get('/getHistory/:id', async (req,res)=>{
 route.get('/showOrNew', permitListsLogin(), hideNavMenu(), (req, res)=>{ //admin middleware may be used here to grant full authorization
     console.log('In showOrNew=====================================');
     if (req.user.profileId.length){// show profiles, orole
-        console.log('This is req: ', req.user);
+        // console.log('This is req: ', req.user);
         console.log('This is req.user.userName:', req.user.userName);
         indexRedirect(req, res, 'My Profile(s)', 'noError');
     } else{ //create new profile
@@ -305,7 +305,7 @@ route.get('/showOrNew', permitListsLogin(), hideNavMenu(), (req, res)=>{ //admin
                                 console.log('Going well1');
                                 // console.log(query)
                                 const users = await query.exec();
-                                console.log(users)
+                                // console.log(users)
                                 console.log('Going well2');
                                 res.render('user/index.ejs', {
                                     users:users,

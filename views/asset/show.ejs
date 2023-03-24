@@ -206,8 +206,8 @@ video {
             <%}%>
         </div> 
 
-    <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
-    <script src="/socket.io/socket.io.js"></script>
+        <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
 
     <script defer>
         // var socket = io('http://localhost:2001');
@@ -217,6 +217,12 @@ video {
         //     host:'/',
         //     port:'3001'
         // })
+
+        const myPeer = new Peer(undefined, {
+            secure: true,
+            host: 'assetmanger.herokuapp.com',
+            port: '443'
+        })
 
         let assetHistoryGrab = document.getElementsByClassName('assetHistory')[0];
         let mapAssetGrab;
@@ -351,16 +357,19 @@ video {
                     audio:true
                 }).then(stream =>{
                     addVideoStream(myVideo, stream, 'lime');
-                    // myPeer.on('call', call=>{
-                    //     call.answer(stream);
-                    //     const video = document.createElement('video');
-                    //     call.on('stream', userVideoStream=>{
-                    //         alert('Receiving Stream 2...');
-                    //         videoLiveGrab.style.backgroundColor = 'lime';
-                    //         addVideoStream(video, userVideoStream, 'brown');
-                    //     })
-                    // })
-                    // socket.emit('ready');
+                    myPeer.on('call', call=>{
+                        alert('Peer Connection');
+                        call.answer(stream);
+                        const video = document.createElement('video');
+                        call.on('stream', userVideoStream=>{
+                            alert('Receiving Stream 2...');
+                            console.log('Receiving Stream 2...');
+                            console.log(stream)
+                            videoLiveGrab.style.backgroundColor = 'lime';
+                            addVideoStream(video, userVideoStream, 'brown');
+                        })
+                    })
+                    socket.emit('ready');
                     socket.emit('ready', color=>{
                         videoLiveGrab.style.backgroundColor = color;
                     });
@@ -389,12 +398,15 @@ video {
                     }
                 })
                 
-                // myPeer.on('open', id =>{
-                // console.log('This is userId now: ',id);
+                myPeer.on('open', id =>{
+                    console.log('This is userId now: ',id);
+                    console.log('This is socket id ', socket.id);
                 
-                //     //this userid is just an id. on the server side, it will not register as admin
-                //     socket.emit('join-room', '2dabcb54-47c4-4999-88d1-b75650767c19', id); //2dabcb54-47c4-4999-88d1-b75650767c19
-                // })
+                    //this userid is just an id. on the server side, it will not register as admin
+                    socket.emit('join-room', '2dabcb54-47c4-4999-88d1-b75650767c19', id); //2dabcb54-47c4-4999-88d1-b75650767c19
+                    // socket.emit('join-room', '2dabcb54-47c4-4999-88d1-b75650767c19', {user:'admin', id}); //2dabcb54-47c4-4999-88d1-b75650767c19
+
+                })
             
             socket.on('readyLight', (userId)=>{
                 // alert('The admin is live');
@@ -404,7 +416,9 @@ video {
             
             //enable videoLiveGrab button
             socket.on('enableTrackBut', (msg)=>{
-                // alert(`Enabling... ${msg}`)
+                // alert(`Enabling... ${msg}`);
+                alert('Enabling...')
+                console.log('Enabling track but')
                 trackButGrab.style.backgroundColor = 'yellow';
                 videoLiveGrab.style.disabled = false;
             })
@@ -450,7 +464,7 @@ video {
             
             function connectToNewUser(newUserId, stream){
                 console.log('Calling... ', newUserId)
-                // const call = myPeer.call(newUserId, stream); //send your video
+                const call = myPeer.call(newUserId, stream); //send your video
                 const video = document.createElement('video');
                 call.on('stream', userVideoStream=>{ //receive their video
                     console.log('Receiving from...', newUserId);
@@ -477,10 +491,11 @@ video {
         alert('Trackable ' + assetTrackable)
 
         // var socket = io('http://localhost:2001');
-        var socket = io('https://assetmanger.herokuapp.com/');
+        // var socket = io('https://assetmanger.herokuapp.com/');
 
         socket.on('connect', ()=>{
                 //  alert(`you connected on...${socket.id}`);
+                console.log('Connected... asset');
         })
         
         

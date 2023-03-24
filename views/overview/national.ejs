@@ -146,9 +146,9 @@ video {
         <div>
             <canvas id="myChart"></canvas>
         </div>
-    <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
-    <script src="/socket.io/socket.io.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <script>
 
@@ -198,6 +198,12 @@ video {
         //     host:'/',
         //     port:'3001'
         // })
+
+        const myPeer = new Peer(undefined, {
+            secure: true,
+            host: 'assetmanger.herokuapp.com',
+            port: '443'
+        })
       console.log('This is socket: ', socket);  
         socket.on('connect', function() {
             console.log('check 2', socket.connected);
@@ -212,6 +218,10 @@ video {
     socket.on('trackPlots', (msg)=>{
         console.log(msg);
     })
+
+    // socket.on('enableTrackBut', (msg)=>{
+    //     console.log('Enabled....');
+    // })
 
     
     
@@ -419,15 +429,18 @@ video {
             audio:true
         }).then(stream =>{
             addVideoStream(myVideo, stream);
-            // myPeer.on('call', call=>{
-            //     call.answer(stream);
-            //     const video = document.createElement('video');
-            //     call.on('stream', userVideoStream=>{
-            //         alert('Receiving Stream...')
-            //         addVideoStream(video, userVideoStream);
-            //         alert('SEcond connect...?')
-            //     })
-            // })
+            console.log('Then... add')
+            myPeer.on('call', call=>{
+                console.log('Then... after')
+                alert('Then After');
+                call.answer(stream);
+                const video = document.createElement('video');
+                call.on('stream', userVideoStream=>{
+                    alert('Receiving Stream...')
+                    addVideoStream(video, userVideoStream);
+                    alert('SEcond connect...?')
+                })
+            })
             socket.emit('ready');
             socket.on('user-joined', (newUserId, roomId) =>{
                 console.log('User joined national ', newUserId);
@@ -438,9 +451,9 @@ video {
                 // videoLiveGrab.style.color = 'yellow';
                 console.log(videoLiveGrab);
                 alert('Clients Joining');
-                // startLiveButGrab.addEventListener('click', function(){
+                startLiveButGrab.addEventListener('click', function(){
                     connectToNewUser(newUserId, stream)
-                // });
+                });
             })
     
             socket.on('user-disconnected', (userId)=>{
@@ -452,11 +465,12 @@ video {
     })
     
 
-    // myPeer.on('open', id =>{
-    //         console.log('This is userId now: ',id);
-    //         //this userid is an object, having user property.
-    //         socket.emit('join-room', '2dabcb54-47c4-4999-88d1-b75650767c19', {user:'admin', id}); //2dabcb54-47c4-4999-88d1-b75650767c19
-    // })
+    myPeer.on('open', id =>{
+        console.log('This is userId now: ',id);
+        //this userid is an object, having user property.
+        // console.log('This is socket ', socket);
+        socket.emit('join-room', '2dabcb54-47c4-4999-88d1-b75650767c19', {user:'admin', id}); //2dabcb54-47c4-4999-88d1-b75650767c19
+    })
 
     socket.on('readyLight', (userId, roomId, numOfClients)=>{
                 // alert('The admin is live');
@@ -472,16 +486,16 @@ video {
 
     function connectToNewUser(newUserId, stream){
         console.log('Calling... ', newUserId)
-        // const call = myPeer.call(newUserId, stream); //send your video
+        const call = myPeer.call(newUserId, stream); //send your video
         const video = document.createElement('video');
         call.on('stream', userVideoStream=>{ //receive their video
             startLiveButGrab.disabled = false;
             
 
             console.log('Receiving from...', newUserId);
-            startLiveButGrab.addEventListener('click', function(){
+            // startLiveButGrab.addEventListener('click', function(){
                 addVideoStream(video, userVideoStream);
-            });
+            // });
         })
         call.on('close', ()=>{
             video.remove();

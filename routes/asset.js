@@ -35,21 +35,21 @@ const httpServer = require("http").createServer(app);
 // const io = require("socket.io")(httpServer);
 // httpServer.listen(process.env.PORT || 3001);
 
-const io = require('socket.io')(httpServer, {
-    cors:
-    {
-    //    origin:['https://assetmanger.herokuapp.com/']
-       origin:'*'
-    }
-});
-
-// const io = require('socket.io')(2001, {
+// const io = require('socket.io')(httpServer, {
 //     cors:
 //     {
-//        origin:['http://localhost:2000']
-//     //    origin:'*'
+//     //    origin:['https://assetmanger.herokuapp.com/']
+//        origin:'*'
 //     }
 // });
+
+const io = require('socket.io')(2001, {
+    cors:
+    {
+       origin:['http://localhost:2000']
+    //    origin:'*'
+    }
+});
 
 //new
 // const io = socketIO(server);
@@ -72,7 +72,7 @@ let adminAvailableLightUp;
 console.log('Into asset');
 
 io.on('connection', socket=>{
-    console.log('Connected...')
+    console.log('Connection established on Asset Code...')
     // get adminMonitoringTracking
     socket.on('adminMonitoringTracking', (msg)=>{
         //join other sockets to this room
@@ -102,6 +102,7 @@ io.on('connection', socket=>{
 
     //for video use
     socket.on('join-room', (roomId, userId)=>{
+        console.log('In asset...')
         socket.join(roomId);
         if(userId.user !== 'admin'){ //joining from trackable asset
             console.log('Enabling Track Button...')
@@ -110,13 +111,16 @@ io.on('connection', socket=>{
                 console.log(socket.id);
                 console.log(socket.rooms);
                 // io.to(roomId).emit('enableTrackBut');
-                try{
+                // try{
                     // socket.emit('enableTrackBut', 'Enabled' )
-                    socket.emit('enableTrackBut', 'Enabled' )
+                    console.log('',adminAvailableLightUp);
+                    // socket.emit('enableTrackBut', 'Enabled' )
+                    // socket.to(roomId).emit('enableTrackBut', 'Enabled' );
+                    io.to(roomId).emit('enableTrackBut', 'Enabled');
                     console.log('Has it called?');
-                }catch(msg){
-                    console.log(msg);
-                }
+                // }catch(msg){
+                    // console.log(msg);
+                // }
             }
             socket.to(roomId).emit('enableTrackBut', 'Enabled' )
 
@@ -160,7 +164,7 @@ io.on('connection', socket=>{
 
             }else{
                 console.log(`From Driver now... ${userId}`);
-                cb('brown');
+                // cb('brown');
                 socket.broadcast.to(roomId).emit('user-joined', userId)
                 if (adminAvailable){
 

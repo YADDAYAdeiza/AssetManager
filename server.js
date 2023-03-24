@@ -95,17 +95,19 @@ console.log(role);
 
 
 io.on('connection', socket=>{
-    // socket.on('join-room', (roomId, userId)=>{
-    //   socket.join(roomId)
-    //   socket.to(roomId).emit('user-connected', userId)
-    //   // socket.broadcast.to(roomId).emit("hello", "world");
-    //   //socket.to(roomId).broadcast.emit('user-connected', userId)
+  console.log('Connection established on Server Code...');
+    socket.on('join-room', (roomId, userId)=>{
+      console.log('Joined now... 2');
+      socket.join(roomId);
+      socket.to(roomId).emit('user-connected', userId)
+      // socket.broadcast.to(roomId).emit("hello", "world");
+      //socket.to(roomId).broadcast.emit('user-connected', userId)
 
-    //   socket.on('disconnect', ()=>{
-    //     socket.to(roomId).emit('user-disconnected', userId)
-    //     // socket.to(roomId).broadcast.emit('user-disconnected', userId)
-    //   })
-    // })
+      socket.on('disconnect', ()=>{
+        socket.to(roomId).emit('user-disconnected', userId)
+        // socket.to(roomId).broadcast.emit('user-disconnected', userId)
+      })
+    })
 
     socket.on('adminMonitoringTracking', (msg)=>{
       //join other sockets to this room
@@ -134,7 +136,9 @@ io.on('connection', socket=>{
   })
 
   //for video use
+  let adminAvailableLightUp;
   socket.on('join-room', (roomId, userId)=>{
+    console.log('Joined now...1' + userId);
       socket.join(roomId);
       if(userId.user !== 'admin'){ //joining from trackable asset
           console.log('Enabling Track Button...')
@@ -146,7 +150,7 @@ io.on('connection', socket=>{
               try{
                   // socket.emit('enableTrackBut', 'Enabled' )
                   socket.emit('enableTrackBut', 'Enabled' )
-                  console.log('Has it called?');
+                  console.log('Has it called2?');
               }catch(msg){
                   console.log(msg);
               }
@@ -246,14 +250,14 @@ const session = require ('express-session');
 
  initializePassport(passport,   async(email)=>{
  let user = await userCredModel.find({email:email});
- console.log(user);
+//  console.log(user);
  console.log([1,2,3,4]);
  return user[0];
 
 },  async (id)=>{
    let user = await userCredModel.findById(id);
     console.log('User gotten by id:')
-    console.log(user);
+  //   console.log(user);
    console.log('----')
    return user;
  })
@@ -1281,7 +1285,7 @@ app.get('/getAssetTypes', async (req,res)=>{
   async function checkAuthenticated(req, res, next){
     if (req.isAuthenticated()) {
       console.log('In authenticated...')
-      console.log(await req.user);
+      // console.log(await req.user);
       return next()
     }
     

@@ -62,8 +62,6 @@
                     
                     <%- include('../partials/deleteFormAsset.ejs', {url:`/asset/${asset.id}`, assetAllocationStatus:asset.assetAllocationStatus, assetDeleteAccess}) %>
                     <%let len = asset.assetUserHistory.length%>
-                    <% console.log('Length :', len)%>
-                    <%console.log('userid is: ', asset.assetUserHistory[len-1])%>
                     <button class="btn btn-primary" id="deAssignBut" onClick="deAssignAsset('<%=asset.id%>', '<%=asset.assetUserHistory[len-1]%>')" <%=assetDeleteAccess? 'style=display:inline':'style=display:none'%>  <%=asset.assetAllocationStatus != true?'Disabled':"" %>>DeAssignAsset</button> <span id ='ageSpan' ><%= (new Date(Date.now()).getTime() - asset.assetAssignDate)/86400000%></span><span>Day(s) Old</span>
                     <% asset.assetAllocationStatus ? "<a href = `dana/asset._id/asset.assetCode` class = 'QRCodeBtn'>Generate QRCode</a>":"" %>
                     <%if (asset.assetAllocationStatus){%>
