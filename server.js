@@ -143,19 +143,19 @@ io.on('connection', socket=>{
       if(userId.user !== 'admin'){ //joining from trackable asset
           console.log('Enabling Track Button...');
           console.log(adminAvailableLightUp);
-          if (adminAvailableLightUp){
+          // if (adminAvailableLightUp){
               console.log('Enable Track Button...')
               console.log(socket.id);
               console.log(socket.rooms);
               // io.to(roomId).emit('enableTrackBut');
-              try{
+              // try{
                   // socket.emit('enableTrackBut', 'Enabled' )
                   io.emit('enableTrackBut', 'Enabled' )
                   console.log('Has it called2?');
-              }catch(msg){
+              // }catch(msg){
                   console.log(msg);
-              }
-          }
+              // }
+          // }
           socket.to(roomId).emit('enableTrackBut', 'Enabled' )
 
       } else{ //joining from overview national
