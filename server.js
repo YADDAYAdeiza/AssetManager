@@ -96,18 +96,18 @@ console.log(role);
 
 io.on('connection', socket=>{
   console.log('Connection established on Server Code...');
-    socket.on('join-room', (roomId, userId)=>{
-      console.log('Joined now... 2');
-      socket.join(roomId);
-      socket.to(roomId).emit('user-connected', userId)
-      // socket.broadcast.to(roomId).emit("hello", "world");
-      //socket.to(roomId).broadcast.emit('user-connected', userId)
+    // socket.on('join-room', (roomId, userId)=>{
+    //   console.log('Joined now... 2');
+    //   socket.join(roomId);
+    //   socket.to(roomId).emit('user-connected', userId)
+    //   // socket.broadcast.to(roomId).emit("hello", "world");
+    //   //socket.to(roomId).broadcast.emit('user-connected', userId)
 
-      socket.on('disconnect', ()=>{
-        socket.to(roomId).emit('user-disconnected', userId)
-        // socket.to(roomId).broadcast.emit('user-disconnected', userId)
-      })
-    })
+    //   socket.on('disconnect', ()=>{
+    //     socket.to(roomId).emit('user-disconnected', userId)
+    //     // socket.to(roomId).broadcast.emit('user-disconnected', userId)
+    //   })
+    // })
 
     socket.on('adminMonitoringTracking', (msg)=>{
       //join other sockets to this room
@@ -141,7 +141,8 @@ io.on('connection', socket=>{
     console.log('Joined now...1' + userId);
       socket.join(roomId);
       if(userId.user !== 'admin'){ //joining from trackable asset
-          console.log('Enabling Track Button...')
+          console.log('Enabling Track Button...');
+          console.log(adminAvailableLightUp);
           if (adminAvailableLightUp){
               console.log('Enable Track Button...')
               console.log(socket.id);
@@ -149,7 +150,7 @@ io.on('connection', socket=>{
               // io.to(roomId).emit('enableTrackBut');
               try{
                   // socket.emit('enableTrackBut', 'Enabled' )
-                  socket.emit('enableTrackBut', 'Enabled' )
+                  io.emit('enableTrackBut', 'Enabled' )
                   console.log('Has it called2?');
               }catch(msg){
                   console.log(msg);
