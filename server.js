@@ -1314,6 +1314,9 @@ app.get('/getAssetTypes', async (req,res)=>{
 
   // const peerServer = ExpressPeerServer(pServer, {
   //   path: '/assetmanger.herokuapp.com'
+  const peerServer = ExpressPeerServer(server, {
+    debug: true
+  });
   // });
 
   app.use('/peerjs', peerServer);
