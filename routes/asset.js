@@ -105,7 +105,8 @@ io.on('connection', socket=>{
         console.log('In asset...')
         socket.join(roomId);
         if(userId.user !== 'admin'){ //joining from trackable asset
-            console.log('Enabling Track Button...')
+            console.log('Enabling Track Button...');
+            console.log(adminAvailableLightUp);
             if (adminAvailableLightUp){
                 console.log('Enable Track Button...')
                 console.log(socket.id);
