@@ -199,13 +199,13 @@ video {
         //     port:'3001'
         // })
 
-        // const myPeer = new Peer(undefined, {
-        //     secure: true,
-        //     host: '0.peerjs.com',
-        //     port: '443'
-        // })
+        const myPeer = new Peer(undefined, {
+            secure: true,
+            host: '0.peerjs.com',
+            port: '9000'
+        })
 
-        const myPeer = new Peer();
+        // const myPeer = new Peer();
 
       console.log('This is socket: ', socket);  
         socket.on('connect', function() {
