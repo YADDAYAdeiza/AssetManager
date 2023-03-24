@@ -153,7 +153,7 @@ io.on('connection', socket=>{
                   io.emit('enableTrackBut', 'Enabled' )
                   console.log('Has it called2?');
               // }catch(msg){
-                  console.log(msg);
+                  // console.log(msg);
               // }
           // }
           socket.to(roomId).emit('enableTrackBut', 'Enabled' )
