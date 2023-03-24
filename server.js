@@ -34,8 +34,7 @@ const methodOverride = require('method-override')
 const bcrypt =  require('bcrypt');
 
 let cors = require('cors');
-// const server = require('http').Server(app);
-const server = app.listen(9000);
+const server = require('http').Server(app);
 const io = require('socket.io')(server, {cors: {
   origin: "*",
   methods: ["GET", "POST"]
@@ -227,7 +226,7 @@ io.on('connection', socket=>{
   })
 
 
-// server.listen(process.env.PORT || 2000);
+server.listen(process.env.PORT || 2000);
   
   
 mongoose.connect(process.env.DATABASE_URL, {useNewUrlParser:true, useUnifiedTopology:true }); //play around with this
@@ -1315,12 +1314,9 @@ app.get('/getAssetTypes', async (req,res)=>{
 
   // const peerServer = ExpressPeerServer(pServer, {
   //   path: '/assetmanger.herokuapp.com'
-  const peerServer = ExpressPeerServer(server, {
-    debug: true
-  });
   // });
 
-  app.use('/peerjs', peerServer);
+  // app.use('/peerjs', peerServer);
 
 
   // const http = require('http');
