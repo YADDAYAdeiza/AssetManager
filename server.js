@@ -201,7 +201,7 @@ io.on('connection', socket=>{
               console.log(`From Driver now... ${userId}`);
               cb('brown');
               socket.broadcast.to(roomId).emit('user-joined', userId)
-              if (adminAvailable){
+              // if (adminAvailable){
 
               adminSocketVar.broadcast.to(roomId).emit('user-joined', userId, roomId)
                   console.log('Admin is ', adminAvailable);
@@ -212,7 +212,7 @@ io.on('connection', socket=>{
                   adminSocketVar.to(socket.id).emit('readyLight', userId);
                   console.log(`Admin2 to ${socket.id}`);
                   // socket.to(roomId).emit('user-joined', userId)
-              }
+              // }
 
           }
       });
