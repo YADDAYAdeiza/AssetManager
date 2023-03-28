@@ -391,7 +391,7 @@ video {
                     socket.on('user-joined', newUserId =>{
                         videoLiveGrab.style.backgroundColor = 'yellow';
                         console.log('User joined ', newUserId);
-                        // alert('Called me!');
+                        alert('Called me!');
                         connectToNewUser(newUserId, stream)
                     })
                     
