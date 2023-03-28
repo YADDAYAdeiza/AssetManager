@@ -210,7 +210,7 @@ io.on('connection', socket=>{
                   // console.log('Admin is ', adminAvailable);
                   console.log('Number of clients joined: ', io.sockets.adapter.rooms.size);
                   let numOfClients = io.sockets.adapter.rooms.size;
-                  // socket.to(roomId).emit('readyLight', userId, roomId, io.sockets.adapter.rooms.size);
+                  socket.to(roomId).emit('readyLight', userId, roomId, io.sockets.adapter.rooms.size);
                   console.log(`Admin to ${socket.id}`);
                   // adminSocketVar.to(socket.id).emit('readyLight', userId);
                   // socket.to(socket.id).emit('readyLight', userId);
