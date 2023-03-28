@@ -436,7 +436,10 @@ video {
             audio:true
         }).then(stream =>{
             addVideoStream(myVideo, stream);
-            console.log('Then... add')
+            console.log('Then... add');
+            // connectToNewUser
+            // connectToNewUser(newUserId, stream)
+
             myPeer.on('call', call=>{
                 console.log('Then... after')
                 alert('Then After');
@@ -458,9 +461,9 @@ video {
                 // videoLiveGrab.style.color = 'yellow';
                 console.log(videoLiveGrab);
                 alert('Clients Joining');
-                startLiveButGrab.addEventListener('click', function(){
+                // startLiveButGrab.addEventListener('click', function(){
                     connectToNewUser(newUserId, stream)
-                });
+                // });
             })
     
             socket.on('user-disconnected', (userId)=>{

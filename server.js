@@ -141,6 +141,7 @@ io.on('connection', socket=>{
     console.log('Joined now...1' + userId);
       socket.join(roomId);
       if(userId.user !== 'admin'){ //joining from trackable asset
+          console.log(userId);
           console.log('Enabling Track Button...');
           console.log(adminAvailableLightUp);
           // if (adminAvailableLightUp){
@@ -159,6 +160,7 @@ io.on('connection', socket=>{
           socket.to(roomId).emit('enableTrackBut', 'Enabled' )
 
       } else{ //joining from overview national
+          console.log(userId);
           console.log('Admin');
           adminAvailableLightUp = true;
       }
