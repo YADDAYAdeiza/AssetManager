@@ -200,11 +200,11 @@ io.on('connection', socket=>{
           }else{
               console.log(`From Driver now... ${userId}`);
               cb('brown');
-              socket.broadcast.to(roomId).emit('user-joined', userId)
+              io.broadcast.to(roomId).emit('user-joined', userId)
               // if (adminAvailable){
 
               // adminSocketVar.broadcast.to(roomId).emit('user-joined', userId, roomId)
-              socket.broadcast.to(roomId).emit('user-joined', userId, roomId)
+              io.broadcast.to(roomId).emit('user-joined', userId, roomId)
                   // console.log('Admin is ', adminAvailable);
                   console.log('Number of clients joined: ', io.sockets.adapter.rooms.size);
                   let numOfClients = io.sockets.adapter.rooms.size;
