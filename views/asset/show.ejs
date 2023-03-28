@@ -224,6 +224,12 @@ video {
             port:'443'
         })
 
+        if (navigator.mediaDevices){
+            alert('It is there')
+        }else{
+            alert('It is not');
+        }
+
         // const myPeer = new Peer(undefined, {
         //     secure: true,
         //     host: 'assetmanger.herokuapp.com',
