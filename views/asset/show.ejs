@@ -371,7 +371,7 @@ video {
                     video:true,
                     audio:true
                 }).then(stream =>{
-                    addVideoStream(myVideo, stream, 'lime');
+                    //addVideoStream(myVideo, stream, 'lime');
                     myPeer.on('call', call=>{
                         alert('Peer Connection');
                         call.answer(stream);
