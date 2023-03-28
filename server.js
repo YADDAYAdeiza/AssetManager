@@ -206,14 +206,14 @@ io.on('connection', socket=>{
 
               // adminSocketVar.broadcast.to(roomId).emit('user-joined', userId, roomId)
               // socket.broadcast.to(roomId).emit('user-joined', userId, roomId)
-              socket.to(roomId).emit('user-joined', userId, roomId);
+              io.to(roomId).emit('user-joined', userId, roomId);
                   // console.log('Admin is ', adminAvailable);
                   console.log('Number of clients joined: ', io.sockets.adapter.rooms.size);
                   let numOfClients = io.sockets.adapter.rooms.size;
                   socket.to(roomId).emit('readyLight', userId, roomId, io.sockets.adapter.rooms.size);
                   console.log(`Admin to ${socket.id}`);
                   // adminSocketVar.to(socket.id).emit('readyLight', userId);
-                  socket.to(socket.id).emit('readyLight', userId);
+                  // socket.to(socket.id).emit('readyLight', userId);
                   console.log(`Admin2 to ${socket.id}`);
                   // socket.to(roomId).emit('user-joined', userId)
               // }
