@@ -474,6 +474,8 @@ video {
 
     myPeer.on('open', id =>{
         console.log('This is userId now: ',id);
+        console.log('MyPeer is open');
+
         //this userid is an object, having user property.
         // console.log('This is socket ', socket);
         socket.emit('join-room', '2dabcb54-47c4-4999-88d1-b75650767c19', {user:'admin', id}); //2dabcb54-47c4-4999-88d1-b75650767c19

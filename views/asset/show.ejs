@@ -416,7 +416,7 @@ video {
                 myPeer.on('open', id =>{
                     console.log('This is userId now: ',id);
                     console.log('This is socket id ', socket.id);
-                
+                alert('User ID is ', id);
                     //this userid is just an id. on the server side, it will not register as admin
                     socket.emit('join-room', '2dabcb54-47c4-4999-88d1-b75650767c19', id); //2dabcb54-47c4-4999-88d1-b75650767c19
                     // socket.emit('join-room', '2dabcb54-47c4-4999-88d1-b75650767c19', {user:'admin', id}); //2dabcb54-47c4-4999-88d1-b75650767c19
