@@ -315,7 +315,7 @@ video {
                             console.log('This is trackFleetArrObj ', trackFleetArrObj);
                             Object.keys(trackFleetArrObj).forEach(key=>{
                                 console.log(key)
-                                console.log(`Setting ${trackFleetArrObj[key]} to ${trackFleetArrObjPosition[key]}`);
+                                console.log(`Setting ${trackFleetArrObj[key]} to ${trackFleetArrObjPosition[key]}, lat: ${trackFleetArrObjPosition[key].lat}, lng: ${trackFleetArrObjPosition[key].lng}`);
                                 trackFleetArrObj[key].setPosition(trackFleetArrObjPosition[key]);
                             })
                             // mapSet.setHeading(320);
