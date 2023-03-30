@@ -92,6 +92,43 @@ function authenticateRoleProfilePage(){
 function permitListsLogin(){
     return async (req, res, next)=>{
         console.log('Permitting lists for login now...')
+        if (req.query.searchScope == undefined) {//search own profiles activated
+            // searchScope
+            if (req.user.role =='basic'){ //further dig
+                let query;
+                query = userModel.find();
+                query = query.where('_id').in(req.user.profileId)
+                req.queryObj = query;
+            }
+            if (req.user.role =='admin'){
+                let query;
+                query = userModel.find();
+                console.log('Admin thing');
+                // query = query.where('_id');
+                // query = query.where('_id').ne('204');
+                
+                
+                // query = query.where('_id').ne(null); //basically, all
+                // query = userModel.find();
+                //do nothing.
+                // query = userModel.find();
+                // query = query.where('_id').in(req.user.profileId)
+                req.queryObj = query;
+            }
+            if (req.user.role =='superAdmin'){
+                let query;
+                query = userModel.find();
+                console.log('superAdmin thing');
+                // query = query.where('_id').in(req.user.profileId)
+
+                
+                // query = query.where('_id').ne(null); //basically, all
+                // query = userModel.find();
+                //do nothing.
+                // query = userModel.find();
+                req.queryObj = query;
+            }
+    }else {
         if (req.user.role =='basic'){ //further dig
             let query;
             query = userModel.find();
@@ -101,6 +138,7 @@ function permitListsLogin(){
         if (req.user.role =='admin'){
             let query;
             query = userModel.find();
+            query = query.where('_id').in(req.user.profileId)
             console.log('Admin thing');
             // query = query.where('_id');
             // query = query.where('_id').ne('204');
@@ -116,6 +154,7 @@ function permitListsLogin(){
         if (req.user.role =='superAdmin'){
             let query;
             query = userModel.find();
+            query = query.where('_id').in(req.user.profileId)
             console.log('superAdmin thing');
             // query = query.where('_id').in(req.user.profileId)
 
@@ -126,6 +165,7 @@ function permitListsLogin(){
             // query = userModel.find();
             req.queryObj = query;
         }
+    }
        
         // req.queryObj = query;
         next();
