@@ -102,7 +102,7 @@ function permitListsLogin(){
             let query;
             query = userModel.find();
             console.log('Admin thing');
-            query = query.where('_id').in(req.user.profileId)
+            // query = query.where('_id');
             // query = query.where('_id').ne('204');
             
             
@@ -110,13 +110,14 @@ function permitListsLogin(){
             // query = userModel.find();
             //do nothing.
             // query = userModel.find();
+            // query = query.where('_id').in(req.user.profileId)
             req.queryObj = query;
         }
         if (req.user.role =='superAdmin'){
             let query;
             query = userModel.find();
             console.log('superAdmin thing');
-            query = query.where('_id').in(req.user.profileId)
+            // query = query.where('_id').in(req.user.profileId)
 
             
             // query = query.where('_id').ne(null); //basically, all
