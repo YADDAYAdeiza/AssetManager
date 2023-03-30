@@ -282,13 +282,15 @@ video {
                         animation: google.maps.Animation.BOUNCE,   
                     });
                     trackFleetArrObj[posCoords.assetCode] = mapMarker;
-                    trackFleetArrObjPosition[posCoords.assetCode] = posCoords;
+                    // trackFleetArrObjPosition[posCoords.assetCode] = posCoords;
+                    trackFleetArrObjPosition[posCoords.assetCode] = mapMarker.getPosition();
                     trackFleetArr.push(mapMarker);
                     reDrawChart();
                 }else {
-                     //clearing the concerned, individual msg marker, readying for updating it's position
-                     mapMarker.setPosition({lat:+posCoords['lat'], lng:+posCoords['lng']});
-                    trackFleetArrObj[posCoords.assetCode] = mapMarker;
+                    //clearing the concerned, individual msg marker, readying for updating it's position
+                    // mapMarker.setPosition({lat:+posCoords['lat'], lng:+posCoords['lng']});
+                    trackFleetArrObjPosition[posCoords.assetCode] = mapMarker.getPosition();
+                    // trackFleetArrObj[posCoords.assetCode] = mapMarker;
 
                     //resuming from off duty. (Was once onDuty)
                     // document.getElementById(posCoords.assetCode).classList.remove('stopOnDuty');
@@ -310,7 +312,9 @@ video {
                             //
 
                             //changing position of asset markers
+                            console.log('This is trackFleetArrObj ', trackFleetArrObj);
                             Object.keys(trackFleetArrObj).forEach(key=>{
+                                console.log(key)
                                 console.log(`Setting ${trackFleetArrObj[key]} to ${trackFleetArrObjPosition[key]}`);
                                 trackFleetArrObj[key].setPosition(trackFleetArrObjPosition[key]);
                             })
