@@ -79,8 +79,8 @@
 
 <script defer>
    alert('Now here')
-   let assetDate = '<%- asset[0].assetAssignDate%>';
-   let assetName = '<%- asset[0].assetName%>';
+   let assetDate = '<%- asset[0]? asset[0].assetAssignDate : "No Asset"%>';
+   let assetName = '<%- asset[0]: asset[0].assetName "No Asset"%>';
    let uniqueAssetListGrab = document.getElementById('uniqueAssetList');
    let numOfAssetGrab = document.getElementById('numOfAsset');
    console.log('This is assetDate: ', assetDate.toString());
