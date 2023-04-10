@@ -78,6 +78,7 @@
                 </select></p>
                 <button value="submit">Submit</button>
                 <button id="openSettings">Settings</button>
+                <!-- <a href="/getAuditSettings">Settings</a> -->
                 <!-- <a href="/getAssetTypes">Settings</a> -->
                 <div>
                     <input name='searchScope' type="checkbox" <%=searchParams.searchScope?"checked": ""%> />Own Accounts
@@ -89,12 +90,13 @@
         <%if (locals.distinctAuditAssets){%>
             <button id = 'cancelSettings'>X</button>
             <%distinctAuditAssets.forEach(assetAuditVersion=>{%>
-                <form action="/auditSettingsCorrect?_method=PUT" method="post">
-                    <div>
-                    <input name = 'assetName' style='width:60%; padding:0' value="<%=assetAuditVersion.assetType.assetTypeClass%>"/> <input name = 'assetAuditInterval' style='width:20%; padding:0' type="number" value = "<%=assetAuditVersion.assetTypeAuditInterval%>" placeholder="Days"/><button type="submit">Submit</button>
-                <input type="hidden" name="assetId" value="<%=assetAuditVersion._id%>"/>  
-                </div> 
-                </form>
+                <!-- <form action="/auditSettingsCorrect?_method=PUT" method="post"> -->
+                    <div id = "settingsDivCont">
+                        <div id = "settingsDiv">
+                            
+                        </div> 
+                    </div>
+                <!-- </form> -->
             <%})%>
         <%}%>
     </div>
@@ -130,8 +132,10 @@
                 <%  users[userId].userObj.forEach(user=>{%>
                     <ul>
                         <li>
-                            <a href="/asset/<%= user.id %>"><%=user.id%></a><button id="viewAuditBut" value="<%=user.id%>">|View Audit Trail</button>
-                            <div id="auditTrailDiv"></div>
+                            <div>
+                                <a href="/asset/<%= user.id %>"><%=user.id%></a><button id="viewAuditBut" value="<%=user.id%>" onclick = '(function (){viewAuditTrail("<%=user.id%>", true)})()'>|View Audit Trail</button>
+                                <div id="<%=user.id%>" class="auditTrailDiv" data-toggleAuditTrailbool = "true"></div>
+                            </div>
                             <form action="/auditStatus?_method=PUT" method="post">
                                 <select name = 'auditStatus'>
                                     <option>functional</option>
@@ -208,6 +212,9 @@
 </script>
 <script src="/socket.io/socket.io.js"></script>
 <script defer>
+            // let auditTrailDivGrab = document.getElementById('auditTrailDiv');
+            let settingsDivContGrab = document.getElementById('settingsDivCont');
+            // let settingsDivGrab = document.getElementById('settingsDiv');
             let userID = '<%- userEmail %>';
             let dateLabelGrab = document.getElementById('dateLabel');
                 dateLabelGrab.innerHTML =  new Date(Date.now());
@@ -290,7 +297,10 @@
                     });
                     userRankGrab.options[userRankGrab.options.length] = new Option('None');
                     userRankGrab.options[userRankGrab.options.length -1].value = "";
-                    changeDirectorateGrab();
+                    //changeDirectorateGrab();
+
+
+
                     // changeUserRank();
                     // changeAssetListGrab();
 
@@ -362,7 +372,7 @@
                         userAssetListGrab.options[userAssetListGrab.options.length] = new Option('None');
                         userAssetListGrab.options[userAssetListGrab.options.length -1].value = "";
 
-                        changeAssetListGrab();
+                        //changeAssetListGrab();
                 }
 
 
@@ -444,26 +454,34 @@
                 //         userAssetManufacturerGrab.options[userAssetManufacturerGrab.options.length -1].value = "";
                 // }
 
-            viewAuditButGrab.addEventListener('click', async function (){
+            // viewAuditButGrab.addEventListener('click', viewAuditTrail);
+             async function viewAuditTrail (id, bool){
                 alert('Trailing...');
-                alert(viewAuditButGrabBool);
-                if (!viewAuditButGrabBool){
-                    let auditTrail = await fetch(`/auditTrail/${this.value}`);
-                    console.log(auditTrail);
-                    let auditTrailTx = await auditTrail.json();
-                    console.log('This is it: ', auditTrailTx);
-                    auditTrailTx[0].auditTrail.forEach(auditObj=>{
-                        // auditTrailDiv.innerHTML +=  'Id: '+auditObj._id + ' Audit status'+auditObj.auditStatus;
-                        auditTrailDiv.innerHTML += '<div class= "auditItems">'+'id: '+auditObj._id + ' Audit status: '+auditObj.auditStatus +  ' Audited By: '+auditObj.auditedBy.userName + '<br/>'+ 'Audit Date: '+auditObj.auditDate[0] + '</div>';
+                alert(id);
+                let auditTrailDivGrab = document.getElementById(id);
+                alert (auditTrailDivGrab.getAttribute('data-toggleAuditTrailbool') +typeof(auditTrailDivGrab.getAttribute('data-toggleAuditTrailbool')));
+                    if (auditTrailDivGrab.getAttribute('data-toggleAuditTrailbool') == 'true'){
+                        let auditTrail = await fetch(`/auditTrail/${id}`);
+                        console.log(auditTrail);
+                        let auditTrailTx = await auditTrail.json();
+                        console.log('This is it: ', auditTrailTx);
+                        auditTrailTx[0].auditTrail.forEach(auditObj=>{
+                        auditTrailDivGrab.innerHTML += '<div class= "auditItems">'+'id: '+auditObj._id + ' Audit status: '+auditObj.auditStatus +  ' Audited By: '+auditObj.auditedBy.userName + '<br/>'+ 'Audit Date: '+auditObj.auditDate[0] + '</div>';
                         console.log('Got here now');
-                        console.log(auditTrailDiv);
                     })
-                    viewAuditButGrabBool = !viewAuditButGrabBool;
+                    auditTrailDivGrab.setAttribute('data-toggleAuditTrailbool', false);
                 }else{
-                    auditTrailDiv.innerHTML = "";
-                    viewAuditButGrabBool = !viewAuditButGrabBool;
+                    auditTrailDivGrab.innerHTML = "";
+                    alert('Other');
+                    alert (auditTrailDivGrab.getAttribute('data-toggleAuditTrailbool'));
+                    auditTrailDivGrab.setAttribute('data-toggleAuditTrailbool', true);
                 }
-            })
+            };
+
+            // openSettingsGrab.addEventListener('click', function(event){
+            //     event.preventDefault();
+            //     openSettings();
+            // })
 
             openSettingsGrab.addEventListener('click', function(event){
                 event.preventDefault();
@@ -524,12 +542,69 @@
             })
         })
         console.log(Object.values(settingsObj));
-    function openSettings(event){
+    // function openSettings(event){
+    //     console.log('Calling...');
+        
+    //         formSettingsGrab.classList.toggle('formSettingsDisplay')
+    //         searchContDivGrab.classList.toggle('searchContDivSettings');
+    //         formSettingsGrabBool = true;
+    // }
+    async function openSettings(event){
+       
+        settingsDivContGrab.innerHTML = "";
+        let settingsObj = await fetch(`/getAuditSettings`);
+        console.log(settingsObj);
+        let settingsOptions = await settingsObj.json();
+        console.log(settingsOptions); 
+        // let assetNameDiv;
+        // let assetAuditIntervalDiv;
+        // let buttonSettings;
+
+        settingsOptions.forEach(assetTypeAudit=>{
+            let settingsDivGrab = document.createElement('div');
+
+            let assetNameDiv = document.createElement('input');
+                assetNameDiv.setAttribute('name', 'assetName');
+                assetNameDiv.setAttribute('value', assetTypeAudit.assetType.assetTypeClass);
+                assetNameDiv.setAttribute('style', 'width:60%; padding:0');
+                
+                let assetAuditIntervalDiv = document.createElement('input');
+                assetAuditIntervalDiv.setAttribute('name', 'assetAuditInterval');
+                assetAuditIntervalDiv.setAttribute('id', assetTypeAudit.assetType.assetTypeClass);
+                assetAuditIntervalDiv.setAttribute('type', 'number');
+                assetAuditIntervalDiv.setAttribute('style', 'width:20%; padding:0');
+                assetAuditIntervalDiv.setAttribute('value', assetTypeAudit.assetTypeAuditInterval);
+
+           let buttonSettings =  document.createElement('button');
+            buttonSettings.innerHTML = "Update";
+                (function(assetIdName){
+                    buttonSettings.addEventListener('click', function (){
+                        console.log(assetIdName)
+                        ChangeAssetTypeSettings({assetId:assetTypeAudit.assetType._id}, assetIdName);
+                    })
+                })(assetTypeAudit.assetType.assetTypeClass);
+                settingsDivGrab.appendChild(assetNameDiv)
+                settingsDivGrab.appendChild(assetAuditIntervalDiv)
+                settingsDivGrab.appendChild(buttonSettings)
+
+                settingsDivContGrab.appendChild(settingsDivGrab);
+
+                formSettingsGrab.appendChild(settingsDivContGrab);
+            })
+
+
+            console.log(formSettingsGrab);
+
+
+
+
+
+
         console.log('Calling...');
         
-            formSettingsGrab.classList.toggle('formSettingsDisplay')
-            searchContDivGrab.classList.toggle('searchContDivSettings');
-            formSettingsGrabBool = true;
+                formSettingsGrab.classList.toggle('formSettingsDisplay')
+                searchContDivGrab.classList.toggle('searchContDivSettings');
+                // formSettingsGrabBool = true;
     }
 
     async function saveSnapShotFunc(){
@@ -624,6 +699,40 @@
             let deleteSavedSnapshotOptions = await deletedSavedSnapshotObj.json();
             console.log(deleteSavedSnapshotOptions);
     }
+
+   async function ChangeAssetTypeSettings(data = {}, id){
+    alert(data.assetId); 
+    alert(id); 
+    console.log('Element', document.getElementById(id))
+    console.log('Value', document.getElementById(id).value)
+data.assetAuditInterval = document.getElementById(id).value;
+    console.log(data);  
+    data = JSON.stringify(data);
+    // console.log(.getElementsByClassName('assetAuditInterval')[0]).value;
+    // alert(data.assetAuditInterval);    
+  // Default options are marked with *
+        const response = await fetch(`/auditSettingsCorrect/${data}`, {
+            method: "GET", // *GET, POST, PUT, DELETE, etc.
+            // mode: "cors", // no-cors, *cors, same-origin
+            // cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+            // credentials: "same-origin", // include, *same-origin, omit
+            headers: {
+            "Content-Type": "application/json",
+            // 'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            // redirect: "follow", // manual, *follow, error
+            // referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+            // body: JSON.stringify(data), // body data type must match "Content-Type" header
+        });
+
+        if (response.ok){
+            alert('Done')
+        }
+        return response.json(); // parses JSON response into native JavaScript objects
+    }
+
+
+
 
 </script>
 <script defer src="https://unpkg.com/peerjs@1.3.2/dist/peerjs.min.js"></script>
