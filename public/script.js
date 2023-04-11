@@ -82,8 +82,9 @@ function connectToNewUser(userId, stream, col){
     peers[userId]= call;
 }
 
-function addVideoStream(video, stream){
+function addVideoStream(video, stream, col){
     video.srcObject = stream;
+    video.style.borderColor = col;
     video.addEventListener('loadedmetadata', ()=>{
         video.play()
     })
