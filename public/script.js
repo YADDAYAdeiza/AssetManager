@@ -21,13 +21,17 @@ navigator.mediaDevices.getUserMedia({
     video:true,
     audio:true
 }).then(stream =>{
+    console.log('Adding first video...');
 addVideoStream(myVideo, stream);
 
 myPeer.on('call', call=>{
+    console.log('First Call...');
     call.answer(stream)
     
     const video = document.createElement('video');
     call.on('stream', userVideoStream=>{
+        console.log('Answering first call...');
+        console.log(userVideoStream);
         addVideoStream(video,userVideoStream)
     })
     
@@ -58,6 +62,7 @@ function connectToNewUser(userId, stream){
     const video = document.createElement('video')
     call.on('stream', userVideoStream=>{
         console.log('Answering...');
+        console.log(userVideoStream);
         addVideoStream(video, userVideoStream)
     })
     call.on('close', ()=>{
