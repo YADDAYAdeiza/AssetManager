@@ -133,8 +133,9 @@
                     <ul>
                         <li>
                             <div>
-                                <a href="/asset/<%= user.id %>"><%=user.id%></a><button id="viewAuditBut" value="<%=user.id%>" onclick = '(function (){viewAuditTrail("<%=user.id%>", true)})()'>|View Audit Trail</button>
-                                <div id="<%=user.id%>" class="auditTrailDiv" data-toggleAuditTrailbool = "true"></div>
+                               <% console.log('Does id have assetCode? ', user.id.assetCode)%>
+                                <a href="/asset/<%= user.id._id %>"><%=user.id._id%></a><button id="viewAuditBut" value="<%=user.id._id%>" onclick = '(function (){viewAuditTrail("<%=user.id._id%>", true)})()'>|View Audit Trail</button>|<div><a href = '/videoAudit/<%=user.id.assetCode%>'>Video Audit</a></div>
+                                <div id="<%=user.id._id%>" class="auditTrailDiv" data-toggleAuditTrailbool = "true"></div>
                             </div>
                             <form action="/auditStatus?_method=PUT" method="post">
                                 <select name = 'auditStatus'>
@@ -180,7 +181,26 @@
     <canvas id="myChart"></canvas>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
 <script>
+
+    //socket
+    var socket = io('https://assetmanger.herokuapp.com/');
+    const myPeer = new Peer(undefined, {
+            host:'0.peerjs.com',
+            port:'443'
+    });
+    socket.on('connect', function() {
+            console.log('check 2', socket.connected);
+    });
+    socket.emit('adminMonitoringTracking', 'Fetching tracked...');
+    socket.on('trackPlots', (msg)=>{
+        console.log(msg);
+    })
+
+
+
     let assetObj = '<%- JSON.stringify(assetObj) %>';
     assetObj = JSON.parse(assetObj);
     console.log('assetObj on client', assetObj);
@@ -210,7 +230,7 @@
 <script>
     const Room_ID = "<%=roomId%>";
 </script>
-<script src="/socket.io/socket.io.js"></script>
+<!-- <script src="/socket.io/socket.io.js"></script> -->
 <script defer>
             // let auditTrailDivGrab = document.getElementById('auditTrailDiv');
             let settingsDivContGrab = document.getElementById('settingsDivCont');
@@ -731,10 +751,19 @@ data.assetAuditInterval = document.getElementById(id).value;
         return response.json(); // parses JSON response into native JavaScript objects
     }
 
+    async function VideoAudit(assetCode){
+        alert (assetCode);
+        const response = await fetch(`/videoAudit/${assetCode}`);
+        if (response.ok){
+            alert('Video Audit in progress')
+        }
+        // let responseObj = response.json(); // parses JSON response into native JavaScript objects
+        
+    }
+
 
 
 
 </script>
 <script defer src="https://unpkg.com/peerjs@1.3.2/dist/peerjs.min.js"></script>
-<script src="/socket.io/socket.io.js" defer></script>
 <script src="/script.js" defer></script>

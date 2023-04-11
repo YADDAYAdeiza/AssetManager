@@ -558,7 +558,7 @@ app.get('/audGoLive/:room', async (req, res)=>{
   // let distinctAuditAssets =  await assetTypeAuditModel.find({}).select('assetTypeClass assetTypeAuditInterval');
                             // let userStoreApprovalRoles = await userModel.find({}).where('userStoreApproval').ne(null).distinct('approvalStatus');
                             // let query = req.queryObj; //from permitLists middleware
-                            let query = userModel.find().populate('userOwnedAsset.idAudit.assetTypeId'); //from permitLists middleware
+                            let query = userModel.find().populate('userOwnedAsset.idAudit.assetTypeId userOwnedAsset.idAudit.id'); //from permitLists middleware
                             console.log('Back here');
                             // console.log(query);
                             query = query.where('userOwnedAsset.id').ne(null); //users with Assets
@@ -1359,6 +1359,11 @@ app.get('/getAssetTypes', async (req,res)=>{
     }
     next();
   }
+
+  app.get('/videoAudit/:roomId', (req, res)=>{
+    console.log('Readying for video...', req.params.roomId);
+    res.render('audit/room', {roomId:req.params.roomId});
+  });
   
   
   app.use('/user', checkAuthenticated, userRoute);
