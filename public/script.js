@@ -53,9 +53,11 @@ myPeer.on('open', id=>{
 })
 
 function connectToNewUser(userId, stream){
+    console.log('Inside connectToNewUser');
     const call = myPeer.call(userId, stream);
     const video = document.createElement('video')
     call.on('stream', userVideoStream=>{
+        console.log('Answering...');
         addVideoStream(video, userVideoStream)
     })
     call.on('close', ()=>{
