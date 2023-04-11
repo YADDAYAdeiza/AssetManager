@@ -99,7 +99,7 @@ io.on('connection', socket=>{
     socket.on('join-room', (roomId, userId)=>{
       console.log('Joined now... 2');
       socket.join(roomId);
-      socket.to(roomId).emit('user-connected', userId)
+      io.to(roomId).emit('user-connected', userId)
       // socket.broadcast.to(roomId).emit("hello", "world");
       //socket.to(roomId).broadcast.emit('user-connected', userId)
 
@@ -880,7 +880,7 @@ app.get('/audGoLive/:room', async (req, res)=>{
                                   });                        
                               }catch(e) {
                                 console.error(e);
-                                  console.log('An error occured');
+                                  console.log('An error occured2');
                                   res.render('user/index.ejs', {msg: `An error occurred getting the list`, searchParams:req.query, msgClass:'error-message'}); //tying the view to the moongoose model
                               }
 
