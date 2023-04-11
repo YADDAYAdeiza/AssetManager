@@ -1,4 +1,4 @@
-const { collection } = require("../models/assetType");
+// const { collection } = require("../models/assetType");
 
 const socket = io('/');
 const videoGrid = document.getElementById('video-grid')
