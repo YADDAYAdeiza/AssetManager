@@ -99,7 +99,7 @@ io.on('connection', socket=>{
     socket.on('join-room', (roomId, userId)=>{
       console.log('Joined now... 2');
       socket.join(roomId);
-      io.to(roomId).emit('user-connected', userId)
+      socket.to(roomId).emit('user-connected', userId)
       // socket.broadcast.to(roomId).emit("hello", "world");
       //socket.to(roomId).broadcast.emit('user-connected', userId)
 

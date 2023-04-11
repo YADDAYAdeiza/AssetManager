@@ -1,5 +1,6 @@
 const socket = io('/');
 const videoGrid = document.getElementById('video-grid')
+let addVidButGrab = document.getElementById('addVidBut');
 
 //  const myPeer = new Peer(undefined, {
 //             host:'/',
@@ -40,7 +41,12 @@ socket.on('user-connected', userId=>{
     // connectToNewUser(userId, stream);
     console.log(stream);
     console.log('User connected production...', userId);
-    connectToNewUser(userId,stream);
+    //function, closure. button on room.ejs
+    (function(userId, stream){
+        addVidButGrab.addEventListener('click',  function(){
+            connectToNewUser(userId,stream);
+        })
+    })(userId, stream)
     // setTimeout(connectToNewUser,1000,userId,stream)
 })
 })
