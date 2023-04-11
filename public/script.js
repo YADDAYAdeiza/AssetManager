@@ -1,3 +1,5 @@
+const { collection } = require("../models/assetType");
+
 const socket = io('/');
 const videoGrid = document.getElementById('video-grid')
 let addVidButGrab = document.getElementById('addVidBut');
@@ -23,7 +25,7 @@ navigator.mediaDevices.getUserMedia({
     audio:true
 }).then(stream =>{
     console.log('Adding first video...');
-addVideoStream(myVideo, stream);
+addVideoStream(myVideo, stream, 'green');
 
 myPeer.on('call', call=>{
     console.log('First Call...');
@@ -33,7 +35,7 @@ myPeer.on('call', call=>{
     call.on('stream', userVideoStream=>{
         console.log('Answering first call...');
         console.log(userVideoStream);
-        addVideoStream(video,userVideoStream)
+        addVideoStream(video,userVideoStream, 'yellow');
     })
     
 })
@@ -44,7 +46,8 @@ socket.on('user-connected', userId=>{
     //function, closure. button on room.ejs
     (function(userId, stream){
         addVidButGrab.addEventListener('click',  function(){
-            connectToNewUser(userId,stream);
+            alert('Clicked!');
+            connectToNewUser(userId,stream, 'brown');
         })
     })(userId, stream)
     // setTimeout(connectToNewUser,1000,userId,stream)
@@ -63,14 +66,14 @@ myPeer.on('open', id=>{
     socket.emit('join-room', Room_ID, id);
 })
 
-function connectToNewUser(userId, stream){
+function connectToNewUser(userId, stream, col){
     console.log('Inside connectToNewUser');
     const call = myPeer.call(userId, stream);
     const video = document.createElement('video')
     call.on('stream', userVideoStream=>{
         console.log('Answering...');
         console.log(userVideoStream);
-        addVideoStream(video, userVideoStream)
+        addVideoStream(video, userVideoStream, col)
     })
     call.on('close', ()=>{
         video.remove();
