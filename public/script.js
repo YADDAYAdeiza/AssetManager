@@ -86,6 +86,7 @@ function connectToNewUser(userId, stream, col){
 
 function addVideoStream(video, stream, col){
     console.log('Adding...', col);
+    console.log(stream);
     video.srcObject = stream;
     video.style.borderColor = col;
     video.addEventListener('loadedmetadata', ()=>{
