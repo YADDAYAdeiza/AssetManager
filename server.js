@@ -96,7 +96,7 @@ console.log(role);
 
 io.on('connection', socket=>{
   console.log('Connection established on Server Code...');
-    socket.on('join-room', (roomId, userId)=>{
+    socket.on('join-room2', (roomId, userId)=>{
       console.log('Joined now... 2');
       socket.join(roomId);
       socket.to(roomId).emit('user-connected', userId)

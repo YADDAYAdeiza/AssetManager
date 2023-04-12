@@ -20,7 +20,7 @@ myVideo.muted = true;
 
 myPeer.on('open', id=>{
     console.log('User Connected...:', id)
-    socket.emit('join-room', Room_ID, id);
+    socket.emit('join-room2', Room_ID, id);
 });
 
 const peers = {}
