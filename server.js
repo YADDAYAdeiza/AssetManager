@@ -99,7 +99,7 @@ io.on('connection', socket=>{
     socket.on('join-room2', (roomId, userId)=>{
       console.log('Joined now... 2');
       socket.join(roomId);
-      socket.to(roomId).emit('user-connected', userId)
+      io.to(roomId).emit('user-connected', userId)
       console.log(userId + ' joined '+ roomId);
       // socket.broadcast.to(roomId).emit("hello", "world");
       //socket.to(roomId).broadcast.emit('user-connected', userId)
@@ -139,7 +139,7 @@ io.on('connection', socket=>{
   //for video use
   let adminAvailableLightUp;
   socket.on('join-room', (roomId, userId)=>{
-    console.log('Joined now...1' + userId);
+    console.log('Joined now...1 ' + userId);
       socket.join(roomId);
       if(userId.user !== 'admin'){ //joining from trackable asset
           console.log(userId);
