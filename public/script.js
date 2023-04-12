@@ -30,6 +30,7 @@ navigator.mediaDevices.getUserMedia({
     audio:true
 }).then(stream =>{
     console.log('Adding first video...');
+    console.log(stream);
 addVideoStream(myVideo, stream, 'green');
 
 myPeer.on('call', call=>{
@@ -49,12 +50,12 @@ socket.on('user-connected', userId=>{
     console.log(stream);
     console.log('User connected production...', userId);
     //function, closure. button on room.ejs
-    (function(userId, stream){
-        addVidButGrab.addEventListener('click',  function(){
+    // (function(userId, stream){
+    //     addVidButGrab.addEventListener('click',  function(){
             alert('Clicked!');
             connectToNewUser(userId,stream, 'brown');
-        })
-    })(userId, stream)
+    //     })
+    // })(userId, stream)
     // setTimeout(connectToNewUser,1000,userId,stream)
 })
 })
