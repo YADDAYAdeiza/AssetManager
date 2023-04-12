@@ -18,6 +18,11 @@ const myPeer = new Peer(undefined, {
 const myVideo = document.createElement('video');
 myVideo.muted = true;
 
+myPeer.on('open', id=>{
+    console.log('User Connected...:', id)
+    socket.emit('join-room', Room_ID, id);
+});
+
 const peers = {}
 
 navigator.mediaDevices.getUserMedia({
@@ -44,12 +49,12 @@ socket.on('user-connected', userId=>{
     console.log(stream);
     console.log('User connected production...', userId);
     //function, closure. button on room.ejs
-    // (function(userId, stream){
-    //     addVidButGrab.addEventListener('click',  function(){
+    (function(userId, stream){
+        addVidButGrab.addEventListener('click',  function(){
             alert('Clicked!');
             connectToNewUser(userId,stream, 'brown');
-    //     })
-    // })(userId, stream)
+        })
+    })(userId, stream)
     // setTimeout(connectToNewUser,1000,userId,stream)
 })
 })
@@ -61,10 +66,6 @@ socket.on('user-disconnected', userId=>{
     }
 })
 
-myPeer.on('open', id=>{
-    console.log('User Connected...:', id)
-    socket.emit('join-room', Room_ID, id);
-})
 
 function connectToNewUser(userId, stream, col){
     console.log('Inside connectToNewUser');
@@ -83,7 +84,7 @@ function connectToNewUser(userId, stream, col){
 }
 
 function addVideoStream(video, stream, col){
-    video.srcObject = stream;
+    video.srcObject = stream;addVideoStream
     video.style.borderColor = col;
     video.addEventListener('loadedmetadata', ()=>{
         video.play()
