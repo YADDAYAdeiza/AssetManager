@@ -6,7 +6,18 @@ var socket = io('https://assetmanger.herokuapp.com/');
 socket.on('Enable Auditee Location', (val, posCoords)=>{
     alert(`setting to ${val}`);
     auditLocationActGrab.disabled = val;
-    auditLocation(posCoords)
+    // auditLocation(posCoords)
+})
+
+socket.on('Plot Auditee Location', (position)=>{
+    alert('Plotting Auditee location on Auditor Map')
+    let auditeeMarker =  new google.maps.Marker({
+        position:{lat:position.coords.latitude, lng:position.coords.longitude},
+        map:mapAssetGrab,
+        title: 'Actual',
+        draggable: true,    
+        // animation:google.maps.Animation.BOUNCE
+    });
 })
 
 const videoGrid = document.getElementById('video-grid')
@@ -18,13 +29,14 @@ console.log(videoGrid);
 console.log(auditLocationGrab);
 
 auditLocationGrab.addEventListener('click', function(){
-    // socket.emit('Auditor Location Move', (val) => {
-    // });
     auditLocation();
 })
 
 
 let auditLocationActGrab =  document.getElementById('auditLocationAct');
+    auditLocationActGrab.addEventListener('click', function(){
+        auditLocation();
+    })
 let auditWatchLocationGrab = document.querySelector('#auditWatchLocation');
 auditWatchLocationGrab.addEventListener('click', function(){
     watchPosition();
@@ -126,11 +138,11 @@ function addVideoStream(video, stream, col){
 }
 
 
-function auditLocation(posCoords){
+function auditLocation(){
     alert()
     function success(position) {
-        const latitude = position.coords.latitude ? position.coords.latitude : position.latitude; //this second option is for when we are manually invoking sucess, and using posCoords from socket value
-        const longitude = position.coords.longitude ? position.coords.longitude : position.longitude;
+        const latitude = position.coords.latitude; //? position.coords.latitude : position.latitude; //this second option is for when we are manually invoking sucess, and using posCoords from socket value
+        const longitude = position.coords.longitude; //? position.coords.longitude : position.longitude;
     
         locationStatusGrab.textContent = `${latitude} and ${longitude}`;
         // mapLink.href = `https://www.openstreetmap.org/#map=18/${latitude}/${longitude}`;
@@ -142,7 +154,8 @@ function auditLocation(posCoords){
                             draggable: true,
                             animation:google.maps.Animation.BOUNCE
                         });
-            
+
+            socket.emit('Auditee Location', position);
       }
     
       function error() {
@@ -153,12 +166,12 @@ function auditLocation(posCoords){
         locationStatusGrab.textContent = "Geolocation is not supported by your browser";
       } else {
         locationStatusGrab.textContent = "Locating…";
-        if (posCoords){
-            alert('Manual invocation');
-            success(posCoords)
-        }else{
+        // if (posCoords){
+        //     alert('Manual invocation');
+        //     success(posCoords)
+        // }else{
             navigator.geolocation.getCurrentPosition(success, error);
-        }
+        // }
       }
 }
 
