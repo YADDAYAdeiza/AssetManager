@@ -3,9 +3,10 @@
 // const socket = io('/');
 var socket = io('https://assetmanger.herokuapp.com/');
 
-socket.on('Enable Auditee Location', (val)=>{
+socket.on('Enable Auditee Location', (val, posCoords)=>{
     alert(`setting to ${val}`);
     auditLocationActGrab.disabled = val;
+    auditLocation(posCoords)
 })
 
 const videoGrid = document.getElementById('video-grid')
@@ -125,11 +126,11 @@ function addVideoStream(video, stream, col){
 }
 
 
-function auditLocation(){
+function auditLocation(posCoords){
     alert()
     function success(position) {
-        const latitude = position.coords.latitude;
-        const longitude = position.coords.longitude;
+        const latitude = position.coords.latitude ? position.coords.latitude : position.latitude; //this second option is for when we are manually invoking sucess, and using posCoords from socket value
+        const longitude = position.coords.longitude ? position.coords.longitude : position.longitude;
     
         locationStatusGrab.textContent = `${latitude} and ${longitude}`;
         // mapLink.href = `https://www.openstreetmap.org/#map=18/${latitude}/${longitude}`;
@@ -152,7 +153,12 @@ function auditLocation(){
         locationStatusGrab.textContent = "Geolocation is not supported by your browser";
       } else {
         locationStatusGrab.textContent = "Locating…";
-        navigator.geolocation.getCurrentPosition(success, error);
+        if (posCoords){
+            alert('Manual invocation');
+            success(posCoords)
+        }else{
+            navigator.geolocation.getCurrentPosition(success, error);
+        }
       }
 }
 
