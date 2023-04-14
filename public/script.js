@@ -28,9 +28,9 @@ let auditLocationGrab = document.getElementById('auditLocation');
 console.log(videoGrid);
 console.log(auditLocationGrab);
 
-auditLocationGrab.addEventListener('click', function(){
-    auditLocation();
-})
+// auditLocationGrab.addEventListener('click', function(){
+//     auditLocation();
+// })
 
 
 let auditLocationActGrab =  document.getElementById('auditLocationAct');
@@ -156,7 +156,7 @@ function auditLocation(){
                         });
                         alert(pos.coords.latitude)
 
-            socket.emit('Auditee Location', pos);
+            socket.emit('Auditee Location', locationMarker.getPosition());
       }
     
       function error() {
