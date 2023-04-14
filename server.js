@@ -95,6 +95,10 @@ console.log(role);
 
 
 io.on('connection', socket=>{
+
+  socket.on('Auditor Location Move', (val)=>{
+    console.log('This auditor location click ', val)
+  });
   console.log('Connection established on Server Code...');
     socket.on('join-room2', (roomId, userId)=>{
       console.log('Joined now... 2');
@@ -768,6 +772,7 @@ app.get('/audGoLive/:room', async (req, res)=>{
                                             console.log('Greater');
                                             idAuditObj[user.id].userProfilePic = user.userProfilePic;
                                             idAuditObj[user.id].firstName = user.firstName;
+                                            idAuditObj[user.id].locationAudit = user.geoCoord;
                                             idAuditObj[user.id].userObj.push(user.userOwnedAsset.idAudit[a]);
                                             // return user;
                                             filteredUser.push(user)
@@ -1361,9 +1366,12 @@ app.get('/getAssetTypes', async (req,res)=>{
     next();
   }
 
-  app.get('/videoAudit/:roomId', (req, res)=>{
+  app.get('/videoAudit/:roomId/:locationAudit', (req, res)=>{
     console.log('Readying for video...', req.params.roomId);
-    res.render('audit/room', {roomId:req.params.roomId});
+    console.log('Auditee Location obj...?', req.params.locationAudit);
+    console.log(`Auditee Location..., ${req.params.locationAudit.lat} and ${req.params.locationAudit.lng}`);
+    
+    res.render('audit/room', {roomId:req.params.roomId, locationAudit: JSON.parse(req.params.locationAudit)});
   });
   
   

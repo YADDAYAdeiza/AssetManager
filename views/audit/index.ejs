@@ -134,7 +134,8 @@
                         <li>
                             <div>
                                <% console.log('Does id have assetCode? ', user.id.assetCode)%>
-                                <a href="/asset/<%= user.id._id %>"><%=user.id._id%></a><button id="viewAuditBut" value="<%=user.id._id%>" onclick = '(function (){viewAuditTrail("<%=user.id._id%>", true)})()'>|View Audit Trail</button>|<div><a href = '/videoAudit/<%=user.id.assetCode%>'>Video Audit</a></div>
+                               <%console.log('locationAudit: ',users[userId].locationAudit)%>
+                                <a href="/asset/<%= user.id._id %>"><%=user.id._id%></a><button id="viewAuditBut" value="<%=user.id._id%>" onclick = '(function (){viewAuditTrail("<%=user.id._id%>", true)})()'>|View Audit Trail</button>|<div><a href = '/videoAudit/<%=user.id.assetCode%>/<%=JSON.stringify(users[userId].locationAudit)%>'>Video Audit</a></div>
                                 <div id="<%=user.id._id%>" class="auditTrailDiv" data-toggleAuditTrailbool = "true"></div>
                             </div>
                             <form action="/auditStatus?_method=PUT" method="post">
@@ -174,7 +175,6 @@
 
                 
 <div class="video-grid" id="video-grid"></div>
-
 
 <!-- Charting -->
 <div>

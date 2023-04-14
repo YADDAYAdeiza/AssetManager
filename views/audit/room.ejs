@@ -21,18 +21,35 @@
             border:2px solid black;
         }
 
+        #mapView{
+            height: 50%;
+            background-color: blanchedalmond;
+        }
 
     </style>
     <script>
         const Room_ID = "<%=roomId%>";
+        let locationAudit = '<%-JSON.stringify(locationAudit)%>';
+        console.log(locationAudit)
+        console.log(JSON.stringify(locationAudit));
+        console.log(JSON.parse(locationAudit));
     </script>
     <script defer src="https://unpkg.com/peerjs@1.3.2/dist/peerjs.min.js"></script>
     <script src="/socket.io/socket.io.js" defer></script>
+    <script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDuYptvwFszij8WWugKw5jQ6PkhiYqBo2c&libraries=Visualization" async defer>
+    </script>
     <script src="/script.js" defer></script>
+
+    
 </head>
 <body>
     <div class="video-grid" id="video-grid"></div>
+    <div id="mapView">Location Map</div>
     <%=roomId%>
     <button id = 'addVidBut'>Add Video</button>
+    <button id ='auditLocation'>Audit Location (Exp)</button><p id="locationStatus">Location Status</p>
+    <button id ='auditLocationAct' disabled >Audit Location (Act)</button><p id="locationStatus">Location Status</p>
+    <button id ='auditWatchLocation'>Audit Location(Watch)</button><p id="locationWatchStatus">Location Watch Status</p>
 </body>
 </html>
