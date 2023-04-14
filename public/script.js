@@ -3,6 +3,10 @@
 // const socket = io('/');
 var socket = io('https://assetmanger.herokuapp.com/');
 
+socket.on('Enable Auditee Location', (val)=>{
+    auditLocationActGrab.disabled = val;
+})
+
 const videoGrid = document.getElementById('video-grid')
 // let auditLocationGrab = document.querySelector('#auditLocation');
 let mapAssetGrab;
@@ -11,13 +15,12 @@ let auditLocationGrab = document.getElementById('auditLocation');
 console.log(videoGrid);
 console.log(auditLocationGrab);
 
-socket.emit('join-room-audit', '232AuditRoom');
 auditLocationGrab.addEventListener('click', function(){
-    socket.emit('Auditor Location Move', (val) => {
-        auditLocationActGrab.disabled = val;
-    });
+    // socket.emit('Auditor Location Move', (val) => {
+    // });
     auditLocation();
 })
+
 
 let auditLocationActGrab =  document.getElementById('auditLocationAct');
 let auditWatchLocationGrab = document.querySelector('#auditWatchLocation');
@@ -137,6 +140,7 @@ function auditLocation(){
                             draggable: true,
                             animation:google.maps.Animation.BOUNCE
                         });
+            
       }
     
       function error() {
@@ -182,6 +186,8 @@ function auditLocation(){
         center: locationMarker.getPosition(),
         radius: 20000,
       });
+
+      socket.emit('join-room-audit', '232AuditRoom', locationMarker.getPosition());
 }
 
 function watchPosition(){
