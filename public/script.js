@@ -9,7 +9,7 @@ socket.on('Enable Auditee Location', (val, posCoords)=>{
     // auditLocation(posCoords)
 })
 
-socket.on('Plot Auditee Location', (position)=>{
+socket.on('Plot Auditee Location', (pos)=>{
     alert('Plotting Auditee location on Auditor Map')
     let auditeeMarker =  new google.maps.Marker({
         position:{lat:position.coords.latitude, lng:position.coords.longitude},
@@ -139,10 +139,10 @@ function addVideoStream(video, stream, col){
 
 
 function auditLocation(){
-    alert()
-    function success(position) {
-        const latitude = position.coords.latitude; //? position.coords.latitude : position.latitude; //this second option is for when we are manually invoking sucess, and using posCoords from socket value
-        const longitude = position.coords.longitude; //? position.coords.longitude : position.longitude;
+    // alert()
+    function success(pos) {
+        const latitude = pos.coords.latitude; 
+        const longitude = pos.coords.longitude;
     
         locationStatusGrab.textContent = `${latitude} and ${longitude}`;
         // mapLink.href = `https://www.openstreetmap.org/#map=18/${latitude}/${longitude}`;
@@ -150,12 +150,12 @@ function auditLocation(){
         var locationMarker =  new google.maps.Marker({
                             position: {lat:latitude, lng:longitude},
                             map:mapAssetGrab,
-                            title: `Actual ${position.coords.accuracy}`,
+                            title: `Actual ${pos.coords.accuracy}`,
                             draggable: true,
                             animation:google.maps.Animation.BOUNCE
                         });
 
-            socket.emit('Auditee Location', position);
+            socket.emit('Auditee Location', pos);
       }
     
       function error() {
