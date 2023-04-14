@@ -219,6 +219,20 @@ function watchPosition(){
       id = navigator.geolocation.watchPosition(success, error, options);
 }
 
+//uiSettings
+var settingsObj = '<%- JSON.stringify(uiSettings)%>';
+        console.log('settings: ', settingsObj);
+        console.log('Now here show');
+
+        var settingsObjKeys = (Object.keys(settingsObj));
+        var settingsObjValues = (Object.values(settingsObj));
+        settingsObjKeys.forEach(className=>{
+            [ ...document.getElementsByClassName(className)].forEach(elm=>{
+                elm.style.display = settingsObj[className];
+            })
+        })
+        console.log(Object.values(settingsObj));
+
 window.onload = function (){
     // alert('I have loaded');
     openMap();

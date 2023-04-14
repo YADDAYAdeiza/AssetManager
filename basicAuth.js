@@ -310,11 +310,22 @@ function hideNavMenu(){
 
         if (req.user.role =='admin'){
             console.log('Admin UI')
-            let uiSettings = {
-                'onlyAdmin':'block',
-                'onlyStaff':'none'
+            if (req.user.subRole == 'staff'){
+                let uiSettings = {
+                    'onlyAdmin':'block',
+                    'onlyStaff':'none',
+                    'onlyAudit':'none'
+                }
+                req.dispSetting = uiSettings;
+                
+            }else {
+                let uiSettings = {
+                    'onlyAdmin':'block',
+                    'onlyStaff':'none'
+                }
+                req.dispSetting = uiSettings;
+
             }
-            req.dispSetting = uiSettings;
             console.log('--')
             console.log('This is it, ', req.dispSetting);
 
@@ -326,7 +337,8 @@ function hideNavMenu(){
             console.log('Admin UI')
             let uiSettings = {
                 'onlyAdmin':'block',
-                'onlyStaff':'none'
+                'onlyStaff':'none',
+                'onlyAudit':'none'
             }
             req.dispSetting = uiSettings;
             console.log('--')
