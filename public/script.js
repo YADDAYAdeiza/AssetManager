@@ -10,6 +10,8 @@ let mapAssetGrab;
 let auditLocationGrab = document.getElementById('auditLocation');
 console.log(videoGrid);
 console.log(auditLocationGrab);
+
+socket.emit('join-room-audit', '232AuditRoom');
 auditLocationGrab.addEventListener('click', function(){
     socket.emit('Auditor Location Move', (val) => {
         auditLocationActGrab.disabled = val;
