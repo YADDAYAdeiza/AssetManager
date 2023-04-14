@@ -12,7 +12,7 @@ socket.on('Enable Auditee Location', (val, posCoords)=>{
 socket.on('Plot Auditee Location', (pos)=>{
     alert('Plotting Auditee location on Auditor Map')
     let auditeeMarker =  new google.maps.Marker({
-        position:{lat:pos.coords.latitude, lng:pos.coords.longitude},
+        position:{lat:pos.lat, lng:pos.lng},
         map:mapAssetGrab,
         title: 'Actual',
         draggable: true,    
