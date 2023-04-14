@@ -98,7 +98,7 @@ io.on('connection', socket=>{
   socket.on('join-room-audit',  (roomId, posCoords)=>{
     console.log(`Audit Room joined ${roomId}`);
     socket.join(roomId)
-    io.to(roomId).emit('Enable Auditee Location', true);
+    io.to(roomId).emit('Enable Auditee Location', false, posCoords);
 
   })
   socket.on('Auditor Location Move', (val)=>{

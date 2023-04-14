@@ -4,6 +4,7 @@
 var socket = io('https://assetmanger.herokuapp.com/');
 
 socket.on('Enable Auditee Location', (val)=>{
+    alert(`setting to ${val}`);
     auditLocationActGrab.disabled = val;
 })
 
