@@ -96,7 +96,7 @@ console.log(role);
 
 io.on('connection', socket=>{
   socket.on('join-room-audit',  (roomId)=>{
-    console.log(`Audit Room joined by ${userId}`);
+    console.log(`Audit Room joined ${roomId}`);
     socket.join(roomId)
   })
   socket.on('Auditor Location Move', (val)=>{
