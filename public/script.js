@@ -11,9 +11,13 @@ let auditLocationGrab = document.getElementById('auditLocation');
 console.log(videoGrid);
 console.log(auditLocationGrab);
 auditLocationGrab.addEventListener('click', function(){
-    socket.emit('Auditor Location Move', true);
+    socket.emit('Auditor Location Move', (val) => {
+        auditLocationActGrab.disabled = val;
+    });
     auditLocation();
 })
+
+let auditLocationActGrab =  document.getElementById('auditLocationAct');
 let auditWatchLocationGrab = document.querySelector('#auditWatchLocation');
 auditWatchLocationGrab.addEventListener('click', function(){
     watchPosition();

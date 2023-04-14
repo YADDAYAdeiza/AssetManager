@@ -95,10 +95,11 @@ console.log(role);
 
 
 io.on('connection', socket=>{
-
   socket.on('Auditor Location Move', (val)=>{
-    console.log('This auditor location click ', val)
+    console.log('This auditor location click ', val);
+    val(false);
   });
+  
   console.log('Connection established on Server Code...');
     socket.on('join-room2', (roomId, userId)=>{
       console.log('Joined now... 2');
