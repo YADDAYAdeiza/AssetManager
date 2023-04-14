@@ -219,19 +219,19 @@ function watchPosition(){
       id = navigator.geolocation.watchPosition(success, error, options);
 }
 
-//uiSettings
-var settingsObj = '<%- JSON.stringify(uiSettings)%>';
-        console.log('settings: ', settingsObj);
+// settingsObj
+var settingsObj2 = JSON.parse(settingsObj);
+        console.log('settings: ', settingsObj2);
         console.log('Now here show');
 
-        var settingsObjKeys = (Object.keys(settingsObj));
-        var settingsObjValues = (Object.values(settingsObj));
+        var settingsObjKeys = (Object.keys(settingsObj2));
+        var settingsObjValues = (Object.values(settingsObj2));
         settingsObjKeys.forEach(className=>{
             [ ...document.getElementsByClassName(className)].forEach(elm=>{
-                elm.style.display = settingsObj[className];
+                elm.style.display = settingsObj2[className];
             })
         })
-        console.log(Object.values(settingsObj));
+        console.log(Object.values(settingsObj2));
 
 window.onload = function (){
     // alert('I have loaded');

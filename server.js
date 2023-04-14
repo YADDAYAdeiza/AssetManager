@@ -99,7 +99,7 @@ io.on('connection', socket=>{
     console.log('This auditor location click ', val);
     val(false);
   });
-  
+
   console.log('Connection established on Server Code...');
     socket.on('join-room2', (roomId, userId)=>{
       console.log('Joined now... 2');
@@ -1367,12 +1367,13 @@ app.get('/getAssetTypes', async (req,res)=>{
     next();
   }
 
-  app.get('/videoAudit/:roomId/:locationAudit', (req, res)=>{
+  app.get('/videoAudit/:roomId/:locationAudit', hideNavMenu(), (req, res)=>{
     console.log('Readying for video...', req.params.roomId);
     console.log('Auditee Location obj...?', req.params.locationAudit);
     console.log(`Auditee Location..., ${req.params.locationAudit.lat} and ${req.params.locationAudit.lng}`);
+    console.log('uiSettings: ', req.dispSetting);
     
-    res.render('audit/room', {roomId:req.params.roomId, locationAudit: JSON.parse(req.params.locationAudit)});
+    res.render('audit/room', {roomId:req.params.roomId, locationAudit: JSON.parse(req.params.locationAudit), uiSettings:req.dispSetting});
   });
   
   
