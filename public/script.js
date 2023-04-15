@@ -21,7 +21,7 @@ socket.on('Plot Auditee Location', (pos)=>{
 
     let distance = haversine_distance(locationMarker, auditeeMarker);
     alert('Distance is: ' + distance);
-    marderDistanceGrab.innerHTML = distance;
+    markerDistanceGrab.innerHTML = distance;
 })
 
 const videoGrid = document.getElementById('video-grid')
@@ -29,7 +29,8 @@ const videoGrid = document.getElementById('video-grid')
 let mapAssetGrab;
 let auditeeMarker;
 let locationMarker;
-let marderDistanceGrab =  document.getElementById('marderDistance');
+let markerDistanceGrab;
+    markerDistanceGrab = document.getElementById('markerDistance');
 
 let auditLocationGrab = document.getElementById('auditLocation');
 console.log(videoGrid);
