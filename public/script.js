@@ -39,7 +39,7 @@ let markerDistanceGrab;
     let locationProgressGrab;
     locationProgressGrab = document.getElementById('locationProgress');
 let allowedDistance;
-    allowedDistance = 20000;
+    allowedDistance = 20;
 
 
 let auditLocationGrab = document.getElementById('auditLocation');
