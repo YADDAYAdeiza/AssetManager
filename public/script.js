@@ -9,7 +9,7 @@ socket.on('Enable Auditee Location', (val, posCoords)=>{
     // auditLocation(posCoords)
 })
 
-socket.on('Plot Auditee Location', (pos)=>{
+socket.on('Plot Auditee Location', (pos, userId)=>{
     alert('Plotting Auditee location on Auditor Map')
     auditeeMarker =  new google.maps.Marker({
         position:{lat:pos.lat, lng:pos.lng},
@@ -22,10 +22,25 @@ socket.on('Plot Auditee Location', (pos)=>{
     let distance = haversine_distance(locationMarker, auditeeMarker);
     alert('Distance is: ' + distance);
     markerDistanceGrab.innerHTML = distance;
-    if (distance < allowedDistance){
-        locationProgressGrab.classList.add('pass')
+
+    //progress Checks
+
+    //Location Progress Check
+        if (distance < allowedDistance){
+            locationProgressGrab.classList.add('pass')
+        }else{
+            locationProgressGrab.classList.add('noPass');
+        }
+    
+    //Owner progress Check
+    console.log(userID) //from auditor
+    console.log(userId)//from auditee
+    if (userID == userId){
+        alert('User confirmed');
+        ownerProgressGrab.classList.add('pass');
     }else{
-        locationProgressGrab.classList.add('noPass');
+        alert('Not user')
+        ownerProgressGrab.classList.add('noPass');
     }
 })
 
@@ -36,8 +51,13 @@ let auditeeMarker;
 let locationMarker;
 let markerDistanceGrab;
     markerDistanceGrab = document.getElementById('markerDistance');
-    let locationProgressGrab;
+
+//progress bars
+let locationProgressGrab;
     locationProgressGrab = document.getElementById('locationProgress');
+let ownerProgressGrab;
+    ownerProgressGrab = document.getElementById('ownerProgress');
+
 let allowedDistance;
     allowedDistance = 20;
 
@@ -174,7 +194,7 @@ function auditLocation(){
                         });
                         alert(pos.coords.latitude)
 
-            socket.emit('Auditee Location', locationMarkerAuditee.getPosition());
+            socket.emit('Auditee Location', locationMarkerAuditee.getPosition(), userID);
       }
     
       function error() {

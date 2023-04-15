@@ -101,9 +101,9 @@ io.on('connection', socket=>{
     // io.to(roomId).emit('Enable Auditee Location', false, posCoords);
     io.to(roomId).emit('Enable Auditee Location', false);
 
-    socket.on('Auditee Location', (pos)=>{
+    socket.on('Auditee Location', (pos, userId)=>{
       console.log('Plotting auditee location: ', pos);
-      socket.to(roomId).emit('Plot Auditee Location', pos);
+      socket.to(roomId).emit('Plot Auditee Location', pos, userId);
     })
     
 
@@ -1381,13 +1381,14 @@ app.get('/getAssetTypes', async (req,res)=>{
     next();
   }
 
-  app.get('/videoAudit/:roomId/:locationAudit', hideNavMenu(), (req, res)=>{
+  app.get('/videoAudit/:userId/:roomId/:locationAudit', hideNavMenu(), (req, res)=>{
     console.log('Readying for video...', req.params.roomId);
     console.log('Auditee Location obj...?', req.params.locationAudit);
     console.log(`Auditee Location..., ${req.params.locationAudit.lat} and ${req.params.locationAudit.lng}`);
+    console.log('This is the user ', req.params.userId);
     console.log('uiSettings: ', req.dispSetting);
     
-    res.render('audit/room', {roomId:req.params.roomId, locationAudit: JSON.parse(req.params.locationAudit), uiSettings:req.dispSetting});
+    res.render('audit/room', {userId: req.params.userId, roomId:req.params.roomId, locationAudit: JSON.parse(req.params.locationAudit), uiSettings:req.dispSetting});
   });
   
   
