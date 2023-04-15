@@ -106,7 +106,7 @@ route.use(express.static('public'));
 
 let userVar = 'trial';
 //get all users of assets
-route.get('/confirmArrival/:id/:uuid', async (req, res)=>{
+route.get('/confirmArrival/:userId/:id/:uuid', async (req, res)=>{
     console.log('This is req.user: ',req.user);
     let userArr = [];
     let userAssets = [];
