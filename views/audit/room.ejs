@@ -26,6 +26,22 @@
             background-color: blanchedalmond;
         }
 
+        .inputProgress{
+            margin-left: 4px;
+            width: 20%;
+        }
+        
+        .inputProgress + .inputProgress {
+            margin-left: 4px;
+        }
+
+        .pass{
+            background-color: limegreen;
+        }
+        
+        .noPass{
+            background-color: pink
+        }
     </style>
     <script>
         const Room_ID = "<%=roomId%>";
@@ -54,6 +70,12 @@
     <button id ='auditLocation' class="onlyAudit">Audit Location (Exp)</button><p id="locationStatus">Location Status</p>
     <button id ='auditLocationAct' disabled >Audit Location (Act)</button><p id="locationStatus">Location Status</p>
     <button id ='auditWatchLocation'>Audit Location(Watch)</button>
+
+    <div id = 'progressBar'>
+        <input id = "locationProgress" class="inputProgress" type = "input"></input>
+        <input id = "ownerProgress" class="inputProgress" type = "input"></input>
+        <input id = "assetProgress" class="inputProgress" type = "input"></input>
+    </div>
     <p id="markerDistance">distance</p>
 </body>
 </html>

@@ -22,6 +22,11 @@ socket.on('Plot Auditee Location', (pos)=>{
     let distance = haversine_distance(locationMarker, auditeeMarker);
     alert('Distance is: ' + distance);
     markerDistanceGrab.innerHTML = distance;
+    if (distance < allowedDistance){
+        locationProgressGrab.classList.add('pass')
+    }else{
+        locationProgressGrab.classList.add('noPass');
+    }
 })
 
 const videoGrid = document.getElementById('video-grid')
@@ -31,6 +36,11 @@ let auditeeMarker;
 let locationMarker;
 let markerDistanceGrab;
     markerDistanceGrab = document.getElementById('markerDistance');
+    let locationProgressGrab;
+    locationProgressGrab = document.getElementById('locationProgress');
+let allowedDistance;
+    allowedDistance = 20000;
+
 
 let auditLocationGrab = document.getElementById('auditLocation');
 console.log(videoGrid);
@@ -213,7 +223,7 @@ function auditLocation(){
         fillOpacity: 0.35,
         map:mapAssetGrab,
         center: locationMarker.getPosition(),
-        radius: 20000,
+        radius: allowedDistance,//20000
       });
 
       socket.emit('join-room-audit', '232AuditRoom', locationMarker.getPosition());
