@@ -11,18 +11,25 @@ socket.on('Enable Auditee Location', (val, posCoords)=>{
 
 socket.on('Plot Auditee Location', (pos)=>{
     alert('Plotting Auditee location on Auditor Map')
-    let auditeeMarker =  new google.maps.Marker({
+    auditeeMarker =  new google.maps.Marker({
         position:{lat:pos.lat, lng:pos.lng},
         map:mapAssetGrab,
         title: 'Actual',
         draggable: true,    
         // animation:google.maps.Animation.BOUNCE
     });
+
+    let distance = haversine_distance(locationMarker, auditeeMarker);
+    alert('Distance is: ' + distance);
+    marderDistanceGrab.innerHTML = distance;
 })
 
 const videoGrid = document.getElementById('video-grid')
 // let auditLocationGrab = document.querySelector('#auditLocation');
 let mapAssetGrab;
+let auditeeMarker;
+let locationMarker;
+let marderDistanceGrab =  document.getElementById('marderDistance');
 
 let auditLocationGrab = document.getElementById('auditLocation');
 console.log(videoGrid);
@@ -147,7 +154,7 @@ function auditLocation(){
         locationStatusGrab.textContent = `${latitude} and ${longitude}`;
         // mapLink.href = `https://www.openstreetmap.org/#map=18/${latitude}/${longitude}`;
         // mapLink.textContent = `Latitude: ${latitude} °, Longitude: ${longitude} °`;
-        var locationMarker =  new google.maps.Marker({
+        var locationMarkerAuditee =  new google.maps.Marker({
                             position: {lat:latitude, lng:longitude},
                             map:mapAssetGrab,
                             title: `Actual ${pos.coords.accuracy}`,
@@ -156,7 +163,7 @@ function auditLocation(){
                         });
                         alert(pos.coords.latitude)
 
-            socket.emit('Auditee Location', locationMarker.getPosition());
+            socket.emit('Auditee Location', locationMarkerAuditee.getPosition());
       }
     
       function error() {
@@ -186,7 +193,7 @@ function auditLocation(){
     let locationAuditLng = +locationAuditObj.lng;
 
     //Marker
-        var locationMarker =  new google.maps.Marker({
+        locationMarker =  new google.maps.Marker({
             position:{lat:locationAuditLat, lng:locationAuditLng},
             map:mapAssetGrab,
             title: 'Expected',
@@ -261,6 +268,19 @@ var settingsObj2 = JSON.parse(settingsObj);
             })
         })
         console.log(Object.values(settingsObj2));
+
+
+
+        function haversine_distance(mk1, mk2) {
+            var R = 6371.0710; // Radius of the Earth in miles
+            var rlat1 = mk1.position.lat() * (Math.PI/180); // Convert degrees to radians
+            var rlat2 = mk2.position.lat() * (Math.PI/180); // Convert degrees to radians
+            var difflat = rlat2-rlat1; // Radian difference (latitudes)
+            var difflon = (mk2.position.lng()-mk1.position.lng()) * (Math.PI/180); // Radian difference (longitudes)
+      
+            var d = 2 * R * Math.asin(Math.sqrt(Math.sin(difflat/2)*Math.sin(difflat/2)+Math.cos(rlat1)*Math.cos(rlat2)*Math.sin(difflon/2)*Math.sin(difflon/2)));
+            return d;
+          }
 
 window.onload = function (){
     // alert('I have loaded');
