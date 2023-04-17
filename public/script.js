@@ -9,7 +9,7 @@ socket.on('Enable Auditee Location', (val, posCoords)=>{
     // auditLocation(posCoords)
 })
 
-socket.on('Plot Auditee Location', (pos, userId)=>{
+socket.on('Plot Auditee Location', (pos, userId, assetId)=>{
     alert('Plotting Auditee location on Auditor Map')
     auditeeMarker =  new google.maps.Marker({
         position:{lat:pos.lat, lng:pos.lng},
@@ -44,7 +44,7 @@ socket.on('Plot Auditee Location', (pos, userId)=>{
     }
     
     //Asset progress Check
-    if (assetID == assetId){
+    if (assetID == assetId){ 
         alert('asset confirmed');
         assetProgressGrab.classList.add('pass');
     }else{
@@ -206,7 +206,7 @@ function auditLocation(){
                         });
                         alert(pos.coords.latitude)
 
-            socket.emit('Auditee Location', locationMarkerAuditee.getPosition(), userID);
+            socket.emit('Auditee Location', locationMarkerAuditee.getPosition(), userID, assetID);
       }
     
       function error() {

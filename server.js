@@ -101,9 +101,9 @@ io.on('connection', socket=>{
     // io.to(roomId).emit('Enable Auditee Location', false, posCoords);
     io.to(roomId).emit('Enable Auditee Location', false);
 
-    socket.on('Auditee Location', (pos, userId)=>{
+    socket.on('Auditee Location', (pos, userId, assetId)=>{
       console.log('Plotting auditee location: ', pos);
-      socket.to(roomId).emit('Plot Auditee Location', pos, userId);
+      socket.to(roomId).emit('Plot Auditee Location', pos, userId, assetId);
     })
     
 
