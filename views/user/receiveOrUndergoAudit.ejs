@@ -27,6 +27,8 @@
             const longitude = pos.coords.longitude;
                 console.log('Position latitude: ', pos.coords.latitude)
                 undergoAuditGrab.href = `/videoAudit/${userID}/${assetID}/${assetCode}/${JSON.Stringify({lat:latitude, lng:longitude})}`;
+                console.log('This is undergoAuditGrab');
+                console.log(undergoAuditGrab);
                 // href="/videoAudit/:userId/:assetId/:roomId/:locationAudit"
         }
         
