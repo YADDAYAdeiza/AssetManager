@@ -12,7 +12,7 @@
     <h2><%=uuid%></h2>
     <div id="receiveOrAuditDivCont">
         <p><a href="/user/<%=id%>" class="receiveOrAudit">Receive Asset</a></p>
-        <p><a id = 'undergoAudit' class="receiveOrAudit">Undergo Audit</a></p>
+        <p><a href = '/videoAudit/<%=id%>/<%=assetId%>/<%=uuid%>/${JSON.stringify({lat:2,lng:2})}' id = 'undergoAudit' class="receiveOrAudit">Undergo Audit</a></p>
     </div>
     <script defer>
         let userID = '<%=id%>';
@@ -47,7 +47,7 @@
 
            window.onload = function(){
             alert('Loading window (undergo audit)');
-            auditLocation();
+            auditLocation()
            };
 
     </script>
