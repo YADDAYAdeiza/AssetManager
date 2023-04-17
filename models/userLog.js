@@ -57,7 +57,7 @@ let userLogSchema = new mongoose.Schema({
     },
     assignedBy:{
         type:mongoose.Schema.Types.ObjectId,
-        required:true,
+        // required:true,
         ref:userModel
     }
 });
