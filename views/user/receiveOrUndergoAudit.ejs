@@ -19,31 +19,33 @@
         let assetID = '<%=assetId%>';
         let assetCode = '<%=uuid%>';
 
-    let undergoAuditGrab = document.getElementById('undergoAudit');
+            let undergoAuditGrab = document.getElementById('undergoAudit');
 
-    function auditLocation(){
-        function success(pos) {
-            const latitude = pos.coords.latitude;
-            const longitude = pos.coords.longitude;
-                console.log('Position latitude: ', pos.coords.latitude)
-                undergoAuditGrab.href = `/videoAudit/${userID}/${assetID}/${assetCode}/${JSON.Stringify({lat:latitude, lng:longitude})}`;
-                console.log('This is undergoAuditGrab');
-                console.log(undergoAuditGrab);
-                // href="/videoAudit/:userId/:assetId/:roomId/:locationAudit"
-        }
-        
-        function error() {
-            locationStatusGrab.textContent = "Unable to retrieve your location";
-            console.log('Unable to retrieve your location')
-        }
-        
-        if (!navigator.geolocation) {
-            console.log("Geolocation is not supported by your browser");
-        } else {
-            locationStatusGrab.textContent = "Locating…";
-                navigator.geolocation.getCurrentPosition(success, error);
-        }
-    }
+            function auditLocation(){
+                function success(pos) {
+                    const latitude = pos.coords.latitude;
+                    const longitude = pos.coords.longitude;
+                        console.log('Position latitude: ', pos.coords.latitude)
+                        undergoAuditGrab.href = `/videoAudit/${userID}/${assetID}/${assetCode}/${JSON.Stringify({lat:latitude, lng:longitude})}`;
+                        console.log('This is undergoAuditGrab');
+                        console.log(undergoAuditGrab);
+                        // href="/videoAudit/:userId/:assetId/:roomId/:locationAudit"
+                }
+                
+                function error() {
+                    locationStatusGrab.textContent = "Unable to retrieve your location";
+                    console.log('Unable to retrieve your location')
+                }
+                
+                if (!navigator.geolocation) {
+                    console.log("Geolocation is not supported by your browser");
+                } else {
+                    locationStatusGrab.textContent = "Locating…";
+                        navigator.geolocation.getCurrentPosition(success, error);
+                }
+            }
+
+            auditLocation();
 
     </script>
 </body>
