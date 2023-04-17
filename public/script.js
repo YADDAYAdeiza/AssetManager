@@ -33,8 +33,8 @@ socket.on('Plot Auditee Location', (pos, userId)=>{
         }
     
     //Owner progress Check
-    console.log(userID) //from auditor
-    console.log(userId)//from auditee
+    console.log('User Id from Auditor: ', userID) //from auditor
+    console.log('User ID from Auditee sign-in ', userId)//from auditee
     if (userID == userId){
         alert('User confirmed');
         ownerProgressGrab.classList.add('pass');
@@ -42,9 +42,19 @@ socket.on('Plot Auditee Location', (pos, userId)=>{
         alert('Not user')
         ownerProgressGrab.classList.add('noPass');
     }
+    
+    //Asset progress Check
+    if (assetID == assetId){
+        alert('asset confirmed');
+        assetProgressGrab.classList.add('pass');
+    }else{
+        alert('Not asset')
+        assetProgressGrab.classList.add('noPass');
+    }
+
 })
 
-const videoGrid = document.getElementById('video-grid')
+const videoGrid = document.getElementById('video-grid');
 // let auditLocationGrab = document.querySelector('#auditLocation');
 let mapAssetGrab;
 let auditeeMarker;
@@ -57,6 +67,8 @@ let locationProgressGrab;
     locationProgressGrab = document.getElementById('locationProgress');
 let ownerProgressGrab;
     ownerProgressGrab = document.getElementById('ownerProgress');
+let assetProgressGrab;
+    assetProgressGrab = document.getElementById('assetProgress');
 
 let allowedDistance;
     allowedDistance = 20;
