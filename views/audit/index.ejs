@@ -20,7 +20,7 @@
                     <%if (distinctState){%>
                         <option value ="" selected>None</option>
                         <%distinctState.forEach(userState=>{%>
-                            <option value= <%=userState%> <%= (searchParams.userState == userState)?'selected':''%>  ><%=userState%></option>
+                            <option value= '<%=userState%>' <%= (searchParams.userState == userState)?'selected':''%>  ><%=userState%></option>
                             <%})%>
                             <%}%>
                         </select></p>
