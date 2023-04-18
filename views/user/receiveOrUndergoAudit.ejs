@@ -15,11 +15,15 @@
 
             function auditLocation(){
                 alert('Invoked...');
+                alert('userId'+userID)
+                alert('assetId'+assetID)
+                alert('assetCode'+assetCode)
+                
                 function success(pos) {
                     alert('Success'+undergoAuditGrab.id);
                     const latitude = pos.coords.latitude;
                     const longitude = pos.coords.longitude;
-                        console.log('Position latitude: ', pos.coords.latitude);JSON.
+                        console.log('Position latitude: ', pos.coords.latitude);
                         alert(undergoAuditGrab.id);
                         alert(`/videoAudit/${userID}/${assetID}/${assetCode}/${JSON.stringify({lat:latitude, lng:longitude})}`);
                         undergoAuditGrab.href = `/videoAudit/${userID}/${assetID}/${assetCode}/${JSON.stringify({lat:latitude, lng:longitude})}`;
