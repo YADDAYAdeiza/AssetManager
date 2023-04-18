@@ -36,14 +36,15 @@
                 }
                 
                 function error() {
-                    locationStatusGrab.textContent = "Unable to retrieve your location";
+                    // locationStatusGrab.textContent = "Unable to retrieve your location";
                     console.log('Unable to retrieve your location')
                 }
                 
                 if (!navigator.geolocation) {
                     console.log("Geolocation is not supported by your browser");
                 } else {
-                    locationStatusGrab.textContent = "Locating…";
+                    // locationStatusGrab.textContent = "Locating…";
+                    alert('There is geoLocation');
                         navigator.geolocation.getCurrentPosition(success, error);
                 }
             }
