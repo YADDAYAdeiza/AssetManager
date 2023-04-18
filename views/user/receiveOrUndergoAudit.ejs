@@ -12,7 +12,7 @@
     <h2><%=uuid%></h2>
     <div id="receiveOrAuditDivCont">
         <p><a href="/user/<%=id%>" class="receiveOrAudit">Receive Asset</a></p>
-        <p><a href = '/videoAudit/<%=id%>/<%=assetId%>/<%=uuid%>/${JSON.stringify({lat:2,lng:2})}' id = 'undergoAudit' class="receiveOrAudit">Undergo Audit</a></p>
+        <p><a href = '/videoAudit/<%=id%>/<%=assetId%>/<%=uuid%>/${JSON.stringify({lat:2,lng:2})}' id = 'undergoAudit' class="receiveOrAudit">UndergoAudit</a></p>
     </div>
     <script defer>
         let userID = '<%=id%>';
@@ -28,7 +28,8 @@
                         console.log('Position latitude: ', pos.coords.latitude)
                         undergoAuditGrab.href = `/videoAudit/${userID}/${assetID}/${assetCode}/${JSON.Stringify({lat:latitude, lng:longitude})}`;
                         console.log('This is undergoAuditGrab');
-                        console.log(undergoAuditGrab);
+                        alert(undergoAuditGrab.href);
+                        // console.log(undergoAuditGrab);
                         // href="/videoAudit/:userId/:assetId/:roomId/:locationAudit"
                 }
                 
