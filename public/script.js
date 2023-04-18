@@ -38,6 +38,7 @@ socket.on('Plot Auditee Location', (pos, userId, assetId)=>{
     if (userID == userId){
         alert('User confirmed');
         ownerProgressGrab.classList.add('pass');
+        socket.emit('user-confirmed', 'pass');
     }else{
         alert('Not user')
         ownerProgressGrab.classList.add('noPass');
@@ -51,8 +52,14 @@ socket.on('Plot Auditee Location', (pos, userId, assetId)=>{
         alert('Not asset')
         assetProgressGrab.classList.add('noPass');
     }
-
+    
 })
+
+socket.on('user-confirmed2', classVal=>{
+    alert('Addding classVal');
+    ownerProgressGrab.classList.add(classVal);
+});
+    //   socket.emit('')
 
 const videoGrid = document.getElementById('video-grid');
 // let auditLocationGrab = document.querySelector('#auditLocation');
@@ -71,7 +78,7 @@ let assetProgressGrab;
     assetProgressGrab = document.getElementById('assetProgress');
 
 let allowedDistance;
-    allowedDistance = 20;
+    allowedDistance = 20000;
 
 
 let auditLocationGrab = document.getElementById('auditLocation');

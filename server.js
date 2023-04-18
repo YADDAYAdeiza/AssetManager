@@ -106,6 +106,10 @@ io.on('connection', socket=>{
       socket.to(roomId).emit('Plot Auditee Location', pos, userId, assetId);
     })
     
+    socket.on('user-confirmed', (classVal)=>{
+      console.log(classVal);
+      socket.emit('user-confirmed2', classVal);
+    })
 
   })
   socket.on('Auditor Location Move', (val)=>{
