@@ -1,12 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
+
     <h1>Confirmation Page</h1>
     <h2><%=id%></h2>
     <h2><%=uuid%></h2>
@@ -18,17 +10,18 @@
         let userID = '<%=id%>';
         let assetID = '<%=assetId%>';
         let assetCode = '<%=uuid%>';
-
-            let undergoAuditGrab = document.getElementById('undergoAudit');
+        let undergoAuditGrab;
+        undergoAuditGrab = document.getElementById('undergoAudit');
 
             function auditLocation(){
                 alert('Invoked...');
                 function success(pos) {
-                    alert('Success')
+                    alert('Success'+undergoAuditGrab.id);
                     const latitude = pos.coords.latitude;
                     const longitude = pos.coords.longitude;
                         console.log('Position latitude: ', pos.coords.latitude);
-                        alert(undergoAuditGrab);
+                        alert(undergoAuditGrab.id);
+                        alert(`/videoAudit/${userID}/${assetID}/${assetCode}/${JSON.Stringify({lat:latitude, lng:longitude})}`)
                         undergoAuditGrab.href = `/videoAudit/${userID}/${assetID}/${assetCode}/${JSON.Stringify({lat:latitude, lng:longitude})}`;
                         console.log('This is undergoAuditGrab');
                         alert(undergoAuditGrab.href);
@@ -56,5 +49,3 @@
            };
 
     </script>
-</body>
-</html>
