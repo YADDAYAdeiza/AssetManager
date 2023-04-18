@@ -19,10 +19,10 @@
                     alert('Success'+undergoAuditGrab.id);
                     const latitude = pos.coords.latitude;
                     const longitude = pos.coords.longitude;
-                        console.log('Position latitude: ', pos.coords.latitude);
+                        console.log('Position latitude: ', pos.coords.latitude);JSON.
                         alert(undergoAuditGrab.id);
-                        alert(`/videoAudit/${userID}/${assetID}/${assetCode}/${JSON.Stringify({lat:latitude, lng:longitude})}`)
-                        undergoAuditGrab.href = `/videoAudit/${userID}/${assetID}/${assetCode}/${JSON.Stringify({lat:latitude, lng:longitude})}`;
+                        alert(`/videoAudit/${userID}/${assetID}/${assetCode}/${JSON.stringify({lat:latitude, lng:longitude})}`);
+                        undergoAuditGrab.href = `/videoAudit/${userID}/${assetID}/${assetCode}/${JSON.stringify({lat:latitude, lng:longitude})}`;
                         console.log('This is undergoAuditGrab');
                         alert(undergoAuditGrab.href);
                         // console.log(undergoAuditGrab);
