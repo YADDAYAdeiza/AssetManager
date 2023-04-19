@@ -261,6 +261,9 @@ function auditLocation(){
     let locationAuditLng = +locationAuditObj.lng;
 
     //Marker
+    alert('Coords')
+    alert(+locationAuditObj.lat);
+    alert(+locationAuditObj.lng);
         locationMarker =  new google.maps.Marker({
             position:{lat:locationAuditLat, lng:locationAuditLng},
             map:mapAssetGrab,
