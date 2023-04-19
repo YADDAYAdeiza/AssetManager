@@ -28,6 +28,8 @@ socket.on('Plot Auditee Location', (pos, userId, assetId)=>{
     //Location Progress Check
         if (distance < allowedDistance){
             locationProgressGrab.classList.add('pass')
+            socket.emit('location-confirmed', 'pass');
+            
         }else{
             locationProgressGrab.classList.add('noPass');
         }
@@ -48,6 +50,7 @@ socket.on('Plot Auditee Location', (pos, userId, assetId)=>{
     if (assetID == assetId){ 
         alert('asset confirmed');
         assetProgressGrab.classList.add('pass');
+        socket.emit('asset-confirmed', 'pass');
     }else{
         alert('Not asset')
         assetProgressGrab.classList.add('noPass');
@@ -55,9 +58,24 @@ socket.on('Plot Auditee Location', (pos, userId, assetId)=>{
     
 })
 
+// socket.on('location-confirmed', (classVal)=>{
+//     console.log(classVal);
+//     socket.to(roomId).emit('location-confirmed2', classVal);
+//     // socket.emit('user-confirmed2', classVal);
+//   })
+
+socket.on('location-confirmed2', classVal=>{
+    alert('Addding classVal');
+    locationProgressGrab.classList.add(classVal);
+});
+
 socket.on('user-confirmed2', classVal=>{
     alert('Addding classVal');
     ownerProgressGrab.classList.add(classVal);
+});
+socket.on('asset-confirmed2', classVal=>{
+    alert('Addding classVal');
+    assetProgressGrab.classList.add(classVal);
 });
     //   socket.emit('')
 
