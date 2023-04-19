@@ -253,7 +253,7 @@ function auditLocation(){
 
 
  function openMap(){
-    // alert('Map');
+    alert('Open Map');
     mapAssetGrab = new google.maps.Map(document.getElementById('mapView'), {zoom:6, center:{lat:9, lng:7}});
     console.log('This is location (from room.ejs), ', JSON.parse(locationAudit));  
     let locationAuditObj = JSON.parse(locationAudit);
