@@ -16,11 +16,9 @@
         let userLocation = '<%- JSON.stringify(userLocation)%>';
         
         alert(userLocation);
-        // alert(userLocation2);
-        // alert(userLocation3);
-
+        
         undergoAuditGrab = document.getElementById('undergoAudit');
-        undergoAuditGrab.href = `/videoAudit/${userID}/${assetID}/${assetCode}/${userLocation})}`;
+        undergoAuditGrab.href = `/videoAudit/${userID}/${assetID}/${assetCode}/${userLocation}`;
 
             function auditLocation(){
                 alert('Invoked...');
