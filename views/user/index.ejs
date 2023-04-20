@@ -129,7 +129,7 @@
             userHistoryGrab.append(butCancelDiv);
             objTex.msg[0].activity.forEach(activity =>{
                 let userHistoryInnerDivs = document.createElement('div');
-                userHistoryInnerDivs.innerText = `Type: ${activity.activity} \t Asset: ${activity.assetList[0]} \t Date: ${activity.activityDate} By: ${activity.activityBy}`
+                userHistoryInnerDivs.innerText = `Type: ${activity.activity} \t Asset: ${activity.assetList[0]._id} \t Date: ${activity.activityDate} By: ${activity.activityBy}`
                 userHistoryGrab.append(userHistoryInnerDivs)
             })
             userHistoryGrab.classList.remove('hide');
