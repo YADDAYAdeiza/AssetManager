@@ -98,7 +98,8 @@ let assetProgressGrab;
 let allowedDistance;
     allowedDistance = 20000;
 
-
+let expectedPositionGrab;
+    expectedPositionGrab = document.getElementById('expectedPosition');
 let auditLocationGrab = document.getElementById('auditLocation');
 console.log(videoGrid);
 console.log(auditLocationGrab);
@@ -287,6 +288,7 @@ function auditLocation(){
       });
 
       socket.emit('join-room-audit', '232AuditRoom', locationMarker.getPosition());
+      expectedPositionGrab.innerHTML = locationMarker.getPosition();
 }
 
 function watchPosition(){
