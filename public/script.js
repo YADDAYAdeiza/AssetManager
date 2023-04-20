@@ -16,7 +16,7 @@ socket.on('Plot Auditee Location', (pos, userId, assetId)=>{
         map:mapAssetGrab,
         title: 'Actual',
         draggable: true,    
-        // animation:google.maps.Animation.BOUNCE
+        animation:google.maps.Animation.BOUNCE
     });
 
     let distance = haversine_distance(locationMarker, auditeeMarker);
