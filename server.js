@@ -1395,6 +1395,7 @@ app.get('/getAssetTypes', async (req,res)=>{
   app.get('/videoAudit/:userId/:assetId/:roomId/:locationAudit', hideNavMenu(), (req, res)=>{
     console.log('Readying for video...', req.params.roomId);
     console.log('Auditee Location obj...?', req.params.locationAudit);
+    console.log(typeof ('This is type: ', req.params.locationAudit));
     console.log(`Auditee Location..., ${req.params.locationAudit.lat} and ${req.params.locationAudit.lng}`);
     console.log('This is the user ', req.params.userId);
     console.log('This is the user asset ', req.params.assetId);

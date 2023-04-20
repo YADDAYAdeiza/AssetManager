@@ -119,7 +119,6 @@ route.get('/confirmArrival/:userId/:id/:uuid', async (req, res)=>{
             let user = await userModel.find({}).where('_id').equals(userId);
             userArr.push(await user)
             // console.log(user);
-            userLocation = user[0].geoCoord;
             // for (let assetId of user.userOwnedAsset.id){
                 if (await user[0].userOwnedAsset){
                     for (assetId of await user[0].userOwnedAsset.id){
@@ -162,6 +161,7 @@ route.get('/confirmArrival/:userId/:id/:uuid', async (req, res)=>{
                                 // userLogSave(user, newIdArr, req.query.assignment, req);
                                 // userLogSave(user, userAssetArr.idArr, req.query.assignment, req);
                                 // userLogSave(user, userAssetArr.idArr, req.query.assignment, req);
+                                userLocation = user[0].geoCoord;
                                 userLogSave(user[0], [await assetItem], 'Received Asset', req);
                                 userLogSave2(user[0], [await assetItem], 'Received Asset', req); //modern log
                         //End of Log
@@ -175,7 +175,7 @@ route.get('/confirmArrival/:userId/:id/:uuid', async (req, res)=>{
                 console.log('This is length ', await userAssets.length);
                 // res.render('./user/confirmPage.ejs', {id:req.params.id, uuid:req.params.uuid})
                 // idRedirect(req, res, 'User found');
-                res.render('./user/receiveOrUndergoAudit.ejs', {id:req.params.id, userLocation:JSON.stringify(userLocation), assetId:assetItemId, uuid:req.params.uuid})
+                res.render('./user/receiveOrUndergoAudit.ejs', {id:req.params.id, userLocation:userLocation, assetId:assetItemId, uuid:req.params.uuid})
                 
             } else if (await userAssets.length && req.user.subRole == 'auditor'){
                 console.log('The option page');
