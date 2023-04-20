@@ -116,11 +116,7 @@ io.on('connection', socket=>{
       socket.to(roomId).emit('asset-confirmed2', classVal);
       // socket.emit('user-confirmed2', classVal);
     })
-    socket.on('location-confirmed', (classVal)=>{
-      console.log(classVal);
-      socket.to(roomId).emit('location-confirmed2', classVal);
-      // socket.emit('user-confirmed2', classVal);
-    })
+    
 
   })
   socket.on('Auditor Location Move', (val)=>{

@@ -11,7 +11,10 @@
         let assetID = '<%=assetId%>';
         let assetCode = '<%=uuid%>';
         let undergoAuditGrab;
+        let userLocation = '<%=userLocation%>';
+
         undergoAuditGrab = document.getElementById('undergoAudit');
+        undergoAuditGrab.href = `/videoAudit/${userID}/${assetID}/${assetCode}/${userLocation})}`;
 
             function auditLocation(){
                 alert('Invoked...');
@@ -26,7 +29,8 @@
                         console.log('Position latitude: ', pos.coords.latitude);
                         alert(undergoAuditGrab.id);
                         alert(`/videoAudit/${userID}/${assetID}/${assetCode}/${JSON.stringify({lat:latitude, lng:longitude})}`);
-                        undergoAuditGrab.href = `/videoAudit/${userID}/${assetID}/${assetCode}/${JSON.stringify({lat:latitude, lng:longitude})}`;
+                        // undergoAuditGrab.href = `/videoAudit/${userID}/${assetID}/${assetCode}/${JSON.stringify({lat:latitude, lng:longitude})}`;
+                        undergoAuditGrab.href = `/videoAudit/${userID}/${assetID}/${assetCode}/${userLocation})}`;
                         console.log('This is undergoAuditGrab');
                         alert(undergoAuditGrab.href);
                         // console.log(undergoAuditGrab);
@@ -49,7 +53,7 @@
 
            window.onload = function(){
             alert('Loading window (undergo audit)');
-            auditLocation()
+            // auditLocation()
            };
 
     </script>
