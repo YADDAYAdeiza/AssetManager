@@ -63,9 +63,9 @@
                     <%- include('../partials/deleteFormAsset.ejs', {url:`/asset/${asset.id}`, assetAllocationStatus:asset.assetAllocationStatus, assetDeleteAccess}) %>
                     <%let len = asset.assetUserHistory.length%>
                     <button class="btn btn-primary" id="deAssignBut" onClick="deAssignAsset('<%=asset.id%>', '<%=asset.assetUserHistory[len-1]%>')" <%=assetDeleteAccess? 'style=display:inline':'style=display:none'%>  <%=asset.assetAllocationStatus != true?'Disabled':"" %>>DeAssignAsset</button> <span id ='ageSpan' ><%= (new Date(Date.now()).getTime() - asset.assetAssignDate)/86400000%></span><span>Day(s) Old</span>
-                    <% asset.assetAllocationStatus ? "<a href = `dana/${asset.assetUserHistory.at(-1)}/${asset._id/asset.assetCode}` class = 'QRCodeBtn'>Generate QRCode</a>":"" %>
+                    <% asset.assetAllocationStatus ? "<a href = `dana/asset._id/asset.assetCode` class = 'QRCodeBtn'>Generate QRCode</a>":"" %>
                     <%if (asset.assetAllocationStatus){%>
-                        <a href = '/dana/<%=asset._id%>/<%=asset.assetCode%>' class = 'QRCodeBtn'>Generate QRCode</a>
+                        <a href = '/dana/<%=asset.assetUserHistory[asset.assetUserHistory.length-1]%>/<%=asset._id%>/<%=asset.assetCode%>' class = 'QRCodeBtn'>Generate QRCode</a>
                         <button id = "assetHistoryBut" class= 'assetHistoryBut' onClick = 'assetHistory("<%=asset._id%>")'>Asset History</button>
                     <%}%>
                 </div>
