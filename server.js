@@ -106,10 +106,7 @@ io.on('connection', socket=>{
       socket.to(roomId).emit('Plot Auditee Location', pos, userId, assetId);
     })
     
-    socket.on('location-confirmed', (classVal)=>{
-      console.log('location confirmed: ', classVal);
-      io.to(roomId).emit('location-confirmed2', classVal);
-    })
+    
     socket.on('user-confirmed', (classVal)=>{
       console.log(classVal);
       socket.to(roomId).emit('user-confirmed2', classVal);
@@ -122,6 +119,11 @@ io.on('connection', socket=>{
     })
     
 
+  })
+
+  socket.on('location-confirmed', (classVal)=>{
+    console.log('location confirmed: ', classVal);
+    io.to(roomId).emit('location-confirmed2', classVal);
   })
   socket.on('Auditor Location Move', (val)=>{
     console.log('This auditor location click ', val);
