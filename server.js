@@ -106,6 +106,10 @@ io.on('connection', socket=>{
       socket.to(roomId).emit('Plot Auditee Location', pos, userId, assetId);
     })
     
+    socket.on('location-confirmed', (classVal)=>{
+      console.log(classVal);
+      socket.to(roomId).emit('location-confirmed2', classVal);
+    })
     socket.on('user-confirmed', (classVal)=>{
       console.log(classVal);
       socket.to(roomId).emit('user-confirmed2', classVal);

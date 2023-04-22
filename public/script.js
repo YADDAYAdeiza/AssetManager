@@ -21,13 +21,13 @@ socket.on('Plot Auditee Location', (pos, userId, assetId)=>{
     });
 
     let distance = haversine_distance(locationMarker, auditeeMarker);
-    alert('Distance is: ' + distance);
+    console.log('Distance is: ' + distance);
     markerDistanceGrab.innerHTML = distance;
 
     //progress Checks
 
     //Location Progress Check
-        if (distance < allowedDistance){
+        if (distance < allowedDistance/1000){//allowedDistance in Km
             locationProgressGrab.classList.add('pass')
             socket.emit('location-confirmed', 'pass');
             
