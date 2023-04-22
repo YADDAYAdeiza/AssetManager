@@ -33,7 +33,9 @@ socket.on('Plot Auditee Location', (pos, userId, assetId)=>{
             socket.emit('location-confirmed', 'pass');
             
         }else{
+            console.log('Distance noPassed')
             locationProgressGrab.classList.add('noPass');
+            socket.emit('location-confirmed', 'noPass');
         }
     
     //Owner progress Check
