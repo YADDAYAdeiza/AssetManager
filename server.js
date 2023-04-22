@@ -101,10 +101,7 @@ io.on('connection', socket=>{
     // io.to(roomId).emit('Enable Auditee Location', false, posCoords);
     io.to(roomId).emit('Enable Auditee Location', false);
 
-    socket.on('Auditee Location', (pos, userId, assetId)=>{
-      console.log('Plotting auditee location: ', pos);
-      socket.to(roomId).emit('Plot Auditee Location', pos, userId, assetId);
-    })
+    
     
     socket.on('user-confirmed', (classVal)=>{
       console.log(classVal);
@@ -119,6 +116,12 @@ io.on('connection', socket=>{
     
 
   })
+
+  socket.on('Auditee Location', (pos, userId, assetId)=>{
+    console.log('Plotting auditee location: ', pos);
+    socket.to(roomId).emit('Plot Auditee Location', pos, userId, assetId);
+  })
+  
   socket.on('Auditor Location Move', (val)=>{
     console.log('This auditor location click ', val);
     val(false);
