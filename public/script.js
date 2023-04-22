@@ -28,6 +28,7 @@ socket.on('Plot Auditee Location', (pos, userId, assetId)=>{
 
     //Location Progress Check
         if (distance < allowedDistance/1000){//allowedDistance in Km
+            console.log('Distance passed');
             locationProgressGrab.classList.add('pass')
             socket.emit('location-confirmed', 'pass');
             
@@ -66,7 +67,7 @@ socket.on('Plot Auditee Location', (pos, userId, assetId)=>{
 //   })
 
 socket.on('location-confirmed2', classVal=>{
-    alert('Addding classVal');
+    alert('Addding classVal to auditee becuase it passed');
     locationProgressGrab.classList.add(classVal);
 });
 

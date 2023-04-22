@@ -107,8 +107,8 @@ io.on('connection', socket=>{
     })
     
     socket.on('location-confirmed', (classVal)=>{
-      console.log(classVal);
-      io.to(roomId).emit('location-confirmed2', classVal);
+      console.log('location confirmed: ', classVal);
+      socket.to(roomId).emit('location-confirmed2', classVal);
     })
     socket.on('user-confirmed', (classVal)=>{
       console.log(classVal);
