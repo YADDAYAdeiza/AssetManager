@@ -69,7 +69,7 @@ socket.on('Plot Auditee Location', (pos, userId, assetId)=>{
 //   })
 
 socket.on('location-confirmed2', classVal=>{
-    alert('Addding classVal to auditee becuase it passed');
+    alert('Addding classVal to auditee because it passed or noPassed');
     locationProgressGrab.classList.add(classVal);
 });
 

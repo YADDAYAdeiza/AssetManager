@@ -37,7 +37,7 @@ function authenticateRoleProfilePage(){
         console.log('req.params.id now: ', req.params.id);
         console.log('Authenticating profile page...');
         console.log('--');
-        if (req.user.role == 'admin'){
+        if (req.user.role == 'admin' || req.user.role == 'superAdmin'){
             // req.routeStr = 'user/showAdmin'
             if (req.user.profileId.includes(req.params.id)){
                 //treat as own account
@@ -58,8 +58,10 @@ function authenticateRoleProfilePage(){
             }
             req.routeStr = 'user/show2'
         }else{
+            console.log('Not admin or superAdmin')
             req.routeStr = 'user/show2'
         }
+        console.log('This is req.ownAccount ', req.ownAccount);
         next();
     }
 }

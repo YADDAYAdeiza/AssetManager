@@ -36,7 +36,7 @@
     <p><input placeholder="Qty..." oninput="this.className = ''" name = "assetTypeQty" id="assetTypeQty" value="<%=assetType.assetCode%>"></p>
     <p><input placeholder="Asset Value..." oninput="this.className = ''" name = "assetTypeValue" id="assetTypeValue" value="<%=assetType.assetValue%>"></p>
     <p><input placeholder="Life Cycle (yrs)..." oninput="this.className = ''" type = 'number' name = "assetTypeLifeCycle" id="assetTypeLifeCycle" value="<%=assetType.assetLifeCycle%>"></p>
-        <p><input placeholder="Asset Purchased..." oninput="this.className = ''" type = 'date' name = "assetTypePurchased" id="assetTypePurchased" value="<%=assetType.assetPurchased.toISOString().split('T')[0]%>"></p>
+        <p><input placeholder="Asset Purchased..." oninput="this.className = ''" type = 'date' name = "assetTypePurchased" id="assetTypePurchased" value="<%=assetType.assetTypePurchased.toISOString().split('T')[0]%>"></p>
   </div>
   
   <div class="tab">Login Info:

@@ -23,6 +23,20 @@ let assetTypeSchema = new mongoose.Schema({
         required:true,
         default: 'Open Market'
     },
+    assetTypeManufacturerAddress:{
+        type:String,
+        required:true,
+        default: 'Wyoming'
+    },
+    assetTypeManufacturerPhone:{
+        type:Number,
+        default: '08035903643'
+    },
+    assetTypeManufacturerEmail:{
+        type:String,
+        required:true,
+        default: '08035903643'
+    },
     assetTypePurchased:{
         type:Date,
         required:true,

@@ -115,6 +115,7 @@ route.get("/:id", async (req, res)=>{
     let assetType=[];
     try{
         assetType = await assetTypeModel.findById(req.params.id);
+
         res.render('assetType/show.ejs', {assetType:assetType});
     }catch{
         res.render('assetType/index.ejs', {assetTypes:assetType, msg:'Error Showing Asset Type'})
@@ -127,10 +128,12 @@ route.get("/:id/edit", async (req, res)=>{
     try{
         let assetType = await assetTypeModel.findById(req.params.id);//
         let assetTypeArr = await assetTypeModel.find({}).distinct('assetTypeClass');
+        let assetTypeManufacturerDistinct = await assetTypeModel.find({}).distinct('assetTypeManufacturer');
+
         //  console.log('This is the object to be edited, ',newAssetType)
         //  console.log('This is the object to be edited, ',assetTypeArr)
 
-        res.render('assetType/edit.ejs',{assetType, assetTypeArr}); //tying the view to the moongoose model //, 
+        res.render('assetType/edit2.ejs',{assetType, assetTypeArr, assetTypeManufacturerDistinct}); //tying the view to the moongoose model //, 
 
     } catch (e){
         console.error(e.message);
@@ -156,6 +159,9 @@ route.put('/:id', async(req, res)=>{
         assetType.assetTypeCode = req.body.assetTypeNumber,
         assetType.assetTypeClass = req.body.assetTypeName,
         assetType.assetTypeManufacturer = req.body.assetTypeManufacturerName,
+        assetType.assetTypeManufacturerAddress = req.body.assetTypeManufacturerAddress,
+        assetType.assetTypeManufacturerPhone = req.body.assetTypeManufacturerPhone,
+        assetType.assetTypeManufacturerEmail = req.body.assetTypeManufacturerEmail,
         assetType.assetTypePurchased = req.body.assetTypePurchased,
         assetType.assetTypeStoreLocation = req.body.assetTypeStoreLocation,
         assetType.assetTypeValue = req.body.assetTypeValue,
@@ -212,11 +218,13 @@ route.post('/',  async (req,res)=>{
     console.log('Entered here');
 
     var assetTypes = await assetTypeModel.find({});
-    
     var assetType = new assetTypeModel({
         assetTypeCode: req.body.assetTypeNumber,
         assetTypeClass:req.body.assetTypeName,
         assetTypeManufacturer:req.body.assetTypeManufacturerName,
+        assetTypeManufacturerAddress:req.body.assetTypeManufacturerAddress,
+        assetTypeManufacturerPhone:req.body.assetTypeManufacturerPhone,
+        assetTypeManufacturerEmail:req.body.assetTypeManufacturerEmail,
         assetTypePurchased:req.body.assetTypePurchased,
         assetTypeStoreLocation:req.body.assetTypeStoreLocation,
         assetTypeValue:req.body.assetTypeValue,

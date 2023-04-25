@@ -86,16 +86,16 @@
 
         
     </div>
-    <button onclick = "userAssetAssign(this, 'user-assetsOwn-div', 'updateFormOwn')" class ="nonStateApprovalClass nonDirectorateApprovalClass nonStoreApprovalClass nonIssueApprovalClass">Assign</button>
-    <button onclick = "userAssetDeassign(this, 'user-assetsOwn-div', 'updateFormOwn')" class = "nonStateApprovalClass nonDirectorateApprovalClass nonStoreApprovalClass nonIssueApprovalClass">DeAssign</button>
-    <button onclick = "userAssetApprove(this, 'user-assetsOwn-div', 'updateFormOwn')" class = "nonOwnApprovalClass nonDirectorateApprovalClass nonStoreApprovalClass nonIssueApprovalClass">Approve</button>
-    <button onclick = "userAssetDeApprove(this, 'user-assetsOwn-div', 'updateFormOwn')" class = "nonOwnApprovalClass nonDirectorateApprovalClass nonStoreApprovalClass nonIssueApprovalClass">DeApprove</button>
-    <button onclick = "userAssetDirectorateApprove(this, 'user-assetsOwn-div', 'updateFormOwn')" class="nonOwnApprovalClass nonStateApprovalClass nonStoreApprovalClass nonIssueApprovalClass">D.Approve</button>
-    <button onclick = "userAssetDirectorateDeApprove(this, 'user-assetsOwn-div', 'updateFormOwn')" class="nonOwnApprovalClass nonStateApprovalClass nonStoreApprovalClass nonIssueApprovalClass">D.DeApprove</button>
-    <button onclick = "userAssetStoreApprove(this, 'user-assetsOwn-div', 'updateFormOwn')" class="nonOwnApprovalClass nonStateApprovalClass nonDirectorateApprovalClass nonIssueApprovalClass">Store.Approve</button>
-    <button onclick = "userAssetStoreDeApprove(this, 'user-assetsOwn-div', 'updateFormOwn')" class="nonOwnApprovalClass nonStateApprovalClass nonDirectorateApprovalClass nonIssueApprovalClass">Store.DeApprove</button>
-    <button onclick = "userAssetIssuerApprove(this, 'user-assetsOwn-div', 'updateFormOwn')" class="nonOwnApprovalClass nonStateApprovalClass nonDirectorateApprovalClass nonStoreApprovalClass">Issuer.Approve</button>
-    <button onclick = "userAssetIssuerDeApprove(this, 'user-assetsOwn-div', 'updateFormOwn')" class="nonOwnApprovalClass nonStateApprovalClass nonDirectorateApprovalClass nonStoreApprovalClass">Issuer.DeApprove</button>
+    <button onclick = "userAssetAssign(this, 'user-assetsOwn-div', 'updateFormOwn')" class ="nonStateApprovalClass nonDirectorateApprovalClass nonStoreApprovalClass nonIssueApprovalClass approvalBtn ownApproval">Assign</button>
+    <button onclick = "userAssetDeassign(this, 'user-assetsOwn-div', 'updateFormOwn')" class = "nonStateApprovalClass nonDirectorateApprovalClass nonStoreApprovalClass nonIssueApprovalClass approvalBtn ownApproval">DeAssign</button>
+    <button onclick = "userAssetApprove(this, 'user-assetsOwn-div', 'updateFormOwn')" class = "nonOwnApprovalClass nonDirectorateApprovalClass nonStoreApprovalClass nonIssueApprovalClass approvalBtn stateApproval">Approve</button>
+    <button onclick = "userAssetDeApprove(this, 'user-assetsOwn-div', 'updateFormOwn')" class = "nonOwnApprovalClass nonDirectorateApprovalClass nonStoreApprovalClass nonIssueApprovalClass approvalBtn stateApproval">DeApprove</button>
+    <button onclick = "userAssetDirectorateApprove(this, 'user-assetsOwn-div', 'updateFormOwn')" class="nonOwnApprovalClass nonStateApprovalClass nonStoreApprovalClass nonIssueApprovalClass approvalBtn directorateApproval">D.Approve</button>
+    <button onclick = "userAssetDirectorateDeApprove(this, 'user-assetsOwn-div', 'updateFormOwn')" class="nonOwnApprovalClass nonStateApprovalClass nonStoreApprovalClass nonIssueApprovalClass approvalBtn directorateApproval">D.DeApprove</button>
+    <button onclick = "userAssetStoreApprove(this, 'user-assetsOwn-div', 'updateFormOwn')" class="nonOwnApprovalClass nonStateApprovalClass nonDirectorateApprovalClass nonIssueApprovalClass approvalBtn storeApproval">Store.Approve</button>
+    <button onclick = "userAssetStoreDeApprove(this, 'user-assetsOwn-div', 'updateFormOwn')" class="nonOwnApprovalClass nonStateApprovalClass nonDirectorateApprovalClass nonIssueApprovalClass approvalBtn storeApproval">Store.DeApprove</button>
+    <button onclick = "userAssetIssuerApprove(this, 'user-assetsOwn-div', 'updateFormOwn')" class="nonOwnApprovalClass nonStateApprovalClass nonDirectorateApprovalClass nonStoreApprovalClass approvalBtn issuerApproval">Issuer.Approve</button>
+    <button onclick = "userAssetIssuerDeApprove(this, 'user-assetsOwn-div', 'updateFormOwn')" class="nonOwnApprovalClass nonStateApprovalClass nonDirectorateApprovalClass nonStoreApprovalClass approvalBtn issuerApproval">Issuer.DeApprove</button>
     
     <%-include('_userContent', {btnVal:`Asset Pool`})%> 
     <form id = 'updateFormOwn' method="POST" >
@@ -276,7 +276,12 @@
     let idObj = {};
     let externalApproveDivGrab = document.getElementById('externalApproveDiv');
     let revealBool = false;
+    let userRole = '<%=user.userRole.role%>';
 
+    alert(userRole);
+
+
+    //External approval
     // console.log('This is approving Id', approvingId);
     console.log('This is approval level', approvalDiv);
     console.log('This is user to Approve, ', usersToApprove);
@@ -1681,6 +1686,18 @@ var objClassList = {}
         alert('Popping');
         pendingStoreApprovals.classList.toggle('popApproval');
     }
+
+    
+    alert('reached here')
+    let approvalBtnGrab = document.getElementsByClassName('approvalBtn');
+    console.log(approvalBtnGrab);
+    [ ...approvalBtnGrab].forEach(btn=>{
+        btn.style.display = 'none';
+    })
+    let showApprovalBtn = document.getElementsByClassName(userRole);
+    [ ...showApprovalBtn].forEach(btnToShow=>{
+        btnToShow.style.display = 'inline';
+    });
 </script>
 
 

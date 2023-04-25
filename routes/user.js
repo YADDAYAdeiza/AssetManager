@@ -525,7 +525,7 @@ route.get('/:id/edit',  hideNavMenu(), async (req,res)=>{
                             console.log('This is approving Id', approvingId);
                             // console.log('This is approval ', req.params.approval);
                             res.render(req.routeStr, { //req.routeStr, modified by authentication middleware to hold route address in views folder
-                                user:user,
+                                user:user?user:user.firstName,
                                 allAssets:allAsset,
                                 assetsByUser:asset, 
                                 allAssetType:allAssetType2,
@@ -607,9 +607,11 @@ route.put('/:id', async(req,res)=>{
             saveProfilePic(user, req.body.photo);
         }
     console.log('Done putting...');
-        await user.save();
+        let updatedUser = await user.save();
         msg = "Update made";
-        idRedirect(req,res, msg)
+        req.routeStr = 'user/index';
+        idRedirect(req,res, msg);
+        res.render('user/index', {userName:updatedUser.firstName, msgClass:'noError', searchParams:req.query, userApprovalRoles:undefined, userEmail:updatedUser.email, uiSettings:undefined})
         // res.render('./user/show', {user});
     }catch (e){
         console.error(e.message);
