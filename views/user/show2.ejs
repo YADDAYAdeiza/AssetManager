@@ -206,7 +206,15 @@
         </ul>
     </div>
 
-    <div>
+    
+
+    <div class="">
+
+         
+        
+
+
+
         Awaiting State Approval
         <button onclick="hideApproved()">Hide Approved</button>
         <%if(usersToApprove.length){%>
@@ -231,8 +239,14 @@
                             <%})%>
                         </div>
                         </ul>
+                        
+                          
         <%}%>
     </div>
+    
+    
+       
+     
 
     <div class="pending-requisition-approvals">
         <ul>
@@ -266,8 +280,137 @@
     
 </div>
 
+<%let approvalCounterObj= {approved:0,notApproved:0}%>
+
+<div class="tab">
+    <button class="tablinks" onclick="openList(event, 'approvedList')">Approved</button>
+    <button class="tablinks" onclick="openList(event, 'pendingApproval')">Pending Approval</button>
+    <button class="tablinks" onclick="openList(event, 'approvalChart')">Approval/Pending Ratio</button>
+</div>
+
+<!-- Tab content -->
+<div id="externalApproveDiv2">
+    <div id="approvedList" class="tabcontent" style='background-color: aquamarine;'>
+        <h3>Approved</h3>
+        <p>London is the capital city of England.</p>
+        <%usersToApprove.forEach(userToApproveObj=>{%>
+            <%userToApproveObj.approvedAssets.forEach(approvedAsset=>{%>
+                <ul>
+                    <%if (approvedAsset.assetApproval[user.userRole.role] == 'approved'){%>
+                        <%approvalCounterObj['approved']++ %>
+                        <li>
+                            <a href = '/user/<%=userToApproveObj.id%>/<%=user.userRole.role%>/<%=user.id%>'><%=userToApproveObj.id%></a>
+                            <ul>
+                                <div class = 'approved'>
+                                    <li><a href = '/asset/<%=approvedAsset._id%>' ><%=approvedAsset._id%> </a> | <a href = '/dana/<%=approvedAsset.assetUserHistory[approvedAsset.assetUserHistory.length - 1]%>/<%=approvedAsset._id%>/<%=approvedAsset.assetCode%>' class = 'QRCodeBtn'>Generate QRCode</a></li>
+                                </div>
+                            </ul>
+                    </li>
+    
+                    <%}%>
+                    </ul>
+            <%})%>
+        <%})%>
+    </div>
+    
+    <div id="pendingApproval" class="tabcontent" style='background-color: cyan;'>
+        <h3>Pending</h3>
+        <p>Paris is the capital of France.</p>
+        <%usersToApprove.forEach(userToApproveObj=>{%>
+            <%userToApproveObj.approvedAssets.forEach(approvedAsset=>{%>
+                <ul>
+                    <%if (approvedAsset.assetApproval[user.userRole.role] != 'approved'){%>
+                        <%approvalCounterObj['notApproved']++ %>
+
+                        <li>
+                            <a href = '/user/<%=userToApproveObj.id%>/<%=user.userRole.role%>/<%=user.id%>'><%=userToApproveObj.id%></a>
+                            <ul>
+                                <div class = 'notApproved'>
+                                    <li><a href = '/asset/<%=approvedAsset._id%>' ><%=approvedAsset._id%> </a> | <a href = '/dana/<%=approvedAsset.assetUserHistory[approvedAsset.assetUserHistory.length - 1]%>/<%=approvedAsset._id%>/<%=approvedAsset.assetCode%>' class = 'QRCodeBtn'>Generate QRCode</a></li>
+                                </div>
+                            </ul>
+                    </li>
+                    <form class='approveWithout2' method="POST" >
+                        <button type="submit">Approve</button>
+                    </form>
+    
+                    <%}%>
+                </ul>
+            <%})%>
+        <%})%>
+    </div>
+
+
+    <div id="approvalChart" class="tabcontent" style='background-color: beige;'>
+        <h3>Approved/Pending Ratio</h3>
+        <canvas id = "myChart" ></canvas>
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script defer>
+
+
+
+function openList(evt, cityName) {
+  // Declare all variables
+  alert('Opening...')
+  var i, tabcontent, tablinks;
+
+  // Get all elements with class="tabcontent" and hide them
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+  }
+
+  // Get all elements with class="tablinks" and remove the class "active"
+  tablinks = document.getElementsByClassName("tablinks");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" active", "");
+  }
+
+  // Show the current tab, and add an "active" class to the button that opened the tab
+  document.getElementById(cityName).style.display = "block";
+  evt.currentTarget.className += " active";
+}
+
+    async function assetHistory(assetId){
+        var data = await fetch(`/asset/assetHistory/${assetId}`);
+        let dataResponse = await data.json();
+        console.log(dataResponse);
+        let butCancelDiv = document.createElement('div');
+            butCancelDiv.setAttribute('class', 'butCancelDiv')
+        let butCancel = document.createElement('button');
+            butCancel.innerHTML = 'x';
+        butCancel.addEventListener('click', function(){
+            console.log(this);
+            console.log(this.parentNode.parentNode);
+            console.log(this.parentNode.parentNode.classList);
+            assetHistoryGrab.classList.toggle('hide');
+            assetHistoryGrab.classList.remove('unHide');
+        })
+        butCancelDiv.append(butCancel);
+            assetHistoryGrab.innerText = "";
+        assetHistoryGrab.append(butCancelDiv);
+        dataResponse.msg[0].assetActivityHistory.forEach(activityObj=>{
+            let assetHistoryInnerDiv = document.createElement('div');
+            assetHistoryInnerDiv.innerText = `Type: ${activityObj.activity}  | \t User:${activityObj.user}  |  By: ${activityObj.activityBy}  | \tDate:${activityObj.activityDate}`
+            assetHistoryGrab.append(assetHistoryInnerDiv);
+        })
+        assetHistoryGrab.classList.remove('hide');
+        assetHistoryGrab.classList.toggle('unHide');
+        console.log(assetHistoryGrab.classList);
+}
+
+    let approvalCounterObj = '<%- JSON.stringify(approvalCounterObj) %>';
+    console.log('This is approvalCounterObj: ', approvalCounterObj);
+    console.log('This is approvalCounterObj (obj): ', JSON.parse(approvalCounterObj));
+
+    let userVar = '<%- JSON.stringify(user) %>';
+    let userVarObj = JSON.parse(userVar);
+    console.log('role ', userVarObj.userRole.role);
     let userID = '<%- user.id %>';
     let approvingId = '<%- approvingId %>';
     let approvalDiv = '<%- divApprovalSetting %>';
@@ -275,17 +418,16 @@
 
     let idObj = {};
     let externalApproveDivGrab = document.getElementById('externalApproveDiv');
+    let externalApproveDivGrab2 = document.getElementById('externalApproveDiv2');
     let revealBool = false;
     let userRole = '<%=user.userRole.role%>';
-
-    alert(userRole);
-
 
     //External approval
     // console.log('This is approving Id', approvingId);
     console.log('This is approval level', approvalDiv);
     console.log('This is user to Approve, ', usersToApprove);
     console.log('This is the div', externalApproveDivGrab);
+    console.log('This is the externalApproveDivGrab2', externalApproveDivGrab2);
     let assignDeassignType;
     switch(approvalDiv){
         case 'stateApproval':
@@ -307,6 +449,8 @@
             break;   
             
     }
+
+    //old
     usersToApprove.forEach((userObj, i)=>{
         console.log(usersToApprove.length);
         console.log(userObj.id);
@@ -327,6 +471,30 @@
         console.log('This is action: ', externalApproveDivGrab.getElementsByClassName('approveWithout')[i].action)
     })
     
+
+    //second
+    usersToApprove.forEach((userObj, i)=>{
+        console.log(usersToApprove.length);
+        console.log(userObj.id);
+        idObj.userId = userObj.id;
+        idObj['idArrAsset'] = (userObj.approvedAssets.map((asset)=>asset.assetType)); //push assetIds
+        idObj['idTypeArr'] = (userObj.approvedAssets.map((asset)=>asset.assetType)); //push assetIds
+        idObj['idArr'] = (userObj.approvedAssets.map((asset)=>asset._id)); //push assetIds
+        
+            //This is external approval, so we have to provide
+            //everything needed here, as oppposed to passing 
+            //it approvingUserId in a get link, as we go into
+            //internal approval
+        idObj.approvingUserId = userID; //or restore to approvingId above and uncomment above
+        console.log('This is idObj, ', idObj);
+        if (userObj.approvedAsset){
+            if (userObj.approvedAsset.assetApproval[user.userRole.role] != 'approved'){  
+                externalApproveDivGrab2.getElementsByClassName('approveWithout2')[i].action = `/user/assignDeassign2/${JSON.stringify(idObj)}?_method=PUT&assignment=${assignDeassignType}`;
+            }
+        }
+        console.log('This is JSon String: ', JSON.stringify(idObj));
+        console.log('This is action: ', externalApproveDivGrab.getElementsByClassName('approveWithout')[i].action)
+    })
 
 
 
@@ -1688,7 +1856,7 @@ var objClassList = {}
     }
 
     
-    alert('reached here')
+    // alert('reached here')
     let approvalBtnGrab = document.getElementsByClassName('approvalBtn');
     console.log(approvalBtnGrab);
     [ ...approvalBtnGrab].forEach(btn=>{
@@ -1697,6 +1865,29 @@ var objClassList = {}
     let showApprovalBtn = document.getElementsByClassName(userRole);
     [ ...showApprovalBtn].forEach(btnToShow=>{
         btnToShow.style.display = 'inline';
+    });
+
+
+    const ctx = document.getElementById('myChart');
+    console.log('This is ctx: ', ctx);
+  
+    new Chart(ctx, {
+      type: 'pie',
+      data: {
+        labels: Object.keys(approvalCounterObj),
+        datasets: [{
+          label: '# of Applications',
+          data: Object.values(approvalCounterObj),
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
     });
 </script>
 
