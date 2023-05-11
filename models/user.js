@@ -252,10 +252,12 @@ let userSchema = new mongoose.Schema({
             approvedAssets:[
                 {type: mongoose.Schema.Types.ObjectId, ref:'assetModel'}
             ]
-        }]
-    },
-    approvalSupId:{
-        type:String
+        }],
+        
+        auditAssigns:[Object],
+        approvalSupId:{
+            type:String
+        },
     },
     userStateApproval:{ //activated for directorate managers
         type:[Object]

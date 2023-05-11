@@ -571,6 +571,9 @@ app.get('/audGoLive/:room', async (req, res)=>{
                 let distinctState;
                 let distinctDirectorate;
                 let distinctRank;
+                let auditors;
+                let auditorsStaff;
+                let auditorsMap;
 
                 try{
                   distinctAuditAssets =  await assetTypeAuditModel.find({}).populate('assetType');//.select('assetTypeClass assetTypeAuditInterval');
@@ -578,7 +581,16 @@ app.get('/audGoLive/:room', async (req, res)=>{
                   distinctAssetManufacturer = await assetTypeModel.find({}).populate('assetType').distinct('assetTypeManufacturer');
                   distinctAssetLifeCycle = await assetTypeModel.find({}).populate('assetType').distinct('assetTypeLifeCycle');
                   distinctStatus = await assetTypeModel.find({}).populate('assetType').distinct('status');
+                  auditors = await userCredModel.find({}).where('subRole').equals('auditor');//.populate('profileId');
+                  
+                 auditorsMap = auditors.map(auditor=>{
+                    return auditor.profileId[0];
+                  })
+                  console.log('Mapped auditors ', auditorsMap);
+                  auditorsStaff = await userModel.find({}).where('_id').in(auditorsMap);//.select('firstName');
 
+                  // auditorStaff =  await userModel.find({}).where()
+                    // console.log('These are auditors: ', auditorStaff);
                   //userQueries
                   distinctState = await userModel.find({}).distinct('state');
                   distinctDirectorate = await userModel.find({}).distinct('directorate');
@@ -586,8 +598,7 @@ app.get('/audGoLive/:room', async (req, res)=>{
                 }catch(e){
               console.error(e)
                 }
-  
-                
+
   // let distinctAuditAssets =  await assetTypeAuditModel.find({}).select('assetTypeClass assetTypeAuditInterval');
                             // let userStoreApprovalRoles = await userModel.find({}).where('userStoreApproval').ne(null).distinct('approvalStatus');
                             // let query = req.queryObj; //from permitLists middleware
@@ -914,7 +925,9 @@ app.get('/audGoLive/:room', async (req, res)=>{
                                       distinctRank,
                                       reqUser:req.user,
                                       assetObj: assetObj,
-                                      reloadCheck:req.query.userState
+                                      reloadCheck:req.query.userState,
+                                      auditors:auditorsStaff,
+                                      // auditors2:auditors
                                   });                        
                               }catch(e) {
                                 console.error(e);
@@ -1408,6 +1421,42 @@ app.get('/getAssetTypes', async (req,res)=>{
     console.log('uiSettings: ', req.dispSetting);
     
     res.render('audit/room', {userId: req.params.userId, assetId:req.params.assetId, roomId:req.params.roomId, locationAudit: JSON.parse(req.params.locationAudit), uiSettings:req.dispSetting});
+  });
+ 
+  app.get('/assignAuditor/:assignObj', hideNavMenu(), async (req, res)=>{
+   
+      console.log('Assigning Auditor...');
+      let assignObj = JSON.parse(req.params.assignObj);
+      let assignedUserId = JSON.parse(req.params.assignObj).assignedUser;
+      console.log('Assigned user: ', assignedUserId);
+      let user = await userModel.find({}).where('_id').equals(assignedUserId);
+      user[0].userRole.auditAssigns.push(assignObj);
+      let assignedUser = await user[0].save();
+      // res.send(JSON.stringify({assignedUser}));
+
+       //Re-charting... 
+              auditors = await userCredModel.find({}).where('subRole').equals('auditor');//.populate('profileId');
+                          
+              auditorsMap = auditors.map(auditor=>{
+                  return auditor.profileId[0];
+                })
+                console.log('Mapped auditors ', auditorsMap);
+                auditorsStaff = await userModel.find({}).where('_id').in(auditorsMap);
+                let auditorObj = {}
+                auditorsStaff.forEach(auditor=>{
+                    // auditorObj[auditor._id] = 0;
+                    auditorObj[auditor.firstName] = 0;
+                });
+
+                auditorsStaff.forEach(auditor=>{
+                    // auditorObj[auditor._id] = auditor.userRole.auditAssigns.length;
+                    auditorObj[auditor.firstName] = auditor.userRole.auditAssigns.length;
+                });
+
+
+      res.json(auditorObj);
+    
+    // res.render('audit/room', {userId: req.params.userId, assetId:req.params.assetId, roomId:req.params.roomId, locationAudit: JSON.parse(req.params.locationAudit), uiSettings:req.dispSetting});
   });
   
   

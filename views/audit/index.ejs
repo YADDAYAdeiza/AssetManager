@@ -1,5 +1,5 @@
    
-    <h4>Welcomel, <%= userName %> </h4>
+    <h4>Welcome, <%= userName %> </h4>
     <div class=<%=msgClass%>>
         <p><%=msg%></p>
     </div>
@@ -101,6 +101,62 @@
         <%}%>
     </div>
     </div>
+
+
+    <div>
+        <div class = 'tab2'>
+            <%if (auditors){%>
+                <!-- Stats btn -->
+                    <button class="tablinks" onclick="openList(event, 'auditorAssignment')">Stats</button>
+                <!-- Other btns -->
+                <%auditors.forEach(auditor=>{%>
+                    <!-- The buttons -->
+                    <button class="tablinks" onclick="openList(event, '<%=auditor._id%>')"><%=auditor.firstName%></button>
+                <%})%>
+                    <!-- the divs -->
+                    <!-- Stats div -->
+                    <div id = 'auditorAssignment' class = 'tabcontent2 auditorAssignment'>
+                        <%if (auditors){%>
+                            Auditors
+                            <select name="auditorAssignSel" id="auditorAssignSel">
+                                <%auditors.forEach(auditor=>{%>
+                                    <div>
+                                        <%=auditor.firstName%>  
+                                      </div>
+                                    <option value="<%=auditor._id%>"><%=auditor.firstName%></option>
+                                <%})%>
+                            </select>
+                        <%}%>
+                        <button id="assignAuditor" onclick="assignAuditor()">Assign</button>
+                        <canvas id = 'auditorChart'>
+                        </canvas>
+                    </div>
+                    <!-- other divs -->
+                <%auditors.forEach(auditor=>{%>
+                    <div id="<%=auditor._id%>" class="tabcontent2">
+                        <p>
+                            <h3>Assigned Audit List</h3>
+                        </p>
+                            <%auditor.userRole.auditAssigns.forEach(assignAuditObj=>{%>
+                                 <div class = 'auditAssignDiv'>
+                                    <div class = "auditAssignString">
+                                        <%=JSON.stringify(assignAuditObj)%>
+                                    </div>
+                                    <div class="auditAssignObjActions">
+                                       <button>Delete</button>
+                                       <button>ReAssign</button>
+                                    </div>
+                                </div>
+                            <%})%>
+                        <p><%=auditor.userRole.auditAssigns[0]%></p>
+    
+                    </div>
+                <%})%> //
+            <%}%>
+        </div>
+    </div>
+
+    
     <h2>List of Profiles:</h2>
     <form action="">
         <div>
@@ -176,14 +232,129 @@
                 
 <div class="video-grid" id="video-grid"></div>
 
+
+
+
+
 <!-- Charting -->
 <div>
     <canvas id="myChart"></canvas>
 </div>
+
+
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script>
+
+function openList(evt, cityName) {
+  // Declare all variables
+  alert('Opening...')
+  var i, tabcontent, tablinks;
+
+  // Get all elements with class="tabcontent" and hide them
+  tabcontent = document.getElementsByClassName("tabcontent2");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+  }
+
+  // Get all elements with class="tablinks" and remove the class "active"
+  tablinks = document.getElementsByClassName("tablinks");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" active", "");
+  }
+
+  // Show the current tab, and add an "active" class to the button that opened the tab
+  document.getElementById(cityName).style.display = "block";
+  evt.currentTarget.className += " active";
+}
+
+    async function assignAuditor(){
+        alert('Assign to Auditor');
+        let assignObj = {
+            userState:userStateGrab.value,
+            userDirectorate:userDirectorateGrab.value,
+            userRank:userRankGrab.value,
+            assignedUser:auditorAssignSelGrab.value,
+            assignedBy:reqUserObj._id
+        }
+
+        // checkIfAssignExists(assignObj);
+        addToTab(assignObj);
+
+        
+        let auditOptionsObj = await fetch(`/assignAuditor/${JSON.stringify(assignObj)}`);
+        
+                    console.log(auditOptionsObj);
+                    let objOptions = await auditOptionsObj.json();
+                    console.log('Back from server: ',objOptions); 
+                    alert('Re-charting...')
+                    if (auditChart){
+                        auditChart.destroy();
+                    }
+                   auditChart = new Chart(ctx2, {
+                        type: 'bar',
+                        data: {
+                            labels: Object.keys(objOptions),
+                            datasets: [{
+                            label: '# of Votes',
+                            data: Object.values(objOptions),
+                            borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                            }
+                        }
+                        });
+    }
+
+    function addToTab(obj){ //cosmetic addition to the auditor tab; though it has been stored on the server
+        console.log('Adding to tab: ', JSON.stringify(obj));
+        checkIfAssignExists(obj);
+        let auditActionsDiv = document.createElement('div');
+        auditActionsDiv.setAttribute('class', 'auditAssignObjActions');
+        let auditActionDelete = document.createElement('button');
+            auditActionDelete.innerHTML = 'Delete';
+        let auditActionReAssign = document.createElement('button');
+            auditActionReAssign.innerHTML = 'ReAssign';
+        auditActionsDiv.appendChild(auditActionDelete);
+        auditActionsDiv.appendChild(auditActionReAssign);
+        
+        let auditDiv = document.createElement('div');
+            auditDiv.setAttribute('class', 'auditAssignDiv');
+        let auditAssignStringDiv = document.createElement('div');
+            auditAssignStringDiv.setAttribute('class', 'auditAssignString');
+            auditAssignStringDiv.innerHTML = JSON.stringify(obj);
+            auditDiv.appendChild(auditAssignStringDiv);
+            auditDiv.appendChild(auditActionsDiv);
+        document.getElementById(obj.assignedUser).appendChild(auditDiv);
+        // <div class="auditAssignObjActions">
+        //                                <button>Delete</button>
+        //                                <button>ReAssign</button>
+        //                             </div>
+    }
+
+    function checkIfAssignExists(obj){
+        let auditAssignStringGrab = document.getElementsByClassName('auditAssignString');
+        let auditAssignStringGrabMap = [ ...auditAssignStringGrab].map(div=>{
+            return div.innerHTML
+        })
+
+        console.log('This is auditAssignStringGrabMap: ', auditAssignStringGrabMap)
+
+        if (auditAssignStringGrabMap.indexOf(JSON.stringify(obj) == -1)){
+            prompt('You have assigned this before');
+            return;
+        }else {
+            console.log('Assigned...');
+        }
+    }
+
 
     //socket
     var socket = io('https://assetmanger.herokuapp.com/');
@@ -200,11 +371,28 @@
     })
 
 
-
+    let auditChart;
     let assetObj = '<%- JSON.stringify(assetObj) %>';
+    let auditors = <%- JSON.stringify(auditors) %>;
+    console.log('Here is auditors, ', auditors);
     assetObj = JSON.parse(assetObj);
+    auditorsObj = auditors;//JSON.parse(auditors);
+        let auditorObj = {}
+        auditorsObj.forEach(auditor=>{
+            // auditorObj[auditor._id] = 0;
+            auditorObj[auditor.firstName] = 0;
+        });
+
+        auditorsObj.forEach(auditor=>{
+            // auditorObj[auditor._id] = auditor.userRole.auditAssigns.length;
+            auditorObj[auditor.firstName] = auditor.userRole.auditAssigns.length;
+        });
+
+    console.log('Audit Assigns: ', auditorsObj);
+    console.log('Audit Assigns Obj: ', auditorObj);
     console.log('assetObj on client', assetObj);
     const ctx = document.getElementById('myChart');
+    const ctx2 = document.getElementById('auditorChart');
   
     new Chart(ctx, {
       type: 'bar',
@@ -224,6 +412,25 @@
         }
       }
     });
+
+    auditChart = new Chart(ctx2, {
+      type: 'bar',
+      data: {
+        labels: Object.keys(auditorObj),
+        datasets: [{
+          label: '# of Votes',
+          data: Object.values(auditorObj),
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
   </script>
   <!-- End of Charting -->
 
@@ -232,9 +439,15 @@
 </script>
 <!-- <script src="/socket.io/socket.io.js"></script> -->
 <script defer>
+            let reqUser = '<%- JSON.stringify(reqUser)%>';
+            let reqUserObj = JSON.parse(reqUser);
+            console.log('This is: ', reqUserObj);
             // let auditTrailDivGrab = document.getElementById('auditTrailDiv');
+            let auditorAssignSelGrab = document.getElementById('auditorAssignSel');
+            let assignAuditorGrab = document.getElementById('assignAuditor');
             let settingsDivContGrab = document.getElementById('settingsDivCont');
             // let settingsDivGrab = document.getElementById('settingsDiv');
+            // console.log('This is reqUser: ', reqUser);
             let userID = '<%- userEmail %>';
             let dateLabelGrab = document.getElementById('dateLabel');
                 dateLabelGrab.innerHTML =  new Date(Date.now());
