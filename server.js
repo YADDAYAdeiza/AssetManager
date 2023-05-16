@@ -1458,6 +1458,62 @@ app.get('/getAssetTypes', async (req,res)=>{
     
     // res.render('audit/room', {userId: req.params.userId, assetId:req.params.assetId, roomId:req.params.roomId, locationAudit: JSON.parse(req.params.locationAudit), uiSettings:req.dispSetting});
   });
+
+
+  app.get('/deleteAuditAssign/:obj', async (req, res)=>{
+    console.log('hitting delete');
+    console.log(req.params.obj);
+    console.log(JSON.parse(req.params.obj));
+    let objParse = (JSON.parse(req.params.obj));
+
+    let auditUser = await userModel.find({}).where('_id').equals(objParse.assignedUser);
+    console.log(auditUser[0].firstName);
+    // auditUser[0].userRole.auditAssigns.forEach((auditObj, i)=>{
+    //   if (JSON.stringify(auditObj) == req.params.obj.trim()){
+    //     console.log(auditUser[0].userRole.auditAssigns.length);
+    //     auditUser[0].userRole.auditAssigns.slice(i,1);
+    //     console.log('Deleted', i);
+    //     console.log(auditUser[0].userRole.auditAssigns.length);
+    //   }
+    // })
+    let counter = 0;
+    for (auditObj of auditUser[0].userRole.auditAssigns){
+      counter++
+      if (JSON.stringify(auditObj) == req.params.obj.trim()){
+        console.log(auditUser[0].userRole.auditAssigns.length);
+        auditUser[0].userRole.auditAssigns.splice(counter,1);
+        console.log('Deleted', counter);
+        console.log(auditUser[0].userRole.auditAssigns.length);
+        // await auditUser[0].save();
+      }
+    }
+
+    await auditUser[0].save();
+    res.json({msg:'deleted'});
+  });
+
+  app.get('/checkIfAssignExists/:obj', async (req, res)=>{
+    
+    console.log('From client: ', req.params.obj);
+
+    let parseObj = JSON.parse(req.params.obj);
+    let objKeys = Object.keys(JSON.parse(req.params.obj));
+    // console.log('objKeys: ',  objKeys)
+    console.log('parseObj: ',  parseObj);
+    let objVals = Object.values(JSON.parse(req.params.obj));
+
+    let assignedAuditor = await userModel.find({}).where('_id').equals(parseObj['assignedUser']);
+    console.log('This is auditor', assignedAuditor[0]);
+
+    let auditObjExists = assignedAuditor[0].userRole.auditAssigns.filter(auditObj=>{
+      if (auditObj.userState == parseObj.userState && auditObj.userDirectorate == parseObj.userDirectorate && auditObj.userRank == parseObj.userRank){
+        return true;
+      }
+    })
+    console.log('auditObjExists: ', auditObjExists);
+    res.json({'auditObjExists': auditObjExists})
+   
+  })
   
   
   app.use('/user', checkAuthenticated, userRoute);

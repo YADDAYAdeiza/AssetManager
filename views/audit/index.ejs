@@ -143,7 +143,7 @@
                                         <%=JSON.stringify(assignAuditObj)%>
                                     </div>
                                     <div class="auditAssignObjActions">
-                                       <button>Delete</button>
+                                       <button onclick="DeleteAssignedAudit(event.currentTarget)">Delete</button>
                                        <button>ReAssign</button>
                                     </div>
                                 </div>
@@ -281,58 +281,80 @@ function openList(evt, cityName) {
         }
 
         // checkIfAssignExists(assignObj);
-        addToTab(assignObj);
+        let  returnaddToTabValue = await addToTab(assignObj);
 
-        
-        let auditOptionsObj = await fetch(`/assignAuditor/${JSON.stringify(assignObj)}`);
-        
-                    console.log(auditOptionsObj);
-                    let objOptions = await auditOptionsObj.json();
-                    console.log('Back from server: ',objOptions); 
-                    alert('Re-charting...')
-                    if (auditChart){
-                        auditChart.destroy();
-                    }
-                   auditChart = new Chart(ctx2, {
-                        type: 'bar',
-                        data: {
-                            labels: Object.keys(objOptions),
-                            datasets: [{
-                            label: '# of Votes',
-                            data: Object.values(objOptions),
-                            borderWidth: 1
-                            }]
-                        },
-                        options: {
-                            scales: {
-                            y: {
-                                beginAtZero: true
-                            }
-                            }
+        if ( returnaddToTabValue == true){
+            alert ('addToTab'+ returnaddToTabValue);
+            //Do nothing
+        }else{
+            //update database
+            alert('returnaddToTabValue: '+ returnaddToTabValue)
+            let auditOptionsObj = await fetch(`/assignAuditor/${JSON.stringify(assignObj)}`);
+            
+                        console.log(auditOptionsObj);
+                        let objOptions = await auditOptionsObj.json();
+                        console.log('Back from server: ',objOptions); 
+                        alert('Re-charting...')
+                        if (auditChart){
+                            auditChart.destroy();
                         }
-                        });
+                       auditChart = new Chart(ctx2, {
+                            type: 'bar',
+                            data: {
+                                labels: Object.keys(objOptions),
+                                datasets: [{
+                                label: '# of Votes',
+                                data: Object.values(objOptions),
+                                borderWidth: 1
+                                }]
+                            },
+                            options: {
+                                scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                                }
+                            }
+                            });
+        }
     }
 
-    function addToTab(obj){ //cosmetic addition to the auditor tab; though it has been stored on the server
+    async function addToTab(obj){ //cosmetic addition to the auditor tab; though it has been stored on the server
         console.log('Adding to tab: ', JSON.stringify(obj));
-        checkIfAssignExists(obj);
-        let auditActionsDiv = document.createElement('div');
-        auditActionsDiv.setAttribute('class', 'auditAssignObjActions');
-        let auditActionDelete = document.createElement('button');
-            auditActionDelete.innerHTML = 'Delete';
-        let auditActionReAssign = document.createElement('button');
-            auditActionReAssign.innerHTML = 'ReAssign';
-        auditActionsDiv.appendChild(auditActionDelete);
-        auditActionsDiv.appendChild(auditActionReAssign);
-        
-        let auditDiv = document.createElement('div');
-            auditDiv.setAttribute('class', 'auditAssignDiv');
-        let auditAssignStringDiv = document.createElement('div');
-            auditAssignStringDiv.setAttribute('class', 'auditAssignString');
-            auditAssignStringDiv.innerHTML = JSON.stringify(obj);
-            auditDiv.appendChild(auditAssignStringDiv);
-            auditDiv.appendChild(auditActionsDiv);
-        document.getElementById(obj.assignedUser).appendChild(auditDiv);
+        let retVal =  checkIfAssignExists2(obj);
+
+        console.log('retVal: ', await retVal)
+        console.log('retVal: ', await retVal[0]);
+
+        let existsVal = await retVal;
+
+        console.log('existsVal: ', existsVal);
+
+        if (await existsVal[0]){
+            alert('This audit is already assigned! (' +existsVal[1]+')');
+            return await existsVal[0]; //returncheckIfAssignExistsValue; //true
+        }else{
+            alert('Nope'+retVal[0]);
+            let auditActionsDiv = document.createElement('div');
+            auditActionsDiv.setAttribute('class', 'auditAssignObjActions');
+            let auditActionDelete = document.createElement('button');
+                auditActionDelete.innerHTML = 'Delete';
+            let auditActionReAssign = document.createElement('button');
+                auditActionReAssign.innerHTML = 'ReAssign';
+            auditActionsDiv.appendChild(auditActionDelete);
+            auditActionsDiv.appendChild(auditActionReAssign);
+            
+            let auditDiv = document.createElement('div');
+                auditDiv.setAttribute('class', 'auditAssignDiv');
+            let auditAssignStringDiv = document.createElement('div');
+                auditAssignStringDiv.setAttribute('class', 'auditAssignString');
+                auditAssignStringDiv.innerHTML = JSON.stringify(obj);
+                auditDiv.appendChild(auditAssignStringDiv);
+                auditDiv.appendChild(auditActionsDiv);
+            document.getElementById(obj.assignedUser).appendChild(auditDiv);
+
+            // return 1
+        }
         // <div class="auditAssignObjActions">
         //                                <button>Delete</button>
         //                                <button>ReAssign</button>
@@ -341,18 +363,48 @@ function openList(evt, cityName) {
 
     function checkIfAssignExists(obj){
         let auditAssignStringGrab = document.getElementsByClassName('auditAssignString');
+        alert(auditAssignStringGrab.length);
         let auditAssignStringGrabMap = [ ...auditAssignStringGrab].map(div=>{
-            return div.innerHTML
+            return div.innerText.trim();
         })
 
         console.log('This is auditAssignStringGrabMap: ', auditAssignStringGrabMap)
 
-        if (auditAssignStringGrabMap.indexOf(JSON.stringify(obj) == -1)){
+        if (auditAssignStringGrabMap.indexOf(JSON.stringify(obj)) != -1){
+            console.log('index of assigned: ', auditAssignStringGrabMap.indexOf(JSON.stringify(obj)));
             prompt('You have assigned this before');
-            return;
+            return 0;
         }else {
+            console.log('index of assigned2: ', auditAssignStringGrabMap.indexOf(JSON.stringify(obj) != -1));
+            console.log(JSON.stringify(obj));
             console.log('Assigned...');
         }
+    }
+   async function checkIfAssignExists2(obj){
+        let auditOptionsObj = await fetch(`/checkIfAssignExists/${JSON.stringify(obj)}`);
+            
+                        console.log(auditOptionsObj);
+                        let objOptions = await auditOptionsObj.json();
+                        console.log('This is auditExists: ', objOptions);
+                        console.log('This is auditExists2: ', objOptions.auditObjExists.length);
+        alert (await objOptions.auditObjExists.length > 0);
+         return ([await objOptions.auditObjExists.length > 0, await objOptions.auditObjExists[0].assignedUser]);
+    }
+
+    async function DeleteAssignedAudit(e){
+        alert('Deleting...');
+        console.log('This is this: ', this)
+        console.log(e);
+        console.log(e.parentNode.parentNode);
+
+        console.log(e.parentNode.parentNode.getElementsByClassName('auditAssignString')[0].innerHTML);
+        let objString = e.parentNode.parentNode.getElementsByClassName('auditAssignString')[0].innerHTML;
+        e.parentNode.parentNode.parentNode.removeChild(e.parentNode.parentNode);
+
+        let auditOptionsObj = await fetch(`/deleteAuditAssign/${objString}`);
+                    console.log(auditOptionsObj);
+                    let objOptions = await auditOptionsObj.json();
+                    console.log(objOptions); 
     }
 
 
