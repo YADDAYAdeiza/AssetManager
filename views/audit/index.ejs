@@ -388,7 +388,7 @@ function openList(evt, cityName) {
                         console.log('This is auditExists: ', objOptions);
                         console.log('This is auditExists2: ', objOptions.auditObjExists.length);
         alert (await objOptions.auditObjExists.length > 0);
-         return ([await objOptions.auditObjExists.length > 0, await objOptions.auditObjExists[0].assignedUser]);
+         return ([await objOptions.auditObjExists.length > 0, (objOptions.auditObjExists.length)? await objOptions.auditObjExists[0].assignedUser:'No User']);
     }
 
     async function DeleteAssignedAudit(e){

@@ -1493,7 +1493,8 @@ app.get('/getAssetTypes', async (req,res)=>{
   });
 
   app.get('/checkIfAssignExists/:obj', async (req, res)=>{
-    
+    let auditObjExists = [];
+    let auditorProfiles = [];
     console.log('From client: ', req.params.obj);
 
     let parseObj = JSON.parse(req.params.obj);
@@ -1502,14 +1503,31 @@ app.get('/getAssetTypes', async (req,res)=>{
     console.log('parseObj: ',  parseObj);
     let objVals = Object.values(JSON.parse(req.params.obj));
 
-    let assignedAuditor = await userModel.find({}).where('_id').equals(parseObj['assignedUser']);
-    console.log('This is auditor', assignedAuditor[0]);
-
-    let auditObjExists = assignedAuditor[0].userRole.auditAssigns.filter(auditObj=>{
-      if (auditObj.userState == parseObj.userState && auditObj.userDirectorate == parseObj.userDirectorate && auditObj.userRank == parseObj.userRank){
-        return true;
+    // let assignedAuditor = await userModel.find({}).where('_id').equals(parseObj['assignedUser']);
+    let assignedAuditor = await userCredModel.find({}).where('subRole').equals('auditor');
+      for (auditor of assignedAuditor){
+          auditorProfiles.push(await userModel.findById({}).where('_id').equals(auditor.profileId[0]));
       }
-    })
+console.log('This is auditorProfiles: ', auditorProfiles);
+
+      for (auditorProfile of auditorProfiles){
+        console.log(auditorProfile.firstName);
+        auditorProfile.userRole.auditAssigns.forEach(auditObj=>{
+          // console.log('Entered here1');
+          if (auditObj.userState == parseObj.userState && auditObj.userDirectorate == parseObj.userDirectorate && auditObj.userRank == parseObj.userRank){
+            console.log('Entered here2');
+            auditObjExists.push(auditObj);// return true;
+          }
+        })
+      }
+    // console.log('This is auditor', assignedAuditor[0]);
+    console.log('This is the audit', auditObjExists);
+
+    // let auditObjExists = assignedAuditor[0].userRole.auditAssigns.filter(auditObj=>{
+    //   if (auditObj.userState == parseObj.userState && auditObj.userDirectorate == parseObj.userDirectorate && auditObj.userRank == parseObj.userRank){
+    //     return true;
+    //   }
+    // })
     console.log('auditObjExists: ', auditObjExists);
     res.json({'auditObjExists': auditObjExists})
    
