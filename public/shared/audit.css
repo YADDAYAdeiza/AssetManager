@@ -122,9 +122,9 @@ video{
   }
   
   /* Create an active/current tablink class */
-  /* .tab button.active {
+  .tab2 button.active {
     background-color: #ccc;
-  } */
+  }
   
   /* Style the tab content */
   .tabcontent2 {

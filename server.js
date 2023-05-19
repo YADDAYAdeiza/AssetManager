@@ -1478,7 +1478,6 @@ app.get('/getAssetTypes', async (req,res)=>{
     // })
     let counter = 0;
     for (auditObj of auditUser[0].userRole.auditAssigns){
-      counter++
       if (JSON.stringify(auditObj) == req.params.obj.trim()){
         console.log(auditUser[0].userRole.auditAssigns.length);
         auditUser[0].userRole.auditAssigns.splice(counter,1);
@@ -1486,6 +1485,7 @@ app.get('/getAssetTypes', async (req,res)=>{
         console.log(auditUser[0].userRole.auditAssigns.length);
         // await auditUser[0].save();
       }
+      counter++
     }
 
     await auditUser[0].save();
@@ -1532,6 +1532,54 @@ console.log('This is auditorProfiles: ', auditorProfiles);
     res.json({'auditObjExists': auditObjExists})
    
   })
+
+
+  app.get('/reAssignAuditor/:reAssignedAudit/:newAuditorId', async (req, res)=>{
+    let auditorProfiles = [];
+    console.log('RE-Assigning');
+    console.log(req.params.reAssignedAudit);
+    console.log(req.params.newAuditorId);
+
+    let parseObj = JSON.parse(req.params.reAssignedAudit);
+
+    let user = await userModel.findById({}).where('_id').equals(parseObj.assignedUser);
+        user.userRole.auditAssigns.forEach((auditObj, i)=>{
+          if (auditObj.userState == parseObj.userState && auditObj.userDirectorate == parseObj.userDirectorate && auditObj.userRank == parseObj.userRank){
+                  console.log('Entered here2');
+                  user.userRole.auditAssigns.splice(i,1);
+                  // auditObjExists.push(auditObj);// return true;
+            }
+        })
+
+        await user.save();
+
+        //Now, work on To.
+      let toUser = await userModel.findById({}).where('_id').equals(req.params.newAuditorId);
+        toUserNewLength  = toUser.userRole.auditAssigns.push(parseObj)
+        await toUser.save();
+
+        //recharting
+        //Re-charting... 
+        let auditors = await userCredModel.find({}).where('subRole').equals('auditor');//.populate('profileId');
+                          
+        let auditorsMap = auditors.map(auditor=>{
+            return auditor.profileId[0];
+          })
+          console.log('Mapped auditors ', auditorsMap);
+          let auditorsStaff = await userModel.find({}).where('_id').in(auditorsMap);
+          let auditorObj = {}
+          auditorsStaff.forEach(auditor=>{
+              // auditorObj[auditor._id] = 0;
+              auditorObj[auditor.firstName] = 0;
+          });
+
+          auditorsStaff.forEach(auditor=>{
+              // auditorObj[auditor._id] = auditor.userRole.auditAssigns.length;
+              auditorObj[auditor.firstName] = auditor.userRole.auditAssigns.length;
+          });
+          // res.json(auditorObj);
+        res.send(JSON.stringify(auditorObj)); //ideally, this length should be more than what it was before the assignment
+  });
   
   
   app.use('/user', checkAuthenticated, userRoute);

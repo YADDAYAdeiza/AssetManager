@@ -128,6 +128,7 @@
                             </select>
                         <%}%>
                         <button id="assignAuditor" onclick="assignAuditor()">Assign</button>
+                        <button id="reAssignAuditor" onclick="reAssignAuditor(event.target)" disabled>Re-Assign</button>
                         <canvas id = 'auditorChart'>
                         </canvas>
                     </div>
@@ -144,7 +145,8 @@
                                     </div>
                                     <div class="auditAssignObjActions">
                                        <button onclick="DeleteAssignedAudit(event.currentTarget)">Delete</button>
-                                       <button>ReAssign</button>
+                                       <button onclick="ReAssignAudit(event.currentTarget)">ReAssign</button>
+                                       <button>Load</button>
                                     </div>
                                 </div>
                             <%})%>
@@ -248,8 +250,12 @@
 <script src="/socket.io/socket.io.js"></script>
 <script>
 
-function openList(evt, cityName) {
+let reAssignedDOMDiv; //for temporarily holding div to be reassinged
+
+function openList(evt, cityName, reAssignedDiv) {
   // Declare all variables
+  console.log('This is reAssignedDiv: ', reAssignedDiv)
+   reAssignedDOMDiv = reAssignedDiv;
   alert('Opening...')
   var i, tabcontent, tablinks;
 
@@ -341,8 +347,11 @@ function openList(evt, cityName) {
                 auditActionDelete.innerHTML = 'Delete';
             let auditActionReAssign = document.createElement('button');
                 auditActionReAssign.innerHTML = 'ReAssign';
+            let auditActionLoad = document.createElement('button');
+                auditActionReAssign.innerHTML = 'Load';
             auditActionsDiv.appendChild(auditActionDelete);
             auditActionsDiv.appendChild(auditActionReAssign);
+            auditActionsDiv.appendChild(auditActionLoad);
             
             let auditDiv = document.createElement('div');
                 auditDiv.setAttribute('class', 'auditAssignDiv');
@@ -405,6 +414,54 @@ function openList(evt, cityName) {
                     console.log(auditOptionsObj);
                     let objOptions = await auditOptionsObj.json();
                     console.log(objOptions); 
+    }
+
+
+    function ReAssignAudit(e){
+        alert('ReAssigning...');
+        console.log(e.parentNode.parentNode);
+        openList(event, 'auditorAssignment', e.parentNode.parentNode);
+        console.log(reAssignAuditorGrab);
+        reAssignAuditorGrab.disabled = false;
+    }
+    
+    async function reAssignAuditor(e){
+        console.log('Div to be reassigned: ', reAssignedDOMDiv);
+        // openList(event, auditorAssignSelGrab.value, reAssignedDOMDiv);
+        openList(event, 'auditorAssignment', reAssignedDOMDiv)
+        document.getElementById(auditorAssignSelGrab.value).appendChild(reAssignedDOMDiv);
+
+        //Now, to effect it on the server and database
+        let auditOptionsObj = await fetch(`/reAssignAuditor/${reAssignedDOMDiv.getElementsByClassName('auditAssignString')[0].innerText}/${auditorAssignSelGrab.value}`);
+                    console.log(auditOptionsObj);
+                    let objOptions = await auditOptionsObj.json();
+                    console.log('This should be newLength: ', objOptions); 
+
+            if (auditChart){
+                    auditChart.destroy();
+                }
+               auditChart = new Chart(ctx2, {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(objOptions),
+                        datasets: [{
+                        label: '# of Votes',
+                        data: Object.values(objOptions),
+                        borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                        }
+                    }
+                    });
+
+        e.disabled = true;
+
+        
     }
 
 
@@ -532,6 +589,7 @@ function openList(evt, cityName) {
                 viewSavedSnapShotGrab.addEventListener('click', viewSavedSnapShotFunc);
             let viewSavedSnapShotFuncBool = true;
             let viewSavedSnapsGrab = document.getElementById('viewSavedSnapsContainer');
+            let reAssignAuditorGrab = document.getElementById('reAssignAuditor');
 
             expandAuditGrab.addEventListener('click', function(e){
                 e.preventDefault();
