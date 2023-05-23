@@ -146,7 +146,8 @@
                                     <div class="auditAssignObjActions">
                                        <button onclick="DeleteAssignedAudit(event.currentTarget)">Delete</button>
                                        <button onclick="ReAssignAudit(event.currentTarget)">ReAssign</button>
-                                       <button>Load</button>
+                                       <button onclick = "LoadAssignAudit(event.currentTarget)">Load</button>
+                                       <span class = 'numberOfAudits'>(Nos)</span>
                                     </div>
                                 </div>
                             <%})%>
@@ -191,7 +192,7 @@
                     <ul>
                         <li>
                             <div>
-                               <% console.log('Does id have assetCode? ', user.id.assetCode)%>
+                               <% console.log('Does id have assetCode? ', user.id? user.id.assetCode:"")%>
                                <%console.log('locationAudit: ',users[userId].locationAudit)%>
                                 <a href="/asset/<%= user.id._id %>"><%=user.id._id%></a><button id="viewAuditBut" value="<%=user.id._id%>" onclick = '(function (){viewAuditTrail("<%=user.id._id%>", true)})()'>|View Audit Trail</button>|<div><a href = '/videoAudit/<%=userId%>/<%=user.id._id%>/<%=user.id.assetCode%>/<%=JSON.stringify(users[userId].locationAudit)%>'>Video Audit</a></div>
                                 <div id="<%=user.id._id%>" class="auditTrailDiv" data-toggleAuditTrailbool = "true"></div>
@@ -249,8 +250,23 @@
 <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script>
-
-let reAssignedDOMDiv; //for temporarily holding div to be reassinged
+    
+    let reAssignedDOMDiv; //for temporarily holding div to be reassinged
+let users = '<%- JSON.stringify(users) %>';
+let usersObj = JSON.parse(users);
+console.log('Number of audits: ', usersObj);
+// let lengthOfAudits = usersObj.userObj.length;
+// console.log('Length of Audits ', lengthOfAudits);
+console.log('Keys ', Object.keys(usersObj));
+let totalAudit = 0; //counter for number of audits
+// Object.keys(usersObj).forEach(userId=>{
+//     totalAudit =+ usersObj(userId).userObj.length;
+// })
+Object.values(usersObj).forEach(val=>{
+    totalAudit =+ val.userObj.length
+});
+console.log('Total Audit: ', totalAudit);
+    
 
 function openList(evt, cityName, reAssignedDiv) {
   // Declare all variables
@@ -462,6 +478,17 @@ function openList(evt, cityName, reAssignedDiv) {
         e.disabled = true;
 
         
+    }
+
+    function LoadAssignAudit(e){
+        alert('Loading...');
+        let auditAssign = e.parentNode.parentNode.getElementsByClassName('auditAssignString')[0].innerText;
+        let auditAssignObj = JSON.parse(auditAssign);
+        userStateGrab.value = auditAssignObj.userState;
+        userDirectorateGrab.value = auditAssignObj.userDirectorate;
+        userRankGrab.value = auditAssignObj.userRank;
+        let numberOfAssignAudits = e.parentNode.parentNode.getElementsByClassName('numberOfAudits')[0];
+        numberOfAssignAudits.innerText = `(${totalAudit})`;
     }
 
 
