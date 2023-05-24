@@ -1,4 +1,7 @@
 var mongoose = require('mongoose');
+
+mongoose.set('strictQuery', false);
+
 const assetTypeModel = require('./assetType.js');
 const assetModel = require('./asset.js');
 

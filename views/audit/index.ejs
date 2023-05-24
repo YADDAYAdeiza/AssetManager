@@ -84,6 +84,7 @@
                     <input name='searchScope' type="checkbox" <%=searchParams.searchScope?"checked": ""%> />Own Accounts
                 </div>
             </form>
+            <button id="openSettings2" onclick="openSettings2Now()">Submit2</button>
         </div>
     <div class="formSettings">
         <!-- forEach -->
@@ -579,6 +580,7 @@ function openList(evt, cityName, reAssignedDiv) {
             let reqUserObj = JSON.parse(reqUser);
             console.log('This is: ', reqUserObj);
             // let auditTrailDivGrab = document.getElementById('auditTrailDiv');
+            let assetListGrab = document.getElementById('assetList');
             let auditorAssignSelGrab = document.getElementById('auditorAssignSel');
             let assignAuditorGrab = document.getElementById('assignAuditor');
             let settingsDivContGrab = document.getElementById('settingsDivCont');
@@ -975,6 +977,24 @@ function openList(evt, cityName, reAssignedDiv) {
                 formSettingsGrab.classList.toggle('formSettingsDisplay')
                 searchContDivGrab.classList.toggle('searchContDivSettings');
                 // formSettingsGrabBool = true;
+    }
+
+    async function openSettings2Now(){
+        // alert('Alternative submit');
+        postObj = {
+            userState:userStateGrab.value,
+            userDirectorate:userDirectorateGrab.value,
+            userRank:userRankGrab.value,
+            assetDateBeforeSearch:assetDateBeforeSearchGrab.value,
+            assetList:assetListGrab.value,
+            userAssetManufacturer:userAssetManufacturerGrab.value,
+            assetTypeLifeCycle:assetTypeLifeCycleGrab.value,
+            assetDatePurchased:assetDatePurchasedGrab.value
+        }
+
+        let getAudits = await fetch(`/getAudits/${JSON.stringify(postObj)}`);
+        let getAuditsJson = await getAudits.json();
+        console.log('This is fetch another option ', getAuditsJson);
     }
 
     async function saveSnapShotFunc(){

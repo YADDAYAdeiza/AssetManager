@@ -5,6 +5,7 @@ const assetModel = require('./asset.js');
 // const path = require('path');
 
 // const profileImagePath = 'uploads/profilePics';
+mongoose.set('strictQuery', false);
 
 if (process.env.NODE_ENV !=='production'){
     var dotEnv =  require('dotenv');

@@ -935,7 +935,287 @@ app.get('/audGoLive/:room', async (req, res)=>{
                                   res.render('user/index.ejs', {msg: `An error occurred getting the list`, searchParams:req.query, msgClass:'error-message'}); //tying the view to the moongoose model
                               }
 
-})
+});
+
+app.get('/getAudits/:auditParam', async (req,res)=>{
+  console.log('hitting... ', req.params.auditParam);
+  let auditParamObj = JSON.parse(req.params.auditParam);
+  console.log('As an object: ', auditParamObj);
+  console.log('This is assetDateBefore, ', req.query.assetDateBeforeSearch);
+
+  let auditArr = [];
+  console.log('req.query here: ', req.query);
+  console.log('Hitting...');
+  console.log(req.user);
+  console.log(req.query.userDateBeforeSearch);
+
+  let userApprovalRoles = await userModel.find({}).where('approvalStatus').ne(null).distinct('approvalStatus');
+  // let distinctAssets =  await assetTypeModel.find({}).distinct('assetTypeClass')
+                let distinctAuditAssets;
+                let distinctAssetManufacturer;
+                let distinctAssetLifeCycle;
+                let distinctStatus
+                let distinctState;
+                let distinctDirectorate;
+                let distinctRank;
+                let auditors;
+                let auditorsStaff;
+                let auditorsMap;
+
+                try{
+                  distinctAuditAssets =  await assetTypeAuditModel.find({}).populate('assetType');//.select('assetTypeClass assetTypeAuditInterval');
+                  // distinctAssetManufacturer = await assetTypeAuditModel.find({}).populate('assetType').distinct('assetManufacturer');
+                  distinctAssetManufacturer = await assetTypeModel.find({}).populate('assetType').distinct('assetTypeManufacturer');
+                  distinctAssetLifeCycle = await assetTypeModel.find({}).populate('assetType').distinct('assetTypeLifeCycle');
+                  distinctStatus = await assetTypeModel.find({}).populate('assetType').distinct('status');
+                  auditors = await userCredModel.find({}).where('subRole').equals('auditor');//.populate('profileId');
+                  
+                 auditorsMap = auditors.map(auditor=>{
+                    return auditor.profileId[0];
+                  })
+                  console.log('Mapped auditors ', auditorsMap);
+                  auditorsStaff = await userModel.find({}).where('_id').in(auditorsMap);//.select('firstName');
+
+                  // auditorStaff =  await userModel.find({}).where()
+                    // console.log('These are auditors: ', auditorStaff);
+                  //userQueries
+                  distinctState = await userModel.find({}).distinct('state');
+                  distinctDirectorate = await userModel.find({}).distinct('directorate');
+                  distinctRank = await userModel.find({}).distinct('rank');
+                }catch(e){
+              console.error(e)
+                }
+
+  // let distinctAuditAssets =  await assetTypeAuditModel.find({}).select('assetTypeClass assetTypeAuditInterval');
+                            // let userStoreApprovalRoles = await userModel.find({}).where('userStoreApproval').ne(null).distinct('approvalStatus');
+                            // let query = req.queryObj; //from permitLists middleware
+                            let query = userModel.find().populate('userOwnedAsset.idAudit.assetTypeId userOwnedAsset.idAudit.id'); //from permitLists middleware
+                            console.log('Back here');
+                            // console.log(query);
+                            query = query.where('userOwnedAsset.id').ne(null); //users with Assets
+                            // query.where(userOwnedAsset.id).equals
+                            if (req.query.userNameSearch != null && req.query.userNameSearch != ""){
+                                query = query.regex('firstName', new RegExp(req.query.userNameSearch, 'i'));
+                            }
+                            if (req.query.userDateBeforeSearch != null && req.query.userDateBeforeSearch != ""){
+                                query = query.lte('dateCreated', req.query.userDateBeforeSearch);
+                            }
+
+                            //userState
+                            if (auditParamObj.userState != null){// && req.query.userState != ""
+                              if (auditParamObj.userState == ""){
+                                //skip from query
+                                console.log('Skipped'); //return all
+                              }else{
+                                console.log('State')
+                                query = query.regex('state', auditParamObj.userState);
+                              }
+                            }
+                            if (auditParamObj.userDirectorate != null){// && req.query.userDirectorate != ""
+                              console.log('Directorate')
+                              if (auditParamObj.userDirectorate == ""){
+                                //skip from query
+                                console.log('Skipped Directorate'); //return all directorates
+                              }else{
+                                query = query.regex('directorate', auditParamObj.userDirectorate);
+                              }
+                            }
+                            if (auditParamObj.userRank != null){// && req.query.userRank != ""
+                              if (auditParamObj.userRank == ""){
+                                console.log('This is rank (skip) ', auditParamObj.userRank )
+                                //skip from query
+                              }else{
+                                console.log('This is rank (skip)2 ', auditParamObj.userRank )
+                                query = query.regex('rank', auditParamObj.userRank);
+                              }
+                            }
+                            if (auditParamObj.userApprovalRole != null && auditParamObj.userApprovalRole != ""){
+                              console.log('Approval')
+                                // auditParamObj.userApprovalRole = (auditParamObj.userApprovalRole == 'All')? null: auditParamObj.userApprovalRole
+                                if (auditParamObj.userApprovalRole == 'All'){
+                                  console.log('What is this?')
+                                    //Don't add to the query: Leave as is.
+                                }else {
+                                    console.log('What is this2?')
+                                    query = query.where('approvalStatus').equals(auditParamObj.userApprovalRole);
+                                }
+
+                            }
+
+                            let uiSettings = req.dispSetting;
+                            let userName = req.user.userName;
+                            console.log('This is userName, ', userName);
+                            console.log('These are assetTypes: ', distinctAuditAssets);
+                            console.log('These are distinctAssetManufacturer: ', distinctAssetManufacturer);
+                              try{
+                                  const users = await query.exec();
+
+                                  console.log('GeoCoord, ', users[0].geoCoord);
+  
+                                  let dateObj;
+                                  console.log('Today ',new Date(Date.now()) - new Date('2022-12-20T16:30:45.684+00:00'))
+                                  let diffT = new Date(Date.now()) - new Date('2022-12-20T16:30:45.684+00:00')
+                                  console.log('Number of Hours', new Date(diffT).getHours());
+                                
+                                  let assetUniqueAuditObjArr = await assetTypeAuditModel.find({}).populate('assetType');//.select('_id assetType audit');
+                                  let uniqueAssetObj = {};
+                                  // console.log('This is assetUniqueAuditObjArr, ', assetUniqueAuditObjArr);
+
+                                  //assets - auditInterval mappings
+                                    assetUniqueAuditObjArr.forEach(auditAssetType=>{
+                                      uniqueAssetObj[auditAssetType.assetType._id.toString()] = auditAssetType.assetTypeAuditInterval;
+                                      uniqueAssetObj[auditAssetType.assetType.assetTypeClass] = auditAssetType.assetTypeAuditInterval;
+                                    })
+                                    console.log('This is uniqueAssetObj, ', uniqueAssetObj);
+
+                                  //Now, we need to get into the for loop
+                                  // console.log('This is users', users);
+                                  let idAuditObj = {};
+                                  users.forEach(user=>{
+                                    for (var a=0;a<user.userOwnedAsset.idAudit.length;a++){ //is this necessary
+                                      idAuditObj[user.id] = {userObj:[]}
+                                    }
+                                  })
+
+                
+                              let filteredUser = []
+                               users.forEach(user=>{
+                                  for (var a=0;a<user.userOwnedAsset.idAudit.length;a++){
+                                    console.log('The name, ', user.firstName);
+
+                                    let numOfDays = (new Date(Date.now()).getTime() - user.userOwnedAsset.idAudit[a].auditDate.getTime())/(1000*60*60*24);
+                                    console.log('Asset ', user.userOwnedAsset.idAudit[a].id);
+                                    console.log('Number of Days (rounded), ', Math.round(numOfDays));
+                                    console.log('This is numOfDays ', numOfDays);
+                                    // console.log('First...')
+                                    if (auditParamObj.assetDateBeforeSearch != ''){// assetDate //go with the auditor settings.  (Or asset settings?)
+                                        console.log('Something...', user.userOwnedAsset.idAudit[a].id);
+                                        if (user.userOwnedAsset.idAudit[a].assetTypeId){
+                                          console.log('Lifecycle, ', user.userOwnedAsset.idAudit[a].assetTypeId.assetTypeLifeCycle);
+                                          console.log('id -', auditParamObj.assetList);
+                                          if (user.userOwnedAsset.idAudit[a].assetTypeId.assetTypeLifeCycle){
+                                            if (user.userOwnedAsset.idAudit[a].assetTypeId.assetTypePurchased){
+                                              console.log('Asset Purchased: ', user.userOwnedAsset.idAudit[a].assetTypeId.assetTypePurchased.getTime());
+                                              console.log('User length: ', users.length);
+                                              console.log('user.userOwnedAsset.idAudit.length, ', user.userOwnedAsset.idAudit.length);
+                                              console.log(user.userOwnedAsset.idAudit[a].assetTypeId.id.toString());
+                                              console.log('auditParamObj.assetList: ', auditParamObj.assetList);
+                                              console.log(user.userOwnedAsset.idAudit[a].assetTypeId.id.toString() == auditParamObj.assetList);
+                                              console.log(user.userOwnedAsset.idAudit[a].assetTypeId.assetTypeLifeCycle == (auditParamObj.assetTypeLifeCycle?auditParamObj.assetTypeLifeCycle:user.userOwnedAsset.idAudit[a].assetTypeId.assetTypeLifeCycle));
+                                              console.log(user.userOwnedAsset.idAudit[a].assetTypeId.assetTypeManufacturer == (auditParamObj.assetManufacturer?auditParamObj.assetManufacturer:user.userOwnedAsset.idAudit[a].assetTypeId.assetManufacturer));
+                                              console.log(user.userOwnedAsset.idAudit[a].assetTypeId.assetTypePurchased.getTime() < (new Date(auditParamObj.assetDatePurchased).getTime()));
+
+                                          if (user.userOwnedAsset.idAudit[a].auditDate.getTime() <= (new Date(auditParamObj.assetDateBeforeSearch).getTime()) && user.userOwnedAsset.idAudit[a].assetTypeId.id.toString() == auditParamObj.assetList && user.userOwnedAsset.idAudit[a].assetTypeId.assetTypeLifeCycle == (auditParamObj.assetTypeLifeCycle?auditParamObj.assetTypeLifeCycle:user.userOwnedAsset.idAudit[a].assetTypeId.assetTypeLifeCycle)  && user.userOwnedAsset.idAudit[a].assetTypeId.assetTypeManufacturer == (auditParamObj.assetManufacturer?auditParamObj.assetManufacturer:user.userOwnedAsset.idAudit[a].assetTypeId.assetManufacturer) && user.userOwnedAsset.idAudit[a].assetTypeId.assetTypePurchased.getTime() < (new Date(auditParamObj.assetDatePurchased).getTime())){//{
+                                 
+                                              console.log('less than now2');
+                                              console.log('assetTypeid ', user.userOwnedAsset.idAudit[a].assetTypeId.id.toString());
+                                              idAuditObj[user.id].userProfilePic = user.userProfilePic;
+                                              idAuditObj[user.id].firstName = user.firstName;
+                                              idAuditObj[user.id].userObj.push(user.userOwnedAsset.idAudit[a]);
+                                              idAuditObj[user.id].locationAudit = user.geoCoord;
+
+                                              console.log('Now', user.firstName, user.userOwnedAsset.idAudit[a].id)
+                                              // return user;
+                                              filteredUser.push(user)
+                                          }
+                                        }
+                                        }
+                                        }
+                                          
+                                        }else { //just go with the auditor admin settings auditIntervals
+                                          console.log('Nothing...');
+                                          console.log('Number of Days, ', numOfDays);
+                                          console.log('uniqueAssetObj object', uniqueAssetObj);
+                                          console.log('Before the id ', user.userOwnedAsset.idAudit[a]);
+                                          console.log('The id: ', user.userOwnedAsset.idAudit[a].assetTypeId);
+                                          console.log('Interval ', uniqueAssetObj[user.userOwnedAsset.idAudit[a].assetTypeId._id]);
+                                          if (Math.ceil(numOfDays) > (uniqueAssetObj[user.userOwnedAsset.idAudit[a].assetTypeId._id]) || Math.ceil(numOfDays) == (uniqueAssetObj[user.userOwnedAsset.idAudit[a].assetTypeId._id])){
+                                            console.log('Greater');
+                                            idAuditObj[user.id].userProfilePic = user.userProfilePic;
+                                            idAuditObj[user.id].firstName = user.firstName;
+                                            idAuditObj[user.id].locationAudit = user.geoCoord;
+                                            idAuditObj[user.id].userObj.push(user.userOwnedAsset.idAudit[a]);
+                                            // return user;
+                                            filteredUser.push(user)
+                                          }
+                                        }
+                                        // return (user.userOwnedAsset.idAudit[a].id.toString() == '63a1e335bc9dbf8077de0dc9');
+                                      }
+                                      // return (auditArr);
+                                      // auditArr.push(user.userOwnedAsset.idAudit[a])
+                                      
+                                    })
+                                    console.log('idAudit Now', idAuditObj);
+                                  
+
+                                  console.log('This is userToBeAudited...', auditArr);
+                                  console.log('This is userToBeAudited2...', idAuditObj);
+                                  
+                                  //settings  //should this be here, or higher up?
+                                      if(req.body.assetAuditInterval){ //if we are changing settings
+                                        console.log('Correcting...');
+                                        console.log(req.body);
+                                        let assetAuditObjArr = await assetTypeAuditModel.find({}).populate('assetType').where('_id').equals(req.body.assetId);
+                                            assetAuditObjArr[0].assetTypeAuditInterval = req.body.assetAuditInterval;
+                                            await assetAuditObjArr[0].save();
+                                      }
+
+                                      //Getting statistics
+                                            let assets = await assetModel.find({}).where('auditTrail').ne(null).select('assetName auditTrail');
+
+                                            console.log('Audited assets', assets.length);
+
+                                            let assetArr = [];
+                                            let assetObj = {
+                                              functional:0,
+                                              nonFunctional:0,
+                                              retired:0
+                                            }
+
+                                            assets.forEach((asset,i)=>{
+                                              if (asset.auditTrail.length){
+                                                asset.auditTrail.forEach((auditObj,j)=>{
+                                                  console.log('Status ',auditObj.auditStatus);
+                                                  ++assetObj[auditObj.auditStatus];
+                                                })
+                                              }
+                                            });
+
+                                      console.log('This is assetObj', assetObj)
+                                  // res.json({msg:idAuditObj});
+                                  console.log('As an object again: ', auditParamObj);
+
+                                  res.json(idAuditObj);
+                                  // res.render('audit/index.ejs', {
+                                  //     users:idAuditObj,
+                                  //     searchParams:auditParamObj,
+                                  //     msg:'Auditing',
+                                  //     msgClass:'noError',
+                                  //     userName,
+                                  //     roomId:req.params.room,
+                                  //     userEmail:req.user.email,
+                                  //     uiSettings,
+                                  //     userApprovalRoles,
+                                  //     distinctAuditAssets,
+                                  //     distinctAssetManufacturer,
+                                  //     distinctAssetLifeCycle,
+                                  //     dateObj,
+                                  //     distinctState,
+                                  //     distinctDirectorate,
+                                  //     distinctRank,
+                                  //     reqUser:req.user,
+                                  //     assetObj: assetObj,
+                                  //     reloadCheck:auditParamObj.userState,
+                                  //     auditors:auditorsStaff,
+                                  //     // auditors2:auditors
+                                  // });                        
+                              }catch(e) {
+                                console.error(e);
+                                  console.log('An error occured2');
+                                  res.render('user/index.ejs', {msg: `An error occurred getting the list`, searchParams:req.query, msgClass:'error-message'}); //tying the view to the moongoose model
+                              }
+
+}) //end of getAudits
 
 app.get('/auditSettingsCorrect/:data', async (req, res)=>{
   console.log('In auditSettingsCorrect');

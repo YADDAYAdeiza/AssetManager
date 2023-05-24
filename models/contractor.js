@@ -6,6 +6,8 @@ if (process.env.NODE_ENV !=='production'){
 }
 mongoose.connect(process.env.DATABASE_URL, {useNewUrlParser:true, useUnifiedTopology:true }); //play around with this
 
+mongoose.set('strictQuery', false);
+
 let contractorSchema = new mongoose.Schema({
     contractorCompanyName:{
         type:String,

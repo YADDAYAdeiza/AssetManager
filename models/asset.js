@@ -4,6 +4,8 @@ if (process.env.NODE_ENV !=='production'){
     var dotEnv =  require('dotenv');
     dotEnv.config();
 }
+
+mongoose.set('strictQuery', false);
 mongoose.connect(process.env.DATABASE_URL, {useNewUrlParser:true, useUnifiedTopology:true }); //play around with this
 
 const assetTypeModel = require('./assetType.js');

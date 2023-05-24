@@ -2,6 +2,8 @@ let express = require('express');
 let route = express.Router();
 let mongoose = require('mongoose');
 
+mongoose.set('strictQuery', false);
+
 let ejs = require('ejs');
 let {v4:uuidv4} = require('uuid');
 

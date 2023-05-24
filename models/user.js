@@ -1,6 +1,11 @@
 var mongoose = require('mongoose');
+
+mongoose.set('strictQuery', false);
+
 const assetTypeModel = require('./assetType.js');
 const assetModel = require('./asset.js');
+
+mongoose.set('strictQuery', false);
 
 if (process.env.NODE_ENV !=='production'){
     var dotEnv =  require('dotenv');
