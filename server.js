@@ -1399,6 +1399,27 @@ app.put('/auditStatus', async (req, res)=>{
   // console.log(asset2);
 })
 
+app.get('/auditStatus2/:auditUpdateObj', async (req, res)=>{
+  console.log('auditUpdateObj is ', req.params.auditUpdateObj);
+  let auditUpdateObjParse = JSON.parse(req.params.auditUpdateObj);
+  let asset =  await assetModel.find({}).where('_id').equals(auditUpdateObjParse.assetId).select('assetCode assetType assetName auditTrail');
+  console.log('This is asset,', asset);
+  asset[0].auditTrail.push(
+    {
+      user:auditUpdateObjParse.userId,
+      auditedBy:auditUpdateObjParse.auditorId,
+      auditStatus:auditUpdateObjParse.auditStatus
+    }
+  );
+
+  let asset2 = await asset[0].save();
+  res.json({updatedAsset:asset2});
+ 
+  // console.log(asset2);
+})
+
+
+
 app.get('/auditTrail/:id', async (req, res)=>{
   console.log('Auditing records...')
   console.log(req.params.id);

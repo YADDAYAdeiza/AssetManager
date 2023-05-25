@@ -162,6 +162,7 @@
 
     
     <h2>List of Profiles:</h2>
+    <div id = 'alternativeAuditDiv' class="alternativeAuditDiv"></div>
     <form action="">
         <div>
             Snapshot
@@ -204,7 +205,7 @@
                                     <option>nonFunctional</option>
                                     <option>retired</option>
                                 </select>
-                                <input name = 'assetId' type="hidden" value="<%=user.id%>">
+                                <input name = 'assetId' type="hidden" value="<%=user.id._id%>">
                                 <input name = 'userId' type="hidden" value="<%=userId%>">
                                 <input name = 'auditorId' type="hidden" value="<%=reqUser._id%>">
                                 <Button type= 'submit'>Audit</Button>
@@ -619,6 +620,7 @@ function openList(evt, cityName, reAssignedDiv) {
             let viewSavedSnapShotFuncBool = true;
             let viewSavedSnapsGrab = document.getElementById('viewSavedSnapsContainer');
             let reAssignAuditorGrab = document.getElementById('reAssignAuditor');
+            let alternativeAuditDivGrab = document.getElementById('alternativeAuditDiv');
 
             expandAuditGrab.addEventListener('click', function(e){
                 e.preventDefault();
@@ -981,6 +983,12 @@ function openList(evt, cityName, reAssignedDiv) {
 
     async function openSettings2Now(){
         // alert('Alternative submit');
+        // var auditsParentDiv;
+        // var auditDiv;
+        // var assetLink;
+
+        let auditStatusArr = ['functional', 'nonFunctional', 'retired']
+
         postObj = {
             userState:userStateGrab.value,
             userDirectorate:userDirectorateGrab.value,
@@ -995,6 +1003,78 @@ function openList(evt, cityName, reAssignedDiv) {
         let getAudits = await fetch(`/getAudits/${JSON.stringify(postObj)}`);
         let getAuditsJson = await getAudits.json();
         console.log('This is fetch another option ', getAuditsJson);
+        
+        let parentDiv = document.createElement('div');
+        Object.keys(getAuditsJson).forEach(userId=>{
+            var auditsParentDiv = document.createElement('div');
+            let userProfileImg = document.createElement('img');
+                userProfileImg.setAttribute('src', getAuditsJson[userId].userProfilePic);
+                userProfileImg.setAttribute('height', 'auto');
+                userProfileImg.setAttribute('width', 120);
+            let userName = document.createElement('p');
+                userName.innerText = getAuditsJson[userId].firstName;
+            parentDiv.appendChild(userProfileImg);
+            parentDiv.appendChild(userName);
+            getAuditsJson[userId].userObj.forEach(auditObj=>{
+                var auditDiv = document.createElement('div');
+                var assetLink = document.createElement('a');
+                var auditTrailBut =  document.createElement('button');
+                    auditTrailBut.innerHTML = 'View Audit Trail';
+                    (function(){
+                        console.log(auditObj.id._id);
+                        auditTrailBut.addEventListener('click', function (){
+                            viewAuditTrail(auditObj.id._id, true);
+                        });
+                    })(auditObj.id._id);
+
+                    assetLink.innerHTML = auditObj.assetTypeId.assetTypeCode + ' | (' + auditObj.id._id + ')';
+                    assetLink.setAttribute('href', `/asset/${auditObj.id._id}`);
+                    auditDiv.appendChild(assetLink);
+                    auditDiv.appendChild(auditTrailBut);
+                    var auditTrailDiv = document.createElement('div');
+                        auditTrailDiv.setAttribute('id', auditObj.id._id);
+                        auditTrailDiv.setAttribute('data-toggleAuditTrailbool', true);
+                        auditsParentDiv.appendChild(auditDiv);
+                        auditsParentDiv.appendChild(auditTrailDiv);
+                        
+                        //the video Audit link
+                        let videoAuditDiv = document.createElement('div');
+                        let videoAuditLink = document.createElement('a');
+                        videoAuditLink.innerHTML = 'Video Audit';
+                        videoAuditLink.href = `/videoAudit/${userId}/${auditObj.id._id}/${auditObj.id.assetCode}/${JSON.stringify(getAuditsJson[userId].locationAudit)}`;
+                        
+                        videoAuditDiv.appendChild(videoAuditLink);
+                        auditsParentDiv.appendChild(videoAuditDiv);
+
+
+                        //the select
+                        var selectAudit = document.createElement('select');
+                        selectAudit.setAttribute('name', 'auditStatus');
+                        auditStatusArr.forEach((arrItem,i)=>{
+                            selectAudit.options[i] = new Option(arrItem);
+                        })
+                        auditsParentDiv.appendChild(selectAudit);
+                        let auditBut = document.createElement('button');
+                        auditBut.innerHTML = 'Audit';
+                            auditBut.addEventListener('click', async function(){
+                                let auditUpdateObj = {
+                                    assetId:auditObj.id._id,
+                                    auditStatus:selectAudit.value,
+                                    userId,
+                                    auditorId:reqUserObj._id
+                                }
+                                
+                                let auditUpdate = await fetch(`/auditStatus2/${JSON.stringify(auditUpdateObj)}`);
+                                let getAuditUpdate = await auditUpdate.json();
+                                console.log('This is auditUpdate from another option ', getAuditUpdate);
+                                
+                            })
+                            auditsParentDiv.appendChild(auditBut);
+                            
+            })
+            parentDiv.appendChild(auditsParentDiv);
+        })
+        alternativeAuditDivGrab.appendChild(parentDiv);
     }
 
     async function saveSnapShotFunc(){
