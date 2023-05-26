@@ -260,14 +260,16 @@ console.log('Number of audits: ', usersObj);
 // let lengthOfAudits = usersObj.userObj.length;
 // console.log('Length of Audits ', lengthOfAudits);
 console.log('Keys ', Object.keys(usersObj));
-let totalAudit = 0; //counter for number of audits
+// let totalAudit = 0; //counter for number of audits
+let totalAuditCounter2 = 0;// used for alternative submit -with fetch
+
 // Object.keys(usersObj).forEach(userId=>{
 //     totalAudit =+ usersObj(userId).userObj.length;
 // })
-Object.values(usersObj).forEach(val=>{
-    totalAudit =+ val.userObj.length
-});
-console.log('Total Audit: ', totalAudit);
+// Object.values(usersObj).forEach(val=>{
+//     totalAudit =+ val.userObj.length
+// });
+// console.log('Total Audit: ', totalAudit);
     
 
 function openList(evt, cityName, reAssignedDiv) {
@@ -489,8 +491,10 @@ function openList(evt, cityName, reAssignedDiv) {
         userStateGrab.value = auditAssignObj.userState;
         userDirectorateGrab.value = auditAssignObj.userDirectorate;
         userRankGrab.value = auditAssignObj.userRank;
-        let numberOfAssignAudits = e.parentNode.parentNode.getElementsByClassName('numberOfAudits')[0];
-        numberOfAssignAudits.innerText = `(${totalAudit})`;
+        // let numberOfAssignAudits = e.parentNode.parentNode.getElementsByClassName('numberOfAudits')[0];
+        // numberOfAssignAudits.innerText = `(${totalAudit})`;
+
+        openSettings2Now(e);
     }
 
 
@@ -981,11 +985,12 @@ function openList(evt, cityName, reAssignedDiv) {
                 // formSettingsGrabBool = true;
     }
 
-    async function openSettings2Now(){
+    async function openSettings2Now(e){
         // alert('Alternative submit');
         // var auditsParentDiv;
         // var auditDiv;
         // var assetLink;
+        totalAuditCounter2 = 0;
 
         let auditStatusArr = ['functional', 'nonFunctional', 'retired']
 
@@ -1005,6 +1010,7 @@ function openList(evt, cityName, reAssignedDiv) {
         console.log('This is fetch another option ', getAuditsJson);
         
         let parentDiv = document.createElement('div');
+            parentDiv.setAttribute('class', 'auditParentDiv');
         Object.keys(getAuditsJson).forEach(userId=>{
             var auditsParentDiv = document.createElement('div');
             let userProfileImg = document.createElement('img');
@@ -1015,6 +1021,8 @@ function openList(evt, cityName, reAssignedDiv) {
                 userName.innerText = getAuditsJson[userId].firstName;
             parentDiv.appendChild(userProfileImg);
             parentDiv.appendChild(userName);
+
+            totalAuditCounter2 += getAuditsJson[userId].userObj.length;
             getAuditsJson[userId].userObj.forEach(auditObj=>{
                 var auditDiv = document.createElement('div');
                 var assetLink = document.createElement('a');
@@ -1074,7 +1082,22 @@ function openList(evt, cityName, reAssignedDiv) {
             })
             parentDiv.appendChild(auditsParentDiv);
         })
+
+        if (alternativeAuditDivGrab.children.length){
+            alert(alternativeAuditDivGrab.children.length);
+            console.log(alternativeAuditDivGrab.children)
+            while(alternativeAuditDivGrab.children.length){
+                console.log('Removing...')
+                alternativeAuditDivGrab.children[0].remove();
+            }
+        }
         alternativeAuditDivGrab.appendChild(parentDiv);
+        if (e){//if coming from loading audits
+            alert('From event...');
+            console.log(e)
+            let numberOfAssignAudits = e.parentNode.parentNode.getElementsByClassName('numberOfAudits');
+            numberOfAssignAudits[0].innerText = `(${totalAuditCounter2})`;
+        }
     }
 
     async function saveSnapShotFunc(){
