@@ -1,0 +1,33 @@
+body{
+    background:url(Giraffe.png);
+    background-repeat: no-repeat;
+    background-size:auto;
+}
+
+.loginContainer{
+    width:30%;
+    height: 60%;
+    background: transparent;
+    /* background: radial-gradient(rgb(171, 171, 244), rgb(238, 238, 223)); */
+    border: 1px solid orange;
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform: translate(-50%, -50%);
+}
+
+.profileDiv{
+    position: absolute;
+    width:20%;
+    height: 20%;
+    border: 1px solid yellowgreen;
+    border-radius:50%;
+    text-align: center;
+    top:0px;
+    left:70%;
+    transform: translateY(-50%)
+}
+
+.imgGiraffe{
+    object-fit: contain;
+}

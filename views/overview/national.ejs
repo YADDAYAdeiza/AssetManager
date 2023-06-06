@@ -313,7 +313,7 @@ video {
 
                             //changing position of asset markers
                             console.log('This is trackFleetArrObj ', trackFleetArrObj);
-                            Object.keys(trackFleetArrObj).forEach(key=>{
+                            Object.keys(trackFleetArrObj).forEach(key=>{ //consider eliminating this loop, and using key from posCoords to update setPosition
                                 console.log(key)
                                 console.log(`Setting ${trackFleetArrObj[key]} to ${trackFleetArrObjPosition[key]}, lat: ${trackFleetArrObjPosition[key].lat}, lng: ${trackFleetArrObjPosition[key].lng}`);
                                 trackFleetArrObj[key].setPosition(trackFleetArrObjPosition[key]);

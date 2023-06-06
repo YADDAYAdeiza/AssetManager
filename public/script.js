@@ -1,3 +1,4 @@
+let auditResultObj ={passes:{}};
 // const { collection } = require("../models/assetType");
 
 // const socket = io('/');
@@ -9,7 +10,8 @@ socket.on('Enable Auditee Location', (val, posCoords)=>{
     // auditLocation(posCoords)
 })
 
-socket.on('Plot Auditee Location', (pos, userId, assetId)=>{
+socket.on('Plot Auditee Location', async (pos, userId, assetId)=>{
+    auditResultObj = {passes:{}}
     alert('Plotting Auditee location on Auditor Map');
     console.log(pos);
     auditeeMarker =  new google.maps.Marker({
@@ -31,35 +33,45 @@ socket.on('Plot Auditee Location', (pos, userId, assetId)=>{
             console.log('Distance passed');
             locationProgressGrab.classList.add('pass')
             socket.emit('location-confirmed', 'pass');
-            
+            auditResultObj.passes.locationPass = true; //meaning 'passed'
         }else{
             console.log('Distance noPassed')
             locationProgressGrab.classList.add('noPass');
             socket.emit('location-confirmed', 'noPass');
+            auditResultObj.passes.locationPass = false; //meaning 'failed'
         }
-    
-    //Owner progress Check
-    console.log('User Id from Auditor: ', userID) //from auditor
-    console.log('User ID from Auditee sign-in ', userId)//from auditee
-    if (userID == userId){
-        alert('User confirmed');
-        ownerProgressGrab.classList.add('pass');
-        socket.emit('user-confirmed', 'pass');
-    }else{
-        alert('Not user')
-        ownerProgressGrab.classList.add('noPass');
+        
+        //Owner progress Check
+        console.log('User Id from Auditor: ', userID) //from auditor
+        console.log('User ID from Auditee sign-in ', userId)//from auditee
+        if (userID == userId){
+            alert('User confirmed');
+            ownerProgressGrab.classList.add('pass');
+            socket.emit('user-confirmed', 'pass');
+            auditResultObj.passes.ownerPass = true; //meaning 'failed'
+        }else{
+            alert('Not user')
+            ownerProgressGrab.classList.add('noPass');
+            auditResultObj.passes.ownerPass = false; //meaning 'failed'
+        }
+        
+        //Asset progress Check
+        if (assetID == assetId){ 
+            alert('asset confirmed');
+            assetProgressGrab.classList.add('pass');
+            socket.emit('asset-confirmed', 'pass');
+            auditResultObj.passes.assetPass = true; //meaning 'failed'
+        }else{
+            alert('Not asset')
+            assetProgressGrab.classList.add('noPass');
+            auditResultObj.passes.assetPass = false; //meaning 'failed'
     }
-    
-    //Asset progress Check
-    if (assetID == assetId){ 
-        alert('asset confirmed');
-        assetProgressGrab.classList.add('pass');
-        socket.emit('asset-confirmed', 'pass');
-    }else{
-        alert('Not asset')
-        assetProgressGrab.classList.add('noPass');
-    }
-    
+
+    //fetch auditResultObj, and get feedback.  Tie it to
+    var auditResult = await fetch(`/asset/assetHistory/${assetId}`);
+        let dataResponse = await auditResult.json();
+        console.log(dataResponse);
+
 })
 
 // socket.on('location-confirmed', (classVal)=>{
@@ -230,12 +242,12 @@ function auditLocation(){
         var locationMarkerAuditee =  new google.maps.Marker({
                             position: {lat:latitude, lng:longitude},
                             map:mapAssetGrab,
-                            title: `Actual ${pos.coords.accuracy}`,
+                            title: `My Actual ${pos.coords.accuracy}`,
                             draggable: true,
                             animation:google.maps.Animation.BOUNCE
                         });
                         alert(pos.coords.latitude)
-
+                        // locationStatusGrab.textContent = `Latitude ${latitude}, Longitude ${longitude}`;
             socket.emit('Auditee Location', locationMarkerAuditee.getPosition(), userID, assetID);
       }
     
@@ -358,6 +370,24 @@ var settingsObj2 = JSON.parse(settingsObj);
             var d = 2 * R * Math.asin(Math.sqrt(Math.sin(difflat/2)*Math.sin(difflat/2)+Math.cos(rlat1)*Math.cos(rlat2)*Math.sin(difflon/2)*Math.sin(difflon/2)));
             return d;
           }
+
+          async function AuditAsset(userId, assetId, auditorId, auditStatus){
+            alert('Auditing asset from video page');
+            auditResultObj.assetStatus = auditStatus;
+
+            let auditUpdateObj = {
+                assetId,
+                // auditStatus,
+                userId,
+                auditorId,
+                auditResult:auditResultObj
+            }
+            console.log('The object : ', auditUpdateObj);
+            
+            let auditUpdate = await fetch(`/auditStatus2/${JSON.stringify(auditUpdateObj)}`);
+            let getAuditUpdate = await auditUpdate.json();
+            console.log('This is auditUpdate from another option ', getAuditUpdate); 
+        }
 
 window.onload = function (){
     // alert('I have loaded');

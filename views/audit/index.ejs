@@ -486,15 +486,18 @@ function openList(evt, cityName, reAssignedDiv) {
 
     function LoadAssignAudit(e){
         alert('Loading...');
-        let auditAssign = e.parentNode.parentNode.getElementsByClassName('auditAssignString')[0].innerText;
-        let auditAssignObj = JSON.parse(auditAssign);
-        userStateGrab.value = auditAssignObj.userState;
-        userDirectorateGrab.value = auditAssignObj.userDirectorate;
-        userRankGrab.value = auditAssignObj.userRank;
+
+        //load to the Form
+            let auditAssign = e.parentNode.parentNode.getElementsByClassName('auditAssignString')[0].innerText;
+            let auditAssignObj = JSON.parse(auditAssign);
+            userStateGrab.value = auditAssignObj.userState;
+            userDirectorateGrab.value = auditAssignObj.userDirectorate;
+            userRankGrab.value = auditAssignObj.userRank;
         // let numberOfAssignAudits = e.parentNode.parentNode.getElementsByClassName('numberOfAudits')[0];
         // numberOfAssignAudits.innerText = `(${totalAudit})`;
-
-        openSettings2Now(e);
+        
+        //Fetch
+            openSettings2Now(e);
     }
 
 
@@ -1233,6 +1236,8 @@ data.assetAuditInterval = document.getElementById(id).value;
         // let responseObj = response.json(); // parses JSON response into native JavaScript objects
         
     }
+
+    
 
 
 

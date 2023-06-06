@@ -770,7 +770,7 @@ app.get('/audGoLive/:room', async (req, res)=>{
                                     console.log('Number of Days (rounded), ', Math.round(numOfDays));
                                     console.log('This is numOfDays ', numOfDays);
                                     // console.log('First...')
-                                    if (req.query.assetDateBeforeSearch != ''){// assetDate //go with the auditor settings.  (Or asset settings?)
+                                    if (req.query.assetDateBeforeSearch != ''){// assetDate   (Or asset settings?)
                                         console.log('Something...', user.userOwnedAsset.idAudit[a].id);
                                         if (user.userOwnedAsset.idAudit[a].assetTypeId){
                                           console.log('Lifecycle, ', user.userOwnedAsset.idAudit[a].assetTypeId.assetTypeLifeCycle);
@@ -1395,6 +1395,20 @@ app.put('/auditStatus', async (req, res)=>{
   );
 
   let asset2 = await asset[0].save();
+
+  //it should also update the new audit date on the user 
+  // let user =  await userModel.findById({}).where('_id').equals(req.body.userId);
+  // console.log('This is user ', user)
+  // user.userOwnedAsset.idAudit.forEach(auditObj=>{
+  //   if (auditObj.id.toString() == req.body.assetId){
+  //     console.log('Found');
+  //     console.log(auditObj.auditDate)
+  //     console.log(new Date(Date.now()));
+  //     auditObj.auditDate = Date.now();
+  //   }
+  // })
+
+  // await user.save();
  
   // console.log(asset2);
 })
@@ -1408,11 +1422,26 @@ app.get('/auditStatus2/:auditUpdateObj', async (req, res)=>{
     {
       user:auditUpdateObjParse.userId,
       auditedBy:auditUpdateObjParse.auditorId,
-      auditStatus:auditUpdateObjParse.auditStatus
+      auditStatus:auditUpdateObjParse.auditResult.assetStatus
     }
   );
 
   let asset2 = await asset[0].save();
+
+  //it should also update the new audit date on the user 
+  let user =  await userModel.findById({}).where('_id').equals(auditUpdateObjParse.userId);
+  console.log('This is user ', user)
+  user.userOwnedAsset.idAudit.forEach(auditObj=>{
+    if (auditObj.id.toString() == auditUpdateObjParse.assetId){
+      console.log('Found');
+      console.log(auditObj.auditDate)
+      console.log(new Date(Date.now()));
+      auditObj.auditDate = Date.now();
+    }
+  })
+
+  await user.save();
+
   res.json({updatedAsset:asset2});
  
   // console.log(asset2);
@@ -1721,7 +1750,7 @@ app.get('/getAssetTypes', async (req,res)=>{
     console.log('This is the user asset ', req.params.assetId);
     console.log('uiSettings: ', req.dispSetting);
     
-    res.render('audit/room', {userId: req.params.userId, assetId:req.params.assetId, roomId:req.params.roomId, locationAudit: JSON.parse(req.params.locationAudit), uiSettings:req.dispSetting});
+    res.render('audit/room', {userId: req.params.userId, assetId:req.params.assetId, roomId:req.params.roomId, locationAudit: JSON.parse(req.params.locationAudit), uiSettings:req.dispSetting, auditor:req.user});
   });
  
   app.get('/assignAuditor/:assignObj', hideNavMenu(), async (req, res)=>{

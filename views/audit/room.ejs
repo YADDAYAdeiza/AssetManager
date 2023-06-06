@@ -51,6 +51,11 @@
         let settingsObj = '<%-JSON.stringify(uiSettings)%>';
         let userID = "<%=userId%>";
         let assetID = "<%=assetId%>";
+
+        let auditor = '<%- JSON.stringify(auditor)%>';
+        let auditorObj = JSON.parse(auditor)
+        console.log('This is auditor,', auditorObj);
+        console.log('This is auditorId,', auditorObj._id);
     
         console.log('Settings Obj: ', settingsObj)
         console.log(locationAudit)
@@ -82,5 +87,21 @@
     </div>
     <p id="markerDistance">distance</p>
     <p id="expectedPosition">ExpPos</p>
+
+    <div>
+        <select id="selAudit">
+            <option value="functional">functional</option>
+            <option value="nonFunctional">nonFunctional</option>
+            <option value="retired">retired</option>
+        </select>
+        <button onclick="AuditAsset('<%=userId%>', '<%=assetId%>', auditorObj._id, selAudit.value)">Audit</button>
+
+        <!-- let auditUpdateObj = {
+            assetId:auditObj.id._id,
+            auditStatus:selectAudit.value,
+            userId,
+            auditorId:reqUserObj._id
+        } -->
+    </div>
 </body>
 </html>
