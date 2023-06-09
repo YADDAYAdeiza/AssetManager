@@ -371,7 +371,7 @@ var settingsObj2 = JSON.parse(settingsObj);
             return d;
           }
 
-          async function AuditAsset(userId, assetId, auditorId, auditStatus){
+          async function AuditAsset(userId, assetId, auditorId, auditStatus, genId, postObj){
             alert('Auditing asset from video page');
             auditResultObj.assetStatus = auditStatus;
 
@@ -380,7 +380,9 @@ var settingsObj2 = JSON.parse(settingsObj);
                 // auditStatus,
                 userId,
                 auditorId,
-                auditResult:auditResultObj
+                auditResult:auditResultObj,
+                genId,
+                postObj
             }
             console.log('The object : ', auditUpdateObj);
             

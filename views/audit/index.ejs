@@ -138,6 +138,7 @@
                     <div id="<%=auditor._id%>" class="tabcontent2">
                         <p>
                             <h3>Assigned Audit List</h3>
+                            <button onclick="refreshAuditAssigns()">Refresh</button>
                         </p>
                             <%auditor.userRole.auditAssigns.forEach(assignAuditObj=>{%>
                                  <div class = 'auditAssignDiv'>
@@ -147,7 +148,7 @@
                                     <div class="auditAssignObjActions">
                                        <button onclick="DeleteAssignedAudit(event.currentTarget)">Delete</button>
                                        <button onclick="ReAssignAudit(event.currentTarget)">ReAssign</button>
-                                       <button onclick = "LoadAssignAudit(event.currentTarget)">Load</button>
+                                       <button class='loadAudit' onclick = "LoadAssignAudit(event.currentTarget)">Load</button>
                                        <span class = 'numberOfAudits'>(Nos)</span>
                                     </div>
                                 </div>
@@ -196,6 +197,7 @@
                             <div>
                                <% console.log('Does id have assetCode? ', user.id? user.id.assetCode:"")%>
                                <%console.log('locationAudit: ',users[userId].locationAudit)%>
+                               <%console.log('postObj ', postObj)%>
                                 <a href="/asset/<%= user.id._id %>"><%=user.id._id%></a><button id="viewAuditBut" value="<%=user.id._id%>" onclick = '(function (){viewAuditTrail("<%=user.id._id%>", true)})()'>|View Audit Trail</button>|<div><a href = '/videoAudit/<%=userId%>/<%=user.id._id%>/<%=user.id.assetCode%>/<%=JSON.stringify(users[userId].locationAudit)%>'>Video Audit</a></div>
                                 <div id="<%=user.id._id%>" class="auditTrailDiv" data-toggleAuditTrailbool = "true"></div>
                             </div>
@@ -299,6 +301,7 @@ function openList(evt, cityName, reAssignedDiv) {
     async function assignAuditor(){
         alert('Assign to Auditor');
         let assignObj = {
+            genId:crypto.randomUUID(),
             userState:userStateGrab.value,
             userDirectorate:userDirectorateGrab.value,
             userRank:userRankGrab.value,
@@ -306,6 +309,7 @@ function openList(evt, cityName, reAssignedDiv) {
             assignedBy:reqUserObj._id
         }
 
+            console.log('This is obj to assign: ', assignObj);
         // checkIfAssignExists(assignObj);
         let  returnaddToTabValue = await addToTab(assignObj);
 
@@ -484,7 +488,8 @@ function openList(evt, cityName, reAssignedDiv) {
         
     }
 
-    function LoadAssignAudit(e){
+    function LoadAssignAudit(e, refreshVar){
+        alert(refreshVar);
         alert('Loading...');
 
         //load to the Form
@@ -493,6 +498,8 @@ function openList(evt, cityName, reAssignedDiv) {
             userStateGrab.value = auditAssignObj.userState;
             userDirectorateGrab.value = auditAssignObj.userDirectorate;
             userRankGrab.value = auditAssignObj.userRank;
+
+            genId = auditAssignObj.genId;
         // let numberOfAssignAudits = e.parentNode.parentNode.getElementsByClassName('numberOfAudits')[0];
         // numberOfAssignAudits.innerText = `(${totalAudit})`;
         
@@ -584,6 +591,8 @@ function openList(evt, cityName, reAssignedDiv) {
 </script>
 <!-- <script src="/socket.io/socket.io.js"></script> -->
 <script defer>
+            let postObj; //will transfer to backend to produce assets to be audited, and will also transfer to videoaudit pagel to Mark as Done
+            let genId;
             let reqUser = '<%- JSON.stringify(reqUser)%>';
             let reqUserObj = JSON.parse(reqUser);
             console.log('This is: ', reqUserObj);
@@ -1052,7 +1061,7 @@ function openList(evt, cityName, reAssignedDiv) {
                         let videoAuditDiv = document.createElement('div');
                         let videoAuditLink = document.createElement('a');
                         videoAuditLink.innerHTML = 'Video Audit';
-                        videoAuditLink.href = `/videoAudit/${userId}/${auditObj.id._id}/${auditObj.id.assetCode}/${JSON.stringify(getAuditsJson[userId].locationAudit)}`;
+                        videoAuditLink.href = `/videoAudit/${userId}/${auditObj.id._id}/${auditObj.id.assetCode}/${JSON.stringify(getAuditsJson[userId].locationAudit)}/${genId}/${JSON.stringify(postObj)}`;
                         
                         videoAuditDiv.appendChild(videoAuditLink);
                         auditsParentDiv.appendChild(videoAuditDiv);
@@ -1235,6 +1244,17 @@ data.assetAuditInterval = document.getElementById(id).value;
         }
         // let responseObj = response.json(); // parses JSON response into native JavaScript objects
         
+    }
+
+    function refreshAuditAssigns(){
+        alert('refreshing...')
+        let auditAssign = document.getElementsByClassName('auditAssignString')[0].innerText;
+
+        let auditAssignObj = JSON.parse(auditAssign);
+        console.log(auditAssignObj);
+            // userStateGrab.value = auditAssignObj.userState;
+            // userDirectorateGrab.value = auditAssignObj.userDirectorate;
+            // userRankGrab.value = auditAssignObj.userRank;
     }
 
     

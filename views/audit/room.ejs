@@ -51,6 +51,12 @@
         let settingsObj = '<%-JSON.stringify(uiSettings)%>';
         let userID = "<%=userId%>";
         let assetID = "<%=assetId%>";
+        let postObjString = '<%-JSON.stringify(postObj)%>';
+        let postObj = JSON.parse(postObjString);
+
+        console.log('postObj is: ', postObj);
+
+
 
         let auditor = '<%- JSON.stringify(auditor)%>';
         let auditorObj = JSON.parse(auditor)
@@ -94,7 +100,7 @@
             <option value="nonFunctional">nonFunctional</option>
             <option value="retired">retired</option>
         </select>
-        <button onclick="AuditAsset('<%=userId%>', '<%=assetId%>', auditorObj._id, selAudit.value)">Audit</button>
+        <button onclick="AuditAsset('<%=userId%>', '<%=assetId%>', auditorObj._id, selAudit.value, '<%=genId%>', postObj)">Audit</button>
 
         <!-- let auditUpdateObj = {
             assetId:auditObj.id._id,
