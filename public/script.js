@@ -1,4 +1,5 @@
-let auditResultObj ={passes:{}};
+let auditResultObj2;
+let auditResultObj ;//={passes:{}};
 // const { collection } = require("../models/assetType");
 
 // const socket = io('/');
@@ -34,11 +35,19 @@ socket.on('Plot Auditee Location', async (pos, userId, assetId)=>{
             locationProgressGrab.classList.add('pass')
             socket.emit('location-confirmed', 'pass');
             auditResultObj.passes.locationPass = true; //meaning 'passed'
+            // alert('location');
+            // let auditBtnGrab = document.getElementById('auditBtn').disabled = false;
+            // console.log(auditBtnGrab);
+            
         }else{
             console.log('Distance noPassed')
             locationProgressGrab.classList.add('noPass');
             socket.emit('location-confirmed', 'noPass');
             auditResultObj.passes.locationPass = false; //meaning 'failed'
+            // alert('locatiom')
+            // document.getElementById('auditBtn').disabled = false;
+            // console.log(auditBtnGrab);
+
         }
         
         //Owner progress Check
@@ -66,7 +75,8 @@ socket.on('Plot Auditee Location', async (pos, userId, assetId)=>{
             assetProgressGrab.classList.add('noPass');
             auditResultObj.passes.assetPass = false; //meaning 'failed'
     }
-
+    alert('auditResultObj');
+    console.log('This is auditResultObj: ', auditResultObj);
     //fetch auditResultObj, and get feedback.  Tie it to
     var auditResult = await fetch(`/asset/assetHistory/${assetId}`);
         let dataResponse = await auditResult.json();
@@ -231,6 +241,8 @@ function addVideoStream(video, stream, col){
 
 
 function auditLocation(){
+
+    let auditResultObj2 = auditResultObj;
     // alert()
     function success(pos) {
         const latitude = pos.coords.latitude; 
@@ -249,6 +261,12 @@ function auditLocation(){
                         alert(pos.coords.latitude)
                         // locationStatusGrab.textContent = `Latitude ${latitude}, Longitude ${longitude}`;
             socket.emit('Auditee Location', locationMarkerAuditee.getPosition(), userID, assetID);
+            alert('Locatiom')
+            let auditBtnGrab = document.getElementById('auditBtn');
+            auditBtnGrab = false;
+            let hiddenObjGrab = document.getElementById('hiddenObj')
+            hiddenObjGrab.value = JSON.stringify(auditResultObj)//.toString();
+            console.log(auditBtnGrab);
       }
     
       function error() {
@@ -386,7 +404,7 @@ var settingsObj2 = JSON.parse(settingsObj);
             }
             console.log('The object : ', auditUpdateObj);
             
-            let auditUpdate = await fetch(`/auditStatus2/${JSON.stringify(auditUpdateObj)}`);
+            let auditUpdate = await fetch(`/auditStatus2/${JSON.stringify(auditUpdateObj)}`, {redirect:"follow"});
             let getAuditUpdate = await auditUpdate.json();
             console.log('This is auditUpdate from another option ', getAuditUpdate); 
         }

@@ -1768,7 +1768,9 @@ app.get('/auditStatus2/:auditUpdateObj', async (req, res)=>{
     let remainingAudits = await getAudit(req, res, true); //the true means it is from auditStatus2
     console.log('Thi is remainingAudits: ', remainingAudits);
 
+    console.log('Rendering...');
     res.render('audit/index.ejs',remainingAudits); 
+    console.log('Done now2');
     // {
     //                                                   users:idAuditObj,
     //                                                   searchParams:auditParamObj,

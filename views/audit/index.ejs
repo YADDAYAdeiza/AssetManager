@@ -197,7 +197,6 @@
                             <div>
                                <% console.log('Does id have assetCode? ', user.id? user.id.assetCode:"")%>
                                <%console.log('locationAudit: ',users[userId].locationAudit)%>
-                               <%console.log('postObj ', postObj)%>
                                 <a href="/asset/<%= user.id._id %>"><%=user.id._id%></a><button id="viewAuditBut" value="<%=user.id._id%>" onclick = '(function (){viewAuditTrail("<%=user.id._id%>", true)})()'>|View Audit Trail</button>|<div><a href = '/videoAudit/<%=userId%>/<%=user.id._id%>/<%=user.id.assetCode%>/<%=JSON.stringify(users[userId].locationAudit)%>'>Video Audit</a></div>
                                 <div id="<%=user.id._id%>" class="auditTrailDiv" data-toggleAuditTrailbool = "true"></div>
                             </div>

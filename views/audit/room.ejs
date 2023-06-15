@@ -45,16 +45,26 @@
             background-color: pink
         }
     </style>
-    <script>
+    <script defer src="https://unpkg.com/peerjs@1.3.2/dist/peerjs.min.js"></script>
+    <script src="/socket.io/socket.io.js" defer></script>
+    <script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDuYptvwFszij8WWugKw5jQ6PkhiYqBo2c&libraries=Visualization" async defer>
+    </script>
+    <script src="/script.js" defer></script>
+
+    <script defer>
         const Room_ID = "<%=roomId%>";
+
+        // let auditResultObjvar = auditResultObj;
         let locationAudit = '<%-JSON.stringify(locationAudit)%>';
         let settingsObj = '<%-JSON.stringify(uiSettings)%>';
         let userID = "<%=userId%>";
         let assetID = "<%=assetId%>";
         let postObjString = '<%-JSON.stringify(postObj)%>';
         let postObj = JSON.parse(postObjString);
-
+        
         console.log('postObj is: ', postObj);
+        // console.log('This is auditResultObj from script.js ', auditResultObj2);
 
 
 
@@ -68,13 +78,6 @@
         console.log(JSON.stringify(locationAudit));
         console.log(JSON.parse(locationAudit));
     </script>
-    <script defer src="https://unpkg.com/peerjs@1.3.2/dist/peerjs.min.js"></script>
-    <script src="/socket.io/socket.io.js" defer></script>
-    <script
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDuYptvwFszij8WWugKw5jQ6PkhiYqBo2c&libraries=Visualization" async defer>
-    </script>
-    <script src="/script.js" defer></script>
-
     
 </head>
 <body>
@@ -100,7 +103,12 @@
             <option value="nonFunctional">nonFunctional</option>
             <option value="retired">retired</option>
         </select>
-        <button onclick="AuditAsset('<%=userId%>', '<%=assetId%>', auditorObj._id, selAudit.value, '<%=genId%>', postObj)">Audit</button>
+
+        <form action="">
+            <input id="hiddenObj" type="text">
+        </form>
+        <button id='auditBtn' onclick="AuditAsset('<%=userId%>', '<%=assetId%>', auditorObj._id, selAudit.value, '<%=genId%>', postObj)" disabled>Audit</button>
+        // console.log('This is auditResultObj from script.js ', auditResultObj2);
 
         <!-- let auditUpdateObj = {
             assetId:auditObj.id._id,
