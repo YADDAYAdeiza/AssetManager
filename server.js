@@ -1761,7 +1761,7 @@ app.get('/auditStatus2/:auditUpdateObj', async (req, res)=>{
     //if remains, do nothing,
     //if satisfied, remove it from auditor assigns
 
-    console.log('genId ', auditUpdateObjParse.genId);
+    // console.log('genId ', auditUpdateObjParse.genId);
     console.log('postObj ', auditUpdateObjParse.postObj);
 
     req.params.auditParam = auditUpdateObjParse.postObj;
@@ -2094,8 +2094,8 @@ app.get('/getAssetTypes', async (req,res)=>{
     next();
   }
 
-  app.get('/videoAudit/:userId/:assetId/:roomId/:locationAudit/:genId/:postObj', hideNavMenu(), (req, res)=>{
-    console.log('Query Object', req.params.genId);
+  app.get('/videoAudit/:userId/:assetId/:roomId/:locationAudit/', hideNavMenu(), (req, res)=>{//:genId/:postObj
+    // console.log('Query Object', req.params.genId);
     // console.log('Query Object Parsed', JSON.parse(req.params.queryObj));
     console.log('Readying for video...', req.params.roomId);
     console.log('Auditee Location obj...?', req.params.locationAudit);
@@ -2104,9 +2104,9 @@ app.get('/getAssetTypes', async (req,res)=>{
     console.log('This is the user ', req.params.userId);
     console.log('This is the user asset ', req.params.assetId);
     console.log('uiSettings: ', req.dispSetting);
-    console.log('This is postObj:', req.params.postObj);
+    // console.log('This is postObj:', req.params.postObj);
     
-    res.render('audit/room', {userId: req.params.userId, assetId:req.params.assetId, roomId:req.params.roomId, locationAudit: JSON.parse(req.params.locationAudit), genId: req.params.genId, postObj: JSON.parse(req.params.postObj), uiSettings:req.dispSetting, auditor:req.user});
+    res.render('audit/room', {userId: req.params.userId, assetId:req.params.assetId, roomId:req.params.roomId, locationAudit: JSON.parse(req.params.locationAudit), uiSettings:req.dispSetting, auditor:req.user});//postObj: JSON.parse(req.params.postObj), genId: req.params.genId, 
   });
  
   app.get('/assignAuditor/:assignObj', hideNavMenu(), async (req, res)=>{
