@@ -1,9 +1,11 @@
-<div class = "profileCreatedMsgDivCont">
+
+
+<!-- <div class = "profileCreatedMsgDivCont">
     <h1>This is show2</h1>
    <h1>
        <p class = 'profileCreatedMsg'>Profile succesfully created!</p>
    </h1>
-</div>
+</div> -->
 <%if(msg){%>
     <%console.log('This is msg: ',msg)%>
     <p><%=msg%></p>
@@ -345,14 +347,32 @@
         <h3>Approved/Pending Ratio</h3>
         <canvas id = "myChart" ></canvas>
     </div>
-
+<div id = 'popUp' class="successPopUpStart">
+    <img src="/greenTick-2.png" alt="Tick">
+    <h5><%=applicationMsg%></h5>
+    <button id='closePopUpBtn' onclick = 'closePopUp()' class="btn">Close</button>
+</div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script defer>
 
-
+if ('<%=applicationMsg%>'){
+        console.log('Successful Sub')
+        let popUpGrab = document.getElementById('popUp').classList.add('successPopUpFinish'); 
+    }else {
+        console.log('Just viewing');
+    }
+    
+    // let closePopUpBtnGrab = document.getElementById('closePopUpBtn');
+    // console.log(closePopUpBtnGrab);
+    function closePopUp(){
+        // alert('Closing....');
+        let popUpGrab = document.getElementById('popUp');
+        popUpGrab.classList.remove('successPopUpFinish');
+        console.log(popUpGrab);
+    }
 
 function openList(evt, cityName) {
   // Declare all variables

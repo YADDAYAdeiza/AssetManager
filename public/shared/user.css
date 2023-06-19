@@ -1,3 +1,7 @@
+*{
+    box-sizing: border-box;
+}
+
 .profileCreatedMsgDivCont{
     text-align: center;
 }
@@ -289,6 +293,55 @@ transition:  0.4s;
     background-color: grey;
     text-align: right;
 }
+
+.successPopUpStart{
+    background-color: white;
+    position: absolute;
+    width: 400px;
+    border-radius: 10px;
+    padding: 20px 20px;
+    top:0;
+    left:50%;
+    transform: translate(-50%, -50%) scale(0.1);
+    text-align: center;
+    border: 1px solid black;
+    visibility: hidden;
+    transition: top 0.4s, transform 0.4s;
+    /* font-weight:500; */
+}
+
+.successPopUpFinish{
+    position: absolute;
+    width: 400px;
+    border-radius: 10px;
+    padding: 20px 20px;
+    top:50%;
+    left:50%;
+    transform: translate(-50%, -50%) scale(1);
+    text-align: center;
+    border: 1px solid black;
+    visibility:visible;
+}
+.successPopUpStart .btn{
+    outline: none;
+    border:none;
+    width: 100%;
+    padding:2px 4px;
+    cursor: pointer;
+    background-color: limegreen;
+    margin-top:10px;
+    /* font-weight:500; */
+}
+
+.successPopUpStart img{
+    width: 100px;
+    margin-top:-50px;
+    /* transform: translateY(-50%); */
+    border-radius: 50%;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+
 
 
 /* Media Queries */

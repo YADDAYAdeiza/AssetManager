@@ -258,6 +258,7 @@
 let users = '<%- JSON.stringify(users) %>';
 let usersObj = JSON.parse(users);
 console.log('Number of audits: ', usersObj);
+
 // let lengthOfAudits = usersObj.userObj.length;
 // console.log('Length of Audits ', lengthOfAudits);
 console.log('Keys ', Object.keys(usersObj));
@@ -590,6 +591,10 @@ function openList(evt, cityName, reAssignedDiv) {
 </script>
 <!-- <script src="/socket.io/socket.io.js"></script> -->
 <script defer>
+    let genIdDone = '<%-genIdDone%>';
+    if (genIdDone){
+        alert ('genIdDone')
+    }
             let postObj; //will transfer to backend to produce assets to be audited, and will also transfer to videoaudit pagel to Mark as Done
             let genId;
             let reqUser = '<%- JSON.stringify(reqUser)%>';

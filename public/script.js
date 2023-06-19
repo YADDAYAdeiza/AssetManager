@@ -1,5 +1,5 @@
 let auditResultObj2;
-let auditResultObj ;//={passes:{}};
+let auditResultObj ={passes:{}};
 // const { collection } = require("../models/assetType");
 
 // const socket = io('/');
@@ -12,7 +12,7 @@ socket.on('Enable Auditee Location', (val, posCoords)=>{
 })
 
 socket.on('Plot Auditee Location', async (pos, userId, assetId)=>{
-    auditResultObj = {passes:{}}
+    auditResultObj = {passes:{}, assetStatus}
     alert('Plotting Auditee location on Auditor Map');
     console.log(pos);
     auditeeMarker =  new google.maps.Marker({
@@ -75,8 +75,8 @@ socket.on('Plot Auditee Location', async (pos, userId, assetId)=>{
             assetProgressGrab.classList.add('noPass');
             auditResultObj.passes.assetPass = false; //meaning 'failed'
     }
-    alert('auditResultObj');
-    console.log('This is auditResultObj: ', auditResultObj);
+
+
     //fetch auditResultObj, and get feedback.  Tie it to
     var auditResult = await fetch(`/asset/assetHistory/${assetId}`);
         let dataResponse = await auditResult.json();
@@ -263,10 +263,10 @@ function auditLocation(){
             socket.emit('Auditee Location', locationMarkerAuditee.getPosition(), userID, assetID);
             alert('Locatiom')
             let auditBtnGrab = document.getElementById('auditBtn');
-            auditBtnGrab = false;
-            let hiddenObjGrab = document.getElementById('hiddenObj')
-            hiddenObjGrab.value = JSON.stringify(auditResultObj)//.toString();
-            console.log(auditBtnGrab);
+            auditBtnGrab.disabled = false;
+            console.log(auditBtnGrab);  
+            // let hiddenObjGrab = document.getElementById('hiddenObj')
+            // hiddenObjGrab.value = auditResultObj.toString();
       }
     
       function error() {
@@ -391,7 +391,10 @@ var settingsObj2 = JSON.parse(settingsObj);
 
           async function AuditAsset(userId, assetId, auditorId, auditStatus, genId, postObj){
             alert('Auditing asset from video page');
+            console.log('Asset status: ',auditStatus);
+            console.log('auditResultObj ', auditResultObj);
             auditResultObj.assetStatus = auditStatus;
+            console.log(auditResultObj);
 
             let auditUpdateObj = {
                 assetId,
@@ -402,9 +405,11 @@ var settingsObj2 = JSON.parse(settingsObj);
                 genId,
                 postObj
             }
+            alert('The object : ')
             console.log('The object : ', auditUpdateObj);
             
             let auditUpdate = await fetch(`/auditStatus2/${JSON.stringify(auditUpdateObj)}`, {redirect:"follow"});
+            console.log('Intermediate -fetch status, ', auditUpdate)
             let getAuditUpdate = await auditUpdate.json();
             console.log('This is auditUpdate from another option ', getAuditUpdate); 
         }

@@ -544,7 +544,8 @@ route.get('/:id/edit',  hideNavMenu(), async (req,res)=>{
                                 approvalSettings:req.approvalSettings?req.approvalSettings:{nonOwnApprovalClass:'none'},
                                 approvingId,
                                 msg,
-                                divApprovalSetting:req.params.approval?req.params.approval:user.userRole.role
+                                divApprovalSetting:req.params.approval?req.params.approval:user.userRole.role,
+                                applicationMsg:req.params.applicationMsg
                                 // divApprovalSetting:req.params.approval?req.params.approval:'ownApproval'
                             });
 
@@ -557,7 +558,12 @@ route.get('/:id', authenticateRoleProfilePage(),hideNavMenu(), async (req, res)=
     console.log('First...');
     console.log('This is approval', req.params.approval);
     idRedirect(req, res, 'User found');
+});route.get('/:id/:applicationMsg', authenticateRoleProfilePage(),hideNavMenu(), async (req, res)=>{
+    console.log('First...');
+    console.log('This is approval', req.params.approval);
+    idRedirect(req, res, 'User found');
 });
+
 
 route.get('/:id/:approval/:approvalId', authenticateRoleProfilePage(),hideNavMenu(), permitApproval(), async (req, res)=>{
     console.log('This is approval ', req.params.approval);
@@ -742,6 +748,7 @@ route.put('/:id', async(req,res)=>{
 // });
 
 route.put('/assignDeassign2/:id', async (req,res)=>{
+    let applicationMsg = null;
     let userAssetArrIdArrObj = {};
     let affectedAsset;
     let affectedAssetTypeObj = {};
@@ -794,6 +801,7 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                 console.log(userAssetArrIdArrObj)
         
         if (req.query.assignment == 'Assign'){
+            applicationMsg = 'Successfully Submitted'
             //takes all assetTypesIds from tentative asset div(upper) and appends them to present assets
             let newAsset;
             if (userAssetArr.idArr.length){ //assigning new assets
@@ -1009,6 +1017,8 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
         }
         
         if (req.query.assignment == 'DeAssign'){
+            applicationMsg = 'Successfully Withdrawn'
+
             //takes only ticked items from own list and subtracts it from user asset (user.userAsset.id)
 
             console.log('DeAssign now');
@@ -1047,17 +1057,24 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
             //reassign updated assetIds to user
             user.userAsset.id = newIdArr;
             let assetsNamesToAssign = await assetModel.find().where('_id').in(newIdArr).select('assetType status allocationStatus assetApproval').exec();
-            let affectedAssets = await assetModel.find().where('_id').in(userAssetArr.idArr).select('assetType status allocationStatus assetApproval').exec();
+            let affectedAssets = await assetModel.find().where('_id').in(userAssetArr.idArr).select('assetType status allocationStatus assetApproval assetActivityHistory').exec();
 
             //return affected Assets to Asset pool (used)
             //This will be in each approval stage
-            affectedAssets.forEach(async asset=>{
+            for (asset of affectedAssets){
                 console.log('Did it get here?');
                 asset.assetAllocationStatus = false;
                 asset.assetApproval.self = null;
                 let savedAsset = await asset.save();
                 console.log(savedAsset);
-            })
+            }
+            // affectedAssets.forEach(async asset=>{
+            //     console.log('Did it get here?');
+            //     asset.assetAllocationStatus = false;
+            //     asset.assetApproval.self = null;
+            //     let savedAsset = await asset.save();
+            //     console.log(savedAsset);
+            // })
             var assetTypeArr = [];
             assetsNamesToAssign.forEach(asset=>{
                 console.log('Is this right?');
@@ -1077,7 +1094,7 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                     activityBy:req.user.id,
                     activityDate:new Date (Date.now())
                 };
-
+                console.log('affectedAssets[0]', affectedAssets[0]);
                 affectedAssets[0].assetActivityHistory.push(objActivity);
                 await affectedAssets[0].save();
             
@@ -1983,7 +2000,7 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
         // if (req.query.assignment == 'Store.Approve'){
         //     res.render(`user/issuingApproval`);
         // }else{
-            res.redirect(`/user/${redirectUser}`);
+            res.redirect(`/user/${redirectUser}/${applicationMsg}`);
         // }
         
     } catch(e){

@@ -119,6 +119,17 @@ let assetSchema = new mongoose.Schema({
             },
             auditStatus:{
                 type:String
+            }, 
+            auditPasses:{
+                type:Object,
+                default:{nameNow:'Adeiza'}
+            },
+            auditer:{
+                type:String,
+                default:'Yaman'
+            },
+            genId:{
+                type:String
             }
         }
     ]

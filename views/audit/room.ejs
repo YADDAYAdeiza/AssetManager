@@ -104,10 +104,13 @@
             <option value="retired">retired</option>
         </select>
 
-        <form action="">
+        <!-- <form action="">
             <input id="hiddenObj" type="text">
-        </form>
+        </form> -->
         <button id='auditBtn' onclick="AuditAsset('<%=userId%>', '<%=assetId%>', auditorObj._id, selAudit.value, '<%=genId%>', postObj)" disabled>Audit</button>
+        <!-- <button id="auditDoneBtn" onclick="DoneAuditAsset">Done</button> -->
+        <a id="auditDoneBtn" href="/auditDone/<%=genId%>">Done</a>
+        <!-- <link>Done</link> -->
         // console.log('This is auditResultObj from script.js ', auditResultObj2);
 
         <!-- let auditUpdateObj = {
