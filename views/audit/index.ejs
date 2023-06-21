@@ -592,7 +592,8 @@ function openList(evt, cityName, reAssignedDiv) {
 <!-- <script src="/socket.io/socket.io.js"></script> -->
 <script defer>
     let genIdDone = '<%-genIdDone%>';
-    if (genIdDone){
+    if (genIdDone !='undefined'){ //the string
+        console.log('This is genId: ', typeof(genIdDone));
         alert ('genIdDone')
     }
             let postObj; //will transfer to backend to produce assets to be audited, and will also transfer to videoaudit pagel to Mark as Done
