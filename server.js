@@ -1317,54 +1317,41 @@ app.get('/audGoLive/:room/:genId/:auditorId', async (req, res)=>{
                                    console.log('This is auditor ', auditor);
                                      let user = await userModel.findById(auditor.profileId[0]); //getting first -and only- user in profile of auditor
                                      console.log('This is user ', user);
-                                     let counter = 0;
                                      for (const auditAssignObj of user.userRole.auditAssigns){
                                        if (auditAssignObj.genId == req.params.genId){
                                          console.log('This is auditObj ', auditAssignObj);
-                                         console.log(auditAssignObj['userState']);
-                                         auditAssignObj['userState'] = 'Kabunda';
+                                         auditAssignObj.auditStatus.status = 'Done'
+                                         auditAssignObj.auditStatus.date = new Date();
                                          let user2 = await user.save();
                                          console.log('Saving...');
-                                         console.log('user2', user2.userRole.auditAssigns[user2.userRole.auditAssigns.length - 1]);
-                                         console.log('user2', user2.userRole.auditAssigns[user2.userRole.auditAssigns.length - 1].userState);
-                                         console.log(auditAssignObj['userState']);
-                                         // auditAssignObj.done = {
-                                           //   date:new Date(),
-                                           console.log('Deleted');
-                                           user.userRole.auditAssigns.splice(counter,1);
-                                         //   status:'Done'
-                                         // };
-                                         // auditAssignObj.didIt = 'Yes';
-
                                        }
-                                       ++counter;
                                      }
                                  }
                                       
-                                  // res.render('audit/index.ejs', {
-                                  //     users:idAuditObj,
-                                  //     searchParams:req.query,
-                                  //     msg:'Auditing',
-                                  //     msgClass:'noError',
-                                  //     userName,
-                                  //     roomId:req.params.room,
-                                  //     userEmail:req.user.email,
-                                  //     uiSettings,
-                                  //     userApprovalRoles,
-                                  //     distinctAuditAssets,
-                                  //     distinctAssetManufacturer,
-                                  //     distinctAssetLifeCycle,
-                                  //     dateObj,
-                                  //     distinctState,
-                                  //     distinctDirectorate,
-                                  //     distinctRank,
-                                  //     reqUser:req.user,
-                                  //     assetObj: assetObj,
-                                  //     reloadCheck:req.query.userState,
-                                  //     auditors:auditorsStaff,
-                                  //     genIdDone:req.params.genId
-                                  //     // auditors2:auditors
-                                  // });                        
+                                  res.render('audit/index.ejs', {
+                                      users:idAuditObj,
+                                      searchParams:req.query,
+                                      msg:'Auditing',
+                                      msgClass:'noError',
+                                      userName,
+                                      roomId:req.params.room,
+                                      userEmail:req.user.email,
+                                      uiSettings,
+                                      userApprovalRoles,
+                                      distinctAuditAssets,
+                                      distinctAssetManufacturer,
+                                      distinctAssetLifeCycle,
+                                      dateObj,
+                                      distinctState,
+                                      distinctDirectorate,
+                                      distinctRank,
+                                      reqUser:req.user,
+                                      assetObj: assetObj,
+                                      reloadCheck:req.query.userState,
+                                      auditors:auditorsStaff,
+                                      genIdDone:req.params.genId
+                                      // auditors2:auditors
+                                  });                        
                               }catch(e) {
                                 console.error(e);
                                   console.log('An error occured2');

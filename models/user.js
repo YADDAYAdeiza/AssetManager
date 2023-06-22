@@ -259,7 +259,37 @@ let userSchema = new mongoose.Schema({
             ]
         }],
         
-        auditAssigns:[Object],
+        auditAssigns:[
+            {
+                genId:{
+                    type:String
+                },
+                userState:{
+                    type:String
+                },
+                userDirectorate:{
+                    type:String
+                },
+                userRank:{
+                    type:String
+                },
+                assignedUser:{
+                    type:String
+                },
+                assignedBy:{
+                    type:String
+                },
+                auditStatus:{
+                    date:{
+                        type: Date
+                    },
+                    status:{
+                        type:String,
+                        default:'Pending'
+                    }
+                }
+            }
+        ],
         approvalSupId:{
             type:String
         },
