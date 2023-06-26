@@ -141,17 +141,19 @@
                             <button onclick="refreshAuditAssigns()">Refresh</button>
                         </p>
                             <%auditor.userRole.auditAssigns.forEach(assignAuditObj=>{%>
-                                 <div class = 'auditAssignDiv'>
-                                    <div class = "auditAssignString">
-                                        <%=JSON.stringify(assignAuditObj)%>
-                                    </div>
-                                    <div class="auditAssignObjActions">
-                                       <button onclick="DeleteAssignedAudit(event.currentTarget)">Delete</button>
-                                       <button onclick="ReAssignAudit(event.currentTarget)">ReAssign</button>
-                                       <button class='loadAudit' onclick = "LoadAssignAudit(event.currentTarget)">Load</button>
-                                       <span class = 'numberOfAudits'>(Nos)</span>
-                                    </div>
-                                </div>
+                                <%if(assignAuditObj.auditStatus.status != 'Done'){%>
+                                    <div class = 'auditAssignDiv'>
+                                       <div class = "auditAssignString">
+                                           <%=JSON.stringify(assignAuditObj)%>
+                                       </div>
+                                       <div class="auditAssignObjActions">
+                                          <button onclick="DeleteAssignedAudit(event.currentTarget)">Delete</button>
+                                          <button onclick="ReAssignAudit(event.currentTarget)">ReAssign</button>
+                                          <button class='loadAudit' onclick = "LoadAssignAudit(event.currentTarget)">Load</button>
+                                          <span class = 'numberOfAudits'>(Nos)</span>
+                                       </div>
+                                   </div>
+                                   <%}%>
                             <%})%>
                         <p><%=auditor.userRole.auditAssigns[0]%></p>
     
@@ -594,6 +596,7 @@ function openList(evt, cityName, reAssignedDiv) {
     let genIdDone = '<%-genIdDone%>';
     if (genIdDone !='undefined'){ //the string
         console.log('This is genId: ', typeof(genIdDone));
+        console.log('This is genId: ', genIdDone);
         alert ('genIdDone')
     }
             let postObj; //will transfer to backend to produce assets to be audited, and will also transfer to videoaudit pagel to Mark as Done

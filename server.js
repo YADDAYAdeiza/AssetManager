@@ -1312,20 +1312,22 @@ app.get('/audGoLive/:room/:genId/:auditorId', async (req, res)=>{
 
                                  console.log('This is genIdDone: ', req.params.genId);
                                  if (req.params.genId){
-                                   let auditor = await userCredModel.findById(req.params.auditorId); //getting auditor login credentials
-                                   console.log('Marking auditObj as Done');
-                                   console.log('This is auditor ', auditor);
-                                     let user = await userModel.findById(auditor.profileId[0]); //getting first -and only- user in profile of auditor
-                                     console.log('This is user ', user);
-                                     for (const auditAssignObj of user.userRole.auditAssigns){
-                                       if (auditAssignObj.genId == req.params.genId){
-                                         console.log('This is auditObj ', auditAssignObj);
-                                         auditAssignObj.auditStatus.status = 'Done'
-                                         auditAssignObj.auditStatus.date = new Date();
-                                         let user2 = await user.save();
-                                         console.log('Saving...');
-                                       }
-                                     }
+                                  //This has been implemented in auditStatus2
+
+                                  //  let auditor = await userCredModel.findById(req.params.auditorId); //getting auditor login credentials
+                                  //  console.log('Marking auditObj as Done');
+                                  //  console.log('This is auditor ', auditor);
+                                  //    let user = await userModel.findById(auditor.profileId[0]); //getting first -and only- user in profile of auditor
+                                  //    console.log('This is user ', user);
+                                  //    for (const auditAssignObj of user.userRole.auditAssigns){
+                                  //      if (auditAssignObj.genId == req.params.genId){
+                                  //        console.log('This is auditObj ', auditAssignObj);
+                                  //        auditAssignObj.auditStatus.status = 'Done'
+                                  //        auditAssignObj.auditStatus.date = new Date();
+                                  //        let user2 = await user.save();
+                                  //        console.log('Saving...');
+                                  //      }
+                                  //    }
                                  }
                                       
                                   res.render('audit/index.ejs', {
@@ -2202,6 +2204,31 @@ app.get('/auditStatus2/:auditUpdateObj', async (req, res)=>{
     // res.render('audit/index.ejs',remainingAudits); 
   console.log('auditUpdateObj is ', req.params.auditUpdateObj);
     console.log('Done now2');
+
+    let userWithAuditAssets = Object.keys(remainingAudits.users);
+      for (const user of userWithAuditAssets){
+          if (remainingAudits.users[user].userObj.length == 0){
+            //remove from list ...
+            if (req.params.genId){
+              let auditor = await userCredModel.findById(auditUpdateObjParse.auditorId); //getting auditor login credentials
+              console.log('Marking auditObj as Done2');
+              console.log('This is auditor2 ', auditor);
+                let user = await userModel.findById(auditor.profileId[0]); //getting first -and only- user in profile of auditor
+                console.log('This is user2 ', user);
+                for (const auditAssignObj of user.userRole.auditAssigns){
+                  if (auditAssignObj.genId == auditUpdateObjParse.genId){
+                    console.log('This is auditObj2 to be marked as done ', auditAssignObj);
+                    auditAssignObj.auditStatus.status = 'Done'
+                    auditAssignObj.auditStatus.date = new Date();
+                    let user2 = await user.save();
+                    console.log('Saving...');
+                  }
+                }
+            }                            
+          }
+    }
+
+
     // {
     //                                                   users:idAuditObj,
     //                                                   searchParams:auditParamObj,
