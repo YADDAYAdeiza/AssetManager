@@ -273,6 +273,9 @@ let userSchema = new mongoose.Schema({
                 userRank:{
                     type:String
                 },
+                assetList:{
+                    type:String
+                },
                 assignedUser:{
                     type:String
                 },

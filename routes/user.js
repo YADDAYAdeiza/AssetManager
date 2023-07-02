@@ -525,9 +525,14 @@ route.get('/:id/edit',  hideNavMenu(), async (req,res)=>{
                             console.log('This is chosen route: ', req.routeStr);
                             console.log('This is approval Settings, ', approvalSettings);
                             console.log('This is approving Id', approvingId);
+                            console.log('This is user ', user)
                             // console.log('This is approval ', req.params.approval);
+                            
+                            
+                            // user:user?user:user.firstName,
+
                             res.render(req.routeStr, { //req.routeStr, modified by authentication middleware to hold route address in views folder
-                                user:user?user:user.firstName,
+                                user:user,
                                 allAssets:allAsset,
                                 assetsByUser:asset, 
                                 allAssetType:allAssetType2,

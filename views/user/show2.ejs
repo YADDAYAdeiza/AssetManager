@@ -332,7 +332,7 @@
                                 </div>
                             </ul>
                     </li>
-                    <form class='approveWithout2' method="POST" >
+                    <form id= <%=approvedAsset._id%> class='approveWithout2' method="POST" >
                         <button type="submit">Approve</button>
                     </form>
     
@@ -432,6 +432,7 @@ function openList(evt, cityName) {
     let userVarObj = JSON.parse(userVar);
     console.log('role ', userVarObj.userRole.role);
     let userID = '<%- user.id %>';
+    console.log('This is userID ', userID);
     let approvingId = '<%- approvingId %>';
     let approvalDiv = '<%- divApprovalSetting %>';
     let usersToApprove = <%- JSON.stringify(usersToApprove) %>;
@@ -493,9 +494,10 @@ function openList(evt, cityName) {
     
 
     //second
+    console.log('usersToApprove', usersToApprove);
     usersToApprove.forEach((userObj, i)=>{
         console.log(usersToApprove.length);
-        console.log(userObj.id);
+        console.log('userObj Id', userObj.id);
         idObj.userId = userObj.id;
         idObj['idArrAsset'] = (userObj.approvedAssets.map((asset)=>asset.assetType)); //push assetIds
         idObj['idTypeArr'] = (userObj.approvedAssets.map((asset)=>asset.assetType)); //push assetIds
@@ -506,11 +508,23 @@ function openList(evt, cityName) {
             //it approvingUserId in a get link, as we go into
             //internal approval
         idObj.approvingUserId = userID; //or restore to approvingId above and uncomment above
-        console.log('This is idObj, ', idObj);
-        if (userObj.approvedAsset){
-            if (userObj.approvedAsset.assetApproval[user.userRole.role] != 'approved'){  
-                externalApproveDivGrab2.getElementsByClassName('approveWithout2')[i].action = `/user/assignDeassign2/${JSON.stringify(idObj)}?_method=PUT&assignment=${assignDeassignType}`;
-            }
+        console.log('This is idObj2, ', idObj); 
+        console.log('userObj', userObj);
+        if (userObj.approvedAssets){
+            userObj.approvedAssets.forEach(arrItem=>{
+                if (arrItem.assetApproval[userVarObj.userRole.role] != 'approved'){  
+                    // alert('Not equal to approved');
+                    console.log('This is i: ', i)
+                    console.log(externalApproveDivGrab2.getElementsByClassName('approveWithout2')[4]);
+                    console.log('the id: ', arrItem._id, 'userObj _id', userObj.id)
+                    document.getElementById(arrItem._id).action = `/user/assignDeassign2/${JSON.stringify(idObj)}?_method=PUT&assignment=${assignDeassignType}`;
+                    // externalApproveDivGrab2.getElementsByClassName('approveWithout2')[i].action = `/user/assignDeassign2/${JSON.stringify(idObj)}?_method=PUT&assignment=${assignDeassignType}`;
+                }else{
+                    // alert('Equal to approved');
+    
+                }
+            })
+        
         }
         console.log('This is JSon String: ', JSON.stringify(idObj));
         console.log('This is action: ', externalApproveDivGrab.getElementsByClassName('approveWithout')[i].action)

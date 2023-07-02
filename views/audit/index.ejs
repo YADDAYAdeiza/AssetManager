@@ -307,6 +307,7 @@ function openList(evt, cityName, reAssignedDiv) {
             userState:userStateGrab.value,
             userDirectorate:userDirectorateGrab.value,
             userRank:userRankGrab.value,
+            assetList:assetListGrab.value,
             assignedUser:auditorAssignSelGrab.value,
             assignedBy:reqUserObj._id
         }
@@ -500,6 +501,7 @@ function openList(evt, cityName, reAssignedDiv) {
             userStateGrab.value = auditAssignObj.userState;
             userDirectorateGrab.value = auditAssignObj.userDirectorate;
             userRankGrab.value = auditAssignObj.userRank;
+            assetListGrab.value = auditAssignObj.assetList;
 
             genId = auditAssignObj.genId;
         // let numberOfAssignAudits = e.parentNode.parentNode.getElementsByClassName('numberOfAudits')[0];
@@ -1010,6 +1012,7 @@ function openList(evt, cityName, reAssignedDiv) {
         // var auditsParentDiv;
         // var auditDiv;
         // var assetLink;
+        alert('Submit2...')
         totalAuditCounter2 = 0;
 
         let auditStatusArr = ['functional', 'nonFunctional', 'retired']
@@ -1025,10 +1028,14 @@ function openList(evt, cityName, reAssignedDiv) {
             assetDatePurchased:assetDatePurchasedGrab.value
         }
 
-        let getAudits = await fetch(`/getAudits/${JSON.stringify(postObj)}`);
+        console.log('payload', postObj);
+
+
+        let getAudits = await fetch(`/auditsNow/${JSON.stringify(postObj)}`);
+        console.log('Fetched with... ', postObj);
         let getAuditsJson = await getAudits.json();
         console.log('This is fetch another option ', getAuditsJson);
-        
+        console.log('Trying to plot Dom...');
         let parentDiv = document.createElement('div');
             parentDiv.setAttribute('class', 'auditParentDiv');
         Object.keys(getAuditsJson).forEach(userId=>{
