@@ -177,7 +177,7 @@ route.get('/confirmArrival/:userId/:id/:uuid', async (req, res)=>{
                 console.log('This is length ', await userAssets.length);
                 // res.render('./user/confirmPage.ejs', {id:req.params.id, uuid:req.params.uuid})
                 // idRedirect(req, res, 'User found');
-                res.render('./user/receiveOrUndergoAudit.ejs', {id:req.params.id, userLocation:userLocation, assetId:assetItemId, uuid:req.params.uuid})
+                res.render('./user/receiveOrUndergoAudit.ejs', {id:req.params.id, userLocation:userLocation, assetId:assetItemId, uuid:req.params.uuid, genId:null, postObj:null})
                 
             } else if (await userAssets.length && req.user.subRole == 'auditor'){
                 console.log('The option page');
