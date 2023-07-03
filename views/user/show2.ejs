@@ -308,7 +308,9 @@
                                 </div>
                             </ul>
                     </li>
-    
+                    <form id= <%=approvedAsset._id%> class='approveWithout2' method="POST" >
+                        <button type="submit">DeApprove</button>
+                    </form>
                     <%}%>
                     </ul>
             <%})%>
@@ -513,14 +515,56 @@ function openList(evt, cityName) {
         if (userObj.approvedAssets){
             userObj.approvedAssets.forEach(arrItem=>{
                 if (arrItem.assetApproval[userVarObj.userRole.role] != 'approved'){  
+                    switch(approvalDiv){
+                        case 'stateApproval':
+                        assignDeassignType = 'Approve';
+                        break;
+                        case 'directorateApproval':
+                            assignDeassignType = 'D.Approve';
+                            break;
+                        case 'storeApproval':
+                            assignDeassignType = 'Store.Approve';
+                            break;
+                        case 'issuerApproval':
+                            assignDeassignType = 'Issuer.Approve';
+                            break;
+                        case 'receivedApproval': //not yet in use.
+                            assignDeassignType = 'received.Approve';
+                            break;
+                        default:
+                            break;   
+                            
+                    }
                     // alert('Not equal to approved');
                     console.log('This is i: ', i)
-                    console.log(externalApproveDivGrab2.getElementsByClassName('approveWithout2')[4]);
+                    console.log('assignDeassignType: if approved ', assignDeassignType);
+                    // console.log(externalApproveDivGrab2.getElementsByClassName('approveWithout2')[4]);
                     console.log('the id: ', arrItem._id, 'userObj _id', userObj.id)
                     document.getElementById(arrItem._id).action = `/user/assignDeassign2/${JSON.stringify(idObj)}?_method=PUT&assignment=${assignDeassignType}`;
                     // externalApproveDivGrab2.getElementsByClassName('approveWithout2')[i].action = `/user/assignDeassign2/${JSON.stringify(idObj)}?_method=PUT&assignment=${assignDeassignType}`;
                 }else{
-                    // alert('Equal to approved');
+                    switch(approvalDiv){
+                        case 'stateApproval':
+                        assignDeassignType = 'DeApprove';
+                        break;
+                        case 'directorateApproval':
+                            assignDeassignType = 'D.DeApprove';
+                            break;
+                        case 'storeApproval':
+                            assignDeassignType = 'Store.DeApprove';
+                            break;
+                        case 'issuerApproval':
+                            assignDeassignType = 'Issuer.DeApprove';
+                            break;
+                        case 'receivedApproval': //not yet in use.
+                            assignDeassignType = 'received.DeApprove';
+                            break;
+                        default:
+                            break;   
+            
+                    }
+                    console.log('assignDeassignType: if approved ', assignDeassignType);
+                    document.getElementById(arrItem._id).action = `/user/assignDeassign2/${JSON.stringify(idObj)}?_method=PUT&assignment=${assignDeassignType}`;
     
                 }
             })

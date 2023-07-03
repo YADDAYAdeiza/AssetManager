@@ -1265,7 +1265,9 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
 
             //return affected Assets to Asset pool (used)
             //This will be in each approval stage
-            affectedAssets.forEach(async asset=>{
+            // affectedAssets.forEach(async asset=>{
+            for (asset of affectedAssets){
+
                 // asset.assetAllocationStatus = false;
                 // asset.assetApproval = {
                 //     self:'approved',
@@ -1282,7 +1284,8 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                     issuerApproval:null
                 };
                 await asset.save();
-            })
+            }
+                // })
             var assetTypeArr = [];
             assetsNamesToAssign.forEach(asset=>{
                 asset.assetAllocationStatus = false; //we have to bring false assets and store them under their asset Divs as used items
@@ -1305,7 +1308,9 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                     };
 
                     affectedAssets[0].assetActivityHistory.push(objActivity);
+                    console.log('Here');
                     await affectedAssets[0].save();
+                    console.log('Here2');
                 
                     // userLogSave(user, newIdArr, req.query.assignment, req);
                     // userLogSave(user, userAssetArr.idArr, req.query.assignment, req);
@@ -1472,7 +1477,9 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
 
             //return affected Assets to Asset pool (used)
             //This will be in each approval stage
-            affectedAssets.forEach(async asset=>{
+            // affectedAssets.forEach(async asset=>{
+            for (asset of affectedAssets){
+
                 // asset.assetAllocationStatus = false;
                 // asset.assetApproval ={
                 //     self:'approved',
@@ -1489,7 +1496,8 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                     issuerApproval:null
                 };
                 await asset.save();
-            })
+            }
+            // })
             var assetTypeArr = [];
             assetsNamesToAssign.forEach(asset=>{
                 asset.assetAllocationStatus = false; //we have to bring false assets and store them under their asset Divs as used items
@@ -1738,16 +1746,19 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
 
             //return affected Assets to Asset pool (used)
             //This will be in each approval stage
-            affectedAssets.forEach(async asset=>{
-                // asset.assetAllocationStatus = false;
-
-                // asset.assetApproval= {
-                //     self:'approved',
-                //     state:'approved',
-                //     directorate:'approved',
-                //     store:null,
-                //     issue:null
-                // };
+            // affectedAssets.forEach(async asset=>{
+                console.log('Na here')
+                console.log('This isaffectedAsset: ', affectedAsset)
+                for (asset of affectedAssets){
+                    // asset.assetAllocationStatus = false;
+                    
+                    // asset.assetApproval= {
+                        //     self:'approved',
+                        //     state:'approved',
+                        //     directorate:'approved',
+                        //     store:null,
+                        //     issue:null
+                        // };
 
                 asset.assetApproval ={
                     ownApproval:'approved',
@@ -1757,7 +1768,9 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                     issuerApproval:null
                 };
                 await asset.save();
-            })
+            }
+            console.log('Na here2')
+            // })
             var assetTypeArr = [];
             assetsNamesToAssign.forEach(asset=>{
                 asset.assetAllocationStatus = false; //we have to bring false assets and store them under their asset Divs as used items
@@ -1930,7 +1943,9 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
 
             //return affected Assets to Asset pool (used)
             //This will be in each approval stage
-            affectedAssets.forEach(async asset=>{
+            // affectedAssets.forEach(async asset=>{
+            for (asset of affectedAssets){
+
                 // asset.assetAllocationStatus = false;
                 // asset.assetApproval = {
                 //     self:'approved',
@@ -1948,7 +1963,8 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                     issuerApproval:null
                 };
                 await asset.save();
-            })
+            }
+                // })
             var assetTypeArr = [];
             assetsNamesToAssign.forEach(asset=>{
                 asset.assetAllocationStatus = false; //we have to bring false assets and store them under their asset Divs as used items
