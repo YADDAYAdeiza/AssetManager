@@ -20,7 +20,7 @@
         alert(userLocation);
         
         undergoAuditGrab = document.getElementById('undergoAudit');
-        undergoAuditGrab.href = `/videoAudit/${userID}/${assetID}/${assetCode}/${userLocation}/2345dfgh/{isneeded:'not needed'}`;
+        undergoAuditGrab.href = `/videoAudit/${userID}/${assetID}/${assetCode}/${userLocation}/2345dfgh/${JSON.stringify({isneeded:'not needed'})}`;
 
             function auditLocation(){
                 alert('Invoked...');
