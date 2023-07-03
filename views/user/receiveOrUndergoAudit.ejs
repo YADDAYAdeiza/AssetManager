@@ -10,6 +10,8 @@
         let userID = '<%=id%>';
         let assetID = '<%=assetId%>';
         let assetCode = '<%=uuid%>';
+        let genId = '<%=genId%>';
+        let postObj = '<%- JSON.stringify(genId)%>';
         let undergoAuditGrab;
 
         alert('User Location');
@@ -18,7 +20,7 @@
         alert(userLocation);
         
         undergoAuditGrab = document.getElementById('undergoAudit');
-        undergoAuditGrab.href = `/videoAudit/${userID}/${assetID}/${assetCode}/${userLocation}`;
+        undergoAuditGrab.href = `/videoAudit/${userID}/${assetID}/${assetCode}/${userLocation}/${genId}/${postObj}`;
 
             function auditLocation(){
                 alert('Invoked...');
