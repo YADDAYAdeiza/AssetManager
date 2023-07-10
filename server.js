@@ -1921,6 +1921,8 @@ app.get('/auditStatus2/:auditUpdateObj', async (req, res)=>{
   let asset2 = await asset[0].save();
 
   //it should also update the new audit date on the user 
+
+  // i don't know about this
   let user =  await userModel.findById({}).where('_id').equals(auditUpdateObjParse.userId);
   console.log('This is user ', user)
   user.userOwnedAsset.idAudit.forEach(auditObj=>{
@@ -1931,9 +1933,12 @@ app.get('/auditStatus2/:auditUpdateObj', async (req, res)=>{
       auditObj.auditDate = Date.now();
     }
   })
+  //i don't know about this
 
   await user.save();
 
+  
+  
   //now check if postObj is satisfied, or if it remains
     //if remains, do nothing,
     //if satisfied, remove it from auditor assigns
@@ -1946,6 +1951,44 @@ app.get('/auditStatus2/:auditUpdateObj', async (req, res)=>{
     console.log('Thi is remainingAudits: ', remainingAudits);
 
     console.log('Rendering...');
+
+  
+    let auditor = await userCredModel.findById(auditUpdateObjParse.auditorId); //getting auditor login credentials
+  
+  let userAuditor = await userModel.findById(auditor.profileId[0]); //getting first -and only- user in profile of auditor
+  
+  //update userRole.auditAssigns
+  console.log('This is auditor ', userAuditor);
+  // console.log('This is auditor pr ', userAuditor);
+ for (const objToBeAudited of userAuditor.userRole.auditAssigns) {
+    console.log('Entered 1');
+    if (auditUpdateObjParse.genId == objToBeAudited.genId ){
+      for (auditItem of objToBeAudited.auditProgress){
+        if (auditItem.assetId == auditUpdateObjParse.assetId){
+          auditItem.status = 'Done';
+          let newUserAuditor = await userAuditor.save();
+          console.log(newUserAuditor.userRole.auditAssigns[3].auditProgress[0])
+        }
+      }
+      // console.log('Entered 2');
+      // console.log(objToBeAudited);
+      // console.log('userId auditUpdateObjParse:', auditUpdateObjParse.userId);
+      // console.log('userId auditUpdateObjParse type:', typeof (auditUpdateObjParse.userId));
+      // console.log('Progress: ', objToBeAudited.auditProgress);
+      // console.log('Progress Specific: ', objToBeAudited.auditProgress['64a512dff9c53a0b4760e9ce']);
+      // console.log('Progress auditUpdateObjParse: ', objToBeAudited.auditProgress[auditUpdateObjParse.userId]);
+      // console.log(objToBeAudited.auditProgress[auditUpdateObjParse.userId]);
+     
+      // objToBeAudited.auditProgress[auditUpdateObjParse.userId][auditUpdateObjParse.assetId] = {auditStatus: 'Done'};
+      // console.log(objToBeAudited.auditProgress[auditUpdateObjParse.userId][auditUpdateObjParse.assetId].auditStatus)
+      // userAuditor.markModified('userRole.auditAssigns.auditProgress[auditUpdateObjParse.userId][auditUpdateObjParse.assetId]');
+      // await objToBeAudited.save();
+      // console.log('objToBeAudited after save, ', objToBeAudited);
+      // console.log('Returned userAuditor, ', newUserAuditor.userRole.auditAssigns[3].auditProgress['64a512dff9c53a0b4760e9ce']['64a51524f9c53a0b4760eef4'])
+    }
+  } 
+
+
     console.log('auditUpdateObjParse.genId is: ', auditUpdateObjParse.genId);
     // res.render('audit/index.ejs',remainingAudits); 
   console.log('auditUpdateObj is ', req.params.auditUpdateObj);

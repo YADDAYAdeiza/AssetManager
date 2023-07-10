@@ -282,6 +282,14 @@ let userSchema = new mongoose.Schema({
                 assignedBy:{
                     type:String
                 },
+                auditProgress:[{
+                    assetId:{
+                        type:String
+                    },
+                    status:{
+                        type:String
+                    }
+                }],
                 auditStatus:{
                     date:{
                         type: Date

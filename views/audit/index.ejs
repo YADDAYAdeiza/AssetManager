@@ -135,16 +135,21 @@
                     </div>
                     <!-- other divs -->
                 <%auditors.forEach(auditor=>{%>
+                    <%console.log('New auditor')%>
                     <div id="<%=auditor._id%>" class="tabcontent2">
                         <p>
                             <h3>Assigned Audit List</h3>
                             <button onclick="refreshAuditAssigns()">Refresh</button>
                         </p>
                             <%auditor.userRole.auditAssigns.forEach(assignAuditObj=>{%>
-                                <%if(assignAuditObj.auditStatus.status != 'Done'){%>
+                                <%let renderAuditAssignBool = assignAuditObj.auditProgress.some(assetObj=>{%>
+                                    <%return assetObj.status == 'Pending'%>
+                                <%})%>
+                                <%console.log('Render or not: ', renderAuditAssignBool)%>
+                                <%if(renderAuditAssignBool){%> //render if there is still any asset audit pending
                                     <div class = 'auditAssignDiv'>
                                        <div class = "auditAssignString">
-                                           <%=JSON.stringify(assignAuditObj)%>
+                                           <%=JSON.stringify(assignAuditObj)%>  
                                        </div>
                                        <div class="auditAssignObjActions">
                                           <button onclick="DeleteAssignedAudit(event.currentTarget)">Delete</button>
@@ -153,7 +158,7 @@
                                           <span class = 'numberOfAudits'>(Nos)</span>
                                        </div>
                                    </div>
-                                   <%}%>
+                                <%}%> //Render
                             <%})%>
                         <p><%=auditor.userRole.auditAssigns[0]%></p>
     
@@ -256,6 +261,9 @@
 <script src="/socket.io/socket.io.js"></script>
 <script>
     
+let objToAudit; //for use in Assigning to Auditors
+let objToAuditArr = [];
+//for use in Assigning to Auditors
     let reAssignedDOMDiv; //for temporarily holding div to be reassinged
 let users = '<%- JSON.stringify(users) %>';
 let usersObj = JSON.parse(users);
@@ -302,6 +310,8 @@ function openList(evt, cityName, reAssignedDiv) {
 
     async function assignAuditor(){
         alert('Assign to Auditor');
+        // assetAuditArr
+        
         let assignObj = {
             genId:crypto.randomUUID(),
             userState:userStateGrab.value,
@@ -309,7 +319,8 @@ function openList(evt, cityName, reAssignedDiv) {
             userRank:userRankGrab.value,
             assetList:assetListGrab.value,
             assignedUser:auditorAssignSelGrab.value,
-            assignedBy:reqUserObj._id
+            assignedBy:reqUserObj._id,
+            auditProgress:objToAuditArr
         }
 
             console.log('This is obj to assign: ', assignObj);
@@ -820,9 +831,9 @@ function openList(evt, cityName, reAssignedDiv) {
                     var today = now.getFullYear() + "-" + (month) + "-" + (day);
                     // $('#SubmitDate').val(today);
 
-                    userDateAfterSearchGrab.value = today;
-                    assetDateBeforeSearchGrab.value = today;
-                    assetDatePurchasedGrab.value = today;
+                    // userDateAfterSearchGrab.value = today;
+                    // assetDateBeforeSearchGrab.value = today;
+                    // assetDatePurchasedGrab.value = today;
                 }
 
                 DateSet();
@@ -1033,7 +1044,49 @@ function openList(evt, cityName, reAssignedDiv) {
 
         let getAudits = await fetch(`/auditsNow/${JSON.stringify(postObj)}`);
         console.log('Fetched with... ', postObj);
-        let getAuditsJson = await getAudits.json();
+        getAuditsJson = await getAudits.json();
+
+                        //get all the assets - for use in tracking for finished, after assigned to auditor
+                            assetAuditArr= [];
+                            objToAudit = {};
+
+                            let user = {};
+                            let auditorIds = Object.keys(getAuditsJson);
+                            
+                            //Initializing
+                            // for (let userId of auditorIds){
+                            //     objToAudit[userId] = {};
+                            //         getAuditsJson[userId].userObj.forEach(item=>{
+                            //             let itemId = item.id._id;
+                            //             objToAudit[userId][itemId] = {}
+                            //         })
+                            // }
+                            for (let userId of auditorIds){
+                                // objToAudit[userId] = {};
+                                    getAuditsJson[userId].userObj.forEach(item=>{
+                                        let itemId = item.id._id;
+                                        // objToAudit[userId][itemId] = {}
+                                        objToAuditArr.push({
+                                            assetId:itemId,
+                                            status:'Pending'
+                                        })
+                                    })
+                            }
+
+                            //Assigning
+                            // for (let userId of auditorIds){
+                            //     getAuditsJson[userId].userObj.forEach(item=>{
+                            //         let itemId = item.id._id;      
+                            //         objToAudit[userId][itemId] = {auditStatus:'pending'}
+
+                            //     })
+                            // }
+                            // console.log('This will be updated in the auditor,', objToAudit);
+                            // console.log('This will ', objToAudit['64a512dff9c53a0b4760e9ce']['64a51524f9c53a0b4760eef4'])
+                            // console.log('List of assets we are going to track as assigned: ', assetAuditArr);
+                            console.log('This will be updated in the auditor,', objToAuditArr);
+
+                        //
         console.log('This is fetch another option ', getAuditsJson);
         console.log('Trying to plot Dom...');
         let parentDiv = document.createElement('div');
