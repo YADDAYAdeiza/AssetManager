@@ -9,7 +9,7 @@
     
    Audit  <a href="/audit">Audit Live</a> <a href= "/audGoLive/<%=roomId%>" target="_blank">Send Link</a>
     <div id="searchContDiv">
-        <div id="searchContDivForm">
+        <div id="searchContDivForm" class="onlyAdmin">  
             <form method="get" action="/audGoLive/<%=roomId%>">
                 
                 <p><input type="number" name = "userDays" value = <%=searchParams.userDays%>></p>
@@ -112,7 +112,7 @@
                 <!-- Other btns -->
                 <%auditors.forEach(auditor=>{%>
                     <!-- The buttons -->
-                    <button class="tablinks" onclick="openList(event, '<%=auditor._id%>')"><%=auditor.firstName%></button>
+                    <button class="tablinks <%=auditor._id%>" onclick="openList(event, '<%=auditor._id%>')"><%=auditor.firstName%></button>
                 <%})%>
                     <!-- the divs -->
                     <!-- Stats div -->
@@ -540,6 +540,7 @@ function openList(evt, cityName, reAssignedDiv) {
 
     let auditChart;
     let assetObj = '<%- JSON.stringify(assetObj) %>';
+    let accessingAuditorId = '<%=accessingAuditorId%>';
     let auditors = <%- JSON.stringify(auditors) %>;
     console.log('Here is auditors, ', auditors);
     assetObj = JSON.parse(assetObj);
@@ -953,7 +954,21 @@ function openList(evt, cityName, reAssignedDiv) {
             })
         })
         console.log(Object.values(settingsObj));
-    // function openSettings(event){
+    
+        [ ...document.getElementsByClassName('tablinks')].forEach(tab=>{
+            console.log('Accessing auditor: ', accessingAuditorId);
+            console.log('Classlist: ', tab.classList)
+            console.log('Classlist: ', [...tab.classList])
+            console.log('Classlist: ', [...tab.classList].includes(accessingAuditorId))
+            if ([ ...tab.classList].includes(accessingAuditorId)){
+                // console.log
+                tab.style.display = 'block';
+            }else{
+                alert('NOT INcludes');
+                tab.style.display = 'none';
+            }
+        })
+        // function openSettings(event){
     //     console.log('Calling...');
         
     //         formSettingsGrab.classList.toggle('formSettingsDisplay')

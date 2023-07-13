@@ -569,7 +569,7 @@ app.get('/audit/:room', permitLists(), async (req,res)=>{
                             }
 })
 
-app.get('/audGoLive/:room', async (req, res)=>{
+app.get('/audGoLive/:room', hideNavMenu(), async (req, res)=>{
   console.log('This is assetDateBefore, audGoLive ', req.query.assetDateBeforeSearch);
 
   let auditArr = [];
@@ -677,6 +677,12 @@ app.get('/audGoLive/:room', async (req, res)=>{
                             // console.log('This is userName, ', userName);
                             // console.log('These are assetTypes: ', distinctAuditAssets);
                             // console.log('These are distinctAssetManufacturer: ', distinctAssetManufacturer);
+
+                            //Getting the first in profile of auditor
+                            let auditor = await userModel.findById().where('_id').equals(req.user.profileId[0]);
+                            let accessingAuditorId = auditor._id;
+
+
                               try{
                                   const users = await query.exec();
 
@@ -930,12 +936,16 @@ app.get('/audGoLive/:room', async (req, res)=>{
 
                                       console.log('This is assetObj', assetObj)
 
+                                  let uiSettings = req.dispSetting;
+
+
                                   res.render('audit/index.ejs', {
                                       users:idAuditObj,
                                       searchParams:req.query,
                                       msg:'Auditing',
                                       msgClass:'noError',
                                       userName,
+                                      accessingAuditorId,
                                       roomId:req.params.room,
                                       userEmail:req.user.email,
                                       uiSettings,

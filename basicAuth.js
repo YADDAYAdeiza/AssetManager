@@ -302,12 +302,22 @@ function permitApproval(){
 function hideNavMenu(){
     return async (req, res, next)=>{
         if (req.user.role =='basic'){
-            console.log('Basic UI')
-            let uiSettings = {
-                'onlyAdmin':'none'
+            if (req.user.subRole == 'staff'){
+                console.log('Basic UI')
+                let uiSettings = {
+                    'onlyAdmin':'none'
+                }
+                req.dispSetting = uiSettings;
+                console.log('This is it, ', req.dispSetting);
+            }else{
+                console.log('Basic Auditor')
+                let uiSettings = {
+                    'onlyAdmin':'none',
+                    'onlyAuditor':'block'
+                }
+                req.dispSetting = uiSettings;
+                console.log('This is it, ', req.dispSetting);
             }
-            req.dispSetting = uiSettings;
-            console.log('This is it, ', req.dispSetting);
         }
 
         if (req.user.role =='admin'){

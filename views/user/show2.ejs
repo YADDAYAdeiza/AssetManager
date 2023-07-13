@@ -228,6 +228,7 @@
                     <li><a href = '/user/<%=userToApproveObj.id%>/<%=user.userRole.role%>/<%=user.id%>'><%=userToApproveObj.id%></a>
                         <ul>
                             <%userToApproveObj.approvedAssets.forEach(approvedAsset=>{%>
+                               <% console.log('user.userRole.role', user.userRole.role);%>
                                 <div class = <%=approvedAsset? (approvedAsset.assetApproval[user.userRole.role] ?'approved':'notApproved'):""%>>
                                     <li><a href = '/asset/<%=approvedAsset._id%>' ><%=approvedAsset._id%> </a> | <a href = '/dana/<%=approvedAsset.assetUserHistory[approvedAsset.assetUserHistory.length - 1]%>/<%=approvedAsset._id%>/<%=approvedAsset.assetCode%>' class = 'QRCodeBtn'>Generate QRCode</a></li>
                                 </div>
@@ -591,6 +592,21 @@ function openList(evt, cityName) {
         }
     })
 
+
+    // setting buttons?
+
+    // let blankedButs = [ ...document.getElementsByClassName('approvalBtn')].forEach(button=>{
+    //     button.style.display = 'none';
+    // })
+
+    // let blankedButs2 = [ ...document.getElementsByClassName('approvalBtn')].forEach(button=>{
+    //     console.log('This is approvalDiv: ', approvalDiv);
+    //     console.log('This is button classList: ', button.classList)
+    //     if (button.classList.includes(approvalDiv)){
+    //         button.style.display = 'inline';
+    //     }
+    // })
+    
 
 
 
@@ -1940,9 +1956,14 @@ var objClassList = {}
     [ ...approvalBtnGrab].forEach(btn=>{
         btn.style.display = 'none';
     })
-    let showApprovalBtn = document.getElementsByClassName(userRole);
+    let showApprovalBtn = document.getElementsByClassName('approvalBtn');
     [ ...showApprovalBtn].forEach(btnToShow=>{
-        btnToShow.style.display = 'inline';
+        // console.log('showing: ', userRole);
+        console.log('btnToShow', btnToShow.classList)
+        console.log(userRole);
+        if ([ ...btnToShow.classList].includes(approvalDiv)){
+            btnToShow.style.display = 'inline';
+        }
     });
 
 

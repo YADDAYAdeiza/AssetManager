@@ -147,7 +147,14 @@ route.get('/confirmArrival/:userId/:id/:uuid', async (req, res)=>{
                                 //     storeApproval:null,
                                 //     issuerApproval:null
                                 // };
-                                user[0].receivedUserAsset.id.push(assetItem._id);
+                                // user[0].receivedUserAsset.id.push(assetItem._id);
+                                let receivedAsset = {
+                                    id:assetItem._id,
+                                    idType:assetItem.assetName,
+                                    // assignDate: new Date(),
+                                    assignStatus:'Assigned'
+                                }
+                                user[0].receivedUserAsset.push(receivedAsset);
                                 await user[0].save();
                                 //Log
                                 let objActivity = {
@@ -215,7 +222,14 @@ route.get('/directReceive/:id/:assetItemId', async (req, res)=>{
             req.params.id = user[0]._id; // recalibrating hack
             req.routeStr = 'user/show2';
         asset[0].assetApproval.received = 'approved';
-        user[0].receivedUserAsset.id.push(assetItem._id);
+        // user[0].receivedUserAsset.id.push(assetItem._id);// where did assetItem come from?
+        let receivedAsset = {
+            id:asset[0]._id,
+            idType:asset[0].assetName,
+            // assignDate: new Date(),
+            assignStatus:'Assigned'
+        }
+        user[0].receivedUserAsset.push(receivedAsset);
         await user[0].save();
         // console.log('Asset is: ', asset[0]);
         idRedirect(req, res, 'User found');
@@ -465,8 +479,8 @@ route.get('/:id/edit',  hideNavMenu(), async (req,res)=>{
                                 user.issueApprovedUserAsset.id.forEach(async itemArr=>{
                                     issueApprovedAssets.push(itemArr.toString());
                                 });
-                                user.receivedUserAsset.id.forEach(async itemArr=>{
-                                    receivedUserAsset.push(itemArr.toString());
+                                user.receivedUserAsset.forEach(async itemArr=>{
+                                    receivedUserAsset.push(itemArr.id.toString()); //learn from this, all you above
                                 });
 
                                 // user.userRole.usersToApprove.forEach(userId=>{
@@ -907,8 +921,9 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                         }
                         console.log('This is userObj now ', userObj);
                                 stateApprover[0].userRole.usersToApprove.push(userObj);
-
+                        console.log('pushed');
                                 await stateApprover[0].save();  
+                                console.log('Pushed2 saved')
                     // redirectUser = stateApprover[0].id;
                     redirectUser = user.id;
                                 console.log('stateApprover now', stateApprover[0]); 

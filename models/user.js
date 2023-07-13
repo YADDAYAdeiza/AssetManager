@@ -182,23 +182,28 @@ let userSchema = new mongoose.Schema({
             }
         }
     },
-    receivedUserAsset:{
+    receivedUserAsset:[
+        {
         id:{
-            type:[mongoose.Schema.Types.ObjectId],
+            type:mongoose.Schema.Types.ObjectId,
             ref:'AssetCol',
             required:true
         },
         idType:{
-            type:[String],
+            type:String,
             required:true
         },
         assignDate:{
-            type:[Date],
+            type:Date,
             default:()=>{
                 return Date.now()
             }
+        },
+        assignStatus:{
+            type:String
         }
-    },
+    }
+    ],
     userOwnedAsset:{
         id:{
             type:[mongoose.Schema.Types.ObjectId],
