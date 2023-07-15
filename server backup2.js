@@ -438,10 +438,7 @@ app.get('/audit/:room', permitLists(), async (req,res)=>{
                             let query = req.queryObj; //from permitLists middleware
                             console.log('Back here');
                             // console.log(query);
-                            // query = query.where('userOwnedAsset.id').ne(null); //users with Assets
-                            // query = query.where('userOwnedAsset.id').ne(null); //users with Assets
-                            query = query.where('userOwnedAsset').ne({$size: 0}); //users with Assets
-
+                            query = query.where('userOwnedAsset.id').ne(null); //users with Assets
                             // query.where(userOwnedAsset.id).equals
                             if (req.query.userNameSearch != null && req.query.userNameSearch != ""){
                                 query = query.regex('firstName', new RegExp(req.query.userNameSearch, 'i'));
@@ -472,7 +469,7 @@ app.get('/audit/:room', permitLists(), async (req,res)=>{
 
                                 let idAuditObj = {};
                                 users.forEach(user=>{
-                                  for (var a=0;a<user.userOwnedAsset.length;a++){
+                                  for (var a=0;a<user.userOwnedAsset.idAudit.length;a++){
                                     idAuditObj[user.id] = {userObj:[]}
                                   }
                                    
@@ -483,28 +480,28 @@ app.get('/audit/:room', permitLists(), async (req,res)=>{
                                 let dateObj;
                               //  let userToBeAudited = users.filter(user=>{
                               //     for (var a=0;a<user.userOwnedAsset.idAudit.length;a++){
-                              //       let diffTime = Date.now() - user.userOwnedAsset[a].idAuditObj.auditDate;
+                              //       let diffTime = Date.now() - user.userOwnedAsset.idAudit[a].auditDate;
                               //       console.log('New Date object: ', new Date(diffTime));
                               //       dateObj = new Date(diffTime * 1000);
                               //       console.log('Query', req.query);
                               //       console.log('Before', req.query.userDateBeforeSearch);
                               //       console.log('New Date hours: ', new Date(diffTime).getHours());
                               //       console.log('New Date Date: ', new Date(diffTime).getDate());
-                              //       console.log('Time lapse: ',typeof(user.userOwnedAsset[a].idAuditObj.auditDate));
-                              //       console.log('Time lapse: ', Date.now() - user.userOwnedAsset[a].idAuditObj.auditDate);
-                              //       console.log('Time lapse: ', req.query.userDateBeforeSearch - user.userOwnedAsset[a].idAuditObj.auditDate);
+                              //       console.log('Time lapse: ',typeof(user.userOwnedAsset.idAudit[a].auditDate));
+                              //       console.log('Time lapse: ', Date.now() - user.userOwnedAsset.idAudit[a].auditDate);
+                              //       console.log('Time lapse: ', req.query.userDateBeforeSearch - user.userOwnedAsset.idAudit[a].auditDate);
                                     
-                              //       let numOfDays = (new Date(Date.now()).getTime() - user.userOwnedAsset[a].idAuditObj.auditDate.getTime())/(1000*60*60*24);
-                              //         console.log('Asset ', user.userOwnedAsset[a].idAuditObj.id);
+                              //       let numOfDays = (new Date(Date.now()).getTime() - user.userOwnedAsset.idAudit[a].auditDate.getTime())/(1000*60*60*24);
+                              //         console.log('Asset ', user.userOwnedAsset.idAudit[a].id);
                               //         console.log('Number of Days (rounded), ', Math.round(numOfDays));
                               //         // if ((req.query.userDays) == Math.ceil(numOfDays)){
-                              //           user.userOwnedAsset[a].idAuditObj.firstName = user.firstName
-                              //           user.userOwnedAsset[a].idAuditObj.userId = user.id
-                              //           auditArr.push(user.userOwnedAsset[a].idAuditObj)
-                              //           idAuditObj[user.id].push(user.userOwnedAsset[a].idAuditObj)
+                              //           user.userOwnedAsset.idAudit[a].firstName = user.firstName
+                              //           user.userOwnedAsset.idAudit[a].userId = user.id
+                              //           auditArr.push(user.userOwnedAsset.idAudit[a])
+                              //           idAuditObj[user.id].push(user.userOwnedAsset.idAudit[a])
                               //         // }
                               //       //req.query.userDateBeforeSearch
-                              //       // return (user.userOwnedAsset[a].idAuditObj.id.toString() == '63a1e335bc9dbf8077de0dc9');
+                              //       // return (user.userOwnedAsset.idAudit[a].id.toString() == '63a1e335bc9dbf8077de0dc9');
                               //     }
                               //     // return user.userOwnedAsset.idAudit.forEach(assetObj=>{
                               //     //   console.log('Audit enter');
@@ -516,35 +513,35 @@ app.get('/audit/:room', permitLists(), async (req,res)=>{
                               //   })
 
                               users.forEach(user=>{
-                                for (var a=0;a<user.userOwnedAsset.length;a++){
+                                for (var a=0;a<user.userOwnedAsset.idAudit.length;a++){
                                   
-                                  let numOfDays = (new Date(Date.now()).getTime() - user.userOwnedAsset[a].idAuditObj.auditDate.getTime())/(1000*60*60*24);
-                                  console.log('Asset ', user.userOwnedAsset[a].idAuditObj.id);
+                                  let numOfDays = (new Date(Date.now()).getTime() - user.userOwnedAsset.idAudit[a].auditDate.getTime())/(1000*60*60*24);
+                                  console.log('Asset ', user.userOwnedAsset.idAudit[a].id);
                                   console.log('Number of Days (rounded), ', Math.round(numOfDays));
                                   if (req.query.userDays){
                                     console.log('First...')
                                     if (Math.ceil(numOfDays) > (req.query.userDays) ||Math.ceil(numOfDays) == (req.query.userDays) ){
-                                      // user.userOwnedAsset[a].idAuditObj.firstName = user.firstName
-                                      // user.userOwnedAsset[a].idAuditObj.userId = user.id
-                                      // auditArr.push(user.userOwnedAsset[a].idAuditObj)
+                                      // user.userOwnedAsset.idAudit[a].firstName = user.firstName
+                                      // user.userOwnedAsset.idAudit[a].userId = user.id
+                                      // auditArr.push(user.userOwnedAsset.idAudit[a])
                                       idAuditObj[user.id].firstName = user.firstName
-                                      idAuditObj[user.id].userObj.push(user.userOwnedAsset[a].idAuditObj)
+                                      idAuditObj[user.id].userObj.push(user.userOwnedAsset.idAudit[a])
                                     }
 
                                   }else {
                                     console.log('Second');
-                                      // user.userOwnedAsset[a].idAuditObj.firstName = user.firstName
-                                      // user.userOwnedAsset[a].idAuditObj.userId = user.id
-                                      // auditArr.push(user.userOwnedAsset[a].idAuditObj)
-                                      // idAuditObj[user.id].push(user.userOwnedAsset[a].idAuditObj)
+                                      // user.userOwnedAsset.idAudit[a].firstName = user.firstName
+                                      // user.userOwnedAsset.idAudit[a].userId = user.id
+                                      // auditArr.push(user.userOwnedAsset.idAudit[a])
+                                      // idAuditObj[user.id].push(user.userOwnedAsset.idAudit[a])
                                       idAuditObj[user.id].firstName = user.firstName
-                                      idAuditObj[user.id].userObj.push(user.userOwnedAsset[a].idAuditObj)
+                                      idAuditObj[user.id].userObj.push(user.userOwnedAsset.idAudit[a])
 
                                   }
-                                  // return (user.userOwnedAsset[a].idAuditObj.id.toString() == '63a1e335bc9dbf8077de0dc9');
+                                  // return (user.userOwnedAsset.idAudit[a].id.toString() == '63a1e335bc9dbf8077de0dc9');
                                 }
                                 // return (auditArr);
-                                // auditArr.push(user.userOwnedAsset[a].idAuditObj)
+                                // auditArr.push(user.userOwnedAsset.idAudit[a])
 
                                
                               })
@@ -621,18 +618,10 @@ app.get('/audGoLive/:room', hideNavMenu(), async (req, res)=>{
   // let distinctAuditAssets =  await assetTypeAuditModel.find({}).select('assetTypeClass assetTypeAuditInterval');
                             // let userStoreApprovalRoles = await userModel.find({}).where('userStoreApproval').ne(null).distinct('approvalStatus');
                             // let query = req.queryObj; //from permitLists middleware
-                            // let query = userModel.find().populate('userOwnedAsset.idAuditObj.assetTypeId userOwnedAsset.idAuditObj.id'); //from permitLists middleware
-                            let query = userModel.find().populate('userOwnedAsset.idAuditObj.assetTypeId userOwnedAsset.idAuditObj.id'); //from permitLists middleware
-                            // let queryExample = await userModel.find().where('_id').equals('64b11ce7e64f6adaab95c2ee').populate('userOwnedAsset.idAuditObj.id'); //from permitLists middleware
-                            // console.log('This is examplequeryy ', queryExample[0].userOwnedAsset[0].idAuditObj.id);
-                            // let queryExample = await userModel.find().where('userOwnedAsset.length').gte(1);//'64b11ce7e64f6adaab95c2ee').populate('userOwnedAsset.idAuditObj.id'); //from permitLists middleware
-                            // let queryExample = await userModel.find({userOwnedAsset:{$size: 1 }})//.where('userOwnedAsset.length').gte(1);//'64b11ce7e64f6adaab95c2ee').populate('userOwnedAsset.idAuditObj.id'); //from permitLists middleware
-                            let queryExample = await userModel.find().where('userOwnedAsset').equals({$size: 1})//.where('userOwnedAsset.length').gte(1);//'64b11ce7e64f6adaab95c2ee').populate('userOwnedAsset.idAuditObj.id'); //from permitLists middleware
-                            console.log('This is examplequeryy ', queryExample);
+                            let query = userModel.find().populate('userOwnedAsset.idAudit.assetTypeId userOwnedAsset.idAudit.id'); //from permitLists middleware
                             // console.log('Back here');
                             // console.log(query);
-                            // query = query.where('userOwnedAsset.id').ne(null); //users with Assets
-                            query = query.where('userOwnedAsset').ne({$size: 0}); //users with Assets
+                            query = query.where('userOwnedAsset.id').ne(null); //users with Assets
                             // query.where(userOwnedAsset.id).equals
                             if (req.query.userNameSearch != null && req.query.userNameSearch != ""){
                                 query = query.regex('firstName', new RegExp(req.query.userNameSearch, 'i'));
@@ -690,9 +679,7 @@ app.get('/audGoLive/:room', hideNavMenu(), async (req, res)=>{
                             // console.log('These are distinctAssetManufacturer: ', distinctAssetManufacturer);
 
                             //Getting the first in profile of auditor
-                            console.log('This is req.user.profileId[95], ', req.user.profileId[95])
-                            let auditor = await userModel.findById().where('_id').equals(req.user.profileId[95]);
-                            console.log('This is auditor, ', auditor);
+                            let auditor = await userModel.findById().where('_id').equals(req.user.profileId[0]);
                             let accessingAuditorId = auditor._id;
 
 
@@ -720,21 +707,16 @@ app.get('/audGoLive/:room', hideNavMenu(), async (req, res)=>{
                                   //Now, we need to get into the for loop
                                   // console.log('This is users', users);
                                   let idAuditObj = {};
-                                  // users.forEach(user=>{
-                                  //   for (var a=0;a<user.userOwnedAsset.idAudit.length;a++){ //is this necessary
-                                  //     idAuditObj[user.id] = {userObj:[]}
-                                  //   }
-                                  // })
                                   users.forEach(user=>{
-                                    for (var a=0;a<user.userOwnedAsset.length;a++){ //is this necessary
+                                    for (var a=0;a<user.userOwnedAsset.idAudit.length;a++){ //is this necessary
                                       idAuditObj[user.id] = {userObj:[]}
                                     }
                                   })
 
                                 //  users.forEach(user=>{
                                 //     for (var a=0;a<user.userOwnedAsset.idAudit.length;a++){
-                                //       // let diffTime = Date.now() - user.userOwnedAsset[a].idAuditObj.auditDate;
-                                //       // let diffTime = new Date(req.query.userDateBeforeSearch) - user.userOwnedAsset[a].idAuditObj.auditDate;
+                                //       // let diffTime = Date.now() - user.userOwnedAsset.idAudit[a].auditDate;
+                                //       // let diffTime = new Date(req.query.userDateBeforeSearch) - user.userOwnedAsset.idAudit[a].auditDate;
                                       
                                 //       // console.log('New Date object: ', new Date(diffTime));
                                 //       // dateObj = new Date(diffTime * 1000);
@@ -743,52 +725,51 @@ app.get('/audGoLive/:room', hideNavMenu(), async (req, res)=>{
                                 //       // console.log('Before Object', new Date(req.query.userDateBeforeSearch));
                                 //       // console.log('New Date hours: ', new Date(diffTime).getHours());
                                 //       // console.log('New Date Date: ', new Date(diffTime).getDate());
-                                //       // console.log('Time lapse: ',typeof(user.userOwnedAsset[a].idAuditObj.auditDate));
-                                //       // console.log('Time lapse: ', new Date(Date.now()) - user.userOwnedAsset[a].idAuditObj.auditDate);
-                                //       // console.log('Time lapse: ', new Date(req.query.userDateBeforeSearch) - user.userOwnedAsset[a].idAuditObj.auditDate);
-                                //       // let lapse = new Date(new Date(req.query.userDateBeforeSearch) - user.userOwnedAsset[a].idAuditObj.auditDate);
-                                //       // let lapse2 = new Date(new Date(Date.now()) - user.userOwnedAsset[a].idAuditObj.auditDate);
+                                //       // console.log('Time lapse: ',typeof(user.userOwnedAsset.idAudit[a].auditDate));
+                                //       // console.log('Time lapse: ', new Date(Date.now()) - user.userOwnedAsset.idAudit[a].auditDate);
+                                //       // console.log('Time lapse: ', new Date(req.query.userDateBeforeSearch) - user.userOwnedAsset.idAudit[a].auditDate);
+                                //       // let lapse = new Date(new Date(req.query.userDateBeforeSearch) - user.userOwnedAsset.idAudit[a].auditDate);
+                                //       // let lapse2 = new Date(new Date(Date.now()) - user.userOwnedAsset.idAudit[a].auditDate);
                                 //       // console.log('This is lapse', lapse.getHours());
                                 //       // console.log('This is lapse', lapse.getDay());
                                 //       // console.log('This is lapse2', lapse2.getDay());
-                                //       // console.log('Time lapse now: ', new Date(req.query.userDateBeforeSearch).getTime() - user.userOwnedAsset[a].idAuditObj.auditDate.getTime());
-                                //       // let numOfDays = (new Date(req.query.userDateBeforeSearch).getTime() - user.userOwnedAsset[a].idAuditObj.auditDate.getTime())/(1000*60*60*24);
-                                //       let numOfDays = (new Date(Date.now()).getTime() - user.userOwnedAsset[a].idAuditObj.auditDate.getTime())/(1000*60*60*24);
-                                //       console.log('Asset ', user.userOwnedAsset[a].idAuditObj.id);
+                                //       // console.log('Time lapse now: ', new Date(req.query.userDateBeforeSearch).getTime() - user.userOwnedAsset.idAudit[a].auditDate.getTime());
+                                //       // let numOfDays = (new Date(req.query.userDateBeforeSearch).getTime() - user.userOwnedAsset.idAudit[a].auditDate.getTime())/(1000*60*60*24);
+                                //       let numOfDays = (new Date(Date.now()).getTime() - user.userOwnedAsset.idAudit[a].auditDate.getTime())/(1000*60*60*24);
+                                //       console.log('Asset ', user.userOwnedAsset.idAudit[a].id);
                                 //       console.log('Number of Days (rounded), ', Math.round(numOfDays));
                                 //       // console.log('First...')
                                 //       if (req.query.assetDateBeforeSearch != ''){// assetDate
                                 //           console.log('Something...');
-                                //             if (user.userOwnedAsset[a].idAuditObj.auditDate.getTime() < (new Date(req.query.assetDateBeforeSearch).getTime())){
+                                //             if (user.userOwnedAsset.idAudit[a].auditDate.getTime() < (new Date(req.query.assetDateBeforeSearch).getTime())){
                                 //               console.log('less than')
                                 //               idAuditObj[user.id].userProfilePic = user.userProfilePic;
                                 //               idAuditObj[user.id].firstName = user.firstName;
-                                //               idAuditObj[user.id].userObj.push(user.userOwnedAsset[a].idAuditObj);
+                                //               idAuditObj[user.id].userObj.push(user.userOwnedAsset.idAudit[a]);
                                 //             }
 
                                 //       }else {
                                 //         consol.log('Nothing...');
-                                //           if (Math.ceil(numOfDays) > (uniqueAssetObj[user.userOwnedAsset[a].idAuditObj.assetTypeId]) || Math.ceil(numOfDays) == (uniqueAssetObj[user.userOwnedAsset[a].idAuditObj.assetTypeId])){
+                                //           if (Math.ceil(numOfDays) > (uniqueAssetObj[user.userOwnedAsset.idAudit[a].assetTypeId]) || Math.ceil(numOfDays) == (uniqueAssetObj[user.userOwnedAsset.idAudit[a].assetTypeId])){
                                 //             console.log('Greater')
                                 //             idAuditObj[user.id].userProfilePic = user.userProfilePic;
                                 //             idAuditObj[user.id].firstName = user.firstName;
-                                //             idAuditObj[user.id].userObj.push(user.userOwnedAsset[a].idAuditObj);
+                                //             idAuditObj[user.id].userObj.push(user.userOwnedAsset.idAudit[a]);
                                 //           }
                                 //       }
-                                //       // return (user.userOwnedAsset[a].idAuditObj.id.toString() == '63a1e335bc9dbf8077de0dc9');
+                                //       // return (user.userOwnedAsset.idAudit[a].id.toString() == '63a1e335bc9dbf8077de0dc9');
                                 //     }
                                 //     // return (auditArr);
-                                //     // auditArr.push(user.userOwnedAsset[a].idAuditObj)
+                                //     // auditArr.push(user.userOwnedAsset.idAudit[a])
 
                                    
                                 //   })
                               let filteredUser = []
                                users.forEach(user=>{
-                                  // for (var a=0;a<user.userOwnedAsset.idAudit.length;a++){
-                                  for (var a=0;a<user.userOwnedAsset.length;a++){
+                                  for (var a=0;a<user.userOwnedAsset.idAudit.length;a++){
                                     // console.log('The name, ', user.firstName);
-                                    // let diffTime = Date.now() - user.userOwnedAsset[a].idAuditObj.auditDate;
-                                    // let diffTime = new Date(req.query.userDateBeforeSearch) - user.userOwnedAsset[a].idAuditObj.auditDate;
+                                    // let diffTime = Date.now() - user.userOwnedAsset.idAudit[a].auditDate;
+                                    // let diffTime = new Date(req.query.userDateBeforeSearch) - user.userOwnedAsset.idAudit[a].auditDate;
                                     
                                     // console.log('New Date object: ', new Date(diffTime));
                                     // dateObj = new Date(diffTime * 1000);
@@ -797,55 +778,55 @@ app.get('/audGoLive/:room', hideNavMenu(), async (req, res)=>{
                                     // console.log('Before Object', new Date(req.query.userDateBeforeSearch));
                                     // console.log('New Date hours: ', new Date(diffTime).getHours());
                                     // console.log('New Date Date: ', new Date(diffTime).getDate());
-                                    // console.log('Time lapse: ',typeof(user.userOwnedAsset[a].idAuditObj.auditDate));
-                                    // console.log('Time lapse: ', new Date(Date.now()) - user.userOwnedAsset[a].idAuditObj.auditDate);
-                                    // console.log('Time lapse: ', new Date(req.query.userDateBeforeSearch) - user.userOwnedAsset[a].idAuditObj.auditDate);
-                                    // let lapse = new Date(new Date(req.query.userDateBeforeSearch) - user.userOwnedAsset[a].idAuditObj.auditDate);
-                                    // let lapse2 = new Date(new Date(Date.now()) - user.userOwnedAsset[a].idAuditObj.auditDate);
+                                    // console.log('Time lapse: ',typeof(user.userOwnedAsset.idAudit[a].auditDate));
+                                    // console.log('Time lapse: ', new Date(Date.now()) - user.userOwnedAsset.idAudit[a].auditDate);
+                                    // console.log('Time lapse: ', new Date(req.query.userDateBeforeSearch) - user.userOwnedAsset.idAudit[a].auditDate);
+                                    // let lapse = new Date(new Date(req.query.userDateBeforeSearch) - user.userOwnedAsset.idAudit[a].auditDate);
+                                    // let lapse2 = new Date(new Date(Date.now()) - user.userOwnedAsset.idAudit[a].auditDate);
                                     // console.log('This is lapse', lapse.getHours());
                                     // console.log('This is lapse', lapse.getDay());
                                     // console.log('This is lapse2', lapse2.getDay());
-                                    // console.log('Time lapse now: ', new Date(req.query.userDateBeforeSearch).getTime() - user.userOwnedAsset[a].idAuditObj.auditDate.getTime());
-                                    // let numOfDays = (new Date(req.query.userDateBeforeSearch).getTime() - user.userOwnedAsset[a].idAuditObj.auditDate.getTime())/(1000*60*60*24);
-                                    let numOfDays = (new Date(Date.now()).getTime() - user.userOwnedAsset[a].idAuditObj.auditDate.getTime())/(1000*60*60*24);
-                                    // console.log('Asset ', user.userOwnedAsset[a].idAuditObj.id);
+                                    // console.log('Time lapse now: ', new Date(req.query.userDateBeforeSearch).getTime() - user.userOwnedAsset.idAudit[a].auditDate.getTime());
+                                    // let numOfDays = (new Date(req.query.userDateBeforeSearch).getTime() - user.userOwnedAsset.idAudit[a].auditDate.getTime())/(1000*60*60*24);
+                                    let numOfDays = (new Date(Date.now()).getTime() - user.userOwnedAsset.idAudit[a].auditDate.getTime())/(1000*60*60*24);
+                                    // console.log('Asset ', user.userOwnedAsset.idAudit[a].id);
                                     // console.log('Number of Days (rounded), ', Math.round(numOfDays));
                                     // console.log('This is numOfDays ', numOfDays);
                                     // console.log('First...')
                                     if (req.query.assetDateBeforeSearch != ''){// assetDate   (Or asset settings?)
                                       // console.log('T', req.query.assetDateBeforeSearch)
-                                        // console.log('Something...', user.userOwnedAsset[a].idAuditObj.id);
-                                        if (user.userOwnedAsset[a].idAuditObj.assetTypeId){
-                                          // console.log('Lifecycle, ', user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypeLifeCycle);
+                                        // console.log('Something...', user.userOwnedAsset.idAudit[a].id);
+                                        if (user.userOwnedAsset.idAudit[a].assetTypeId){
+                                          // console.log('Lifecycle, ', user.userOwnedAsset.idAudit[a].assetTypeId.assetTypeLifeCycle);
                                           // console.log('id -', req.query.assetList);
-                                          if (user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypeLifeCycle){
-                                            if (user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypePurchased){
-                                              // console.log('Asset Purchased: ', user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypePurchased.getTime());
+                                          if (user.userOwnedAsset.idAudit[a].assetTypeId.assetTypeLifeCycle){
+                                            if (user.userOwnedAsset.idAudit[a].assetTypeId.assetTypePurchased){
+                                              // console.log('Asset Purchased: ', user.userOwnedAsset.idAudit[a].assetTypeId.assetTypePurchased.getTime());
                                               // console.log('User length: ', users.length);
                                               // console.log('user.userOwnedAsset.idAudit.length, ', user.userOwnedAsset.idAudit.length);
-                                              // console.log(user.userOwnedAsset[a].idAuditObj.assetTypeId.id.toString());
+                                              // console.log(user.userOwnedAsset.idAudit[a].assetTypeId.id.toString());
                                               // console.log('req.query.assetList: ', req.query.assetList);
-                                              // console.log(user.userOwnedAsset[a].idAuditObj.assetTypeId.id.toString() == req.query.assetList);
-                                              // console.log(user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypeLifeCycle == (req.query.assetTypeLifeCycle?req.query.assetTypeLifeCycle:user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypeLifeCycle));
-                                              // console.log(user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypeManufacturer == (req.query.assetManufacturer?req.query.assetManufacturer:user.userOwnedAsset[a].idAuditObj.assetTypeId.assetManufacturer));
-                                              // console.log(user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypePurchased.getTime() < (new Date(req.query.assetDatePurchased).getTime()));
+                                              // console.log(user.userOwnedAsset.idAudit[a].assetTypeId.id.toString() == req.query.assetList);
+                                              // console.log(user.userOwnedAsset.idAudit[a].assetTypeId.assetTypeLifeCycle == (req.query.assetTypeLifeCycle?req.query.assetTypeLifeCycle:user.userOwnedAsset.idAudit[a].assetTypeId.assetTypeLifeCycle));
+                                              // console.log(user.userOwnedAsset.idAudit[a].assetTypeId.assetTypeManufacturer == (req.query.assetManufacturer?req.query.assetManufacturer:user.userOwnedAsset.idAudit[a].assetTypeId.assetManufacturer));
+                                              // console.log(user.userOwnedAsset.idAudit[a].assetTypeId.assetTypePurchased.getTime() < (new Date(req.query.assetDatePurchased).getTime()));
                                               
-                                              // console.log('Time', new Date(user.userOwnedAsset[a].idAuditObj.auditDate.getTime()));
+                                              // console.log('Time', new Date(user.userOwnedAsset.idAudit[a].auditDate.getTime()));
                                               // console.log('Time-2', req.query.assetDateBeforeSearch);
 
                                               // console.log('Time2', new Date(req.query.assetDateBeforeSearch).getTime());
-                                              // console.log('Time Bool: ', user.userOwnedAsset[a].idAuditObj.auditDate.getTime() <= (new Date(req.query.assetDateBeforeSearch).getTime()));
+                                              // console.log('Time Bool: ', user.userOwnedAsset.idAudit[a].auditDate.getTime() <= (new Date(req.query.assetDateBeforeSearch).getTime()));
                                               // console.log('req.query here2:', req.query);
-                                          if (user.userOwnedAsset[a].idAuditObj.auditDate.getTime() <= (new Date(req.query.assetDateBeforeSearch).getTime()) && user.userOwnedAsset[a].idAuditObj.assetTypeId.id.toString() == req.query.assetList && user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypeLifeCycle == (req.query.assetTypeLifeCycle?req.query.assetTypeLifeCycle:user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypeLifeCycle)  && user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypeManufacturer == (req.query.assetManufacturer?req.query.assetManufacturer:user.userOwnedAsset[a].idAuditObj.assetTypeId.assetManufacturer) && user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypePurchased.getTime() < (new Date(req.query.assetDatePurchased).getTime())){//{
+                                          if (user.userOwnedAsset.idAudit[a].auditDate.getTime() <= (new Date(req.query.assetDateBeforeSearch).getTime()) && user.userOwnedAsset.idAudit[a].assetTypeId.id.toString() == req.query.assetList && user.userOwnedAsset.idAudit[a].assetTypeId.assetTypeLifeCycle == (req.query.assetTypeLifeCycle?req.query.assetTypeLifeCycle:user.userOwnedAsset.idAudit[a].assetTypeId.assetTypeLifeCycle)  && user.userOwnedAsset.idAudit[a].assetTypeId.assetTypeManufacturer == (req.query.assetManufacturer?req.query.assetManufacturer:user.userOwnedAsset.idAudit[a].assetTypeId.assetManufacturer) && user.userOwnedAsset.idAudit[a].assetTypeId.assetTypePurchased.getTime() < (new Date(req.query.assetDatePurchased).getTime())){//{
                                  
                                               // console.log('less than now2');
-                                              // console.log('assetTypeid ', user.userOwnedAsset[a].idAuditObj.assetTypeId.id.toString());
+                                              // console.log('assetTypeid ', user.userOwnedAsset.idAudit[a].assetTypeId.id.toString());
                                               idAuditObj[user.id].userProfilePic = user.userProfilePic;
                                               idAuditObj[user.id].firstName = user.firstName;
-                                              idAuditObj[user.id].userObj.push(user.userOwnedAsset[a].idAuditObj);
+                                              idAuditObj[user.id].userObj.push(user.userOwnedAsset.idAudit[a]);
                                               idAuditObj[user.id].locationAudit = user.geoCoord;
 
-                                              // console.log('Now', user.firstName, user.userOwnedAsset[a].idAuditObj.id)
+                                              // console.log('Now', user.firstName, user.userOwnedAsset.idAudit[a].id)
                                               // return user;
                                               filteredUser.push(user)
                                           }
@@ -857,23 +838,23 @@ app.get('/audGoLive/:room', hideNavMenu(), async (req, res)=>{
                                           console.log('Nothing...');
                                           console.log('Number of Days, ', numOfDays);
                                           console.log('uniqueAssetObj object', uniqueAssetObj);
-                                          console.log('Before the id ', user.userOwnedAsset[a].idAuditObj);
-                                          console.log('The id: ', user.userOwnedAsset[a].idAuditObj.assetTypeId);
-                                          console.log('Interval ', uniqueAssetObj[user.userOwnedAsset[a].idAuditObj.assetTypeId._id]);
-                                          if (Math.ceil(numOfDays) > (uniqueAssetObj[user.userOwnedAsset[a].idAuditObj.assetTypeId._id]) || Math.ceil(numOfDays) == (uniqueAssetObj[user.userOwnedAsset[a].idAuditObj.assetTypeId._id])){
+                                          console.log('Before the id ', user.userOwnedAsset.idAudit[a]);
+                                          console.log('The id: ', user.userOwnedAsset.idAudit[a].assetTypeId);
+                                          console.log('Interval ', uniqueAssetObj[user.userOwnedAsset.idAudit[a].assetTypeId._id]);
+                                          if (Math.ceil(numOfDays) > (uniqueAssetObj[user.userOwnedAsset.idAudit[a].assetTypeId._id]) || Math.ceil(numOfDays) == (uniqueAssetObj[user.userOwnedAsset.idAudit[a].assetTypeId._id])){
                                             // console.log('Greater');
                                             idAuditObj[user.id].userProfilePic = user.userProfilePic;
                                             idAuditObj[user.id].firstName = user.firstName;
                                             idAuditObj[user.id].locationAudit = user.geoCoord;
-                                            idAuditObj[user.id].userObj.push(user.userOwnedAsset[a].idAuditObj);
+                                            idAuditObj[user.id].userObj.push(user.userOwnedAsset.idAudit[a]);
                                             // return user;
                                             filteredUser.push(user)
                                           }
                                         }
-                                        // return (user.userOwnedAsset[a].idAuditObj.id.toString() == '63a1e335bc9dbf8077de0dc9');
+                                        // return (user.userOwnedAsset.idAudit[a].id.toString() == '63a1e335bc9dbf8077de0dc9');
                                       }
                                       // return (auditArr);
-                                      // auditArr.push(user.userOwnedAsset[a].idAuditObj)
+                                      // auditArr.push(user.userOwnedAsset.idAudit[a])
                                       
                                     })
                                     console.log('idAudit Now', idAuditObj);
@@ -1044,7 +1025,7 @@ app.get('/audGoLive/:room/:genId/:auditorId', async (req, res)=>{
   // let distinctAuditAssets =  await assetTypeAuditModel.find({}).select('assetTypeClass assetTypeAuditInterval');
                             // let userStoreApprovalRoles = await userModel.find({}).where('userStoreApproval').ne(null).distinct('approvalStatus');
                             // let query = req.queryObj; //from permitLists middleware
-                            let query = userModel.find().populate('userOwnedAsset.idAuditObj.assetTypeId userOwnedAsset.idAuditObj.id'); //from permitLists middleware
+                            let query = userModel.find().populate('userOwnedAsset.idAudit.assetTypeId userOwnedAsset.idAudit.id'); //from permitLists middleware
                             console.log('Back here');
                             // console.log(query);
                             query = query.where('userOwnedAsset.id').ne(null); //users with Assets
@@ -1127,15 +1108,15 @@ app.get('/audGoLive/:room/:genId/:auditorId', async (req, res)=>{
                                   // console.log('This is users', users);
                                   let idAuditObj = {};
                                   users.forEach(user=>{
-                                    for (var a=0;a<user.userOwnedAsset.length;a++){ //is this necessary
+                                    for (var a=0;a<user.userOwnedAsset.idAudit.length;a++){ //is this necessary
                                       idAuditObj[user.id] = {userObj:[]}
                                     }
                                   })
 
                                 //  users.forEach(user=>{
                                 //     for (var a=0;a<user.userOwnedAsset.idAudit.length;a++){
-                                //       // let diffTime = Date.now() - user.userOwnedAsset[a].idAuditObj.auditDate;
-                                //       // let diffTime = new Date(req.query.userDateBeforeSearch) - user.userOwnedAsset[a].idAuditObj.auditDate;
+                                //       // let diffTime = Date.now() - user.userOwnedAsset.idAudit[a].auditDate;
+                                //       // let diffTime = new Date(req.query.userDateBeforeSearch) - user.userOwnedAsset.idAudit[a].auditDate;
                                       
                                 //       // console.log('New Date object: ', new Date(diffTime));
                                 //       // dateObj = new Date(diffTime * 1000);
@@ -1144,51 +1125,51 @@ app.get('/audGoLive/:room/:genId/:auditorId', async (req, res)=>{
                                 //       // console.log('Before Object', new Date(req.query.userDateBeforeSearch));
                                 //       // console.log('New Date hours: ', new Date(diffTime).getHours());
                                 //       // console.log('New Date Date: ', new Date(diffTime).getDate());
-                                //       // console.log('Time lapse: ',typeof(user.userOwnedAsset[a].idAuditObj.auditDate));
-                                //       // console.log('Time lapse: ', new Date(Date.now()) - user.userOwnedAsset[a].idAuditObj.auditDate);
-                                //       // console.log('Time lapse: ', new Date(req.query.userDateBeforeSearch) - user.userOwnedAsset[a].idAuditObj.auditDate);
-                                //       // let lapse = new Date(new Date(req.query.userDateBeforeSearch) - user.userOwnedAsset[a].idAuditObj.auditDate);
-                                //       // let lapse2 = new Date(new Date(Date.now()) - user.userOwnedAsset[a].idAuditObj.auditDate);
+                                //       // console.log('Time lapse: ',typeof(user.userOwnedAsset.idAudit[a].auditDate));
+                                //       // console.log('Time lapse: ', new Date(Date.now()) - user.userOwnedAsset.idAudit[a].auditDate);
+                                //       // console.log('Time lapse: ', new Date(req.query.userDateBeforeSearch) - user.userOwnedAsset.idAudit[a].auditDate);
+                                //       // let lapse = new Date(new Date(req.query.userDateBeforeSearch) - user.userOwnedAsset.idAudit[a].auditDate);
+                                //       // let lapse2 = new Date(new Date(Date.now()) - user.userOwnedAsset.idAudit[a].auditDate);
                                 //       // console.log('This is lapse', lapse.getHours());
                                 //       // console.log('This is lapse', lapse.getDay());
                                 //       // console.log('This is lapse2', lapse2.getDay());
-                                //       // console.log('Time lapse now: ', new Date(req.query.userDateBeforeSearch).getTime() - user.userOwnedAsset[a].idAuditObj.auditDate.getTime());
-                                //       // let numOfDays = (new Date(req.query.userDateBeforeSearch).getTime() - user.userOwnedAsset[a].idAuditObj.auditDate.getTime())/(1000*60*60*24);
-                                //       let numOfDays = (new Date(Date.now()).getTime() - user.userOwnedAsset[a].idAuditObj.auditDate.getTime())/(1000*60*60*24);
-                                //       console.log('Asset ', user.userOwnedAsset[a].idAuditObj.id);
+                                //       // console.log('Time lapse now: ', new Date(req.query.userDateBeforeSearch).getTime() - user.userOwnedAsset.idAudit[a].auditDate.getTime());
+                                //       // let numOfDays = (new Date(req.query.userDateBeforeSearch).getTime() - user.userOwnedAsset.idAudit[a].auditDate.getTime())/(1000*60*60*24);
+                                //       let numOfDays = (new Date(Date.now()).getTime() - user.userOwnedAsset.idAudit[a].auditDate.getTime())/(1000*60*60*24);
+                                //       console.log('Asset ', user.userOwnedAsset.idAudit[a].id);
                                 //       console.log('Number of Days (rounded), ', Math.round(numOfDays));
                                 //       // console.log('First...')
                                 //       if (req.query.assetDateBeforeSearch != ''){// assetDate
                                 //           console.log('Something...');
-                                //             if (user.userOwnedAsset[a].idAuditObj.auditDate.getTime() < (new Date(req.query.assetDateBeforeSearch).getTime())){
+                                //             if (user.userOwnedAsset.idAudit[a].auditDate.getTime() < (new Date(req.query.assetDateBeforeSearch).getTime())){
                                 //               console.log('less than')
                                 //               idAuditObj[user.id].userProfilePic = user.userProfilePic;
                                 //               idAuditObj[user.id].firstName = user.firstName;
-                                //               idAuditObj[user.id].userObj.push(user.userOwnedAsset[a].idAuditObj);
+                                //               idAuditObj[user.id].userObj.push(user.userOwnedAsset.idAudit[a]);
                                 //             }
 
                                 //       }else {
                                 //         consol.log('Nothing...');
-                                //           if (Math.ceil(numOfDays) > (uniqueAssetObj[user.userOwnedAsset[a].idAuditObj.assetTypeId]) || Math.ceil(numOfDays) == (uniqueAssetObj[user.userOwnedAsset[a].idAuditObj.assetTypeId])){
+                                //           if (Math.ceil(numOfDays) > (uniqueAssetObj[user.userOwnedAsset.idAudit[a].assetTypeId]) || Math.ceil(numOfDays) == (uniqueAssetObj[user.userOwnedAsset.idAudit[a].assetTypeId])){
                                 //             console.log('Greater')
                                 //             idAuditObj[user.id].userProfilePic = user.userProfilePic;
                                 //             idAuditObj[user.id].firstName = user.firstName;
-                                //             idAuditObj[user.id].userObj.push(user.userOwnedAsset[a].idAuditObj);
+                                //             idAuditObj[user.id].userObj.push(user.userOwnedAsset.idAudit[a]);
                                 //           }
                                 //       }
-                                //       // return (user.userOwnedAsset[a].idAuditObj.id.toString() == '63a1e335bc9dbf8077de0dc9');
+                                //       // return (user.userOwnedAsset.idAudit[a].id.toString() == '63a1e335bc9dbf8077de0dc9');
                                 //     }
                                 //     // return (auditArr);
-                                //     // auditArr.push(user.userOwnedAsset[a].idAuditObj)
+                                //     // auditArr.push(user.userOwnedAsset.idAudit[a])
 
                                    
                                 //   })
                               let filteredUser = []
                                users.forEach(user=>{
-                                  for (var a=0;a<user.userOwnedAsset.length;a++){
+                                  for (var a=0;a<user.userOwnedAsset.idAudit.length;a++){
                                     console.log('The name, ', user.firstName);
-                                    // let diffTime = Date.now() - user.userOwnedAsset[a].idAuditObj.auditDate;
-                                    // let diffTime = new Date(req.query.userDateBeforeSearch) - user.userOwnedAsset[a].idAuditObj.auditDate;
+                                    // let diffTime = Date.now() - user.userOwnedAsset.idAudit[a].auditDate;
+                                    // let diffTime = new Date(req.query.userDateBeforeSearch) - user.userOwnedAsset.idAudit[a].auditDate;
                                     
                                     // console.log('New Date object: ', new Date(diffTime));
                                     // dateObj = new Date(diffTime * 1000);
@@ -1197,48 +1178,48 @@ app.get('/audGoLive/:room/:genId/:auditorId', async (req, res)=>{
                                     // console.log('Before Object', new Date(req.query.userDateBeforeSearch));
                                     // console.log('New Date hours: ', new Date(diffTime).getHours());
                                     // console.log('New Date Date: ', new Date(diffTime).getDate());
-                                    // console.log('Time lapse: ',typeof(user.userOwnedAsset[a].idAuditObj.auditDate));
-                                    // console.log('Time lapse: ', new Date(Date.now()) - user.userOwnedAsset[a].idAuditObj.auditDate);
-                                    // console.log('Time lapse: ', new Date(req.query.userDateBeforeSearch) - user.userOwnedAsset[a].idAuditObj.auditDate);
-                                    // let lapse = new Date(new Date(req.query.userDateBeforeSearch) - user.userOwnedAsset[a].idAuditObj.auditDate);
-                                    // let lapse2 = new Date(new Date(Date.now()) - user.userOwnedAsset[a].idAuditObj.auditDate);
+                                    // console.log('Time lapse: ',typeof(user.userOwnedAsset.idAudit[a].auditDate));
+                                    // console.log('Time lapse: ', new Date(Date.now()) - user.userOwnedAsset.idAudit[a].auditDate);
+                                    // console.log('Time lapse: ', new Date(req.query.userDateBeforeSearch) - user.userOwnedAsset.idAudit[a].auditDate);
+                                    // let lapse = new Date(new Date(req.query.userDateBeforeSearch) - user.userOwnedAsset.idAudit[a].auditDate);
+                                    // let lapse2 = new Date(new Date(Date.now()) - user.userOwnedAsset.idAudit[a].auditDate);
                                     // console.log('This is lapse', lapse.getHours());
                                     // console.log('This is lapse', lapse.getDay());
                                     // console.log('This is lapse2', lapse2.getDay());
-                                    // console.log('Time lapse now: ', new Date(req.query.userDateBeforeSearch).getTime() - user.userOwnedAsset[a].idAuditObj.auditDate.getTime());
-                                    // let numOfDays = (new Date(req.query.userDateBeforeSearch).getTime() - user.userOwnedAsset[a].idAuditObj.auditDate.getTime())/(1000*60*60*24);
-                                    let numOfDays = (new Date(Date.now()).getTime() - user.userOwnedAsset[a].idAuditObj.auditDate.getTime())/(1000*60*60*24);
-                                    console.log('Asset ', user.userOwnedAsset[a].idAuditObj.id);
+                                    // console.log('Time lapse now: ', new Date(req.query.userDateBeforeSearch).getTime() - user.userOwnedAsset.idAudit[a].auditDate.getTime());
+                                    // let numOfDays = (new Date(req.query.userDateBeforeSearch).getTime() - user.userOwnedAsset.idAudit[a].auditDate.getTime())/(1000*60*60*24);
+                                    let numOfDays = (new Date(Date.now()).getTime() - user.userOwnedAsset.idAudit[a].auditDate.getTime())/(1000*60*60*24);
+                                    console.log('Asset ', user.userOwnedAsset.idAudit[a].id);
                                     console.log('Number of Days (rounded), ', Math.round(numOfDays));
                                     console.log('This is numOfDays ', numOfDays);
                                     // console.log('First...')
                                     if (req.query.assetDateBeforeSearch != ''){// assetDate   (Or asset settings?)
-                                        console.log('Something...', user.userOwnedAsset[a].idAuditObj.id);
-                                        if (user.userOwnedAsset[a].idAuditObj.assetTypeId){
-                                          console.log('Lifecycle, ', user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypeLifeCycle);
+                                        console.log('Something...', user.userOwnedAsset.idAudit[a].id);
+                                        if (user.userOwnedAsset.idAudit[a].assetTypeId){
+                                          console.log('Lifecycle, ', user.userOwnedAsset.idAudit[a].assetTypeId.assetTypeLifeCycle);
                                           console.log('id -', req.query.assetList);
-                                          if (user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypeLifeCycle){
-                                            if (user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypePurchased){
-                                              console.log('Asset Purchased: ', user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypePurchased.getTime());
+                                          if (user.userOwnedAsset.idAudit[a].assetTypeId.assetTypeLifeCycle){
+                                            if (user.userOwnedAsset.idAudit[a].assetTypeId.assetTypePurchased){
+                                              console.log('Asset Purchased: ', user.userOwnedAsset.idAudit[a].assetTypeId.assetTypePurchased.getTime());
                                               console.log('User length: ', users.length);
-                                              console.log('user.userOwnedAsset.length, ', user.userOwnedAsset.length);
-                                              console.log(user.userOwnedAsset[a].idAuditObj.assetTypeId.id.toString());
+                                              console.log('user.userOwnedAsset.idAudit.length, ', user.userOwnedAsset.idAudit.length);
+                                              console.log(user.userOwnedAsset.idAudit[a].assetTypeId.id.toString());
                                               console.log('req.query.assetList: ', req.query.assetList);
-                                              console.log(user.userOwnedAsset[a].idAuditObj.assetTypeId.id.toString() == req.query.assetList);
-                                              console.log(user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypeLifeCycle == (req.query.assetTypeLifeCycle?req.query.assetTypeLifeCycle:user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypeLifeCycle));
-                                              console.log(user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypeManufacturer == (req.query.assetManufacturer?req.query.assetManufacturer:user.userOwnedAsset[a].idAuditObj.assetTypeId.assetManufacturer));
-                                              console.log(user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypePurchased.getTime() < (new Date(req.query.assetDatePurchased).getTime()));
+                                              console.log(user.userOwnedAsset.idAudit[a].assetTypeId.id.toString() == req.query.assetList);
+                                              console.log(user.userOwnedAsset.idAudit[a].assetTypeId.assetTypeLifeCycle == (req.query.assetTypeLifeCycle?req.query.assetTypeLifeCycle:user.userOwnedAsset.idAudit[a].assetTypeId.assetTypeLifeCycle));
+                                              console.log(user.userOwnedAsset.idAudit[a].assetTypeId.assetTypeManufacturer == (req.query.assetManufacturer?req.query.assetManufacturer:user.userOwnedAsset.idAudit[a].assetTypeId.assetManufacturer));
+                                              console.log(user.userOwnedAsset.idAudit[a].assetTypeId.assetTypePurchased.getTime() < (new Date(req.query.assetDatePurchased).getTime()));
 
-                                          if (user.userOwnedAsset[a].idAuditObj.auditDate.getTime() <= (new Date(req.query.assetDateBeforeSearch).getTime()) && user.userOwnedAsset[a].idAuditObj.assetTypeId.id.toString() == req.query.assetList && user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypeLifeCycle == (req.query.assetTypeLifeCycle?req.query.assetTypeLifeCycle:user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypeLifeCycle)  && user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypeManufacturer == (req.query.assetManufacturer?req.query.assetManufacturer:user.userOwnedAsset[a].idAuditObj.assetTypeId.assetManufacturer) && user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypePurchased.getTime() < (new Date(req.query.assetDatePurchased).getTime())){//{
+                                          if (user.userOwnedAsset.idAudit[a].auditDate.getTime() <= (new Date(req.query.assetDateBeforeSearch).getTime()) && user.userOwnedAsset.idAudit[a].assetTypeId.id.toString() == req.query.assetList && user.userOwnedAsset.idAudit[a].assetTypeId.assetTypeLifeCycle == (req.query.assetTypeLifeCycle?req.query.assetTypeLifeCycle:user.userOwnedAsset.idAudit[a].assetTypeId.assetTypeLifeCycle)  && user.userOwnedAsset.idAudit[a].assetTypeId.assetTypeManufacturer == (req.query.assetManufacturer?req.query.assetManufacturer:user.userOwnedAsset.idAudit[a].assetTypeId.assetManufacturer) && user.userOwnedAsset.idAudit[a].assetTypeId.assetTypePurchased.getTime() < (new Date(req.query.assetDatePurchased).getTime())){//{
                                  
                                               console.log('less than now2');
-                                              console.log('assetTypeid ', user.userOwnedAsset[a].idAuditObj.assetTypeId.id.toString());
+                                              console.log('assetTypeid ', user.userOwnedAsset.idAudit[a].assetTypeId.id.toString());
                                               idAuditObj[user.id].userProfilePic = user.userProfilePic;
                                               idAuditObj[user.id].firstName = user.firstName;
-                                              idAuditObj[user.id].userObj.push(user.userOwnedAsset[a].idAuditObj);
+                                              idAuditObj[user.id].userObj.push(user.userOwnedAsset.idAudit[a]);
                                               idAuditObj[user.id].locationAudit = user.geoCoord;
 
-                                              console.log('Now', user.firstName, user.userOwnedAsset[a].idAuditObj.id)
+                                              console.log('Now', user.firstName, user.userOwnedAsset.idAudit[a].id)
                                               // return user;
                                               filteredUser.push(user)
                                           }
@@ -1250,23 +1231,23 @@ app.get('/audGoLive/:room/:genId/:auditorId', async (req, res)=>{
                                           console.log('Nothing...');
                                           console.log('Number of Days, ', numOfDays);
                                           console.log('uniqueAssetObj object', uniqueAssetObj);
-                                          console.log('Before the id ', user.userOwnedAsset[a].idAuditObj);
-                                          console.log('The id: ', user.userOwnedAsset[a].idAuditObj.assetTypeId);
-                                          console.log('Interval ', uniqueAssetObj[user.userOwnedAsset[a].idAuditObj.assetTypeId._id]);
-                                          if (Math.ceil(numOfDays) > (uniqueAssetObj[user.userOwnedAsset[a].idAuditObj.assetTypeId._id]) || Math.ceil(numOfDays) == (uniqueAssetObj[user.userOwnedAsset[a].idAuditObj.assetTypeId._id])){
+                                          console.log('Before the id ', user.userOwnedAsset.idAudit[a]);
+                                          console.log('The id: ', user.userOwnedAsset.idAudit[a].assetTypeId);
+                                          console.log('Interval ', uniqueAssetObj[user.userOwnedAsset.idAudit[a].assetTypeId._id]);
+                                          if (Math.ceil(numOfDays) > (uniqueAssetObj[user.userOwnedAsset.idAudit[a].assetTypeId._id]) || Math.ceil(numOfDays) == (uniqueAssetObj[user.userOwnedAsset.idAudit[a].assetTypeId._id])){
                                             console.log('Greater');
                                             idAuditObj[user.id].userProfilePic = user.userProfilePic;
                                             idAuditObj[user.id].firstName = user.firstName;
                                             idAuditObj[user.id].locationAudit = user.geoCoord;
-                                            idAuditObj[user.id].userObj.push(user.userOwnedAsset[a].idAuditObj);
+                                            idAuditObj[user.id].userObj.push(user.userOwnedAsset.idAudit[a]);
                                             // return user;
                                             filteredUser.push(user)
                                           }
                                         }
-                                        // return (user.userOwnedAsset[a].idAuditObj.id.toString() == '63a1e335bc9dbf8077de0dc9');
+                                        // return (user.userOwnedAsset.idAudit[a].id.toString() == '63a1e335bc9dbf8077de0dc9');
                                       }
                                       // return (auditArr);
-                                      // auditArr.push(user.userOwnedAsset[a].idAuditObj)
+                                      // auditArr.push(user.userOwnedAsset.idAudit[a])
                                       
                                     })
                                     console.log('idAudit Now', idAuditObj);
@@ -1462,7 +1443,7 @@ app.get('/auditsNow/:auditParam', async (req,res)=>{
                   // let distinctAuditAssets =  await assetTypeAuditModel.find({}).select('assetTypeClass assetTypeAuditInterval');
                                             // let userStoreApprovalRoles = await userModel.find({}).where('userStoreApproval').ne(null).distinct('approvalStatus');
                                             // let query = req.queryObj; //from permitLists middleware
-                                            let query = userModel.find().populate('userOwnedAsset.idAuditObj.assetTypeId userOwnedAsset.idAuditObj.id'); //from permitLists middleware
+                                            let query = userModel.find().populate('userOwnedAsset.idAudit.assetTypeId userOwnedAsset.idAudit.id'); //from permitLists middleware
                                             console.log('Back here');
                                             // console.log(query);
                                             query = query.where('userOwnedAsset.id').ne(null); //users with Assets
@@ -1545,7 +1526,7 @@ app.get('/auditsNow/:auditParam', async (req,res)=>{
                                                   // console.log('This is users', users);
                                                   let idAuditObj = {};
                                                   users.forEach(user=>{
-                                                    for (var a=0;a<user.userOwnedAsset.length;a++){ //is this necessary
+                                                    for (var a=0;a<user.userOwnedAsset.idAudit.length;a++){ //is this necessary
                                                       idAuditObj[user.id] = {userObj:[]}
                                                     }
                                                   })
@@ -1553,54 +1534,52 @@ app.get('/auditsNow/:auditParam', async (req,res)=>{
                                 
                                               let filteredUser = []
                                                users.forEach(user=>{
-                                                  for (var a=0;a<user.userOwnedAsset.length;a++){
-                                                    console.log('The name (getAudit), ', user.firstName);
-                                                    console.log(users)
-                                                    let numOfDays = (new Date(Date.now()).getTime() - user.userOwnedAsset[a].idAuditObj.auditDate.getTime())/(1000*60*60*24);
-                                                    console.log('Asset ', user.userOwnedAsset[a].idAuditObj.id);
+                                                  for (var a=0;a<user.userOwnedAsset.idAudit.length;a++){
+                                                    console.log('The name, ', user.firstName);
+                
+                                                    let numOfDays = (new Date(Date.now()).getTime() - user.userOwnedAsset.idAudit[a].auditDate.getTime())/(1000*60*60*24);
+                                                    console.log('Asset ', user.userOwnedAsset.idAudit[a].id);
                                                     console.log('Number of Days (rounded), ', Math.round(numOfDays));
                                                     console.log('This is numOfDays ', numOfDays);
                                                     // console.log('First...')
                                                     if (auditParamObj.assetDateBeforeSearch != ''){// assetDate //go with the auditor settings.  (Or asset settings?)
-                                                        console.log('Something... auditParams', user.userOwnedAsset[a].idAuditObj.id);
-                                                        if (user.userOwnedAsset[a].idAuditObj.assetTypeId){
-                                                          console.log('Lifecycle, ', user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypeLifeCycle);
+                                                        console.log('Something... auditParams', user.userOwnedAsset.idAudit[a].id);
+                                                        if (user.userOwnedAsset.idAudit[a].assetTypeId){
+                                                          console.log('Lifecycle, ', user.userOwnedAsset.idAudit[a].assetTypeId.assetTypeLifeCycle);
                                                           console.log('id -', auditParamObj.assetList);
-                                                          if (user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypeLifeCycle){
-                                                            if (user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypePurchased){
-                                                              console.log('Asset Purchased: ', user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypePurchased.getTime());
+                                                          if (user.userOwnedAsset.idAudit[a].assetTypeId.assetTypeLifeCycle){
+                                                            if (user.userOwnedAsset.idAudit[a].assetTypeId.assetTypePurchased){
+                                                              console.log('Asset Purchased: ', user.userOwnedAsset.idAudit[a].assetTypeId.assetTypePurchased.getTime());
                                                               console.log('User length: ', users.length);
-                                                              console.log('user.userOwnedAsset.length, ', user.userOwnedAsset.length);
-                                                              console.log(user.userOwnedAsset[a].idAuditObj.assetTypeId.id.toString());
+                                                              console.log('user.userOwnedAsset.idAudit.length, ', user.userOwnedAsset.idAudit.length);
+                                                              console.log(user.userOwnedAsset.idAudit[a].assetTypeId.id.toString());
                                                               console.log('auditParamObj.assetList: ', auditParamObj.assetList);
-                                                              console.log(user.userOwnedAsset[a].idAuditObj.assetTypeId.id.toString() == auditParamObj.assetList);
-                                                              console.log(user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypeLifeCycle == (auditParamObj.assetTypeLifeCycle?auditParamObj.assetTypeLifeCycle:user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypeLifeCycle));
-                                                              console.log(user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypeManufacturer == (auditParamObj.assetManufacturer?auditParamObj.assetManufacturer:user.userOwnedAsset[a].idAuditObj.assetTypeId.assetManufacturer));
-                                                              console.log(user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypePurchased.getTime() < (new Date(auditParamObj.assetDatePurchased).getTime()));
-                                                              console.log('TimeBool auditParams: ', user.userOwnedAsset[a].idAuditObj.auditDate.getTime() <= (new Date(auditParamObj.assetDateBeforeSearch).getTime()))
+                                                              console.log(user.userOwnedAsset.idAudit[a].assetTypeId.id.toString() == auditParamObj.assetList);
+                                                              console.log(user.userOwnedAsset.idAudit[a].assetTypeId.assetTypeLifeCycle == (auditParamObj.assetTypeLifeCycle?auditParamObj.assetTypeLifeCycle:user.userOwnedAsset.idAudit[a].assetTypeId.assetTypeLifeCycle));
+                                                              console.log(user.userOwnedAsset.idAudit[a].assetTypeId.assetTypeManufacturer == (auditParamObj.assetManufacturer?auditParamObj.assetManufacturer:user.userOwnedAsset.idAudit[a].assetTypeId.assetManufacturer));
+                                                              console.log(user.userOwnedAsset.idAudit[a].assetTypeId.assetTypePurchased.getTime() < (new Date(auditParamObj.assetDatePurchased).getTime()));
+                                                              console.log('TimeBool auditParams: ', user.userOwnedAsset.idAudit[a].auditDate.getTime() <= (new Date(auditParamObj.assetDateBeforeSearch).getTime()))
                                                               console.log('tim2', new Date(auditParamObj.assetDateBeforeSearch));
-                                                              console.log('AssetList ', user.userOwnedAsset[a].idAuditObj.assetTypeId.id.toString() == (auditParamObj.assetList?auditParamObj.assetList:user.userOwnedAsset[a].idAuditObj.assetTypeId.id.toString()));
-                                                              console.log('confirm assetlist: ', user.userOwnedAsset[a].idAuditObj.assetTypeId.id.toString())
+                                                              console.log('AssetList ', user.userOwnedAsset.idAudit[a].assetTypeId.id.toString() == auditParamObj.assetList);
+                                                              console.log('confirm assetlist: ', user.userOwnedAsset.idAudit[a].assetTypeId.id.toString())
                                                               console.log('confirm assetListSent: ', auditParamObj.assetList);
-                                                              console.log('Lifecycle: ', user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypeLifeCycle == (auditParamObj.assetTypeLifeCycle?auditParamObj.assetTypeLifeCycle:user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypeLifeCycle))
-                                                              console.log('Manu: ', user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypeManufacturer == (auditParamObj.userAssetManufacturer?auditParamObj.userAssetManufacturer:user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypeManufacturer))
-                                                              console.log('Confirm Manu: ', user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypeManufacturer);
-                                                              console.log('Confirm Manu sent: ', auditParamObj.userAssetManufacturer?auditParamObj.userAssetManufacturer:user.userOwnedAsset[a].idAuditObj.assetTypeId.assetManufacturer)
-                                                              // console.log('Confirm Manu sent: ', auditParamObj.assetManufacturer?auditParamObj.assetManufacturer:user.userOwnedAsset[a].idAuditObj.assetTypeId.assetManufacturer) )
+                                                              console.log('Lifecycle: ', user.userOwnedAsset.idAudit[a].assetTypeId.assetTypeLifeCycle == (auditParamObj.assetTypeLifeCycle?auditParamObj.assetTypeLifeCycle:user.userOwnedAsset.idAudit[a].assetTypeId.assetTypeLifeCycle))
+                                                              console.log('Manu: ', user.userOwnedAsset.idAudit[a].assetTypeId.assetTypeManufacturer == (auditParamObj.assetManufacturer?auditParamObj.assetManufacturer:user.userOwnedAsset.idAudit[a].assetTypeId.assetManufacturer))
+                                                              console.log('Confirm Manu: ', user.userOwnedAsset.idAudit[a].assetTypeId.assetTypeManufacturer);
+                                                              console.log('Confirm Manu sent: ', auditParamObj.userAssetManufacturer?auditParamObj.userAssetManufacturer:user.userOwnedAsset.idAudit[a].assetTypeId.assetManufacturer)
+                                                              // console.log('Confirm Manu sent: ', auditParamObj.assetManufacturer?auditParamObj.assetManufacturer:user.userOwnedAsset.idAudit[a].assetTypeId.assetManufacturer) )
                                                               // console.log('Confirm Manu sent: ', )
-                                                              console.log('Type: ', user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypePurchased.getTime() <= (auditParamObj.assetDatePurchased != ""? new Date(auditParamObj.assetDatePurchased).getTime():user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypePurchased.getTime()))
-                                                              console.log('Type sent , ', auditParamObj.assetDatePurchased);
-                                                              console.log('Type confirmed: ', user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypePurchased.getTime());
-                                                          if (user.userOwnedAsset[a].idAuditObj.auditDate.getTime() <= (new Date(auditParamObj.assetDateBeforeSearch).getTime()) && user.userOwnedAsset[a].idAuditObj.assetTypeId.id.toString() == (auditParamObj.assetList?auditParamObj.assetList:user.userOwnedAsset[a].idAuditObj.assetTypeId.id.toString()) && user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypeLifeCycle == (auditParamObj.assetTypeLifeCycle?auditParamObj.assetTypeLifeCycle:user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypeLifeCycle)  && user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypeManufacturer == (auditParamObj.userAssetManufacturer?auditParamObj.userAssetManufacturer:user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypeManufacturer) && user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypePurchased.getTime() <= (auditParamObj.assetDatePurchased? new Date(auditParamObj.assetDatePurchased).getTime():user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypePurchased.getTime())){
+                                                              console.log('Type: ', user.userOwnedAsset.idAudit[a].assetTypeId.assetTypePurchased.getTime() < (new Date(auditParamObj.assetDatePurchased).getTime()))
+                                                          if (user.userOwnedAsset.idAudit[a].auditDate.getTime() <= (new Date(auditParamObj.assetDateBeforeSearch).getTime()) && user.userOwnedAsset.idAudit[a].assetTypeId.id.toString() == auditParamObj.assetList && user.userOwnedAsset.idAudit[a].assetTypeId.assetTypeLifeCycle == (auditParamObj.assetTypeLifeCycle?auditParamObj.assetTypeLifeCycle:user.userOwnedAsset.idAudit[a].assetTypeId.assetTypeLifeCycle)  && user.userOwnedAsset.idAudit[a].assetTypeId.assetTypeManufacturer == (auditParamObj.userAssetManufacturer?auditParamObj.userAssetManufacturer:user.userOwnedAsset.idAudit[a].assetTypeId.assetTypeManufacturer) && user.userOwnedAsset.idAudit[a].assetTypeId.assetTypePurchased.getTime() < (new Date(auditParamObj.assetDatePurchased).getTime())){
                                                  
                                                               console.log('less than now2');
-                                                              console.log('assetTypeid ', user.userOwnedAsset[a].idAuditObj.assetTypeId.id.toString());
+                                                              console.log('assetTypeid ', user.userOwnedAsset.idAudit[a].assetTypeId.id.toString());
                                                               idAuditObj[user.id].userProfilePic = user.userProfilePic;
                                                               idAuditObj[user.id].firstName = user.firstName;
-                                                              idAuditObj[user.id].userObj.push(user.userOwnedAsset[a].idAuditObj);
+                                                              idAuditObj[user.id].userObj.push(user.userOwnedAsset.idAudit[a]);
                                                               idAuditObj[user.id].locationAudit = user.geoCoord;
                 
-                                                              console.log('Now', user.firstName, user.userOwnedAsset[a].idAuditObj.id)
+                                                              console.log('Now', user.firstName, user.userOwnedAsset.idAudit[a].id)
                                                               // return user;
                                                               filteredUser.push(user)
                                                           }
@@ -1612,25 +1591,23 @@ app.get('/auditsNow/:auditParam', async (req,res)=>{
                                                           console.log('Nothing...');
                                                           console.log('Number of Days, ', numOfDays);
                                                           console.log('uniqueAssetObj object', uniqueAssetObj);
-                                                          console.log('Before the id ', user.userOwnedAsset[a].idAuditObj);
-                                                          console.log('The id: ', user.userOwnedAsset[a].idAuditObj.assetTypeId);
-                                                          console.log('User ', user.firstName);
-                                                          console.log('idAuditObj', idAuditObj);
-                                                          console.log('Interval ', uniqueAssetObj[user.userOwnedAsset[a].idAuditObj.assetTypeId._id]);
-                                                          if (Math.ceil(numOfDays) > (uniqueAssetObj[user.userOwnedAsset[a].idAuditObj.assetTypeId._id]) || Math.ceil(numOfDays) == (uniqueAssetObj[user.userOwnedAsset[a].idAuditObj.assetTypeId._id])){
+                                                          console.log('Before the id ', user.userOwnedAsset.idAudit[a]);
+                                                          console.log('The id: ', user.userOwnedAsset.idAudit[a].assetTypeId);
+                                                          console.log('Interval ', uniqueAssetObj[user.userOwnedAsset.idAudit[a].assetTypeId._id]);
+                                                          if (Math.ceil(numOfDays) > (uniqueAssetObj[user.userOwnedAsset.idAudit[a].assetTypeId._id]) || Math.ceil(numOfDays) == (uniqueAssetObj[user.userOwnedAsset.idAudit[a].assetTypeId._id])){
                                                             console.log('Greater');
                                                             idAuditObj[user.id].userProfilePic = user.userProfilePic;
                                                             idAuditObj[user.id].firstName = user.firstName;
                                                             idAuditObj[user.id].locationAudit = user.geoCoord;
-                                                            idAuditObj[user.id].userObj.push(user.userOwnedAsset[a].idAuditObj);
+                                                            idAuditObj[user.id].userObj.push(user.userOwnedAsset.idAudit[a]);
                                                             // return user;
                                                             filteredUser.push(user)
                                                           }
                                                         }
-                                                        // return (user.userOwnedAsset[a].idAuditObj.id.toString() == '63a1e335bc9dbf8077de0dc9');
+                                                        // return (user.userOwnedAsset.idAudit[a].id.toString() == '63a1e335bc9dbf8077de0dc9');
                                                       }
                                                       // return (auditArr);
-                                                      // auditArr.push(user.userOwnedAsset[a].idAuditObj)
+                                                      // auditArr.push(user.userOwnedAsset.idAudit[a])
                                                       
                                                     })
                                                     console.log('idAudit Now', idAuditObj);
@@ -1854,14 +1831,14 @@ app.get('/getAuditSettings', async (req, res)=>{
                                 
 //                                 users.forEach(user=>{
 //                                   for (var a=0;a<user.userOwnedAsset.idAudit.length;a++){
-//                                     let numOfDays = (new Date(Date.now()).getTime() - user.userOwnedAsset[a].idAuditObj.auditDate.getTime())/(1000*60*60*24);
-//                                     console.log('Asset ', user.userOwnedAsset[a].idAuditObj.id);
+//                                     let numOfDays = (new Date(Date.now()).getTime() - user.userOwnedAsset.idAudit[a].auditDate.getTime())/(1000*60*60*24);
+//                                     console.log('Asset ', user.userOwnedAsset.idAudit[a].id);
 //                                     console.log('Number of Days (rounded), ', Math.round(numOfDays));
-//                                     if ( Math.ceil(numOfDays) > (uniqueAssetObj[user.userOwnedAsset[a].idAuditObj.assetTypeId]) || Math.ceil(numOfDays) == (uniqueAssetObj[user.userOwnedAsset[a].idAuditObj.assetTypeId])){
+//                                     if ( Math.ceil(numOfDays) > (uniqueAssetObj[user.userOwnedAsset.idAudit[a].assetTypeId]) || Math.ceil(numOfDays) == (uniqueAssetObj[user.userOwnedAsset.idAudit[a].assetTypeId])){
 //                                       console.log('Greater')
 //                                       idAuditObj[user.id].userProfilePic = user.userProfilePic;
 //                                       idAuditObj[user.id].firstName = user.firstName;
-//                                       idAuditObj[user.id].userObj.push(user.userOwnedAsset[a].idAuditObj);
+//                                       idAuditObj[user.id].userObj.push(user.userOwnedAsset.idAudit[a]);
 //                                     }
 //                                   }
                                   
@@ -1958,7 +1935,7 @@ app.get('/auditStatus2/:auditUpdateObj', async (req, res)=>{
   // i don't know about this
   let user =  await userModel.findById({}).where('_id').equals(auditUpdateObjParse.userId);
   console.log('This is user ', user)
-  user.userOwnedAsset.forEach(auditObj=>{
+  user.userOwnedAsset.idAudit.forEach(auditObj=>{
     if (auditObj.id.toString() == auditUpdateObjParse.assetId){
       console.log('Found');
       console.log(auditObj.auditDate)
@@ -2106,11 +2083,6 @@ app.get('/auditTrail2/:id', async (req, res)=>{
     let assetListNamesAudit = [];
     let assetListIdAudit = [];
     let assetManufacturer = [];
-    let assetManufacturerMap =[];
-
-    //
-    let assetListIdAuditMap = [];
-    let assetListNamesAuditMap = [];
 
     let objOptions ={directorate:[], rank:[], assetList:[], assetListId:[], assetListNamesAudit:[], assetListIdAudit:[], assetManufacturer:[]};
     console.log('This is id: ', req.params.id);
@@ -2132,7 +2104,7 @@ app.get('/auditTrail2/:id', async (req, res)=>{
 
     // let auditQueryOptions = await query.populate('userOwnedAsset.id.assetType').exec();//userOwnedAsset.id is an asset //userOwnedAsset.id.assetType
     // let auditQueryOptions = await query.populate({path:'userOwnedAsset.id', model:assetModel, populate:{path:'assetType', model:assetTypeModel}}).exec();//userOwnedAsset.id is an asset //userOwnedAsset.id.assetType
-    let auditQueryOptions = await query.populate({path:'userOwnedAsset.id', model:assetModel, populate:{path:'assetType', model:assetTypeModel}}).populate({path:'userOwnedAsset.idAuditObj.assetTypeId', model:assetTypeModel}).exec();//userOwnedAsset.id is an asset //userOwnedAsset.id.assetType
+    let auditQueryOptions = await query.populate({path:'userOwnedAsset.id', model:assetModel, populate:{path:'assetType', model:assetTypeModel}}).populate({path:'userOwnedAsset.idAudit.assetTypeId', model:assetTypeModel}).exec();//userOwnedAsset.id is an asset //userOwnedAsset.id.assetType
 
     console.log('auditQueryOptions');
     console.log(auditQueryOptions);
@@ -2143,36 +2115,23 @@ app.get('/auditTrail2/:id', async (req, res)=>{
       directorate.push(user.directorate);
       // objOptions.rank.push(user.rank);
       rank.push(user.rank);
+      assetList.push(...user.userOwnedAsset.idType);
+      assetListId.push(...user.userOwnedAsset.id);
       
       
       //supposed to push idAudit
-      // assetListIdAudit.push(...user.userOwnedAsset.idAudit);
-      // assetListNamesAudit.push(...user.userOwnedAsset.idAudit);
-      
-      user.userOwnedAsset.forEach(assetObj=>{
-        console.log('This is user:', user.firstName);
-        console.log('This is rank:', user.rank);
-        console.log('This is assetObj:', assetObj);
-        console.log('This is assetObj.idAuditObj:', assetObj.idAuditObj)
-        if (assetObj.idAuditObj)
-        assetList.push(assetObj.idType);
-        assetListId.push(assetObj.id);
-        assetListIdAuditMap.push(assetObj.idAuditObj.id.toString());
-        assetListNamesAuditMap.push(assetObj.idAuditObj.assetTypeId.assetTypeClass);
-        assetManufacturerMap.push(assetObj.idAuditObj.assetTypeId.assetTypeManufacturer?assetObj.idAuditObj.assetTypeId.assetTypeManufacturer:'No Manufacturer')
-      })
-      // assetListIdAudit.push(...user.userOwnedAsset.idAudit);
-      // assetListNamesAudit.push(...user.userOwnedAsset.idAudit);
+      assetListIdAudit.push(...user.userOwnedAsset.idAudit);
+      assetListNamesAudit.push(...user.userOwnedAsset.idAudit);
       // assetListNamesAudit
 
       // assetManufacturer.push(...user.userOwnedAsset.id);
-      // assetManufacturerMap = user.userOwnedAsset.id.map(asset=>{
-      //   // if (asset.assetTypeManufacturer){
-      //     // console.log('assetTypes -', asset.assetType);
-      //     console.log('userOwnedAsset ', asset);
-      //     return ((asset.assetType.assetTypeManufacturer)?asset.assetType.assetTypeManufacturer:'No Manufacturer');
-      //   // }
-      // });
+      assetManufacturerMap = user.userOwnedAsset.id.map(asset=>{
+        // if (asset.assetTypeManufacturer){
+          // console.log('assetTypes -', asset.assetType);
+          console.log('userOwnedAsset ', asset);
+          return ((asset.assetType.assetTypeManufacturer)?asset.assetType.assetTypeManufacturer:'No Manufacturer');
+        // }
+      });
       assetManufacturer.push(...assetManufacturerMap);
     })
 
@@ -2198,20 +2157,20 @@ app.get('/auditTrail2/:id', async (req, res)=>{
     });
 
     // assetListIdAudit
-    // let assetListIdAuditMap = assetListIdAudit.map(asset=>{
-    //   // return asset.assetType._id.toString();
-    //   return asset.assetTypeId._id.toString();
-    // })
+    let assetListIdAuditMap = assetListIdAudit.map(asset=>{
+      // return asset.assetType._id.toString();
+      return asset.assetTypeId._id.toString();
+    })
     var assetListIdAuditUnique = assetListIdAuditMap.filter(function (value, index, self) {
       return self.indexOf(value) === index;
       // return self.indexOf(value._id) === index;
     });
 
     //idAudit names
-    // let assetListNamesAuditMap = assetListNamesAudit.map(asset=>{
-    //   // return asset.assetType._id.toString();
-    //   return asset.assetTypeId.assetTypeClass;
-    // })
+    let assetListNamesAuditMap = assetListNamesAudit.map(asset=>{
+      // return asset.assetType._id.toString();
+      return asset.assetTypeId.assetTypeClass;
+    })
 
     var assetListNamesAuditUnique = assetListNamesAuditMap.filter(function (value, index, self) {
       return self.indexOf(value) === index;

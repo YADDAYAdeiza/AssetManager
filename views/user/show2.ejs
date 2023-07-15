@@ -74,7 +74,6 @@
                     </div>
                 <%}%>
                 <%} else{%>
-                    <%console.log('Not Includes Asset')%>
                 <div class="divAsset divContLi stateApproval ownApproval" data-asset-id="<%=asset.id%>" data-asset-assetName = "<%= asset.assetName %>" data-assettype-id = "<%= asset.assetType %>">
                     <li><input type="checkbox" class = 'user-asset-pool-checkbox' style="display:inline; width:10%"><a href="/asset/<%=asset.id%>"><%=asset.assetCode%></a></li>    
                 </div>

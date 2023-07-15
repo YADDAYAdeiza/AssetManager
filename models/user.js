@@ -77,111 +77,121 @@ let userSchema = new mongoose.Schema({
         },
         immutable:true
     },
-    userAsset:{
-        id:{
-            type:[mongoose.Schema.Types.ObjectId],
-            ref:'AssetCol',
-            required:true
-        },
-        idType:{
-            type:[String],
-            required:true
-        },
-        assignDate:{
-            type:[Date],
-            default:()=>{
-                return Date.now()
-            }
-        },
-        idAudit:[{
+    userAsset:[
+        {
             id:{
                 type:mongoose.Schema.Types.ObjectId,
                 ref:'AssetCol',
                 required:true
             },
-            auditDate:{
+            idType:{
+                type:String,
+                required:true
+            },
+            assignDate:{
                 type:Date,
                 default:()=>{
                     return Date.now()
                 }
             },
-            assetTypeId:{
+            idAuditObj:{
+                id:{
+                    type:mongoose.Schema.Types.ObjectId,
+                    ref:'AssetCol',
+                    required:true
+                },
+                auditDate:{
+                    type:Date,
+                    default:()=>{
+                        return Date.now()
+                    }
+                },
+                assetTypeId:{
+                    type:mongoose.Schema.Types.ObjectId,
+                    ref:'AssetTypeCol'
+                },
+                assetTypeName:{
+                    type:String
+                }
+            }
+        }
+    ],
+    approvedUserAsset:[
+        {
+            id:{
                 type:mongoose.Schema.Types.ObjectId,
-                ref:'AssetTypeCol'
+                ref:'AssetCol',
+                required:true
             },
-            assetTypeName:{
-                type:String
-            }
-        }]
-    },
-    approvedUserAsset:{
-        id:{
-            type:[mongoose.Schema.Types.ObjectId],
-            ref:'AssetCol',
-            required:true
-        },
-        idType:{
-            type:[String],
-            required:true
-        },
-        assignDate:{
-            type:[Date],
-            default:()=>{
-                return Date.now()
-            }
+            idType:{
+                type:String,
+                required:true
+            },
+            assignDate:{
+                type:Date,
+                default:()=>{
+                    return Date.now()
+                }
+            },
         }
-    },
-    directorateApprovedUserAsset:{
-        id:{
-            type:[mongoose.Schema.Types.ObjectId],
-            ref:'AssetCol',
-            required:true
-        },
-        idType:{
-            type:[String],
-            required:true
-        },
-        assignDate:{
-            type:[Date],
-            default:()=>{
-                return Date.now()
-            }
+    ],
+    directorateApprovedUserAsset:[
+        {
+            id:{
+                type:mongoose.Schema.Types.ObjectId,
+                ref:'AssetCol',
+                required:true
+            },
+            idType:{
+                type:String,
+                required:true
+            },
+            assignDate:{
+                type:Date,
+                default:()=>{
+                    return Date.now()
+                }
+            },
         }
-    },
-    storeApprovedUserAsset:{
-        id:{
-            type:[mongoose.Schema.Types.ObjectId],
-            ref:'AssetCol',
-            required:true
-        },
-        idType:{
-            type:[String],
-            required:true
-        },
-        assignDate:{
-            type:[Date],
-            default:()=>{
-                return Date.now()
-            }
+    ],
+    storeApprovedUserAsset:[
+        {
+            id:{
+                type:mongoose.Schema.Types.ObjectId,
+                ref:'AssetCol',
+                required:true
+            },
+            idType:{
+                type:String,
+                required:true
+            },
+            assignDate:{
+                type:Date,
+                default:()=>{
+                    return Date.now()
+                }
+            },
         }
-    },
-    issueApprovedUserAsset:{
-        id:{
-            type:[mongoose.Schema.Types.ObjectId],
-            ref:'AssetCol',
-            required:true
-        },
-        idType:{
-            type:[String],
-            required:true
-        },
-        assignDate:{
-            type:[Date],
-            default:()=>{
-                return Date.now()
-            }
+    ],
+    issueApprovedUserAsset:[
+        {
+            id:{
+                type:mongoose.Schema.Types.ObjectId,
+                ref:'AssetCol',
+                required:true
+            },
+            idType:{
+                type:String,
+                required:true
+            },
+            assignDate:{
+                type:Date,
+                default:()=>{
+                    return Date.now()
+                }
+            },
         }
-    },
+    ],
     receivedUserAsset:[
         {
         id:{
@@ -204,23 +214,24 @@ let userSchema = new mongoose.Schema({
         }
     }
     ],
-    userOwnedAsset:{
-        id:{
-            type:[mongoose.Schema.Types.ObjectId],
-            ref:'AssetCol',
-            required:true
-        },
-        idType:{
-            type:[String],
-            required:true
-        },
-        assignDate:{
-            type:[Date],
-            default:()=>{
-                return Date.now()
-            }
-        },
-        idAudit:[{
+    userOwnedAsset:[
+        {
+            id:{
+                type:mongoose.Schema.Types.ObjectId,
+                ref:'AssetCol',
+                required:true
+            },
+            idType:{
+                type:String,
+                required:true
+            },
+            assignDate:{
+                type:Date,
+                default:()=>{
+                    return Date.now()
+                }
+            },
+        idAuditObj:{
             id:{
                 type:mongoose.Schema.Types.ObjectId,
                 ref:'AssetCol',
@@ -239,8 +250,9 @@ let userSchema = new mongoose.Schema({
             assetTypeName:{
                 type:String
             }
-        }]
-    },
+        }
+    }
+],
     userRequisition:{
         type:Object
     },

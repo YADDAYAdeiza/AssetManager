@@ -462,22 +462,22 @@ route.get('/:id/edit',  hideNavMenu(), async (req,res)=>{
                             
                             console.log('OR. This place?')
 
-                            user.userAsset.id.forEach(async itemArr=>{
-                                        ownAssets.push(itemArr);
+                                user.userAsset.forEach(async itemArr=>{
+                                        ownAssets.push(itemArr.id.toString());
                                 });
                                 //getting approved user assets (to be painted green)
-                                user.approvedUserAsset.id.forEach(async itemArr=>{
-                                    approvedAssets.push(itemArr.toString());
+                                user.approvedUserAsset.forEach(async itemArr=>{
+                                    approvedAssets.push(itemArr.id.toString());
                                 });
                                 // getting directorate approved assets, to be painted purple
-                                user.directorateApprovedUserAsset.id.forEach(async itemArr=>{
-                                    directorateApprovedAssets.push(itemArr.toString());
+                                user.directorateApprovedUserAsset.forEach(async itemArr=>{
+                                    directorateApprovedAssets.push(itemArr.id.toString());
                                 });
-                                user.storeApprovedUserAsset.id.forEach(async itemArr=>{
-                                    storeApprovedAssets.push(itemArr.toString());
+                                user.storeApprovedUserAsset.forEach(async itemArr=>{
+                                    storeApprovedAssets.push(itemArr.id.toString());
                                 });
-                                user.issueApprovedUserAsset.id.forEach(async itemArr=>{
-                                    issueApprovedAssets.push(itemArr.toString());
+                                user.issueApprovedUserAsset.forEach(async itemArr=>{
+                                    issueApprovedAssets.push(itemArr.id.toString());
                                 });
                                 user.receivedUserAsset.forEach(async itemArr=>{
                                     receivedUserAsset.push(itemArr.id.toString()); //learn from this, all you above
@@ -889,18 +889,31 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                                 let newAssetSaved = await newAsset.save();
                                 
                                 //likely
-                                user.userAsset.id.push(newAssetSaved._id);
-                                user.userAsset.idType.push( newAssetSaved.assetName);
-                                user.userAsset.assignDate.push(Date.now());
-                                let idAuditObj = {
-                                    id: newAssetSaved._id,
-                                    auditDate: Date.now(),
-                                    assetTypeId:newAssetSaved.assetType
-                                    //assetTypeName:newAssetSaved.assetName
+                                let assetToApproveObj = {
+                                    id:newAssetSaved._id,
+                                    idType:newAssetSaved.assetName,
+                                    idAuditObj:{
+                                        id: newAssetSaved._id,
+                                        // auditDate: Date.now(), //handled in model by default
+                                        assetTypeId:newAssetSaved.assetType
+                                    }
+                                    // assignDate: new Date(),
                                 }
                                 
+                                user.userAsset.push(assetToApproveObj);
+                                // user.userAsset.id.push(newAssetSaved._id);
+                                // user.userAsset.idType.push( newAssetSaved.assetName);
+                                // user.userAsset.assignDate.push(Date.now());
+
+                                // let idAuditObj = {
+                                //     id: newAssetSaved._id,
+                                //     auditDate: Date.now(),
+                                //     assetTypeId:newAssetSaved.assetType
+                                //     //assetTypeName:newAssetSaved.assetName
+                                // }
+                                
                                 //likely
-                                user.userAsset.idAudit.push(idAuditObj);
+                                // user.userAsset.idAudit.push(idAuditObj);
                                 
                                 console.log('This is newAssetSaved', newAssetSaved);
 
@@ -956,13 +969,13 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                         user.userAsset.id.push(asset._id);
                         user.userAsset.idType.push(asset.assetName);
                         user.userAsset.assignDate.push(Date.now());
-                        let idAuditObj = {
-                            id: asset._id,
-                            auditDate: Date.now(),
-                            assetTypeId:asset.assetType
-                            //assetTypeName:newAssetSaved.assetName
-                        }
-                            user.userAsset.idAudit.push(idAuditObj);
+                        // let idAuditObj = {
+                        //     id: asset._id,
+                        //     auditDate: Date.now(),
+                        //     assetTypeId:asset.assetType
+                        //     //assetTypeName:newAssetSaved.assetName
+                        // }
+                            // user.userAsset.idAudit.push(idAuditObj);
                         
                         // user.userAsset.id.push(newAssetSaved._id);
                         //         user.userAsset.idType.push( newAssetSaved.assetName);
@@ -1193,8 +1206,13 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                                                     newIdArr.push(await approvedAsset._id); //for use in userLogSave()
                                                     
                                                     //We have to push asset ids
-                                                    user.approvedUserAsset.id.push(assetToApprove.id);
-                                                    user.approvedUserAsset.idType.push(assetToApprove.assetName);
+                                                    let assetToApproveObj = {
+                                                        id:assetToApprove.id,
+                                                        idType:assetToApprove.assetName,
+                                                    }
+                                                    user.approvedUserAsset.push(assetToApproveObj);
+                                                    // user.approvedUserAsset.id.push(assetToApprove.id);
+                                                    // user.approvedUserAsset.idType.push(assetToApprove.assetName);
                                             }
                         // for (const itemId of userAssetArr.idArr){
 
@@ -1402,9 +1420,15 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                                                 let approvedAsset = await assetToApprove.save();
                                                 console.log('This is approvedAsset ', approvedAsset);
                                                 newIdArr.push(await approvedAsset._id);
+                                                
+                                                let assetToApproveObj = {
+                                                    id:assetToApprove.id,
+                                                    idType:assetToApprove.assetName,
+                                                }
 
-                                                user.directorateApprovedUserAsset.id.push(assetToApprove.id);
-                                                user.directorateApprovedUserAsset.idType.push(assetToApprove.assetName);
+                                                user.directorateApprovedUserAsset.push(assetToApproveObj);
+                                                // user.directorateApprovedUserAsset.id.push(assetToApprove.id);
+                                                // user.directorateApprovedUserAsset.idType.push(assetToApprove.assetName);
                                             }
                                             let storeApprover = await userModel.find({}).where('userRole.role').equals('storeApproval');//.where('userRole.domain').equals(user.directorate);
                                             console.log('storeApprover', storeApprover[0]);
@@ -1623,8 +1647,15 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                                                 console.log('This is approvedAsset ', approvedAsset);
 
                                                 newIdArr.push(await approvedAsset._id);
-                                                user.storeApprovedUserAsset.id.push(assetToApprove.id);
-                                                user.storeApprovedUserAsset.idType.push(assetToApprove.assetName);
+
+                                                let assetToApproveObj = {
+                                                    id:assetToApprove.id,
+                                                    idType:assetToApprove.assetName,
+                                                }
+
+                                                user.storeApprovedUserAsset.push(assetToApproveObj);
+                                                // user.storeApprovedUserAsset.id.push(assetToApprove.id);
+                                                // user.storeApprovedUserAsset.idType.push(assetToApprove.assetName);
                                             }
                                             let userAssetOwned = JSON.parse(JSON.stringify(user.userAsset));
 
@@ -1648,7 +1679,9 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
                     }
 
             issuerApprover[0].userRole.usersToApprove.push(userObj);
+            console.log('About to - issuerApprover');
             await issuerApprover[0].save();
+            console.log('after to - issuerApprover');
             redirectUser = userAssetArr.approvingUserId; //redirecting back to... State Approver?
             //Log
             let objActivity = {
@@ -1903,8 +1936,14 @@ route.put('/assignDeassign2/:id', async (req,res)=>{
 
                                                 let approvedAsset = await assetToApprove.save();
                                                 // console.log('This is IssueApprovedAsset ', approvedAsset);
-                                                user.issueApprovedUserAsset.id.push(assetToApprove.id);
-                                                user.issueApprovedUserAsset.idType.push(assetToApprove.assetName);
+                                                let assetToApproveObj = {
+                                                    id:assetToApprove.id,
+                                                    idType:assetToApprove.assetName,
+                                                }
+
+                                                user.issueApprovedUserAsset.push(assetToApproveObj);
+                                                // user.issueApprovedUserAsset.id.push(assetToApprove.id);
+                                                // user.issueApprovedUserAsset.idType.push(assetToApprove.assetName);
                                                 console.log('Pushed to issueApprovedUserAsset');
                                             }
                                             let updatedUser = await user.save();
