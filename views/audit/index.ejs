@@ -960,12 +960,22 @@ function openList(evt, cityName, reAssignedDiv) {
             console.log('Classlist: ', tab.classList)
             console.log('Classlist: ', [...tab.classList])
             console.log('Classlist: ', [...tab.classList].includes(accessingAuditorId))
-            if ([ ...tab.classList].includes(accessingAuditorId)){
-                // console.log
+            
+            console.log('This is reqUser ', JSON.parse(reqUser));
+
+            if (JSON.parse(reqUser).role == 'superAdmin'){
+                alert('SuperAdmin');
                 tab.style.display = 'block';
-            }else{
-                alert('NOT INcludes');
-                tab.style.display = 'none';
+            }else if (JSON.parse(reqUser).role == 'admin' && JSON.parse(reqUser).subRole == 'auditor'){ //for showing all the Auditors
+                tab.style.display = 'block';
+            }else {
+                if ([ ...tab.classList].includes(accessingAuditorId)){
+                    // console.log
+                    tab.style.display = 'block';
+                }else{
+                    // alert('NOT INcludes');
+                    tab.style.display = 'none';
+                }
             }
         })
         // function openSettings(event){

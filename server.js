@@ -611,6 +611,7 @@ app.get('/audGoLive/:room', hideNavMenu(), async (req, res)=>{
                   // auditorStaff =  await userModel.find({}).where()
                     // console.log('These are auditors: ', auditorStaff);
                   //userQueries
+                  // console.log('This is auditorsStaff: ', auditorsStaff);
                   distinctState = await userModel.find({}).distinct('state');
                   distinctDirectorate = await userModel.find({}).distinct('directorate');
                   distinctRank = await userModel.find({}).distinct('rank');
@@ -691,7 +692,7 @@ app.get('/audGoLive/:room', hideNavMenu(), async (req, res)=>{
 
                             //Getting the first in profile of auditor
                             console.log('This is req.user.profileId[95], ', req.user.profileId[95])
-                            let auditor = await userModel.findById().where('_id').equals(req.user.profileId[95]);
+                            let auditor = await userModel.findById().where('_id').equals(req.user.profileId[0]);
                             console.log('This is auditor, ', auditor);
                             let accessingAuditorId = auditor._id;
 
@@ -1346,6 +1347,9 @@ app.get('/audGoLive/:room/:genId/:auditorId', async (req, res)=>{
                                               }
                                             });
                                  console.log('This is assetObj', assetObj)
+                                 let auditor = await userModel.findById().where('_id').equals(req.user.profileId[0]);
+                                 console.log('This is auditor, ', auditor);
+                                 let accessingAuditorId = auditor._id;
 
                                  console.log('This is genIdDone: ', req.params.genId);
                                  if (req.params.genId){
@@ -1377,6 +1381,7 @@ app.get('/audGoLive/:room/:genId/:auditorId', async (req, res)=>{
                                       userEmail:req.user.email,
                                       uiSettings,
                                       userApprovalRoles,
+                                      accessingAuditorId,
                                       distinctAuditAssets,
                                       distinctAssetManufacturer,
                                       distinctAssetLifeCycle,
@@ -2000,7 +2005,6 @@ app.get('/auditStatus2/:auditUpdateObj', async (req, res)=>{
         if (auditItem.assetId == auditUpdateObjParse.assetId){
           auditItem.status = 'Done';
           let newUserAuditor = await userAuditor.save();
-          console.log(newUserAuditor.userRole.auditAssigns[3].auditProgress[0])
         }
       }
       // console.log('Entered 2');
@@ -2494,7 +2498,11 @@ app.get('/getAssetTypes', async (req,res)=>{
     // let assignedAuditor = await userModel.find({}).where('_id').equals(parseObj['assignedUser']);
     let assignedAuditor = await userCredModel.find({}).where('subRole').equals('auditor');
       for (auditor of assignedAuditor){
-          auditorProfiles.push(await userModel.findById({}).where('_id').equals(auditor.profileId[0]));
+        console.log('auditor.profile[0]', auditor.profileId[0])
+        let user = await userModel.findById({}).where('_id').equals(auditor.profileId[0]);
+        if (user != null){
+          auditorProfiles.push(user);
+        }
       }
 console.log('This is auditorProfiles: ', auditorProfiles);
 

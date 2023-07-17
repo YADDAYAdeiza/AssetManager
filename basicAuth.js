@@ -348,6 +348,7 @@ function hideNavMenu(){
         if (req.user.role =='superAdmin'){
             console.log('Admin UI')
             let uiSettings = {
+                'onlySuperAdmin':'block',
                 'onlyAdmin':'block',
                 'onlyStaff':'none',
                 'onlyAudit':'none'
