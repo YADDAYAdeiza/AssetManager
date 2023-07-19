@@ -1254,7 +1254,9 @@ app.get('/audGoLive/:room/:genId/:auditorId', async (req, res)=>{
                                           console.log('Before the id ', user.userOwnedAsset[a].idAuditObj);
                                           console.log('The id: ', user.userOwnedAsset[a].idAuditObj.assetTypeId);
                                           console.log('Interval ', uniqueAssetObj[user.userOwnedAsset[a].idAuditObj.assetTypeId._id]);
-                                          if (Math.ceil(numOfDays) > (uniqueAssetObj[user.userOwnedAsset[a].idAuditObj.assetTypeId._id]) || Math.ceil(numOfDays) == (uniqueAssetObj[user.userOwnedAsset[a].idAuditObj.assetTypeId._id])){
+                                          if ((Math.ceil(numOfDays) > (uniqueAssetObj[user.userOwnedAsset[a].idAuditObj.assetTypeId._id]) || Math.ceil(numOfDays) == (uniqueAssetObj[user.userOwnedAsset[a].idAuditObj.assetTypeId._id])) && user.userOwnedAsset[a].idAuditObj.assetTypeId.id.toString() == (auditParamObj.assetList?auditParamObj.assetList:user.userOwnedAsset[a].idAuditObj.assetTypeId.id.toString()  && user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypeLifeCycle == (auditParamObj.assetTypeLifeCycle?auditParamObj.assetTypeLifeCycle:user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypeLifeCycle)  && user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypeManufacturer == (auditParamObj.userAssetManufacturer?auditParamObj.userAssetManufacturer:user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypeManufacturer) && user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypePurchased.getTime() <= (auditParamObj.assetDatePurchased? new Date(auditParamObj.assetDatePurchased).getTime():user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypePurchased.getTime()))){
+                                          
+                                          // if (Math.ceil(numOfDays) > (uniqueAssetObj[user.userOwnedAsset[a].idAuditObj.assetTypeId._id]) || Math.ceil(numOfDays) == (uniqueAssetObj[user.userOwnedAsset[a].idAuditObj.assetTypeId._id])){
                                             console.log('Greater');
                                             idAuditObj[user.id].userProfilePic = user.userProfilePic;
                                             idAuditObj[user.id].firstName = user.firstName;
@@ -1352,6 +1354,7 @@ app.get('/audGoLive/:room/:genId/:auditorId', async (req, res)=>{
                                  let accessingAuditorId = auditor._id;
 
                                  console.log('This is genIdDone: ', req.params.genId);
+                                 console.log('This is auditorId ', req.params.auditorId);
                                  if (req.params.genId){
                                   // This has been implemented in auditStatus2
 
@@ -1363,10 +1366,12 @@ app.get('/audGoLive/:room/:genId/:auditorId', async (req, res)=>{
                                      for (const auditAssignObj of user.userRole.auditAssigns){
                                        if (auditAssignObj.genId == req.params.genId){
                                          console.log('This is auditObj ', auditAssignObj);
+                                         //I think we have to check for the obj in audit Progress to be Done, before
+                                         //settting auditStatus to Done.
                                          auditAssignObj.auditStatus.status = 'Done'
-                                         auditAssignObj.auditStatus.date = new Date();
+                                         auditAssignObj.auditStatus.auditDate = new Date();
                                          let user2 = await user.save();
-                                         console.log('Saving...');
+                                         console.log('Saving now2...');
                                        }
                                      }
                                  }
@@ -1622,7 +1627,15 @@ app.get('/auditsNow/:auditParam', async (req,res)=>{
                                                           console.log('User ', user.firstName);
                                                           console.log('idAuditObj', idAuditObj);
                                                           console.log('Interval ', uniqueAssetObj[user.userOwnedAsset[a].idAuditObj.assetTypeId._id]);
-                                                          if (Math.ceil(numOfDays) > (uniqueAssetObj[user.userOwnedAsset[a].idAuditObj.assetTypeId._id]) || Math.ceil(numOfDays) == (uniqueAssetObj[user.userOwnedAsset[a].idAuditObj.assetTypeId._id])){
+                                                          console.log('PurchaseBool', user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypePurchased.getTime() <= (auditParamObj.assetDatePurchased? new Date(auditParamObj.assetDatePurchased).getTime():user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypePurchased.getTime()));
+                                                          console.log('ManufacturerBool', user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypeManufacturer == (auditParamObj.userAssetManufacturer?auditParamObj.userAssetManufacturer:user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypeManufacturer));
+                                                          console.log('Lifecycle', user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypeLifeCycle == (auditParamObj.assetTypeLifeCycle?auditParamObj.assetTypeLifeCycle:user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypeLifeCycle));
+                                                          console.log('assetList', user.userOwnedAsset[a].idAuditObj.assetTypeId.id.toString() == (auditParamObj.assetList?auditParamObj.assetList:user.userOwnedAsset[a].idAuditObj.assetTypeId.id.toString()));
+                                                          console.log('OR1',  Math.ceil(numOfDays) == (uniqueAssetObj[user.userOwnedAsset[a].idAuditObj.assetTypeId._id]));
+                                                          console.log('OR2', Math.ceil(numOfDays) > (uniqueAssetObj[user.userOwnedAsset[a].idAuditObj.assetTypeId._id]));
+                                                          // console.log()
+                                                          console.log('Combined: ', (Math.ceil(numOfDays) > (uniqueAssetObj[user.userOwnedAsset[a].idAuditObj.assetTypeId._id]) || Math.ceil(numOfDays) == (uniqueAssetObj[user.userOwnedAsset[a].idAuditObj.assetTypeId._id])));
+                                                          if ((Math.ceil(numOfDays) > (uniqueAssetObj[user.userOwnedAsset[a].idAuditObj.assetTypeId._id]) || Math.ceil(numOfDays) == (uniqueAssetObj[user.userOwnedAsset[a].idAuditObj.assetTypeId._id])) && (user.userOwnedAsset[a].idAuditObj.assetTypeId.id.toString() == (auditParamObj.assetList?auditParamObj.assetList:user.userOwnedAsset[a].idAuditObj.assetTypeId.id.toString()) && (user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypeLifeCycle == (auditParamObj.assetTypeLifeCycle?auditParamObj.assetTypeLifeCycle:user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypeLifeCycle))  && (user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypeManufacturer == (auditParamObj.userAssetManufacturer?auditParamObj.userAssetManufacturer:user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypeManufacturer)) && (user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypePurchased.getTime() <= (auditParamObj.assetDatePurchased? new Date(auditParamObj.assetDatePurchased).getTime():user.userOwnedAsset[a].idAuditObj.assetTypeId.assetTypePurchased.getTime())))){
                                                             console.log('Greater');
                                                             idAuditObj[user.id].userProfilePic = user.userProfilePic;
                                                             idAuditObj[user.id].firstName = user.firstName;
@@ -1968,7 +1981,8 @@ app.get('/auditStatus2/:auditUpdateObj', async (req, res)=>{
       console.log('Found');
       console.log(auditObj.auditDate)
       console.log(new Date(Date.now()));
-      auditObj.auditDate = Date.now();
+      //auditObj.auditDate = Date.now(); //not this
+      auditObj.idAuditObj.auditDate = Date.now();
     }
   })
   //i don't know about this
@@ -2031,6 +2045,12 @@ app.get('/auditStatus2/:auditUpdateObj', async (req, res)=>{
   console.log('auditUpdateObj is ', req.params.auditUpdateObj);
     console.log('Done now2');
 
+
+    //this is the main one, don't mind that second one in getAuditLive
+    //note, if your query object is without beforeDate, it skips the first if and uses the else
+    //Tomorrow:use the longform of the query in the else of getAudit
+    //Math.ceil(numOfDays) is today - audit date on userOwnedAsset > Settings for the object
+  let doneAuditedObj = [];
     let userWithAuditAssets = Object.keys(remainingAudits.users);
     console.log('This is keys, ', userWithAuditAssets);
       for (const user of userWithAuditAssets){
@@ -2048,10 +2068,18 @@ app.get('/auditStatus2/:auditUpdateObj', async (req, res)=>{
                 for (const auditAssignObj of user.userRole.auditAssigns){
                   if (auditAssignObj.genId == auditUpdateObjParse.genId){
                     console.log('This is auditObj2 to be marked as done ', auditAssignObj);
-                    auditAssignObj.auditStatus.status = 'Done'
-                    auditAssignObj.auditStatus.date = new Date();
-                    let user2 = await user.save();
-                    console.log('Saving...');
+                    // are all the audits under auditProgress 'Done'?
+                    for (objToBeAudited of auditAssignObj.auditProgress){
+                      if (objToBeAudited.status == 'Done'){
+                        doneAuditedObj.push(objToBeAudited)
+                      }
+                    }
+                    if (doneAuditedObj.length == auditAssignObj.auditProgress.length){
+                      auditAssignObj.auditStatus.status = 'Done'
+                      auditAssignObj.auditStatus.date = new Date();
+                      let user2 = await user.save();
+                      console.log('Saving...');
+                    }
                   }
                 }
             }                            
@@ -2511,8 +2539,10 @@ console.log('This is auditorProfiles: ', auditorProfiles);
         auditorProfile.userRole.auditAssigns.forEach(auditObj=>{
           // console.log('Entered here1');
           if (auditObj.userState == parseObj.userState && auditObj.userDirectorate == parseObj.userDirectorate && auditObj.userRank == parseObj.userRank && auditObj.assetList == parseObj.assetList){
+            if (auditObj.auditStatus.status =! 'Done'){
             console.log('Entered here2');
             auditObjExists.push(auditObj);// return true;
+          }
           }
         })
       }

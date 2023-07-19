@@ -305,10 +305,16 @@ let userSchema = new mongoose.Schema({
                     },
                     status:{
                         type:String
+                    },
+                    auditDate:{
+                        type:Date,
+                        default:() => {
+                            return Date.now()
+                        }
                     }
                 }],
                 auditStatus:{
-                    date:{
+                    auditDate:{
                         type: Date
                     },
                     status:{
