@@ -293,6 +293,15 @@ let userSchema = new mongoose.Schema({
                 assetList:{
                     type:String
                 },
+                assetBefore:{
+                    type:Date
+                },
+                assetManufacturer:{
+                    type:String
+                },
+                assetLifeCycle:{
+                    type:String
+                },
                 assignedUser:{
                     type:String
                 },

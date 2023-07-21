@@ -1368,8 +1368,8 @@ app.get('/audGoLive/:room/:genId/:auditorId', async (req, res)=>{
                                          console.log('This is auditObj ', auditAssignObj);
                                          //I think we have to check for the obj in audit Progress to be Done, before
                                          //settting auditStatus to Done.
-                                         auditAssignObj.auditStatus.status = 'Done'
-                                         auditAssignObj.auditStatus.auditDate = new Date();
+                                        //  auditAssignObj.auditStatus.status = 'Done'
+                                        //  auditAssignObj.auditStatus.auditDate = new Date();
                                          let user2 = await user.save();
                                          console.log('Saving now2...');
                                        }
@@ -2538,9 +2538,20 @@ console.log('This is auditorProfiles: ', auditorProfiles);
         console.log(auditorProfile.firstName);
         auditorProfile.userRole.auditAssigns.forEach(auditObj=>{
           // console.log('Entered here1');
-          if (auditObj.userState == parseObj.userState && auditObj.userDirectorate == parseObj.userDirectorate && auditObj.userRank == parseObj.userRank && auditObj.assetList == parseObj.assetList){
-            if (auditObj.auditStatus.status =! 'Done'){
-            console.log('Entered here2');
+          console.log('auditObj', auditObj)// == parseObj.assetManufacturer)
+          console.log('parseObj', parseObj);
+          console.log('Date Before: ', auditObj.assetBefore == parseObj.assetBefore);
+          console.log('Manufacturer', auditObj.assetManufacturer == parseObj.assetManufacturer);
+          console.log('LifeCycle', auditObj.assetLifeCycle == parseObj.assetLifeCycle);
+          console.log('State', (auditObj.userState == parseObj.userState));
+          console.log('Directorate ', auditObj.userDirectorate == parseObj.userDirectorate);
+          console.log('Rank ', auditObj.userRank == parseObj.userRank);
+          console.log('AssetList', (auditObj.assetList == parseObj.assetList))
+
+          if ((auditObj.userState == parseObj.userState) && (auditObj.userDirectorate == parseObj.userDirectorate) && (auditObj.userRank == parseObj.userRank) && (auditObj.assetList == parseObj.assetList) && (auditObj.assetBefore == parseObj.assetBefore) && (auditObj.assetManufacturer == parseObj.assetManufacturer) && (auditObj.assetLifeCycle == parseObj.assetLifeCycle)){
+            console.log('Entered here; match found');
+            if (auditObj.auditStatus.status != 'Done'){
+              console.log('Entered here2; match found');
             auditObjExists.push(auditObj);// return true;
           }
           }

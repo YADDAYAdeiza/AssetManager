@@ -318,6 +318,9 @@ function openList(evt, cityName, reAssignedDiv) {
             userDirectorate:userDirectorateGrab.value,
             userRank:userRankGrab.value,
             assetList:assetListGrab.value,
+            assetBefore: (assetDateBeforeSearchGrab.value =="")?null:assetDateBeforeSearchGrab.value,
+            assetManufacturer:userAssetManufacturerGrab.value,
+            assetLifeCycle:assetTypeLifeCycleGrab.value,
             assignedUser:auditorAssignSelGrab.value,
             assignedBy:reqUserObj._id,
             auditProgress:objToAuditArr
