@@ -49,9 +49,16 @@
                             <%console.log('Issue Approved')%>
                             <%if (receivedUserAsset.includes(asset._id.toString())){%>
                                 <%console.log('received Approved')%>
+                                <%if (deallocatedAsset.includes(asset._id.toString())){%>
+                                    <%console.log('deApprovals')%>
+                                    <div class="divAsset divContLiWhite receivedApproval" data-asset-id="<%=asset.id%>" data-asset-assetName = "<%= asset.assetName %>" data-assettype-id = "<%= asset.assetType %>">
+                                        <li><input type="checkbox" class = 'user-asset-pool-checkbox' style="display:inline; width:10%"><a href="/asset/<%=asset.id%>"><%=asset.assetCode%></a></li>    
+                                    </div>
+                                <%}else{%>
                                 <div class="divAsset divContLiOrange receivedApproval" data-asset-id="<%=asset.id%>" data-asset-assetName = "<%= asset.assetName %>" data-assettype-id = "<%= asset.assetType %>">
                                     <li><input type="checkbox" class = 'user-asset-pool-checkbox' style="display:inline; width:10%"><a href="/asset/<%=asset.id%>"><%=asset.assetCode%></a></li>    
                                 </div>
+                                <%}%>
                             <%}else{%>
                                     <div class="divAsset divContLiBrown issuerApproval" data-asset-id="<%=asset.id%>" data-asset-assetName = "<%= asset.assetName %>" data-assettype-id = "<%= asset.assetType %>">
                                         <li><input type="checkbox" class = 'user-asset-pool-checkbox' style="display:inline; width:10%"><a href="/asset/<%=asset.id%>"><%=asset.assetCode%></a></li>    

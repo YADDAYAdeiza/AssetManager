@@ -450,6 +450,8 @@ route.get('/:id/edit',  hideNavMenu(), async (req,res)=>{
                             var storeApprovedAssets = [];
                             var issueApprovedAssets = [];
                             var receivedUserAsset = [];
+                            var deallocatedAsset = [];
+                            var userOwnedAsset = [];
                             var usersToApprove = [];
                             try {
                             const user =await userModel.findById(req.params.id);
@@ -465,6 +467,9 @@ route.get('/:id/edit',  hideNavMenu(), async (req,res)=>{
                                 user.userAsset.forEach(async itemArr=>{
                                         ownAssets.push(itemArr.id.toString());
                                 });
+                                user.userOwnedAsset.forEach(async itemArr=>{
+                                    userOwnedAsset.push(itemArr.id.toString());
+                                });
                                 //getting approved user assets (to be painted green)
                                 user.approvedUserAsset.forEach(async itemArr=>{
                                     approvedAssets.push(itemArr.id.toString());
@@ -479,10 +484,15 @@ route.get('/:id/edit',  hideNavMenu(), async (req,res)=>{
                                 user.issueApprovedUserAsset.forEach(async itemArr=>{
                                     issueApprovedAssets.push(itemArr.id.toString());
                                 });
+
+                                
                                 user.receivedUserAsset.forEach(async itemArr=>{
                                     receivedUserAsset.push(itemArr.id.toString()); //learn from this, all you above
                                 });
-
+                                
+                                user.deallocatedAsset.forEach(async itemArr=>{
+                                    deallocatedAsset.push(itemArr.id.toString());
+                                });
                                 // user.userRole.usersToApprove.forEach(userId=>{
                                 //     usersToApprove.push(userId);
                                 // })
@@ -510,10 +520,14 @@ route.get('/:id/edit',  hideNavMenu(), async (req,res)=>{
                                     usersToApprove.push(userObj2);
                                 }
 
+                                console.log('This is ownAssets: ', ownAssets);
+                                console.log('This is userOwnedAsset: ', userOwnedAsset);
                                 console.log('This is directorateApprovedAssets: ', directorateApprovedAssets);
                                 console.log('This is approved assets ', approvedAssets);
                                 console.log('This is store approved assets ', storeApprovedAssets);
+                                console.log('This is deallocated assets ', deallocatedAsset);
                                 console.log('This is usersToApprove ', usersToApprove);
+                                console.log('This is received assets ', receivedUserAsset);
                                 // let msg = 'User found';
                                 console.log('This is asset:')
                                 console.log('This is msg ', msg);
@@ -556,6 +570,7 @@ route.get('/:id/edit',  hideNavMenu(), async (req,res)=>{
                                 storeApprovedAssets,
                                 issueApprovedAssets,
                                 receivedUserAsset,
+                                deallocatedAsset,
                                 usersToApprove,
                                 assetTypeAll:allAssetType2,//assetTypeDistinct
                                 uiSettings,

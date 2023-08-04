@@ -741,6 +741,7 @@ if (userActivityObj){
         }
 
         async function bringUser(event){
+            alert('Linking...')
             console.log(event.target.value);
             let obj = {
                 userDir: userDirGrab.value,
@@ -748,6 +749,7 @@ if (userActivityObj){
                 userRank:userRankGrab.value,
                 userName:userNameGrab.value
             }
+        
             let objString = JSON.stringify(obj);
             let data = await fetch(`/asset/bringUser/${objString}`);
            let dataResponse = await data.json();

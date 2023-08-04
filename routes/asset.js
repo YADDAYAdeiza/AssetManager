@@ -873,8 +873,85 @@ route.put('/assignToUser/:userId/:assetId', async(req, res)=>{
     try{
         let user = await userModel.find({}).where('_id').equals(req.params.userId);
         let asset = await assetModel.find({}).where('_id').equals(req.params.assetId);
+        let letSourceUser = await userModel.find({}).where('_id').equals(asset[0].assetUserHistory[asset[0].assetUserHistory.length-1]); //getting the last user
+        console.log('This is last user ', letSourceUser[0]);
         // console.log(asset);
-    
+
+        let assignedAssetObj = {
+            id:asset[0]._id,
+            idType:asset[0].assetName,
+            assignDate:Date.now(),
+            idAuditObj:{
+                id:asset[0]._id,
+                // auditDate:asset[0].auditTrail.at(-1).auditDate[0],
+                auditDate:asset[0].auditTrail[asset[0].auditTrail.length-1]? asset[0].auditTrail[asset[0].auditTrail.length-1].auditDate[0]:null,
+                assetTypeId:asset.assetType
+            }
+        }
+
+        //updating user
+        user[0].userOwnedAsset.push(assignedAssetObj);
+            
+            //Don''t remove from source; just archive in deallocatedAssets
+            letSourceUser[0].userOwnedAsset.forEach((ownedAsset, i)=>{
+                if (ownedAsset.id == req.params.assetId){
+                    console.log('Found')
+                    letSourceUser[0].userOwnedAsset.splice(i,1);
+                    console.log('Spliced out');
+                    letSourceUser[0].deallocatedAsset.push(assignedAssetObj);
+                }
+            })
+            letSourceUser[0].receivedUserAsset.forEach((ownedAsset, i)=>{
+                if (ownedAsset.id == req.params.assetId){
+                    console.log('Found')
+                    letSourceUser[0].receivedUserAsset.splice(i,1);
+                    console.log('Spliced out, receivedUserAsset');
+                }
+            })
+
+            letSourceUser[0].issueApprovedUserAsset.forEach((ownedAsset, i)=>{
+                if (ownedAsset.id == req.params.assetId){
+                    console.log('Found')
+                    letSourceUser[0].issueApprovedUserAsset.splice(i,1);
+                    console.log('Spliced out, issueApprovedUserAsset');
+                }
+            })
+
+            letSourceUser[0].storeApprovedUserAsset.forEach((ownedAsset, i)=>{
+                if (ownedAsset.id == req.params.assetId){
+                    console.log('Found')
+                    letSourceUser[0].storeApprovedUserAsset.splice(i,1);
+                    console.log('Spliced out, storeApprovedUserAsset');
+                }
+            })
+            
+            letSourceUser[0].directorateApprovedUserAsset.forEach((ownedAsset, i)=>{
+                if (ownedAsset.id == req.params.assetId){
+                    console.log('Found')
+                    letSourceUser[0].directorateApprovedUserAsset.splice(i,1);
+                    console.log('Spliced out, directorateApprovedUserAsset');
+                }
+            })
+
+            letSourceUser[0].approvedUserAsset.forEach((ownedAsset, i)=>{
+                if (ownedAsset.id == req.params.assetId){
+                    console.log('Found')
+                    letSourceUser[0].approvedUserAsset.splice(i,1);
+                    console.log('Spliced out, approvedUserAsset');
+                }
+            })
+
+            letSourceUser[0].userAsset.forEach((ownedAsset, i)=>{
+                if (ownedAsset.id == req.params.assetId){
+                    console.log('Found')
+                    letSourceUser[0].userAsset.splice(i,1);
+                    console.log('Spliced out, userAsset');
+                }
+            })
+
+            await letSourceUser[0].save();
+        
+        //updating asset
         asset[0].assetLocationHistory.push(user[0]._id);
         asset[0].assetUserHistory.push(user[0]._id);
         asset[0].assetAllocationStatus = true;
@@ -907,33 +984,45 @@ route.put('/assignToUser/:userId/:assetId', async(req, res)=>{
                 //reflect it in user profile
 
                                 //for own approval
-                                user[0].userAsset.id.push(newAssetSaved._id);
-                                user[0].userAsset.idType.push( newAssetSaved.assetName);
-                                user[0].userAsset.assignDate.push(Date.now());
+                                // user[0].userAsset.id.push(newAssetSaved._id);
+                                // user[0].userAsset.idType.push( newAssetSaved.assetName);
+                                // user[0].userAsset.assignDate.push(Date.now());
+
+                                user[0].userAsset.push(assignedAssetObj);
+                                user[0].approvedUserAsset.push(assignedAssetObj);
+                                user[0].directorateApprovedUserAsset.push(assignedAssetObj);
+                                user[0].storeApprovedUserAsset.push(assignedAssetObj);
+                                user[0].issueApprovedUserAsset.push(assignedAssetObj);
                                 
+                                
+                                // I thought we are talking about admin approval -what are all these state, directorate, etc
+
                                 //for state approval
-                                user[0].approvedUserAsset.id.push(newAssetSaved._id);
-                                user[0].approvedUserAsset.idType.push( newAssetSaved.assetName);
-                                user[0].approvedUserAsset.assignDate.push(Date.now());
+                                // user[0].approvedUserAsset.id.push(newAssetSaved._id);
+                                // user[0].approvedUserAsset.idType.push( newAssetSaved.assetName);
+                                // user[0].approvedUserAsset.assignDate.push(Date.now());
 
                                 //directorate approval
-                                user[0].directorateApprovedUserAsset.id.push(newAssetSaved._id);
-                                user[0].directorateApprovedUserAsset.idType.push( newAssetSaved.assetName);
-                                user[0].directorateApprovedUserAsset.assignDate.push(Date.now());
+                                // user[0].directorateApprovedUserAsset.id.push(newAssetSaved._id);
+                                // user[0].directorateApprovedUserAsset.idType.push( newAssetSaved.assetName);
+                                // user[0].directorateApprovedUserAsset.assignDate.push(Date.now());
                                 
                                 //Store approval
-                                user[0].storeApprovedUserAsset.id.push(newAssetSaved._id);
-                                user[0].storeApprovedUserAsset.idType.push( newAssetSaved.assetName);
-                                user[0].storeApprovedUserAsset.assignDate.push(Date.now());
+                                // user[0].storeApprovedUserAsset.id.push(newAssetSaved._id);
+                                // user[0].storeApprovedUserAsset.idType.push( newAssetSaved.assetName);
+                                // user[0].storeApprovedUserAsset.assignDate.push(Date.now());
                                 
                                 //Issue Appproval
-                                user[0].issueApprovedUserAsset.id.push(newAssetSaved._id);
-                                user[0].issueApprovedUserAsset.idType.push( newAssetSaved.assetName);
-                                user[0].issueApprovedUserAsset.assignDate.push(Date.now());
+                                // user[0].issueApprovedUserAsset.id.push(newAssetSaved._id);
+                                // user[0].issueApprovedUserAsset.idType.push( newAssetSaved.assetName);
+                                // user[0].issueApprovedUserAsset.assignDate.push(Date.now());
 
-                                let userAssetOwned = JSON.parse(JSON.stringify(user[0].storeApprovedUserAsset));
+                                // let userAssetOwned = JSON.parse(JSON.stringify(user[0].storeApprovedUserAsset));
                                 //final owned assets
-                                user[0].userOwnedAsset = userAssetOwned;
+
+                                // user[0].userOwnedAsset = userAssetOwned;
+
+                                // user[0].userOwnedAsset.push()
 
                                 await user[0].save();
             

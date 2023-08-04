@@ -83,6 +83,12 @@ transition:  0.4s;
     margin-bottom:5px; 
 }
 
+.divContLiWhite{
+    background-color: white;
+    height:60px;
+    margin-bottom:5px; 
+}
+
 .divContLi:hover a{
     color:white;
     text-decoration:dashed;
