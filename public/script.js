@@ -195,7 +195,7 @@ socket.on('user-connected', userId=>{
     //function, closure. button on room.ejs
     // (function(userId, stream){
     //     addVidButGrab.addEventListener('click',  function(){
-            alert('Clicked!');
+           // alert('Clicked!');
             connectToNewUser(userId,stream, 'brown');
     //     })
     // })(userId, stream)
@@ -258,7 +258,7 @@ function auditLocation(){
                             draggable: true,
                             animation:google.maps.Animation.BOUNCE
                         });
-                        alert(pos.coords.latitude)
+                        //alert(pos.coords.latitude)
                         // locationStatusGrab.textContent = `Latitude ${latitude}, Longitude ${longitude}`;
             socket.emit('Auditee Location', locationMarkerAuditee.getPosition(), userID, assetID);
             alert('Locatiom')
@@ -288,7 +288,7 @@ function auditLocation(){
 
 
  function openMap(){
-    alert('Open Map');
+    //alert('Open Map');
     mapAssetGrab = new google.maps.Map(document.getElementById('mapView'), {zoom:6, center:{lat:9, lng:7}});
     console.log('This is location (from room.ejs), ', JSON.parse(locationAudit));  
     let locationAuditObj = JSON.parse(locationAudit);
@@ -296,9 +296,9 @@ function auditLocation(){
     let locationAuditLng = +locationAuditObj.lng;
 
     //Marker
-    alert('Coords')
-    alert(+locationAuditObj.lat);
-    alert(+locationAuditObj.lng);
+   // alert('Coords')
+    //alert(+locationAuditObj.lat);
+    //alert(+locationAuditObj.lng);
         locationMarker =  new google.maps.Marker({
             position:{lat:locationAuditLat, lng:locationAuditLng},
             map:mapAssetGrab,
