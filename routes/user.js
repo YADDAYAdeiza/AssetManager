@@ -118,14 +118,16 @@ route.get('/confirmArrival/:userId/:id/:uuid', async (req, res)=>{
      console.log(`Confirming receipt... on ${req.params.id} and ${req.params.uuid}`);
      try {
         for (let userId of req.user.profileId){
+            console.log('Entered here now...')
             let user = await userModel.find({}).where('_id').equals(userId);
             userArr.push(await user)
             // console.log(user);
             // for (let assetId of user.userOwnedAsset.id){
-                if (await user[0].userOwnedAsset){
-                    for (assetId of await user[0].userOwnedAsset.id){
+                if (await user[0].userOwnedAsset.length){
+                    console.log('Entered asset.length');
+                    for (assetId of await user[0].userOwnedAsset){
                         console.log('Entering now...')
-                        let asset = await assetModel.find({}).where('_id').equals(assetId);
+                        let asset = await assetModel.find({}).where('_id').equals(assetId.id);
                         console.log('This is asset ', asset);
                         console.log('This is user ', user[0].firstName);
                         req.params.id = user[0]._id; // recalibrating hack
