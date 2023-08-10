@@ -892,7 +892,7 @@ route.put('/assignToUser/:userId/:assetId', async(req, res)=>{
         //updating user
         user[0].userOwnedAsset.push(assignedAssetObj);
             
-            //Don''t remove from source; just archive in deallocatedAssets
+            //records presently owned by user; we need to splice out deallocated
             letSourceUser[0].userOwnedAsset.forEach((ownedAsset, i)=>{
                 if (ownedAsset.id == req.params.assetId){
                     console.log('Found')
@@ -901,53 +901,55 @@ route.put('/assignToUser/:userId/:assetId', async(req, res)=>{
                     letSourceUser[0].deallocatedAsset.push(assignedAssetObj);
                 }
             })
-            letSourceUser[0].receivedUserAsset.forEach((ownedAsset, i)=>{
-                if (ownedAsset.id == req.params.assetId){
-                    console.log('Found')
-                    letSourceUser[0].receivedUserAsset.splice(i,1);
-                    console.log('Spliced out, receivedUserAsset');
-                }
-            })
 
-            letSourceUser[0].issueApprovedUserAsset.forEach((ownedAsset, i)=>{
-                if (ownedAsset.id == req.params.assetId){
-                    console.log('Found')
-                    letSourceUser[0].issueApprovedUserAsset.splice(i,1);
-                    console.log('Spliced out, issueApprovedUserAsset');
-                }
-            })
+            //to remove, or not to remove
+                // letSourceUser[0].receivedUserAsset.forEach((ownedAsset, i)=>{
+                //     if (ownedAsset.id == req.params.assetId){
+                //         console.log('Found')
+                //         letSourceUser[0].receivedUserAsset.splice(i,1);
+                //         console.log('Spliced out, receivedUserAsset');
+                //     }
+                // })
 
-            letSourceUser[0].storeApprovedUserAsset.forEach((ownedAsset, i)=>{
-                if (ownedAsset.id == req.params.assetId){
-                    console.log('Found')
-                    letSourceUser[0].storeApprovedUserAsset.splice(i,1);
-                    console.log('Spliced out, storeApprovedUserAsset');
-                }
-            })
-            
-            letSourceUser[0].directorateApprovedUserAsset.forEach((ownedAsset, i)=>{
-                if (ownedAsset.id == req.params.assetId){
-                    console.log('Found')
-                    letSourceUser[0].directorateApprovedUserAsset.splice(i,1);
-                    console.log('Spliced out, directorateApprovedUserAsset');
-                }
-            })
+                // letSourceUser[0].issueApprovedUserAsset.forEach((ownedAsset, i)=>{
+                //     if (ownedAsset.id == req.params.assetId){
+                //         console.log('Found')
+                //         letSourceUser[0].issueApprovedUserAsset.splice(i,1);
+                //         console.log('Spliced out, issueApprovedUserAsset');
+                //     }
+                // })
 
-            letSourceUser[0].approvedUserAsset.forEach((ownedAsset, i)=>{
-                if (ownedAsset.id == req.params.assetId){
-                    console.log('Found')
-                    letSourceUser[0].approvedUserAsset.splice(i,1);
-                    console.log('Spliced out, approvedUserAsset');
-                }
-            })
+                // letSourceUser[0].storeApprovedUserAsset.forEach((ownedAsset, i)=>{
+                //     if (ownedAsset.id == req.params.assetId){
+                //         console.log('Found')
+                //         letSourceUser[0].storeApprovedUserAsset.splice(i,1);
+                //         console.log('Spliced out, storeApprovedUserAsset');
+                //     }
+                // })
+                
+                // letSourceUser[0].directorateApprovedUserAsset.forEach((ownedAsset, i)=>{
+                //     if (ownedAsset.id == req.params.assetId){
+                //         console.log('Found')
+                //         letSourceUser[0].directorateApprovedUserAsset.splice(i,1);
+                //         console.log('Spliced out, directorateApprovedUserAsset');
+                //     }
+                // })
 
-            letSourceUser[0].userAsset.forEach((ownedAsset, i)=>{
-                if (ownedAsset.id == req.params.assetId){
-                    console.log('Found')
-                    letSourceUser[0].userAsset.splice(i,1);
-                    console.log('Spliced out, userAsset');
-                }
-            })
+                // letSourceUser[0].approvedUserAsset.forEach((ownedAsset, i)=>{
+                //     if (ownedAsset.id == req.params.assetId){
+                //         console.log('Found')
+                //         letSourceUser[0].approvedUserAsset.splice(i,1);
+                //         console.log('Spliced out, approvedUserAsset');
+                //     }
+                // })
+
+            // letSourceUser[0].userAsset.forEach((ownedAsset, i)=>{
+            //     if (ownedAsset.id == req.params.assetId){
+            //         console.log('Found')
+            //         letSourceUser[0].userAsset.splice(i,1);
+            //         console.log('Spliced out, userAsset');
+            //     }
+            // })
 
             await letSourceUser[0].save();
         
